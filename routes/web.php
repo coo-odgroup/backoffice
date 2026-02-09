@@ -1,5 +1,6 @@
 <?php
-
+use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::prefix('admin')->group(function () {
+
+    // DEFAULT ADMIN PAGE
+    Route::get('/', [ModuleController::class, 'index'])->name('admin.dashboard');
+    Route::get('/users', [UserController::class, 'index']);
+
 });
