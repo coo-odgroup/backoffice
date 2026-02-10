@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel</title>
+    <title>@yield('title', 'Admin Panel')</title>
+    <meta name="description" content="simple and responsive tables" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="shortcut icon"
+          href="{{ asset('assets/img/favicon.png') }}"
+          type="image/x-icon">
      <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
      <link rel="stylesheet" href="{{ asset('assets/css/font-awesome.min.css') }}">
      <link rel="stylesheet" href="{{ asset('assets/css/beyond.min.css') }}">
@@ -11,13 +18,11 @@
       @stack('styles')
 
     @vite([
-        'resources/adminlte/css/adminlte.min.css',
-        'resources/adminlte/js/adminlte.min.js',
         'resources/js/admin.js'
     ])
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body>
 <div class="wrapper">
 
     {{-- CONTENT --}}
@@ -28,6 +33,7 @@
 </div>
  <script src="{{ asset('assets/js/jquery-2.0.3.min.js') }}"></script>
 <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/helpers.js') }}"></script>
 <script src="{{ asset('assets/js/beyond.min.js') }}"></script>
 
 <script src="{{ asset('assets/js/datatable/jquery.dataTables.min.js') }}"></script>
