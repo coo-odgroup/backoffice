@@ -1,0 +1,178 @@
+/* ==============================
+   COMMON STYLES
+================================ */
+
+.table_body {
+    margin-top: 10px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    color: #1b2155;
+}
+
+.table-responsive th {
+    background: #1b2155;
+    color: #fff;
+}
+
+.table-responsive td, .table-responsive th {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+
+.page-size {
+    width: 70px;
+    height: 32px;
+    display: inline-block;
+}
+
+.widget-buttons .btn {
+    margin-left: 5px;
+    padding: 2px 6px;
+    font-size: 13px;
+}
+
+.filter-btns {
+    margin-top: 15px;
+}
+
+
+
+/* Booking info */
+.booking-info-row {
+    margin: 10px 0;
+}
+
+.booking-left-info {
+    font-size: 14px;
+    line-height: 22px;
+    margin-bottom: 10px;
+}
+
+.booking-alert {
+    padding: 8px;
+    margin: 0;
+}
+
+/* Buttons */
+.btn-sm {
+    padding: 5px 10px;
+}
+
+/* Footer */
+.table-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.total-text {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.widget-body label{
+    margin-top: 10px !important;
+}
+
+
+/* ==============================
+   MOBILE VIEW (MAX 425px)
+================================ */
+
+@media (max-width: 425px) {
+
+    /* Inputs spacing */
+    .widget-body .form-control {
+        margin-bottom: 10px;
+    }
+
+    /* First select full width */
+    .widget-body .col-md-3:first-child {
+        width: 100% !important;
+    }
+
+    /* Other fields = 2 per row */
+    .widget-body .col-md-2,
+    .widget-body .col-md-3:not(:first-child) {
+        width: 50% !important;
+        float: left;
+    }
+
+    /* Submit / Reset */
+    .filter-btns {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    /* Count + Export row */
+    .table_body .row:first-child {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .table-responsive {
+        font-size: 13px;
+    }
+
+    .btn {
+        font-size: 12px;
+    }
+
+    .count-size{
+        margin-top: 10px;
+    }
+
+    .page-size {
+        width: 60px;
+    }
+
+    .table_body .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    /* Booking info */
+    .booking-left-info {
+        font-size: 13px;
+        text-align: left;
+        margin-bottom: 6px;
+    }
+
+    .booking-alert {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    /* Pagination */
+    .table-footer {
+        text-align: right;
+        margin-top: 10px;
+    }
+}
+
+
+/* ==============================
+   TABLE FOOTER
+================================ */
+
+.footer-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+}

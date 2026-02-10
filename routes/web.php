@@ -2,6 +2,7 @@
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Master\CitiesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,5 +24,8 @@ Route::prefix('admin')->group(function () {
     // DEFAULT ADMIN PAGE
     Route::get('/', [ModuleController::class, 'index'])->name('admin.dashboard');
     Route::get('/users', [UserController::class, 'index']);
+    Route::get('/cities', [CitiesController::class, 'cities']);
+    Route::get('/add-cities', [CitiesController::class, 'addCities']);
+
 
 });

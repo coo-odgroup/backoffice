@@ -17,14 +17,14 @@
         <li class="active open">
             <a href="#" class="menu-dropdown">
                 <i class="menu-icon fa fa-table"></i>
-                <span class="menu-text">Tables</span>
+                <span class="menu-text">Location</span>
                 <i class="menu-expand"></i>
             </a>
 
             <ul class="submenu">
                 <li class="active">
-                    <a href="{{ url('/admin/tables/simple') }}">
-                        <span class="menu-text">Simple & Responsive</span>
+                    <a href="{{ url('/admin/cities') }}">
+                        <span class="menu-text">Cities</span>
                     </a>
                 </li>
             </ul>

@@ -14,6 +14,8 @@
      <link rel="stylesheet" href="{{ asset('assets/css/font-awesome.min.css') }}">
      <link rel="stylesheet" href="{{ asset('assets/css/beyond.min.css') }}">
      <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap.css') }}">
+     <link rel="stylesheet" href="{{ asset('assets/css/skins/custom_style.css') }}">
+
 
       @stack('styles')
 

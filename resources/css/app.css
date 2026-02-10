@@ -1,3 +1,7 @@
 body {
     background-color: #f8fafc;
 }
+/* optional UI fixes */
+.dataTables_processing {
+    background: transparent;
+}
