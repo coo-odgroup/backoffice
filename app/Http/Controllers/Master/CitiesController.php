@@ -17,4 +17,9 @@ class CitiesController extends Controller
     {
         return view('master.addCities');
     }
+
+    public function dataTable()
+    {
+        return view('master.citiesDataTable');
+    }
 }
