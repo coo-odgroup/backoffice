@@ -18,6 +18,8 @@
     <!-- <link rel="stylesheet" href="{{ asset('assets/css/beyond.min.css') }}"> -->
     <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/skins/custom_style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
     
     @stack('styles')
@@ -26,6 +28,8 @@
 </head>
 
 <body>
+     <!-- Navbar -->
+    @include('admin.inc.loader')
     <!-- Navbar -->
     @include('admin.inc.navbar')
     <div class="d-flex" id="wrapper">
@@ -75,6 +79,8 @@
 
     <!-- Common (ALWAYS LAST) -->
     <script src="{{ asset('assets/js/common-datatable.js') }}"></script>
+    <script src="{{ asset('assets/js/commonAjax.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
     const menuToggle = document.getElementById("menu-toggle");
