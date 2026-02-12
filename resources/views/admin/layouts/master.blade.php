@@ -9,16 +9,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}" type="image/x-icon">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('assets/css/v5/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/beyond.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('assets/css/beyond.min.css') }}"> -->
     <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/skins/custom_style.css') }}">
 
-
+    
     @stack('styles')
 
 
@@ -46,11 +47,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <!-- Bootstrap JS -->
 
-    <!-- <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('assets/js/helpers.js') }}"></script> -->
 
-    <!-- Bootstrap 3 -->
-    <!-- <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script> -->
 
     <!-- DataTables Core -->
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>

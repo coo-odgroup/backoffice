@@ -104,141 +104,54 @@
         </div>
         <!-- Table start -->
         <div class="d-flex justify-content-between mb-2">
-            <select class="form-control page-size">
-                <option>5</option>
-                <option>10</option>
-                <option>25</option>
+            <select id="pageSizeDatatable" class="form-control page-size">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
             </select>
 
             <div>
-                <button class="btn btn-success btn-sm">
+                <button id="btnExcel" class="btn btn-success btn-sm">
                     <i class="fa-solid fa-file-excel me-1"></i>
                 </button>
-                <button class="btn btn-danger btn-sm">
+                <button  id="btnPrint" class="btn btn-danger btn-sm">
                     <i class="fa-solid fa-print me-1"></i>
                 </button>
-                <button class="btn btn-warning btn-sm text-white">
+                <button id="btnPdf" class="btn btn-warning btn-sm text-white">
                     <i class="fa-solid fa-file-pdf me-1"></i>
                 </button>
             </div>
         </div>
 
-        <div class="mb-2 booking-info">
-            <div><b>Total Booking :</b> 55</div>
-            <div><b>Journey Date :</b> 25-Jan-2026</div>
-
-            <div class="alert alert-info mt-2 text-center">
-                ℹ Showing booking data based on selected filters
-            </div>
-        </div>
-
         <div class="table-responsive">
-            <table class="table table-bordered">
+            <div id="tableLoader" 
+            class="position-fixed top-0 start-0 w-100 h-100 d-none 
+                    justify-content-center align-items-center"
+            style="background: rgba(255,255,255,0.6); z-index:1055;">
+
+            <div class="spinner-border text-primary" role="output">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+        </div>
+            <table class="table table-hover table-bordered align-middle table-sm" 
+                    id="datatable"
+                    data-url="{{ route('cities.datatable') }}"
+                    data-edit-url="{{ route('cities.edit', 'ID') }}"
+                   >
                 <thead class="thead-light">
                     <tr>
-                        <th>Username</th>
-                        <th>Full Name</th>
-                        <th>Points</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
-                        <th>Notes</th>
+                        <th>Sl No</th>
+                        <th>State/District Name</th>
+                        <th>City Name</th>
+                        <th>Alias</th>
+                        <th>Synonymn</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>alex</td>
-                        <td>Alex Nilson</td>
-                        <td>1234</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="btn btn-info btn-sm">
-                                    <i class="fa-solid fa-pen-to-square me-1"></i>Edit
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="fa-solid fa-trash me-1"></i>Delete
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>alex</td>
-                        <td>Alex Nilson</td>
-                        <td>1234</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="btn btn-info btn-sm">
-                                    <i class="fa fa-edit"></i> Edit
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="fa fa-trash"></i> Delete
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>alex</td>
-                        <td>Alex Nilson</td>
-                        <td>1234</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>power user</td>
-                        <td>
-                            <div class="action-btns">
-                                <button class="btn btn-info btn-sm">
-                                    <i class="fa fa-edit"></i> Edit
-                                </button>
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="fa fa-trash"></i> Delete
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
-        </div>
-
-        <div class="d-flex justify-content-between mt-2">
-            <div></div>
-            <div><b>Total :</b> 78</div>
         </div>
 
         <ul class="pagination justify-content-end mt-2">
@@ -248,6 +161,7 @@
             <li class="page-item"><a class="page-link">3</a></li>
             <li class="page-item"><a class="page-link">Next</a></li>
         </ul>
+
 
     </div>
 </div>
@@ -259,6 +173,7 @@
 
 
 <script>
+   
 $(document).ready(function() {
     // By default hide filter
     $("#filterBox").hide();
@@ -267,7 +182,7 @@ $(document).ready(function() {
     window.toggleFilter = function() {
         $("#filterBox").slideToggle(300);
     };
-    // getDataTableView();
+    getDataTableView();
 });
 
 function toggleFilter() {
@@ -300,105 +215,63 @@ function getDataTableView() {
         selstatus: selStatus,
     };
     let displayColumns = [1, 2, 3, 4, 5, 6];
-    let dataTableColumns = [{
-            data: '',
-            render: function(data, type, row) {
-                return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
-                    '" name="chkStd' + row.service_id + '" value="' + row.service_id +
-                    '" onclick="checkFun(this.id)">';
-            },
-            className: "noPrint text-center"
-        },
+    let dataTableColumns = [
+        // {
+        //     data: '',
+        //     render: function(data, type, row) {
+        //         return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
+        //             '" name="chkStd' + row.id + '" value="' + row.id +
+        //             '" onclick="checkFun(this.id)">';
+        //     },
+        //     className: "noPrint text-center"
+        // },
         {
             data: 'slNo',
             render: function(data, type, row, meta) {
-                return meta.row + meta.settings._iDisplayStart + 1;
+                //return meta.row + meta.settings._iDisplayStart + 1;
             },
             className: "text-center"
         },
         {
-            data: 'service_name',
+            data: 'state_name',
             defaultContent: "--"
         },
         {
-            data: 'service_alias',
+            data: 'city_name',
             defaultContent: "--"
         },
         {
-            data: 'cat_name',
+            data: 'city_alias',
             defaultContent: "--"
         },
-        {
-            data: 'is_seat_type',
-            render: function(data, type, row) {
-                if (row.is_seat_type == 1) {
-                    var st = 'Yes';
-                } else if (row.is_seat_type == 2) {
-                    var st = 'No';
-                } else {
-                    var st = '--';
-                }
-                return '<span>' + st + '</span>';
-            },
-            className: "text-center"
-        },
-        {
-            data: 'is_component',
-            render: function(data, type, row) {
-                if (row.is_component == 1) {
-                    var cmp = 'Yes';
-                } else if (row.is_component == 2) {
-                    var cmp = 'No';
-                } else {
-                    var cmp = '--';
-                }
-                return '<span>' + cmp + '</span>';
-            },
-            className: "text-center"
-        },
-        {
-            data: '',
-            render: function(data, type, row) {
-                if (row.cmp_count > 0) {
-                    return '<a href="javascript:void(0);" onclick="getComponentList(' + "'" + row
-                        .enc_service_id + "'" + ')">' + row.cmp_count + '</a>';
-                } else {
-                    return '--';
-                }
-            },
-            className: "noPrint text-center"
-        },
-        {
-            data: 'booking_engine',
-            defaultContent: "--",
-            className: "text-center"
-        },
-        {
-            data: 'created_date',
-            defaultContent: "--",
-            className: "text-center text-nowrap"
-        },
-        {
-            data: 'full_name',
+         {
+            data: 'city_alias',
             defaultContent: "--"
         },
-        {
+       {
             data: 'is_active',
             render: function(data, type, row) {
                 var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
                 return '<span class="' + cls + '">' + row.is_active + '</span>';
             },
             className: "text-center"
-        },
+        },       
+       
+        // {
+        //     data: 'created_date',
+        //     defaultContent: "--",
+        //     className: "text-center text-nowrap"
+        // },
+       
         {
             data: '',
-            render: function(data, type, row) {
-                return '<a class="btn btn-sm btn-info" title="Edit" href="' + $('#' + tableId).data('edit-url')
-                    .replace("ID", row.enc_service_id) + '"><i class="bi bi-pencil-square"></i></a>';
-            },
+            // render: function(data, type, row) {
+            //     return '<a class="btn btn-sm btn-info" title="Edit" href="' + $('#' + tableId).data('edit-url')
+            //         .replace("ID", row.enc_service_id) + '"><i class="bi bi-pencil-square"></i></a>';
+            // },
             className: "noPrint text-center"
         }
-    ]
+    ]    
 
     loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
 }

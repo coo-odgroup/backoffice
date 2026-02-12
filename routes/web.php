@@ -26,6 +26,10 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/cities', [CitiesController::class, 'cities']);
     Route::get('/add-cities', [CitiesController::class, 'addCities']);
+    Route::post('cities/datatable', [CitiesController::class, 'dataTable'])
+    ->name('cities.datatable');
+    Route::post('cities/edit/{id}', [CitiesController::class, 'edit'])
+    ->name('cities.edit');
 
 
 });

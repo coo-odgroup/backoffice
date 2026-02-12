@@ -200,7 +200,8 @@ table {
 
 .breadcrumb {
     background: transparent;
-    font-size: 14px;
+    font-size: 13px;
+    font-weight: 300;
     width: 100%;
     height: auto;
     margin-top: 50px;
@@ -287,4 +288,8 @@ table {
 /* Mobile sidebar profile spacing */
 #sidebar-wrapper .rounded-circle {
     object-fit: cover;
+}
+
+.dataTables_paginate {
+    float: right !important;
 }
