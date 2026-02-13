@@ -351,6 +351,10 @@ table {
    add cities form styles start here
    ====================================== */
 
+.important{
+    margin-left: 4px;
+}
+
 .add-cities-form label {
     display: block;
     margin-bottom: 4px;

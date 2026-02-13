@@ -40,7 +40,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
-                                            <label for="txtCity">City Name</label>
+                                            <label for="txtCity">City Name<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control" id="txtCity" name="txtCity">
                                         </div>
 
