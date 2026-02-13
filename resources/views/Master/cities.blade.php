@@ -94,16 +94,16 @@
                     <option value="-1">All</option>
                 </select>
                 <div>
-                    <button type="button" id="btnDelete" class="btn btn-success btn-sm">
+                    <button type="button" id="btnDelete" class="btn btn-warning btn-sm">
                         <i class="fa-solid fa-trash me-1"></i>
                         Delete
                     </button>
-                    <button type="button" id="btnActive" class="btn btn-warning btn-sm text-white">
-                        <i class="fa-solid fa-file-pdf me-1"></i>
+                    <button type="button" id="btnActive" class="btn btn-success btn-sm text-white">
+                        <i class="fa-solid fa-circle-check me-1"></i>
                         Active
                     </button>
                     <button type="button" id="btnInactive" class="btn btn-danger btn-sm">
-                        <i class="fa-solid fa-print me-1"></i>
+                        <i class="fa-solid fa-times me-1"></i>
                         Inactive
                     </button>
 

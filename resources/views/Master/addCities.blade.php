@@ -27,7 +27,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 </div>
 
 <!-- TABLE -->
-<form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100">
+<form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -63,9 +63,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="row mb-3 align-items-center">
+                                    <div class="row mb-3 align-items-center synonym-row">
                                         <!-- Label -->
-                                        <div class="col-md-1 text-end">
+                                        <div class="col-md-1 text-left">
                                             <label for="txtSynonym" class="mb-0">Synonyms</label>
                                         </div>
 
@@ -82,9 +82,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                     </div>
 
-                                    <div class="row mb-3 align-items-center">
+                                    <div class="row mb-3 align-items-center synonym-row">
                                         <!-- Label -->
-                                        <div class="col-md-1 text-end">
+                                        <div class="col-md-1 text-left">
                                             <label for="txtSynonym" class="mb-0">Synonyms</label>
                                         </div>
 
@@ -119,18 +119,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </div>
                         </div>
                     </div>
-                    <!-- Table start -->
-                    <div id="tableActions">
-                    </div>
-
-                    <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-                    {{csrf_field()}}
-                    <input name="hdn_ids" id="hdn_ids" type="hidden">
-                    <input name="hdn_qs" id="hdn_qs" type="hidden">
-                    <div class="d-flex justify-content-between align-items-center mt-2">
-                        <div id="customTableInfo"></div>
-                        <div id="customPagination"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -160,134 +148,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         window.toggleFilter = function() {
             $("#filterBox").slideToggle(300);
         };
-        loadStateList();
-        getDataTableView();
+        commonAjax.loadStateList();
     });
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
-
-        getDataTableView();
     });
 
     $(document).on('change', '#selState', function() {
         let state_id = $(this).val();
-        getDistrictList(state_id);
+        commonAjax.loadDistrictList(state_id);
+        
     });
 
 
-    function toggleFilter() {
-        console.log("toggleFilter called");
-        document.getElementById("filterBox").classList.toggle("d-none");
-    }
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
 
-
-    function getDataTableView() {
-
-        $('#pageSizeDatatable').val(10);
-        txtSearch = '';
-        selStatus = '';
-        selState = 0;
-        selDistrict = 0;
-
-        if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
-        }
-        if ($('#selStatus').val() != '') {
-            selStatus = $('#selStatus').val();
-        }
-        if ($('#selState').val() != 0) {
-            selState = $('#selState').val();
-        }
-        if ($('#selDistrict').val() != 0) {
-            selDistrict = $('#selDistrict').val();
-        }
-
-        let tableId = 'datatable';
-        let orderBy = [2, 'asc'];
-        let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus,
-            selstate: selState,
-            seldistrict: selDistrict
-        };
-        let displayColumns = [1, 2, 3, 4, 5, 6];
-        let dataTableColumns = [
-            // {
-            //     data: '',
-            //     render: function(data, type, row) {
-            //         return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
-            //             '" name="chkStd' + row.id + '" value="' + row.id +
-            //             '" onclick="checkFun(this.id)">';
-            //     },
-            //     className: "noPrint text-center"
-            // },
-            {
-                data: 'slNo',
-                render: function(data, type, row, meta) {
-                    return meta.row + meta.settings._iDisplayStart + 1;
-                },
-                className: "text-center"
-            },
-            {
-                data: 'state_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'city_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'city_alias',
-                defaultContent: "--"
-            },
-            {
-                data: 'city_alias',
-                defaultContent: "--"
-            },
-            {
-                data: 'is_active',
-                render: function(data, type, row) {
-                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-                    return '<span class="' + cls + '">' + row.is_active + '</span>';
-                },
-                className: "text-center"
-            },
-
-            // {
-            //     data: 'created_date',
-            //     defaultContent: "--",
-            //     className: "text-center text-nowrap"
-            // },
-
-            {
-                data: '',
-                render: function(data, type, row) {
-
-                    let editUrl = $('#' + tableId).data('edit-url');
-
-                    if (!editUrl) return '';
-
-                    return `
-                        <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_city_id)}">
-                        <i class="fa fa-edit"></i> Edit
-                        </a>
-                    `;
-                },
-                className: "noPrint text-center"
-            }
-        ]
-
-        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
-    }
 </script>
 
 @endpush

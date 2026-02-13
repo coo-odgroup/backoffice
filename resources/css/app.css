@@ -344,31 +344,47 @@ table {
 
 
 /* =====================================================
-/* addCities Css Starts Here */
+   END OF cities form styles
+===================================================== */
 
-@media (max-width: 768px) {
-  #backoffice-form .btn {
-    width: 100%;
-  }
+/* ======================================
+   add cities form styles start here
+   ====================================== */
 
-}
-
-
-/* Force labels above inputs */
-#backoffice-form label {
+.add-cities-form label {
     display: block;
     margin-bottom: 4px;
-    text-align: left;
+    font-weight: 600;
 }
 
-/* Prevent label-input side alignment */
-#backoffice-form .form-control,
-#backoffice-form .form-select {
-    width: 100%;
+
+.add-cities-form .synonym-row .form-control {
+    margin-bottom: 4px !important;
+}
+
+.add-cities-form .synonym-row .btn {
+    width: auto;
+}
+
+/* =========================
+   MOBILE FIXES
+   ========================= */
+
+@media (max-width: 768px) {
+    .add-cities-form .btn {
+        width: 100%;
+    }
+
+    .add-cities-form .synonym-row label {
+        text-align: left;
+        margin-bottom: 4px !important;
+        display: block;
+    }
 }
 
 @media (max-width: 576px) {
-    #txtSynonym {
-        margin-bottom: 6px;
+    .add-cities-form .synonym-row .btn {
+        width: 100%;
+        margin-top: 6px !important;
     }
 }
