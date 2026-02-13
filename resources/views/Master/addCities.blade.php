@@ -1,209 +1,258 @@
 @extends('admin.layouts.master')
-
-@section('title', 'Users')
-
 @section('content')
-<!-- Loading Container -->
-<!-- @include('admin.inc.loader') -->
 
-<!--  /Loading Container -->
-<!-- Navbar -->
-@include('admin.inc.navbar')
-<!-- /Navbar -->
-<!-- Main Container -->
-<div class="main-container container-fluid">
-    <!-- Page Container -->
-    <div class="page-container">
-        <!-- Page Sidebar -->
-        @include('admin.inc.sidebar')
-        <!-- /Page Sidebar -->
-        <!-- Page Content -->
-        <div class="page-content">
-            <!-- Page Breadcrumb -->
-            <div class="page-breadcrumbs">
-                <ul class="breadcrumb">
-                    <li>
-                        <i class="fa fa-home"></i>
-                        <a href="#">Home</a>
-                    </li>
-                    <li>
-                        <a href="#">Tables</a>
-                    </li>
-                    <li class="active">Data Tables</li>
-                </ul>
-            </div>
-            <!-- /Page Breadcrumb -->
+<?php
+$page_name = 'All Cities';
+$listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
+?>
 
-            <!-- PAGE BODY -->
-            <div class="page-body">
 
-                <div class="row">
-                    <div class="col-xs-12">
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item">Tables</li>
+        <li class="breadcrumb-item active">Data Tables</li>
+    </ol>
+</nav>
 
-                        <!-- BOOKING REPORT CARD -->
-                        <div class="widget">
-                            <div class="widget-header">
-                                <span class="widget-caption">Booking Report</span>
-                                <div class="widget-buttons">
-                                    <a href="javascript:void(0)" class="btn btn-primary" onclick="toggleFilter()">
-                                        <i class="fa fa-search"></i> Search
-                                    </a>
-                                    <a href="#" class="btn btn-success">+ Add Bus</a>
-                                </div>
-                            </div>
+<!-- Booking Report Card -->
+<!-- HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 id="page_title">Cities</h5>
+    <div>
+        <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
+            <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+        </button>
+        <button class="btn btn-success btn-sm">+ Add Bus
+        </button>
+    </div>
+</div>
 
-                            <!-- FILTER -->
-                            <div class="widget-body" id="filterBox" style="display:none;">
-                                <div class="row">
-
-                                    <div class="col-md-3">
-                                        <label>Select Operator</label>
-                                        <select class="form-control">
-                                            <option>Select Operator</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label>From Date</label>
-                                        <input type="date" class="form-control">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label>To Date</label>
-                                        <input type="date" class="form-control">
-                                    </div>
-
-                                    <div class="col-md-2">
-                                        <label>Please Select</label>
-                                        <select class="form-control">
-                                            <option>Journey Date</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label>Select Booking</label>
-                                        <select class="form-control">
-                                            <option>Select Booking</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label>Enter PNR</label>
-                                        <input type="text" placeholder="Enter PNR" class="form-control">
-                                    </div>
+<!-- TABLE -->
+<form id="backoffice-form" name="backoffice-form" method="post" novalidate>
+    <div class="card">
+        <div class="card-body">
+            <!-- FILTER -->
+            <div class="mb-3 border-bottom" id="filterBox">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- FILTER FIELDS -->
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
+                                    <label for="txtSearch">Search By City Name/Alias</label>
+                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                                        placeholder="City Name/Alias">
                                 </div>
 
+                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
+                                    <label for="selState">State</label>
+                                    <select class="form-select" id="selState" name="selState">
+                                        <option value="0">Select State</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
+                                    <label for="selDistrict">District</label>
+                                    <select class="form-select" id="selDistrict" name="selDistrict">
+                                        <option value="0">Select District</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="selStatus">Status</label>
+                                    <select class="form-select" id="selStatus" name="selStatus">
+                                        <option value="">Select Status</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
 
-                                <!-- FILTER BUTTONS -->
-                                <div class="row">
-                                    <div class="col-md-12 text-right filter-btns">
-                                        <button class="btn btn-primary">
-                                            <i class="fa fa-check"></i> Submit
-                                        </button>
-                                        <button class="btn btn-default">
-                                            <i class="fa fa-refresh"></i> Reset
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- FILTER -->
-                            <!-- TABLE AREA -->
-                            <div class="widget-header bordered-bottom bordered-blueberry table_body">
-                                <span class="widget-caption">Horizontal Form</span>
-                            </div>
-                            <div class="widget-body">
-                                <div id="horizontal-form">
-                                    <form class="form-horizontal" role="form">
-                                        <div class="form-group">
-                                            <label for="inputEmail3" class="col-sm-2 control-label no-padding-right">Email</label>
-                                            <div class="col-sm-10">
-                                                <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                                                <p class="help-block">Example block-level help text here.</p>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="inputPassword3" class="col-sm-2 control-label no-padding-right">Password</label>
-                                            <div class="col-sm-10">
-                                                <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="col-sm-offset-2 col-sm-10">
-                                                <div class="checkbox">
-                                                    <label>
-                                                        <input type="checkbox">
-                                                        <span class="text">Remember me next time.</span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="col-sm-offset-2 col-sm-10">
-                                                <button type="submit" class="btn btn-default">Sign in</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
                             </div>
                         </div>
+
+                        <!-- BUTTONS -->
+                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                            <button class="btn btn-primary btn-sm" type="button" onclick="return getDataTableView()">
+                                <i class="fa-solid fa-check me-1"></i>Submit
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                <i class="fa-solid fa-rotate-left me-1"></i>Reset
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>
+            <!-- Table start -->
+            <div id="tableActions">
+            </div>
 
+
+           
+            
+            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+            {{csrf_field()}}
+            <input name="hdn_ids" id="hdn_ids" type="hidden">
+            <input name="hdn_qs" id="hdn_qs" type="hidden">
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <div id="customTableInfo"></div>
+                <div id="customPagination"></div>
+            </div>
         </div>
-        <!-- /Page Content -->
     </div>
-    <!-- /Page Container -->
-    <!-- Main Container -->
+    </div>
+</form>
 
-</div>
 @endsection
-
 @push('scripts')
-<script>
-    // $(function () {
-    //     $('#usersTable').DataTable();
-    // });
-</script>
-@endpush
-<!--Basic Scripts-->
-<script src="assets/js/jquery-2.0.3.min.js"></script>
-<script src="assets/js/bootstrap.min.js"></script>
-
-<!--Beyond Scripts-->
-<script src="assets/js/beyond.min.js"></script>
-
-<!--Page Related Scripts-->
-<script src="assets/js/datatable/jquery.dataTables.min.js"></script>
-<script src="assets/js/datatable/ZeroClipboard.js"></script>
-<script src="assets/js/datatable/dataTables.tableTools.min.js"></script>
-<script src="assets/js/datatable/dataTables.bootstrap.min.js"></script>
-<script src="assets/js/datatable/datatables-init.js"></script>
-<script>
-    InitiateSimpleDataTable.init();
-    InitiateEditableDataTable.init();
-    InitiateExpandableDataTable.init();
-    InitiateSearchableDataTable.init();
-</script>
-<!--Google Analytics::Demo Only-->
-<script>
-    (function(i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r;
-        i[r] = i[r] || function() {
-            (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date();
-        a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0];
-        a.async = 1;
-        a.src = g;
-        m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', 'http://www.google-analytics.com/analytics.js', 'ga');
-
-    ga('create', 'UA-52103994-1', 'auto');
-    ga('send', 'pageview');
-</script>
 
 <script>
+    $('#backoffice-form').on('submit', function(e) {
+        e.preventDefault();
+    });
+
+
+    $(document).ready(function() {
+
+
+
+        initSelect2('#selState', 'Select State');
+        initSelect2('#selDistrict', 'Select District');
+        // By default hide filter
+        $("#filterBox").hide();
+
+        // Toggle on button click
+        window.toggleFilter = function() {
+            $("#filterBox").slideToggle(300);
+        };
+        loadStateList();
+        getDataTableView();
+    });
+
+    $('#btnReset').click(function() {
+        $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
+        $('.form-select').val(0);
+        $('.form-select').val('').trigger('change');
+
+        getDataTableView();
+    });
+
+    $(document).on('change', '#selState', function() {
+        let state_id = $(this).val();
+        getDistrictList(state_id);
+    });
+
+
     function toggleFilter() {
-        $("#filterBox").slideToggle();
+        console.log("toggleFilter called");
+        document.getElementById("filterBox").classList.toggle("d-none");
+    }
+
+    document.getElementById("menu-toggle").addEventListener("click", function() {
+        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+
+
+    function getDataTableView() {
+
+        $('#pageSizeDatatable').val(10);
+        txtSearch = '';
+        selStatus = '';
+        selState = 0;
+        selDistrict = 0;
+
+        if ($('#txtSearch').val() != '') {
+            txtSearch = $('#txtSearch').val();
+        }
+        if ($('#selStatus').val() != '') {
+            selStatus = $('#selStatus').val();
+        }
+        if ($('#selState').val() != 0) {
+            selState = $('#selState').val();
+        }
+        if ($('#selDistrict').val() != 0) {
+            selDistrict = $('#selDistrict').val();
+        }
+
+        let tableId = 'datatable';
+        let orderBy = [2, 'asc'];
+        let searchParams = {
+            txtsearch: txtSearch,
+            selstatus: selStatus,
+            selstate: selState,
+            seldistrict: selDistrict
+        };
+        let displayColumns = [1, 2, 3, 4, 5, 6];
+        let dataTableColumns = [
+            // {
+            //     data: '',
+            //     render: function(data, type, row) {
+            //         return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
+            //             '" name="chkStd' + row.id + '" value="' + row.id +
+            //             '" onclick="checkFun(this.id)">';
+            //     },
+            //     className: "noPrint text-center"
+            // },
+            {
+                data: 'slNo',
+                render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                },
+                className: "text-center"
+            },
+            {
+                data: 'state_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'city_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'city_alias',
+                defaultContent: "--"
+            },
+            {
+                data: 'city_alias',
+                defaultContent: "--"
+            },
+            {
+                data: 'is_active',
+                render: function(data, type, row) {
+                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
+                    return '<span class="' + cls + '">' + row.is_active + '</span>';
+                },
+                className: "text-center"
+            },
+
+            // {
+            //     data: 'created_date',
+            //     defaultContent: "--",
+            //     className: "text-center text-nowrap"
+            // },
+
+            {
+                data: '',
+                render: function(data, type, row) {
+
+                    let editUrl = $('#' + tableId).data('edit-url');
+
+                    if (!editUrl) return '';
+
+                    return `
+                        <a class="btn btn-sm btn-info"
+                        href="${editUrl.replace('ID', row.enc_city_id)}">
+                        <i class="fa fa-edit"></i> Edit
+                        </a>
+                    `;
+                },
+                className: "noPrint text-center"
+            }
+        ]
+
+        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
 </script>
+
+@endpush
