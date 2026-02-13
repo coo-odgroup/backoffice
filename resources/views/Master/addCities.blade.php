@@ -21,82 +21,117 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
     <div>
-        <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
-            <i class="fa-solid fa-magnifying-glass me-1"></i> Search
-        </button>
-        <button class="btn btn-success btn-sm">+ Add Bus
+        <button class="btn btn-success btn-sm">Viw Cities
         </button>
     </div>
 </div>
 
 <!-- TABLE -->
-<form id="backoffice-form" name="backoffice-form" method="post" novalidate>
-    <div class="card">
-        <div class="card-body">
-            <!-- FILTER -->
-            <div class="mb-3 border-bottom" id="filterBox">
+<form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
+                    <!-- FILTER -->
+                    <div class="mb-3 border-bottom">
+                        <div class="card-body">
                             <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By City Name/Alias</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="City Name/Alias">
+                                <!-- FILTER FIELDS -->
+                                <div class="col-12">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="txtCity">City Name</label>
+                                            <input type="text" class="form-control" id="txtCity" name="txtCity">
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label for="txtAlias">Alias</label>
+                                            <input type="text" class="form-control" id="txtAlias" name="txtAlias">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="selState">State</label>
+                                            <select class="form-select" id="selState" name="selState">
+                                                <option value="0">Select State</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="selDistrict">District</label>
+                                            <select class="form-select" id="selDistrict" name="selDistrict">
+                                                <option value="0">Select District</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <!-- Label -->
+                                        <div class="col-md-1 text-end">
+                                            <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                        </div>
+
+                                        <!-- Input -->
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" id="txtSynonym" name="txtSynonym">
+                                        </div>
+
+                                        <!-- Plus Button -->
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-outline-primary">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3 align-items-center">
+                                        <!-- Label -->
+                                        <div class="col-md-1 text-end">
+                                            <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                        </div>
+
+                                        <!-- Input -->
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control" id="txtSynonym" name="txtSynonym">
+                                        </div>
+
+                                        <!-- Plus Button -->
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-outline-danger">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+
                                 </div>
 
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selState">State</label>
-                                    <select class="form-select" id="selState" name="selState">
-                                        <option value="0">Select State</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selDistrict">District</label>
-                                    <select class="form-select" id="selDistrict" name="selDistrict">
-                                        <option value="0">Select District</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
+                                <!-- BUTTONS -->
+                                <div class="row mt-4">
+                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
+                                        <button class="btn btn-primary btn-sm" type="button" onclick="return getDataTableView()">
+                                            Submit
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                            Reset
+                                        </button>
+                                    </div>
                                 </div>
 
                             </div>
                         </div>
+                    </div>
+                    <!-- Table start -->
+                    <div id="tableActions">
+                    </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
-                            <button class="btn btn-primary btn-sm" type="button" onclick="return getDataTableView()">
-                                <i class="fa-solid fa-check me-1"></i>Submit
-                            </button>
-                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                <i class="fa-solid fa-rotate-left me-1"></i>Reset
-                            </button>
-                        </div>
-
+                    <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                    {{csrf_field()}}
+                    <input name="hdn_ids" id="hdn_ids" type="hidden">
+                    <input name="hdn_qs" id="hdn_qs" type="hidden">
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div id="customTableInfo"></div>
+                        <div id="customPagination"></div>
                     </div>
                 </div>
-            </div>
-            <!-- Table start -->
-            <div id="tableActions">
-            </div>
-
-
-           
-            
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
             </div>
         </div>
     </div>

@@ -336,3 +336,40 @@ table {
     padding: 6px 12px;
 }
 
+
+
+/* =====================================================
+   END OF CUSTOM STYLES
+===================================================== */
+
+
+/* =====================================================
+/* addCities Css Starts Here */
+
+@media (max-width: 768px) {
+  #backoffice-form .btn {
+    width: 100%;
+  }
+
+}
+
+
+/* Force labels above inputs */
+#backoffice-form label {
+    display: block;
+    margin-bottom: 4px;
+    text-align: left;
+}
+
+/* Prevent label-input side alignment */
+#backoffice-form .form-control,
+#backoffice-form .form-select {
+    width: 100%;
+}
+
+@media (max-width: 576px) {
+    #txtSynonym {
+        margin-bottom: 6px;
+    }
+}
+
