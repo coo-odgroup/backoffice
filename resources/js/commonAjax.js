@@ -1,4 +1,6 @@
-ajaxUrl = 'http://127.0.0.1:8000/admin/';
+import $ from 'jquery';
+
+let ajaxUrl = 'http://127.0.0.1:8000/admin/';
 
 $.ajaxSetup({
     headers: {
@@ -6,7 +8,7 @@ $.ajaxSetup({
     }
 });
 
-function initSelect2(selector, placeholder = "Select Option") {
+export function initSelect2(selector, placeholder = "Select Option") {
 
     if ($(selector).length) {
 
@@ -25,7 +27,7 @@ function initSelect2(selector, placeholder = "Select Option") {
 
 
 
-function loadStateList() {
+export function loadStateList() {
 
     $.ajax({
         type: "POST",
@@ -53,7 +55,7 @@ function loadStateList() {
     });
 }
 
-function getDistrictList(state_id, selected_dist_id = 0) {
+export function getDistrictList(state_id, selected_dist_id = 0) {
 
     $('#selDistrict').html('<option value="">Loading...</option>');
 

@@ -1,7 +1,374 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
+@import "datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css";
+@import "select2/dist/css/select2.min.css";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* =====================================================
+   GLOBAL STYLES
+===================================================== */
+
 body {
-    background-color: #f8fafc;
+    background: #f5f5f5;
 }
-/* optional UI fixes */
-.dataTables_processing {
+
+.card {
+    border-radius: 4px;
+}
+
+label {
+    font-weight: 600;
+}
+
+#filterBox {
+    display: none;
+}
+
+.btn-sm {
+    padding: 4px 10px;
+}
+
+.page-size {
+    width: 80px;
+}
+
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+
+.action-btns {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.action-btns button {
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    min-width: 1200px;
+}
+
+
+/* =====================================================
+   RESPONSIVE (MAX 768px)
+===================================================== */
+
+@media (max-width: 768px) {
+
+    .col-lg-2,
+    .col-md-4,
+    .col-sm-6 {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .action-btns {
+        justify-content: flex-start;
+    }
+
+    .action-btns button {
+        width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* Move toggle button to right only on mobile */
+    #menu-toggle {
+        position: absolute;
+        right: 15px;
+        left: auto;
+    }
+
+    .navbar-brand {
+        margin-left: 0 !important;
+    }
+}
+
+
+/* =====================================================
+   MOBILE FIX (MAX 576px)
+===================================================== */
+
+@media (max-width: 576px) {
+
+    /* Filter Buttons */
+    .action-btns {
+        justify-content: center !important;
+    }
+
+    .action-btns button {
+        width: 100% !important;
+    }
+
+    /* Filter Fields */
+    .col-6,
+    .col-sm-6 {
+        width: 50% !important;
+        max-width: 50% !important;
+    }
+
+    .col-12 {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Table Scroll */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 1200px;
+    }
+}
+
+
+/* =====================================================
+   SMALL MOBILE (MAX 320px)
+===================================================== */
+
+@media (max-width: 320px) {
+    .booking-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+
+/* =====================================================
+   320px – 370px SPECIAL MOBILE
+===================================================== */
+
+@media screen and (min-width: 320px) and (max-width: 370px) {
+
+    /* Top Buttons */
+    .d-flex.justify-content-between.align-items-center {
+        flex-wrap: nowrap;
+        gap: 6px;
+    }
+
+    .d-flex.justify-content-between.align-items-center .btn {
+        font-size: 11px;
+        padding: 4px 6px;
+        white-space: nowrap;
+    }
+
+    /* Export / Print / PDF */
+    .d-flex.justify-content-between.mb-2 {
+        flex-wrap: nowrap;
+        gap: 5px;
+    }
+
+    .d-flex.justify-content-between.mb-2 .btn {
+        font-size: 11px;
+        padding: 4px 6px;
+        white-space: nowrap;
+    }
+
+    /* Page Size */
+    .page-size {
+        width: 60px;
+        font-size: 11px;
+        padding: 3px;
+    }
+}
+
+
+/* =====================================================
+   TABLE FOOTER
+===================================================== */
+
+.footer-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+}
+
+
+/* =====================================================
+   BREADCRUMB
+===================================================== */
+
+.breadcrumb {
     background: transparent;
+    font-size: 13px;
+    font-weight: 300;
+    width: 100%;
+    height: auto;
+    margin-top: 50px;
+    justify-content: left;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 0;
+    border-radius: 4px;
+    border: 1px solid #d2d2d2;
+}
+
+.breadcrumb li {
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.breadcrumb i {
+    padding-left: 15px;
+}
+
+
+/* =====================================================
+   LAYOUT WRAPPER
+===================================================== */
+
+#wrapper {
+    min-height: 100vh;
+}
+
+#page-content-wrapper {
+    flex: 1;
+    padding-top: 80px;
+}
+
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+
+#sidebar-wrapper {
+    width: 250px;
+    transition: 0.3s ease;
+}
+
+#sidebar-wrapper.collapsed {
+    margin-left: -250px;
+}
+
+/* Mobile Full Screen Sidebar */
+@media (max-width: 768px) {
+
+    #sidebar-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: #fff;
+        z-index: 1050;
+        margin-left: -100%;
+        overflow-y: auto;
+    }
+
+    #sidebar-wrapper.active {
+        margin-left: 0;
+    }
+}
+
+
+/* =====================================================
+   SIDEBAR ACTIVE ITEM
+===================================================== */
+
+.list-group-item.active {
+    background-color: #1b2155;
+    border-color: #1b2155;
+}
+
+.list-group-item i {
+    width: 18px;
+}
+
+
+/* Mobile sidebar profile spacing */
+#sidebar-wrapper .rounded-circle {
+    object-fit: cover;
+}
+
+/* Pagination container */
+.dataTables_paginate {
+    background-color: #f1f3f5;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+/* Remove extra spacing */
+.dataTables_paginate .pagination {
+    margin: 0;
+}
+
+/* Page links */
+.dataTables_paginate .page-link {
+    border: 1px solid #dee2e6;
+    color: #0d6efd;
+    margin: 0 2px;
+    border-radius: 6px;
+}
+
+/* Active page */
+.dataTables_paginate .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+}
+
+/* Hover */
+.dataTables_paginate .page-link:hover {
+    background-color: #e9ecef;
+}
+#customTableInfo {
+    font-size: 14px;
+    color: #6c757d;
+}
+@media print {
+    .noPrint {
+        display: none !important;
+    }
+}
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: 38px;
+    padding: 6px 12px;
+}
+
+
+/* =====================================================
+/* addCities Css Starts Here */
+
+@media (max-width: 768px) {
+  #backoffice-form .btn {
+    width: 100%;
+  }
+
+}
+
+
+/* Force labels above inputs */
+#backoffice-form label {
+    display: block;
+    margin-bottom: 4px;
+    text-align: left;
+}
+
+/* Prevent label-input side alignment */
+#backoffice-form .form-control,
+#backoffice-form .form-select {
+    width: 100%;
+}
+
+@media (max-width: 576px) {
+    #txtSynonym {
+        margin-bottom: 6px;
+    }
 }
