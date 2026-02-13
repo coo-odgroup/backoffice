@@ -129,7 +129,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @endsection
 @push('scripts')
 
-<script>
+<script type="module">
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
     });
@@ -137,10 +137,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-
-
-        initSelect2('#selState', 'Select State');
-        initSelect2('#selDistrict', 'Select District');
+        commonAjax.initSelect2('#selState', 'Select State');
+        commonAjax.initSelect2('#selDistrict', 'Select District');
         // By default hide filter
         $("#filterBox").hide();
 

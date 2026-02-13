@@ -159,12 +159,7 @@
 @endsection
 @push('scripts')
 
-<script type="module">
-   
-
-      $(document).ready(function () {
-        console.log('jQuery working');
-    });
+<script type="module">  
 
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
