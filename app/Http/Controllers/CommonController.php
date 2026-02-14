@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Districts;
 use App\Models\States;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
 
 class CommonController extends Controller
 {
@@ -25,7 +28,7 @@ class CommonController extends Controller
     public function getDistrictList(Request $request) {
 
         $stateId = $request->state_id;
-
+       
         $districts = Districts::where('state_id', $stateId)
                               ->where('active_status', 1)
                               ->orderBy('district_name')
@@ -36,4 +39,63 @@ class CommonController extends Controller
             'data'   => $districts
         ]);
     }
+
+    public function bulkAction(Request $request)
+    {
+        $ids = explode(',', $request->ids);
+        $action = $request->action;
+        $modelName = $request->model;
+
+        $allowedModels = [
+            'Cities' => \App\Models\Cities::class,
+            'States' => \App\Models\States::class,
+            'Districts' => \App\Models\Districts::class,
+        ];
+
+        if (!isset($allowedModels[$modelName])) {
+            return response()->json([
+                'message' => 'Invalid model'
+            ], 400);
+        }
+
+        $model = $allowedModels[$modelName];
+
+        switch ($action) {
+
+            case 'D':
+                  $model::whereIn('id', $ids)->update([
+                                  'deleted_at' => now(),
+                                  'deleted_by' => 1,   // Need to udpate with auth user id
+                ]);
+                break;
+
+            case 'A':
+                $model::whereIn('id', $ids)->update([
+                            'active_status' => 1,
+                            'updated_at' => now(),
+                            'updated_by' => 1
+                    ]);  // Need to udpate with auth user id]);
+                break;
+
+            case 'UN':
+                $model::whereIn('id', $ids)->update([
+                                'active_status' => 0,
+                                'updated_at' => now(),
+                                'updated_by' => 1,   // Need to udpate with auth user id]);
+                ]);
+                break;
+
+            default:
+                return response()->json([
+                    'message' => 'Invalid action'
+                ], 400);
+        }
+
+        return response()->json([
+            'message' => 'Action completed successfully'
+        ]);
+    }
+
+
+
 }

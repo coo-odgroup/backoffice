@@ -23,11 +23,15 @@ select2($);
 
 import '@fortawesome/fontawesome-free/js/all';
 
+
+import * as validation from './validation';
+window.validator = validation;
+
 // Import your custom scripts LAST
 import { loadDataTable } from './common-datatable';
 window.loadDataTable = loadDataTable;
 
 import * as commonAjax from './commonAjax';
 window.commonAjax = commonAjax; 
+window.actionRec = commonAjax.actionRec;
 
-console.log('AdminLTE assets loaded');

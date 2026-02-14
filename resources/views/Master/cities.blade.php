@@ -24,7 +24,8 @@
         <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
             <i class="fa-solid fa-magnifying-glass me-1"></i> Search
         </button>
-        <button class="btn btn-success btn-sm">+ Add Bus
+        <button class="btn btn-success btn-sm"
+               onclick="window.location.href='{{ route('cities.add') }}'">+ Add Bus
         </button>
     </div>
 </div>
@@ -66,7 +67,6 @@
                                         <option value="0">Inactive</option>
                                     </select>
                                 </div>
-
                             </div>
                         </div>
 
@@ -94,21 +94,19 @@
                     <option value="-1">All</option>
                 </select>
                 <div>
-                    <button type="button" id="btnDelete" class="btn btn-warning btn-sm">
+                    <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
                         <i class="fa-solid fa-trash me-1"></i>
                         Delete
                     </button>
-                    <button type="button" id="btnActive" class="btn btn-success btn-sm text-white">
+                    <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
                         <i class="fa-solid fa-circle-check me-1"></i>
                         Active
                     </button>
-                    <button type="button" id="btnInactive" class="btn btn-danger btn-sm">
+                    <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
                         <i class="fa-solid fa-times me-1"></i>
                         Inactive
                     </button>
-
                 </div>
-                
             </div>
              </div>
            
@@ -129,16 +127,22 @@
                 <div id="customPaginationTop"></div>
             </div>
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('cities.dataTableView') }}" data-edit-url="{{ route('cities.edit', 'ID') }}">
+                   data-url="{{ route('cities.dataTableView') }}"
+                   data-edit-url="{{ route('cities.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
+                        <th class="noPrint no-sort">
+                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                        </th>
                         <th>Sl No</th>
                         <th>State/District Name</th>
                         <th>City Name</th>
                         <th>Alias</th>
                         <th>Synonymn</th>
+                        <th>Created By</th>
+                        <th>Created On</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th class="no-sort">Action</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -147,6 +151,8 @@
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
+            <input type="hidden" id="hdn_model" value="Cities">
+            
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
                 <div id="customPagination"></div>
@@ -160,6 +166,8 @@
 @push('scripts')
 
 <script type="module">
+
+     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
 
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
@@ -178,6 +186,7 @@ $(document).ready(function() {
         $("#filterBox").slideToggle(300);
     };
     commonAjax.loadStateList();
+    commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
     getDataTableView();
 });
 
@@ -204,8 +213,6 @@ function toggleFilter() {
 document.getElementById("menu-toggle").addEventListener("click", function() {
     document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
 });
-
-
 
 window.getDataTableView = function() {
 
@@ -238,15 +245,15 @@ window.getDataTableView = function() {
     };
     let displayColumns = [1, 2, 3, 4, 5, 6];
     let dataTableColumns = [
-        // {
-        //     data: '',
-        //     render: function(data, type, row) {
-        //         return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
-        //             '" name="chkStd' + row.id + '" value="' + row.id +
-        //             '" onclick="checkFun(this.id)">';
-        //     },
-        //     className: "noPrint text-center"
-        // },
+        {
+            data: '',
+            render: function(data, type, row) {
+                return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.city_id +
+                    '" name="chkStd' + row.city_id + '" value="' + row.city_id +
+                    '" >';
+            },
+            className: "noPrint text-center"
+        },
         {
             data: 'slNo',
             render: function(data, type, row, meta) {
@@ -271,6 +278,14 @@ window.getDataTableView = function() {
             defaultContent: "--"
         },
         {
+            data: 'created_by_name',
+            defaultContent: "--"
+        },
+        {
+            data: 'created_date',
+            defaultContent: "--"
+        },
+        {
             data: 'is_active',
             render: function(data, type, row) {
                 var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
@@ -291,6 +306,8 @@ window.getDataTableView = function() {
 
                 let editUrl = $('#' + tableId).data('edit-url');
 
+                // console.log("Edit URL template: " + editUrl); // Debug log
+
                 if (!editUrl) return '';
 
                 return `
@@ -305,6 +322,18 @@ window.getDataTableView = function() {
     ]
 
     loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+}
+
+
+export function checkFun(ctrId) {
+    console.log(ctrId);
+    if ($("#" + ctrId).is(':checked')) {
+        if ($('.chkItem:checked').length == $('.chkItem').length) {
+            $('.chkAll').prop('checked', true);
+        }
+    } else {
+        $('.chkAll').prop('checked', false);
+    }
 }
 </script>
 

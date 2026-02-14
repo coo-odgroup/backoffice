@@ -20,14 +20,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
-    <div>
-        <button class="btn btn-success btn-sm">Viw Cities
+    <div> 
+        <button class="btn btn-success btn-sm"  onclick="window.location='{{ route('cities.index') }}'">View Cities
         </button>
     </div>
 </div>
 
 <!-- TABLE -->
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
+     {{csrf_field()}}
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -41,17 +42,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCity" name="txtCity">
+                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $row->city_name ?? '' }}">
                                         </div>
 
                                         <div class="col-md-6 mb-3">
-                                            <label for="txtAlias">Alias</label>
-                                            <input type="text" class="form-control" id="txtAlias" name="txtAlias">
+                                            <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="txtCityAlias" name="txtCityAlias" value="{{ $row->alias ?? '' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
-                                            <label for="selState">State</label>
+                                            <label for="selState">State<span class="text-danger important">*</span></label>
                                             <select class="form-select" id="selState" name="selState">
                                                 <option value="0">Select State</option>
                                             </select>
@@ -107,7 +108,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- BUTTONS -->
                                 <div class="row mt-4">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="button" onclick="return getDataTableView()">
+                                        <button class="btn btn-primary btn-sm" type="submit">
                                             Submit
                                         </button>
                                         <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
@@ -130,9 +131,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-    
-    $('#backoffice-form').on('submit', function(e) {
-        e.preventDefault();
+
+    document.getElementById('txtCity').addEventListener('input', function () {
+
+        let cityName = this.value;
+
+        let alias = cityName
+            .toLowerCase()                 // convert to lowercase
+            .trim()                        // remove extra spaces
+            .replace(/[^a-z0-9\s-]/g, '')  // remove special characters
+            .replace(/\s+/g, '-')          // replace spaces with -
+            .replace(/-+/g, '-');          // remove duplicate -
+
+        document.getElementById('txtCityAlias').value = alias;
     });
 
 
@@ -140,14 +151,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
-        // By default hide filter
-        $("#filterBox").hide();
-
-        // Toggle on button click
-        window.toggleFilter = function() {
-            $("#filterBox").slideToggle(300);
-        };
-        commonAjax.loadStateList();
+        let state_id = {{ $row->state_id ?? 0 }};
+        commonAjax.loadStateList(19);
     });
 
     $('#btnReset').click(function() {
@@ -158,11 +163,34 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).on('change', '#selState', function() {
         let state_id = $(this).val();
-        commonAjax.loadDistrictList(state_id);
-        
+        commonAjax.getDistrictList(state_id);
     });
 
+    $('#backoffice-form').on('submit', function(e) {
 
+        e.preventDefault();
+
+        if (!validator.blankCheck('txtCity', 'City Name cannot be left blank'))
+            return false;
+        if (!validator.maxLength('txtCity',100,'City Name'))
+            return false;
+        
+        if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank'))
+            return false;
+
+        if (!validator.maxLength('txtCityAlias',100,'City Alias'))
+            return false;
+
+        if (!validator.selectDropdown('selState', 'Select State'))
+            return false;
+            
+        commonAjax.confirmAlert('Are you sure to proceed !');
+
+        $('#btnConfirmOk').on('click', function() {
+           e.currentTarget.submit();
+        });
+
+    });
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
