@@ -21,11 +21,12 @@
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
     <div>
-        <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
-            <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+        <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-magnifying-glass me-1"></i>
+            <span class="btn-text">Filter</span>
         </button>
         <button class="btn btn-success btn-sm"
-               onclick="window.location.href='{{ route('cities.add') }}'">+ Add Bus
+               onclick="window.location.href='{{ route('cities.add') }}'">+ Add City
         </button>
     </div>
 </div>
@@ -35,7 +36,7 @@
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom" id="filterBox">
+            <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row">
                         <!-- FILTER FIELDS -->
@@ -178,13 +179,6 @@ $(document).ready(function() {
 
     commonAjax.initSelect2('#selState', 'Select State');
     commonAjax.initSelect2('#selDistrict', 'Select District');
-    // By default hide filter
-    $("#filterBox").hide();
-
-    // Toggle on button click
-    window.toggleFilter = function() {
-        $("#filterBox").slideToggle(300);
-    };
     commonAjax.loadStateList();
     commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
     getDataTableView();
@@ -195,8 +189,7 @@ $('#btnReset').click(function() {
     $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
     $('.form-select').val(0);
     $('.form-select').val('').trigger('change');
-
-    getDataTableView();
+    getDataTableView(true);
 });
 
 $(document).on('change', '#selState', function() {
@@ -205,16 +198,24 @@ $(document).on('change', '#selState', function() {
 });
 
 
-function toggleFilter() {
-    console.log("toggleFilter called");
-    document.getElementById("filterBox").classList.toggle("d-none");
-}
 
-document.getElementById("menu-toggle").addEventListener("click", function() {
-    document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-});
+window.getDataTableView = function(reset = true) {
 
-window.getDataTableView = function() {
+    //  If table already initialized
+    if (window.dataTableInstance && reset) {
+
+        // Clear saved state
+        window.dataTableInstance.state.clear();
+
+        // Reset length dropdown UI
+        $('#pageSizeDatatable').val(10);
+
+        // Reset page length internally
+        window.dataTableInstance.page.len(10);
+
+        // Force first page
+        window.dataTableInstance.page(0);
+    }
 
     $('#pageSizeDatatable').val(10);
     let txtSearch = '';
@@ -325,16 +326,7 @@ window.getDataTableView = function() {
 }
 
 
-export function checkFun(ctrId) {
-    console.log(ctrId);
-    if ($("#" + ctrId).is(':checked')) {
-        if ($('.chkItem:checked').length == $('.chkItem').length) {
-            $('.chkAll').prop('checked', true);
-        }
-    } else {
-        $('.chkAll').prop('checked', false);
-    }
-}
+
 </script>
 
 @endpush

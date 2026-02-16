@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Master\CitiesController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\Master\BoardingDroppingController;
-use App\Models\States;
+use App\Models\Master\States;
 use App\Http\Controllers\Master\StateController;
 use App\Http\Controllers\Master\DistrictController;
 use App\Http\Controllers\Master\SeatingTypeController;

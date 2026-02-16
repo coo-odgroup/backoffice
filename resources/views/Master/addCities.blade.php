@@ -11,8 +11,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Tables</li>
-        <li class="breadcrumb-item active">Data Tables</li>
+        <li class="breadcrumb-item">Bus Management</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} City</li>
     </ol>
 </nav>
 
@@ -34,20 +34,40 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="card">
                 <div class="card-body">
                     <!-- FILTER -->
-                    <div class="mb-3 border-bottom">
+                    <div class="mb-3">
                         <div class="card-body">
                             <div class="row">
+                                @if (session('message'))
+                              
+                                        <div class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show" role="alert">
+                                             {{ session('message') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                  
+                                @endif
+                                @if ($errors->any())
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <ul class="mb-0">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"  aria-label="Close"></button>
+                                    </div>
+                                @endif
+
                                 <!-- FILTER FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $row->city_name ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}">
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCityAlias" name="txtCityAlias" value="{{ $row->alias ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCityAlias" name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -91,7 +111,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <!-- Input -->
                                         <div class="col-md-5">
-                                            <input type="text" class="form-control" id="txtSynonym" name="txtSynonym">
+                                            <input type="text" class="form-control" name="txtSynonym">
                                         </div>
 
                                         <!-- Plus Button -->
@@ -101,19 +121,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </button>
                                         </div>
                                     </div>
-
-
                                 </div>
 
                                 <!-- BUTTONS -->
                                 <div class="row mt-4">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
-                                            Submit
+                                            {{ $data['strSubmit'] }}
                                         </button>
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            Reset
-                                        </button>
+                                        @if($data['strReset'] == 'Cancel')
+                                            <button class="btn btn-secondary btn-sm" type="button" onclick="window.location='{{ route('cities.index') }}'">
+                                                {{ $data['strReset'] }}
+                                            </button>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button" id="resetBtn">
+                                                {{ $data['strReset'] }}
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -151,8 +175,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
-        let state_id = {{ $row->state_id ?? 0 }};
-        commonAjax.loadStateList(19);
+        let state_id = {{ $data['row']->state_id ?? 0 }};
+        let district_id = {{ $data['row']->district_id ?? 0 }};
+        commonAjax.loadStateList(state_id);
+        commonAjax.getDistrictList(state_id, district_id);
+
+        $('#resetBtn').click(function(){
+
+            $(':input','#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
+            $('.form-select').val(0);
+
+            // $('.form-control-choosen option:selected').removeAttr('selected');
+            // $('.chosen-single span').html('-- Select --');
+
+            // $('.chosen-select').chosen('destroy');
+            // $('.chosen-select').prop("selectedIndex", -1);
+            // $('.chosen-select').chosen();
+
+            // $('input[type="radio"]').prop('checked', false);
+            // $('input[type="checkbox"]').prop('checked', false);
+        });
     });
 
     $('#btnReset').click(function() {

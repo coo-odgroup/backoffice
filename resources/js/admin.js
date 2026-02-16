@@ -1,7 +1,8 @@
 import $ from 'jquery';
 window.$ = window.jQuery = $;
 
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
+window.bootstrap = bootstrap;
 
 import 'datatables.net';
 import 'datatables.net-bs5';
@@ -22,6 +23,88 @@ import select2 from 'select2';
 select2($); 
 
 import '@fortawesome/fontawesome-free/js/all';
+
+$(document).ajaxStart(function () {    
+    $('#pageLoader').removeClass('d-none').addClass('d-flex');
+});
+
+$(document).ajaxStop(function () {
+    $('#pageLoader').removeClass('d-flex').addClass('d-none');
+});
+
+window.addEventListener('load', function () {
+
+    const loader = document.getElementById('pageLoader');
+
+    // console.log("Page fully loaded, hiding loader...");
+
+    if (loader) {
+        // console.log("Fading out loader...");
+        loader.style.opacity = '0';
+        loader.style.transition = 'opacity 0.3s ease';
+
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 1000);
+    }
+
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar-wrapper');
+
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', function () {
+            sidebar.classList.toggle('collapsed');
+        });
+    }
+    const alerts = document.querySelectorAll('.alert');
+
+    alerts.forEach(function (alert) {
+        setTimeout(function () {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 5000);
+    });
+
+    //For Toggle Filter Button
+    const btn = document.getElementById('btnToggleFilter');
+    const filterBox = document.getElementById('filterBox');
+
+    if (!btn || !filterBox) return; 
+
+    btn.addEventListener('click', function () {
+
+        // console.log("Toggle Filter Button Clicked");
+
+        if (filterBox.classList.contains('d-none')) {
+             console.log("Toggle Filter Button Clicked");
+            filterBox.classList.remove('d-none');
+        } else {
+             console.log("Toggle Filter Button Clickedd");
+            filterBox.classList.add('d-none');
+        }
+
+        btn.classList.toggle('active-filter');
+
+        if (btn.classList.contains('active-filter')) {
+
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-danger');
+            btn.innerHTML = '<i class="fa-solid fa-xmark me-1"></i> Close';
+
+        } else {
+
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-primary');
+            btn.innerHTML = '<i class="fa-solid fa-magnifying-glass me-1"></i> Filter';
+        }
+
+    });
+
+});
 
 
 import * as validation from './validation';

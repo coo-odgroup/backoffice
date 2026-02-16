@@ -35,11 +35,7 @@ $(document).ready(function() {
     //FUnction to disable speacial characters on keyup :by: T Ketaki Debadarshini 
     $('input[type=text],textarea').not('.amhfld,#dqs, .arabic, .french, .odia').on('keypress', function(e) {
 
-        var key = e.keyCode || e.which;
-
-        //         console.log('áˆ‚')   
-        //         console.log(XRegExp('\\pL+$').test('áˆ‚'));
-        //            
+        var key = e.keyCode || e.which;        
 
         var regex = new RegExp("^[a-zA-Z0-9\-_(),.@+:/\n\\s]*$");
         var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);

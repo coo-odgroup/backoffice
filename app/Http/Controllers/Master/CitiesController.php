@@ -29,9 +29,10 @@ class CitiesController extends Controller
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
+
             if ($id > 0) {
 
-                $redirectPage = "cities/edit/".$id;
+                $redirectPage = "admin/cities/edit/".$encId;
                 $data['strPage']    = $method = 'Edit';
                 $data['strSubmit']  = 'Update';
                 $data['strReset']   = 'Cancel';
@@ -69,9 +70,10 @@ class CitiesController extends Controller
                 else {
                     DB::beginTransaction();
 
-                    $selState  = (request('selState'));
-                    $txtCity  = (request('txtCity'));
-                    $txtCityAlias = (request('txtCityAlias'));
+                    $selState  = (int)request('selState');
+                    $selDistrict  = (int)request('selDistrict');
+                    $txtCity  = htmlEncode(request('txtCity'));
+                    $txtCityAlias = htmlEncode(request('txtCityAlias'));
                   
 
                     $duplicate = Cities::select('id')
@@ -92,15 +94,15 @@ class CitiesController extends Controller
                         $obj = ($id!=0) ? Cities::find($id) : new Cities();
 
                         $obj->state_id       = $selState;
-                        $obj->city_name       = $txtCity;
+                        $obj->district_id       = $selDistrict ?? null;
+                        $obj->city_name      = $txtCity;
                         $obj->alias       = $txtCityAlias;
                         $obj->created_by      = 1;     //session('admin_session.user_id');
                         $obj->active_status      = 1;
                         if($id != 0){
                             $obj->updated_by      = 1; //session('admin_session.user_id');
                         }
-
-                        log::info($obj); exit;
+                        
                         $obj->save();
                         
                         request()->session()->flash('level', 'success');
@@ -128,8 +130,7 @@ class CitiesController extends Controller
                 'message'   => $errorMsg
             ])->withInput();
         }
-
-        return view('Master.addCities',$data);
+        return view('Master.addCities',compact('data'));
     }
 
     public function edit($encId) {

@@ -21,10 +21,6 @@ label {
     font-weight: 500;
 }
 
-#filterBox {
-    display: none;
-}
-
 .btn-sm {
     padding: 4px 10px;
 }

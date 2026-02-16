@@ -169,8 +169,6 @@ $('#backoffice-form').on('submit', function(e) {
 
 $(document).ready(function() {
 
-
-
     initSelect2('#selState', 'Select State');
     initSelect2('#selDistrict', 'Select District');
     // By default hide filter
@@ -197,11 +195,6 @@ $(document).on('change', '#selState', function() {
     getDistrictList(state_id);
 });
 
-
-function toggleFilter() {
-    console.log("toggleFilter called");
-    document.getElementById("filterBox").classList.toggle("d-none");
-}
 
 document.getElementById("menu-toggle").addEventListener("click", function() {
     document.getElementById("sidebar-wrapper").classList.toggle("collapsed");

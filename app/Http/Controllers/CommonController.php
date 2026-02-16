@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Districts;
-use App\Models\States;
+use App\Models\Master\Districts;
+use App\Models\Master\States;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -47,9 +47,9 @@ class CommonController extends Controller
         $modelName = $request->model;
 
         $allowedModels = [
-            'Cities' => \App\Models\Cities::class,
-            'States' => \App\Models\States::class,
-            'Districts' => \App\Models\Districts::class,
+            'Cities' => \App\Models\Master\Cities::class,
+            'States' => \App\Models\Master\States::class,
+            'Districts' => \App\Models\Master\Districts::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {

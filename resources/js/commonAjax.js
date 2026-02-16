@@ -35,20 +35,21 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
                 state_id: state_id,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
-            dataType: "json",
+            dataType: "json",           
             success: function(response) {
                 let options = '<option value="">Select State</option>';
                 if(response.status && response.data.length > 0) {
 
                     $.each(response.data, function(index, state) {
-                        options += `<option value="${state.id}">
+                        let selected = (state_id > 0 && state.id == state_id) ? 'selected' : '';
+                        options += `<option value="${state.id}" ${selected}>
                                         ${state.state_name}
                                     </option>`;
                     });
                 }
 
-                $('#selState').html(options);
-            },
+                $('#selState').html(options);             
+            },           
             error: function(xhr) {
                 console.log("Error loading states");
             }
@@ -69,9 +70,10 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
             url: ajaxUrl + "get-district-list",
             data: {
                 state_id: state_id,
+                selected_dist_id: selected_dist_id,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
-            dataType: "json",
+            dataType: "json",         
             success: function(response) {
 
                 let options = '<option value="">-- Select District --</option>';
@@ -91,8 +93,8 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
                     });
                 }
 
-                $('#selDistrict').html(options);
-            },
+                $('#selDistrict').html(options);               
+            },           
             error: function(xhr) {
                 console.log("Error loading districts");
                 $('#selDistrict').html('<option value="">-- Select District --</option>');
@@ -244,6 +246,12 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
         });
     }
 
-
-
-
+    export function checkFun(ctrId) {
+        if ($("#" + ctrId).is(':checked')) {
+            if ($('.chkItem:checked').length == $('.chkItem').length) {
+                $('.chkAll').prop('checked', true);
+            }
+        } else {
+            $('.chkAll').prop('checked', false);
+        }
+    }

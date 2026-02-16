@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Model;
 
-class citiesSynonyms extends Model
+class CitiesSynonyms extends Model
 {
     protected $table = 'cities_synonyms';
     protected $fillable = [

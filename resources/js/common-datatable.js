@@ -11,7 +11,15 @@ window.dataTableInstance = null;
 export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orderBy = [], searchParams = {}, displayColumns = []) {
 
     if ($.fn.DataTable.isDataTable('#' + tableId)) {
-         $('#' + tableId).DataTable().destroy();
+
+        let table = $('#' + tableId).DataTable();
+
+        table.state.clear();
+        table.page.len(10);
+        table.page(0).draw('page');
+
+        table.ajax.reload(null, true); // true = reset paging
+        return;
     }
 
     let selectedLength = parseInt($('#pageSizeDatatable').val());
@@ -44,13 +52,10 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
         ajax: {
             url: $('#' + tableId).data('url'),
             type: "POST",
-            // data: searchParams,
             data: function (searchParams) {
 
                 // Get all form fields dynamically
                 let formData = $('#backoffice-form').serializeArray();
-
-                // console.log("Form Data:", formData);
 
                 $.each(formData, function (index, field) {
                     searchParams[field.name] = field.value;
@@ -58,15 +63,14 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
 
                 // CSRF if needed
                 searchParams._token = $('meta[name="csrf-token"]').attr('content');
-
-                  console.log("DataTables sending:", searchParams.start, searchParams.length);
+                
             }, 
             dataType: 'json',
             beforeSend: function () {
-                $('#tableLoader').removeClass('d-none').addClass('d-flex');
+              $('#pageLoader').removeClass('d-none').addClass('d-flex');
             },
             complete: function () {
-                $('#tableLoader').removeClass('d-flex').addClass('d-none');
+               $('#pageLoader').removeClass('d-flex').addClass('d-none');
             }           
         },       
         
@@ -142,7 +146,7 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
             // ===== Pagination Build =====
             let totalPages = pageInfo.pages;
             let currentPage = pageInfo.page + 1;
-            let maxLength = 6;
+            let maxLength = 7;
 
             let paginationHtml = '<ul class="pagination mb-0 pagination-sm">';
 
