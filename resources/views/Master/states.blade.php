@@ -24,7 +24,7 @@
         <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
             <i class="fa-solid fa-magnifying-glass me-1"></i> Search
         </button>
-        <button class="btn btn-success btn-sm">+ Add State
+        <button class="btn btn-success btn-sm">+ Add Bus
         </button>
     </div>
 </div>
@@ -72,7 +72,7 @@
 
                         <!-- BUTTONS -->
                         <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
-                            <button class="btn btn-primary btn-sm" type="button" onclick="return getDataTableView()">
+                            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-check me-1"></i>Submit
                             </button>
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
@@ -86,7 +86,7 @@
             <!-- Table start -->
              <div id="tableActions">
                  <div class="d-flex justify-content-between mb-2">
-                <select id="pageSizeDatatable" class="form-select page-size">
+                <select id="pageSizeDatatable" class="form-select form-select-sm page-size">
                     <option value="10" selected="selected">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
@@ -94,16 +94,16 @@
                     <option value="-1">All</option>
                 </select>
                 <div>
-                    <button type="button" id="btnExcel" class="btn btn-success btn-sm">
-                        <i class="fa-solid fa-file-excel me-1"></i>
+                    <button type="button" id="btnDelete" class="btn btn-warning btn-sm">
+                        <i class="fa-solid fa-trash me-1"></i>
                         Delete
                     </button>
-                    <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white">
-                        <i class="fa-solid fa-file-pdf me-1"></i>
+                    <button type="button" id="btnActive" class="btn btn-success btn-sm text-white">
+                        <i class="fa-solid fa-circle-check me-1"></i>
                         Active
                     </button>
-                    <button type="button" id="btnPrint" class="btn btn-danger btn-sm">
-                        <i class="fa-solid fa-print me-1"></i>
+                    <button type="button" id="btnInactive" class="btn btn-danger btn-sm">
+                        <i class="fa-solid fa-times me-1"></i>
                         Inactive
                     </button>
 
@@ -133,7 +133,10 @@
                 <thead class="thead-light">
                     <tr>
                         <th>Sl No</th>
-                        <th>State Name</th>
+                        <th>State/District Name</th>
+                        <th>City Name</th>
+                        <th>Alias</th>
+                        <th>Synonymn</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -156,18 +159,17 @@
 @endsection
 @push('scripts')
 
-<script>
-$('#backoffice-form').on('submit', function(e) {
-    e.preventDefault();
-});
+<script type="module">
+
+    $('#backoffice-form').on('submit', function(e) {
+        e.preventDefault();
+    });
 
 
 $(document).ready(function() {
 
-
-
-    initSelect2('#selState', 'Select State');
-    initSelect2('#selDistrict', 'Select District');
+    commonAjax.initSelect2('#selState', 'Select State');
+    commonAjax.initSelect2('#selDistrict', 'Select District');
     // By default hide filter
     $("#filterBox").hide();
 
@@ -175,9 +177,10 @@ $(document).ready(function() {
     window.toggleFilter = function() {
         $("#filterBox").slideToggle(300);
     };
-    loadStateList();
+    commonAjax.loadStateList();
     getDataTableView();
 });
+
 
 $('#btnReset').click(function() {
     $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -189,7 +192,7 @@ $('#btnReset').click(function() {
 
 $(document).on('change', '#selState', function() {
     let state_id = $(this).val();
-    getDistrictList(state_id);
+    commonAjax.getDistrictList(state_id);
 });
 
 
@@ -204,13 +207,13 @@ document.getElementById("menu-toggle").addEventListener("click", function() {
 
 
 
-function getDataTableView() {
+window.getDataTableView = function() {
 
     $('#pageSizeDatatable').val(10);
-    txtSearch = '';
-    selStatus = '';
-    selState = 0;
-    selDistrict = 0;
+    let txtSearch = '';
+    let selStatus = '';
+    let selState = 0;
+    let selDistrict = 0;
 
     if ($('#txtSearch').val() != '') {
         txtSearch = $('#txtSearch').val();
