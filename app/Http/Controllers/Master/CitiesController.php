@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Cities;
+use App\Models\Master\Cities;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -102,7 +102,7 @@ class CitiesController extends Controller
                         if($id != 0){
                             $obj->updated_by      = 1; //session('admin_session.user_id');
                         }
-                        
+
                         $obj->save();
                         
                         request()->session()->flash('level', 'success');
