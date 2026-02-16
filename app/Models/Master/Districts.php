@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Master;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-class districts extends Model
+class Districts extends Model
 {
     protected $table = 'districts';
     protected $fillable = [

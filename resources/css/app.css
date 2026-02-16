@@ -18,11 +18,7 @@ body {
 }
 
 label {
-    font-weight: 600;
-}
-
-#filterBox {
-    display: none;
+    font-weight: 500;
 }
 
 .btn-sm {

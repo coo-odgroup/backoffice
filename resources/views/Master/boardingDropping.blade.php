@@ -168,8 +168,8 @@
 
 $(document).ready(function() {
 
-    commonAjax.initSelect2('#selState', 'Select State');
-    commonAjax.initSelect2('#selDistrict', 'Select District');
+    initSelect2('#selState', 'Select State');
+    initSelect2('#selDistrict', 'Select District');
     // By default hide filter
     $("#filterBox").hide();
 
@@ -195,11 +195,6 @@ $(document).on('change', '#selState', function() {
     commonAjax.getDistrictList(state_id);
 });
 
-
-function toggleFilter() {
-    console.log("toggleFilter called");
-    document.getElementById("filterBox").classList.toggle("d-none");
-}
 
 document.getElementById("menu-toggle").addEventListener("click", function() {
     document.getElementById("sidebar-wrapper").classList.toggle("collapsed");

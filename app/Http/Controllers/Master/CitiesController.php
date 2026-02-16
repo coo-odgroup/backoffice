@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Cities;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -15,10 +18,124 @@ class CitiesController extends Controller
         return view('master.cities');
     }
 
-    public function addCities()
-    {
-        return view('master.addCities');
+    public function add($encId = null) {
+
+        $data = [];
+        $data['strPage']    = $method = 'Add';
+        $data['strSubmit']  = 'Submit';
+        $data['strReset']  = 'Reset';
+
+        try {
+
+            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+
+
+            if ($id > 0) {
+
+                $redirectPage = "admin/cities/edit/".$encId;
+                $data['strPage']    = $method = 'Edit';
+                $data['strSubmit']  = 'Update';
+                $data['strReset']   = 'Cancel';
+
+                $dataResQry = Cities::select('id','state_id', 'district_id','city_name', 'alias');
+
+                $dataResQry = $dataResQry->where('id', $id)->first();
+
+                if(empty($dataResQry)){
+                    return redirect("cities");
+                }
+                $data['row'] = $dataResQry;
+            } else {
+                $id = 0;
+                $redirectPage = "cities";
+            }
+
+            if(request()->isMethod('post')) {
+
+                request()->replace(request()->all());
+
+                $validator = Validator::make(request()->all(), [
+                    'txtCity' => 'bail|required',
+                    'txtCityAlias' => 'bail|required',
+                    'selState' => 'required',
+                ], [
+                    'txtCity.required' => 'City Name cannot be left blank.',
+                    'txtCityAlias.required' => 'City Alias cannot be left blank.',
+                    'selState.required' => 'State cannot be left blank.',
+                ]);
+
+                if ($validator->fails()) {
+                    return back()->withErrors($validator)->withInput();
+                }
+                else {
+                    DB::beginTransaction();
+
+                    $selState  = (int)request('selState');
+                    $selDistrict  = (int)request('selDistrict');
+                    $txtCity  = htmlEncode(request('txtCity'));
+                    $txtCityAlias = htmlEncode(request('txtCityAlias'));
+                  
+
+                    $duplicate = Cities::select('id')
+                                        ->where(['city_name' => $txtCity,
+                                                 'alias'     => $txtCityAlias]);
+
+                    if ($id!=0) {
+                        $duplicate->where('id', '!=', $id);
+                    }
+
+                    if ($duplicate->exists()) {
+                        return back()->with([
+                            'level'     => 'danger',
+                            'message'   => 'City already exist'
+                        ])->withInput();
+                    }
+                    else {
+                        $obj = ($id!=0) ? Cities::find($id) : new Cities();
+
+                        $obj->state_id       = $selState;
+                        $obj->district_id       = $selDistrict ?? null;
+                        $obj->city_name      = $txtCity;
+                        $obj->alias       = $txtCityAlias;
+                        $obj->created_by      = 1;     //session('admin_session.user_id');
+                        $obj->active_status      = 1;
+                        if($id != 0){
+                            $obj->updated_by      = 1; //session('admin_session.user_id');
+                        }
+                        
+                        $obj->save();
+                        
+                        request()->session()->flash('level', 'success');
+                        request()->session()->flash('message', 'City '.(($id!=0) ?
+                                                    'updated': 'created').' successfully.');
+                    }
+                
+                    DB::commit();
+                    return redirect($redirectPage);
+                }
+            }
+        } catch (\Throwable $t) {
+            Log::error("Error", [
+                'Controller' => 'CitiesController',
+                'Method'     => $method,
+                'Error'      => $t->getMessage()
+            ]);
+
+            DB::rollBack();
+
+            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
+
+            return back()->with([
+                'level'     => 'danger',
+                'message'   => $errorMsg
+            ])->withInput();
+        }
+        return view('Master.addCities',compact('data'));
     }
+
+    public function edit($encId) {
+        return $this->add($encId);
+    } 
 
     public function dataTableView()
     {
@@ -33,34 +150,29 @@ class CitiesController extends Controller
             $selState = (int) request('selState');
             $selDistrict = (int) request('selDistrict');
 
-            log::info('CitiesController@dataTableView called', [
-                'txtSearch' => $txtSearch,
-                'selStatus' => $selStatus,
-                'selState' => $selState,
-                'selDistrict' => $selDistrict
-            ]);
-
             $dataQuery = DB::table('cities as c')
-                ->leftJoin('states as s', 's.id', '=', 'c.state_id')
-                ->select(
-                    'c.id as city_id',
-                    'c.city_name',
-                    'c.alias',
-                    's.state_name',
-                    'c.created_at',
-                    'c.active_status'
-                );
+                            ->leftJoin('states as s', 's.id', '=', 'c.state_id')
+                            ->leftJoin('users as u', 'u.id', '=', 'c.created_by')
+                            ->select(
+                                'c.id as city_id',
+                                'c.city_name',
+                                'c.alias',
+                                's.state_name',
+                                'c.created_at',
+                                'c.created_by',
+                                'u.name as created_by_name',
+                                'c.active_status'
+                            );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
-                    ->orWhere('c.alias', 'like', "%{$txtSearch}%");
+                      ->orWhere('c.alias', 'like', "%{$txtSearch}%");
                 });
             }
 
             if (isset($selStatus) && $selStatus != '') {
-                log::info('Applying status filter', ['selStatus' => $selStatus]);
                 $dataQuery->where('c.active_status', $selStatus);
             }
 
@@ -72,10 +184,14 @@ class CitiesController extends Controller
                 $dataQuery->where('c.district_id', $selDistrict);
             }
 
+
             $count = $dataQuery->count('c.id');
 
-            $start  = request('start');
-            $length = request('length');
+            $start  = request()->input('start', 0);
+            $length = request()->input('length', 10);
+
+            $start  = is_numeric($start) ? (int)$start : 0;
+            $length = is_numeric($length) ? (int)$length : 10;
 
             // Ordering
             if (!empty(request('order'))) {
@@ -101,16 +217,15 @@ class CitiesController extends Controller
                                     ->offset($start)
                                     ->get();
             }
-
             // Format Data
             if (count($arrRes) > 0) {
 
                 foreach ($arrRes as $val) {
 
                     $val->city_alias    = $val->alias ?? '--';
-                    $val->created_date  = date('d-m-Y', strtotime($val->created_at));
+                    $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_city_id   = encrypt($val->city_id);
+                    $val->enc_city_id   = Crypt::encryptString($val->city_id);
                 }
             }
 
@@ -118,17 +233,26 @@ class CitiesController extends Controller
             $recordsFiltered  = $count;
             $data             = $arrRes;
 
+
         } catch (\Throwable $t) {
+
+            log::info("Exception occurred in CitiesController@dataTableView", [
+                'error_message' => $t->getMessage(),
+                'trace' => $t->getTraceAsString()
+            ]);
+
+            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
                 'Controller' => 'CityController',
                 'Method'     => 'dataTableView',
-                'Error'      => $t->getMessage()
+                'Error'      => $errorMsg
             ]);
 
             $recordsTotal     = 0;
             $recordsFiltered  = 0;
-            $data             = [];
+            $data            = [];
+            
         }
 
         return response()->json([

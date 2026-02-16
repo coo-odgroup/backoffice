@@ -28,6 +28,114 @@
             @yield('content')
         </div>
     </div>
+    <div class="modal fade"
+        id="alertModal"
+        tabindex="-1"
+         data-bs-backdrop="static"
+         data-bs-keyboard="false"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+
+                <div class="modal-body py-4">
+
+                    <h5 class="alertMessage mb-4"></h5>
+
+                    <div class="d-flex justify-content-center">
+
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                id="btnAlertOk"
+                                data-bs-dismiss="modal">
+                            Ok
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+	<div class="modal fade"
+        id="confirmModal"
+        tabindex="-1"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        aria-labelledby="confirmModalLabel"
+        aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+
+            <div class="modal-body py-4">
+
+                <h5 class="confirmMessage mb-4"></h5>
+
+                <input type="hidden" id="confirmModalHref">
+
+                <div class="d-flex justify-content-center gap-3">
+                    
+                    <button type="button"
+                            class="btn btn-primary btn-sm"
+                            id="btnConfirmOk"
+                            data-bs-dismiss="modal">
+                        Yes
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            id="btnConfirmCancel"
+                            data-bs-dismiss="modal">
+                        No
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+	<div class="modal fade"
+     id="confirmLogoutModal"
+     tabindex="-1"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center">
+
+            <div class="modal-body py-4">
+
+                <h5 class="confirmMessage mb-4">
+                    Are you sure you want to logout?
+                </h5>
+
+                <div class="d-flex justify-content-center gap-3">
+
+                    <!-- Logout Button -->
+                    <a href="https://www.example.com/admin/logout"
+                       class="btn btn-primary btn-sm"
+                       style="width:120px;">
+                        Logout
+                    </a>
+
+                    <!-- Cancel Button -->
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            style="width:120px;"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
 
 @push('scripts')
 
@@ -59,4 +167,5 @@
 
 @stack('scripts')
 </body>
+
 </html>

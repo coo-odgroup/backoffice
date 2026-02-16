@@ -196,11 +196,6 @@ $(document).on('change', '#selState', function() {
 });
 
 
-function toggleFilter() {
-    console.log("toggleFilter called");
-    document.getElementById("filterBox").classList.toggle("d-none");
-}
-
 document.getElementById("menu-toggle").addEventListener("click", function() {
     document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
 });
