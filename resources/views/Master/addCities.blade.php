@@ -20,15 +20,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
-    <div> 
-        <button class="btn btn-success btn-sm"  onclick="window.location='{{ route('cities.index') }}'">View Cities
+    <div>
+        <button class="btn btn-success btn-sm" onclick="window.location='{{ route('cities.index') }}'">View Cities
         </button>
     </div>
 </div>
 
 <!-- TABLE -->
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
-     {{csrf_field()}}
+    {{csrf_field()}}
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -38,23 +38,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="card-body">
                             <div class="row">
                                 @if (session('message'))
-                              
-                                        <div class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show" role="alert">
-                                             {{ session('message') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                        </div>
-                                  
+
+                                <div class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show" role="alert">
+                                    {{ session('message') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+
                                 @endif
                                 @if ($errors->any())
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <ul class="mb-0">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
 
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"  aria-label="Close"></button>
-                                    </div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
                                 @endif
 
                                 <!-- FILTER FIELDS -->
@@ -84,43 +84,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="row mb-3 align-items-center synonym-row">
-                                        <!-- Label -->
-                                        <div class="col-md-1 text-left">
-                                            <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                    <div id="synonymContainer">
+
+                                        <div class="row mb-3 align-items-center synonym-row">
+                                            <div class="col-md-1">
+                                                <label class="mb-0">Synonyms</label>
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                                            </div>
+
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
                                         </div>
 
-                                        <!-- Input -->
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" id="txtSynonym" name="txtSynonym">
-                                        </div>
-
-                                        <!-- Plus Button -->
-                                        <div class="col-md-1">
-                                            <button type="button" class="btn btn-outline-primary">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
                                     </div>
 
-                                    <div class="row mb-3 align-items-center synonym-row">
-                                        <!-- Label -->
-                                        <div class="col-md-1 text-left">
-                                            <label for="txtSynonym" class="mb-0">Synonyms</label>
-                                        </div>
-
-                                        <!-- Input -->
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" name="txtSynonym">
-                                        </div>
-
-                                        <!-- Plus Button -->
-                                        <div class="col-md-1">
-                                            <button type="button" class="btn btn-outline-danger">
-                                                <i class="fa fa-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <!-- BUTTONS -->
@@ -130,13 +113,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                            <button class="btn btn-secondary btn-sm" type="button" onclick="window.location='{{ route('cities.index') }}'">
-                                                {{ $data['strReset'] }}
-                                            </button>
+                                        <button class="btn btn-secondary btn-sm" type="button" onclick="window.location='{{ route('cities.index') }}'">
+                                            {{ $data['strReset'] }}
+                                        </button>
                                         @else
-                                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button" id="resetBtn">
-                                                {{ $data['strReset'] }}
-                                            </button>
+                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button" id="resetBtn">
+                                            {{ $data['strReset'] }}
+                                        </button>
                                         @endif
                                     </div>
                                 </div>
@@ -155,17 +138,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-
-    document.getElementById('txtCity').addEventListener('input', function () {
+    document.getElementById('txtCity').addEventListener('input', function() {
 
         let cityName = this.value;
 
         let alias = cityName
-            .toLowerCase()                 // convert to lowercase
-            .trim()                        // remove extra spaces
-            .replace(/[^a-z0-9\s-]/g, '')  // remove special characters
-            .replace(/\s+/g, '-')          // replace spaces with -
-            .replace(/-+/g, '-');          // remove duplicate -
+            .toLowerCase() // convert to lowercase
+            .trim() // remove extra spaces
+            .replace(/[^a-z0-9\s-]/g, '') // remove special characters
+            .replace(/\s+/g, '-') // replace spaces with -
+            .replace(/-+/g, '-'); // remove duplicate -
 
         document.getElementById('txtCityAlias').value = alias;
     });
@@ -175,14 +157,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
-        let state_id = {{ $data['row']->state_id ?? 0 }};
-        let district_id = {{ $data['row']->district_id ?? 0 }};
+        let state_id = {
+            {
+                $data['row'] - > state_id ?? 0
+            }
+        };
+        let district_id = {
+            {
+                $data['row'] - > district_id ?? 0
+            }
+        };
         commonAjax.loadStateList(state_id);
         commonAjax.getDistrictList(state_id, district_id);
 
-        $('#resetBtn').click(function(){
+        $('#resetBtn').click(function() {
 
-            $(':input','#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
+            $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
             $('.form-select').val(0);
 
             // $('.form-control-choosen option:selected').removeAttr('selected');
@@ -214,22 +204,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         if (!validator.blankCheck('txtCity', 'City Name cannot be left blank'))
             return false;
-        if (!validator.maxLength('txtCity',100,'City Name'))
+        if (!validator.maxLength('txtCity', 100, 'City Name'))
             return false;
-        
+
         if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank'))
             return false;
 
-        if (!validator.maxLength('txtCityAlias',100,'City Alias'))
+        if (!validator.maxLength('txtCityAlias', 100, 'City Alias'))
             return false;
 
         if (!validator.selectDropdown('selState', 'Select State'))
             return false;
-            
+
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
-           e.currentTarget.submit();
+            e.currentTarget.submit();
         });
 
     });
@@ -237,8 +227,48 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
-
-
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const container = document.getElementById('synonymContainer');
+
+    container.addEventListener('click', function (e) {
+
+        // Add synonym Field
+        if (e.target.closest('.btn-add')) {
+            const newRow = document.createElement('div');
+            newRow.className = 'row mb-3 align-items-center synonym-row';
+
+            newRow.innerHTML = `
+                <div class="col-md-1">
+                    <label class="mb-0">Synonyms</label>
+                </div>
+                <div class="col-md-5">
+                    <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-outline-danger btn-remove">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(newRow);
+        }
+
+        // Remove synonym field
+        if (e.target.closest('.btn-remove')) {
+            const rows = container.querySelectorAll('.synonym-row');
+
+            if (rows.length > 1) {
+                e.target.closest('.synonym-row').remove();
+            }
+        }
+    });
+
+});
+</script>
+
 
 @endpush
