@@ -15,12 +15,12 @@ class States extends Model
     // A state has many districts
     public function districts()
     {
-        return $this->hasMany(District::class);
+        return $this->hasMany(Districts::class);
     }
 
     // A state has many cities
     public function cities()
     {
-        return $this->hasMany(City::class);
+        return $this->hasMany(Cities::class);
     }
 }
