@@ -47,7 +47,7 @@ class CitiesController extends Controller
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
-                $redirectPage = "cities";
+                $redirectPage = "admin/cities";
             }
 
             if(request()->isMethod('post')) {
