@@ -18,7 +18,8 @@ class CitiesController extends Controller
         return view('master.cities');
     }
 
-    public function add($encId = null) {
+    public function add($encId = null)
+    {
 
         $data = [];
         $data['strPage']    = $method = 'Add';
@@ -32,25 +33,25 @@ class CitiesController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/cities/edit/".$encId;
+                $redirectPage = "admin/cities/edit/" . $encId;
                 $data['strPage']    = $method = 'Edit';
                 $data['strSubmit']  = 'Update';
                 $data['strReset']   = 'Cancel';
 
-                $dataResQry = Cities::select('id','state_id', 'district_id','city_name', 'alias');
+                $dataResQry = Cities::select('id', 'state_id', 'district_id', 'city_name', 'alias');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
-                if(empty($dataResQry)){
+                if (empty($dataResQry)) {
                     return redirect("cities");
                 }
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
-                $redirectPage = "cities";
+                $redirectPage = "admin/cities";
             }
 
-            if(request()->isMethod('post')) {
+            if (request()->isMethod('post')) {
 
                 request()->replace(request()->all());
 
@@ -66,21 +67,22 @@ class CitiesController extends Controller
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                }
-                else {
+                } else {
                     DB::beginTransaction();
 
                     $selState  = (int)request('selState');
                     $selDistrict  = (int)request('selDistrict');
                     $txtCity  = htmlEncode(request('txtCity'));
                     $txtCityAlias = htmlEncode(request('txtCityAlias'));
-                  
+
 
                     $duplicate = Cities::select('id')
-                                        ->where(['city_name' => $txtCity,
-                                                 'alias'     => $txtCityAlias]);
+                        ->where([
+                            'city_name' => $txtCity,
+                            'alias'     => $txtCityAlias
+                        ]);
 
-                    if ($id!=0) {
+                    if ($id != 0) {
                         $duplicate->where('id', '!=', $id);
                     }
 
@@ -89,9 +91,8 @@ class CitiesController extends Controller
                             'level'     => 'danger',
                             'message'   => 'City already exist'
                         ])->withInput();
-                    }
-                    else {
-                        $obj = ($id!=0) ? Cities::find($id) : new Cities();
+                    } else {
+                        $obj = ($id != 0) ? Cities::find($id) : new Cities();
 
                         $obj->state_id       = $selState;
                         $obj->district_id       = $selDistrict ?? null;
@@ -99,17 +100,52 @@ class CitiesController extends Controller
                         $obj->alias       = $txtCityAlias;
                         $obj->created_by      = 1;     //session('admin_session.user_id');
                         $obj->active_status      = 1;
-                        if($id != 0){
+                        if ($id != 0) {
                             $obj->updated_by      = 1; //session('admin_session.user_id');
                         }
 
                         $obj->save();
-                        
+                        //Save City Synonym
+                        $cityId = $obj->id;
+
+                        $synonyms = request('txtSynonym', []);
+
+                        if (!empty($synonyms)) {
+
+                            if ($id != 0) {
+                                DB::table('cities_synonyms')
+                                    ->where('city_id', $cityId)
+                                    ->delete();
+                            }
+
+                            $insertData = [];
+
+                            foreach ($synonyms as $synonym) {
+
+                                $synonym = trim(htmlEncode($synonym));
+
+                                if ($synonym !== '') {
+                                    $insertData[] = [
+                                        'city_id'       => $cityId,
+                                        'synonym'       => $synonym,
+                                        'active_status' => 1,
+                                        'created_at'    => now(),
+                                        'created_by'    => 1 
+                                    ];
+                                }
+                            }
+
+                            if (!empty($insertData)) {
+                                DB::table('cities_synonyms')->insert($insertData);
+                            }
+                        }
+
+
                         request()->session()->flash('level', 'success');
-                        request()->session()->flash('message', 'City '.(($id!=0) ?
-                                                    'updated': 'created').' successfully.');
+                        request()->session()->flash('message', 'City ' . (($id != 0) ?
+                            'updated' : 'created') . ' successfully.');
                     }
-                
+
                     DB::commit();
                     return redirect($redirectPage);
                 }
@@ -130,10 +166,11 @@ class CitiesController extends Controller
                 'message'   => $errorMsg
             ])->withInput();
         }
-        return view('Master.addCities',compact('data'));
+        return view('Master.addCities', compact('data'));
     }
 
-    public function edit($encId) {
+    public function edit($encId)
+    {
         return $this->add($encId);
     }
 
@@ -144,31 +181,31 @@ class CitiesController extends Controller
         $data             = [];
 
         try {
-            
-            $txtSearch= htmlEncode(request('txtSearch'));
+
+            $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
             $selState = (int) request('selState');
             $selDistrict = (int) request('selDistrict');
 
             $dataQuery = DB::table('cities as c')
-                            ->leftJoin('states as s', 's.id', '=', 'c.state_id')
-                            ->leftJoin('users as u', 'u.id', '=', 'c.created_by')
-                            ->select(
-                                'c.id as city_id',
-                                'c.city_name',
-                                'c.alias',
-                                's.state_name',
-                                'c.created_at',
-                                'c.created_by',
-                                'u.name as created_by_name',
-                                'c.active_status'
-                            );
+                ->leftJoin('states as s', 's.id', '=', 'c.state_id')
+                ->leftJoin('users as u', 'u.id', '=', 'c.created_by')
+                ->select(
+                    'c.id as city_id',
+                    'c.city_name',
+                    'c.alias',
+                    's.state_name',
+                    'c.created_at',
+                    'c.created_by',
+                    'u.name as created_by_name',
+                    'c.active_status'
+                );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
-                      ->orWhere('c.alias', 'like', "%{$txtSearch}%");
+                        ->orWhere('c.alias', 'like', "%{$txtSearch}%");
                 });
             }
 
@@ -201,7 +238,6 @@ class CitiesController extends Controller
                 $orderBy       = request('order');
                 $orderColumn   = $columns[$orderBy[0]['column']] ?? 'c.city_name';
                 $orderType     = $orderBy[0]['dir'];
-
             } else {
                 $orderColumn = 'c.city_name';
                 $orderType   = 'asc';
@@ -214,8 +250,8 @@ class CitiesController extends Controller
                 $arrRes = $dataQuery->get();
             } else {
                 $arrRes = $dataQuery->limit($length)
-                                    ->offset($start)
-                                    ->get();
+                    ->offset($start)
+                    ->get();
             }
             // Format Data
             if (count($arrRes) > 0) {
@@ -232,8 +268,6 @@ class CitiesController extends Controller
             $recordsTotal     = $count;
             $recordsFiltered  = $count;
             $data             = $arrRes;
-
-
         } catch (\Throwable $t) {
 
             log::info("Exception occurred in CitiesController@dataTableView", [
@@ -252,7 +286,6 @@ class CitiesController extends Controller
             $recordsTotal     = 0;
             $recordsFiltered  = 0;
             $data            = [];
-            
         }
 
         return response()->json([
@@ -261,5 +294,4 @@ class CitiesController extends Controller
             'data'            => $data,
         ]);
     }
-
 }
