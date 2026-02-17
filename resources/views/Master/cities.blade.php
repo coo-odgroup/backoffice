@@ -24,7 +24,7 @@
         <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
             <i class="fa-solid fa-magnifying-glass me-1"></i> Search
         </button>
-        <button class="btn btn-success btn-sm">+ Add Bus
+        <button class="btn btn-success btn-sm">+ Add Cities
         </button>
     </div>
 </div>
