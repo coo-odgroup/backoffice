@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Models\Master\States;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -122,5 +123,118 @@ class StateController extends Controller
             'recordsFiltered' => $recordsFiltered,
             'data'            => $data,
         ]);
+    }
+
+    public function add($encId = null) {
+
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+
+        try {
+
+            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+
+            if ($id > 0) {
+
+                $redirectPage = "admin/states/edit/".$encId;
+                $data['strPage'] = $method = 'Edit';
+                $data['strSubmit'] = 'Update';
+                $data['strReset'] = 'Cancel';
+
+                $dataResQry = States::select('id', 'state_name');
+
+                $dataResQry = $dataResQry->where('id', $id)->first();
+
+                if(empty($dataResQry)){
+                    return redirect("states");
+                }
+                $data['row'] = $dataResQry;
+            } else {
+                $id = 0;
+                $redirectPage = "admin/states";
+            }
+
+            if(request()->isMethod('post')) {
+
+                request()->replace(request()->all());
+
+                $validator = Validator::make(request()->all(), [
+                    'txtCity' => 'bail|required',
+                    'txtCityAlias' => 'bail|required',
+                    'selState' => 'required',
+                ], [
+                    'txtCity.required' => 'City Name cannot be left blank.',
+                    'txtCityAlias.required' => 'City Alias cannot be left blank.',
+                    'selState.required' => 'State cannot be left blank.',
+                ]);
+
+                if ($validator->fails()) {
+                    return back()->withErrors($validator)->withInput();
+                } else {
+                    DB::beginTransaction();
+
+                    $selState  = (int)request('selState');
+                    $selDistrict  = (int)request('selDistrict');
+                    $txtCity  = htmlEncode(request('txtCity'));
+                    $txtCityAlias = htmlEncode(request('txtCityAlias'));
+                  
+
+                    $duplicate = Cities::select('id')
+                                        ->where(['city_name' => $txtCity,
+                                                 'alias'     => $txtCityAlias]);
+
+                    if ($id!=0) {
+                        $duplicate->where('id', '!=', $id);
+                    }
+
+                    if ($duplicate->exists()) {
+                        return back()->with([
+                            'level'     => 'danger',
+                            'message'   => 'City already exist'
+                        ])->withInput();
+                    }
+                    else {
+                        $obj = ($id!=0) ? Cities::find($id) : new Cities();
+
+                        $obj->state_id       = $selState;
+                        $obj->district_id       = $selDistrict ?? null;
+                        $obj->city_name      = $txtCity;
+                        $obj->alias       = $txtCityAlias;
+                        $obj->created_by      = 1;     //session('admin_session.user_id');
+                        $obj->active_status      = 1;
+                        if($id != 0){
+                            $obj->updated_by      = 1; //session('admin_session.user_id');
+                        }
+
+                        $obj->save();
+                        
+                        request()->session()->flash('level', 'success');
+                        request()->session()->flash('message', 'City '.(($id!=0) ?
+                                                    'updated': 'created').' successfully.');
+                    }
+                
+                    DB::commit();
+                    return redirect($redirectPage);
+                }
+            }
+        } catch (\Throwable $t) {
+            Log::error("Error", [
+                'Controller' => 'CitiesController',
+                'Method'     => $method,
+                'Error'      => $t->getMessage()
+            ]);
+
+            DB::rollBack();
+
+            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
+
+            return back()->with([
+                'level'     => 'danger',
+                'message'   => $errorMsg
+            ])->withInput();
+        }
+        return view('Master.addStates',compact('data'));
     }
 }
