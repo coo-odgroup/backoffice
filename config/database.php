@@ -46,11 +46,11 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
+            'host' => env('DB_HOST', '192.168.29.141'),
             'port' => env('DB_PORT', '3307'),
-            'database' => env('DB_DATABASE', 'odbusnew'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'database' => env('DB_DATABASE', 'odbusmaster'),
+            'username' => env('DB_USERNAME', 'networkuser'),
+            'password' => env('DB_PASSWORD', 'password123'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -62,6 +62,47 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+
+        'mysql_log' => [
+            'driver' => 'mysql',
+            'url' => env('LOG_DATABASE_URL'),
+            'host' => env('LOG_DB_HOST', '192.168.29.141'),
+            'port' => env('LOG_DB_PORT', '3307'),
+            'database' => env('LOG_DB_DATABASE', 'odbuslog'),
+            'username' => env('LOG_DB_USERNAME', 'networkuser'),
+            'password' => env('LOG_DB_PASSWORD', 'password123'),
+            'unix_socket' => env('LOG_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'mysql_dev' => [
+            'driver' => 'mysql',
+            'url' => env('DEV_DATABASE_URL'),
+            'host' => env('DEV_DB_HOST', '192.168.29.141'),
+            'port' => env('DEV_DB_PORT', '3307'),
+            'database' => env('DEV_DB_DATABASE', 'odbusdev'),
+            'username' => env('DEV_DB_USERNAME', 'networkuser'),
+            'password' => env('DEV_DB_PASSWORD', 'password123'),
+            'unix_socket' => env('DEV_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
 
         'pgsql' => [
             'driver' => 'pgsql',

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class States extends Model
 {
-    protected $table = 'states';
+    protected $table = 'mst_states';
     protected $fillable = [
         'state_name',
         'active_status'

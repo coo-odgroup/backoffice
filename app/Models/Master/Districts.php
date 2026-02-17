@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Districts extends Model
 {
-    protected $table = 'districts';
+    protected $table = 'mst_districts';
     protected $fillable = [
         'state_id',
         'district_name',

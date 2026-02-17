@@ -187,8 +187,8 @@ class CitiesController extends Controller
             $selState = (int) request('selState');
             $selDistrict = (int) request('selDistrict');
 
-            $dataQuery = DB::table('cities as c')
-                ->leftJoin('states as s', 's.id', '=', 'c.state_id')
+            $dataQuery = DB::table('mst_cities as c')
+                ->leftJoin('mst_states as s', 's.id', '=', 'c.state_id')
                 ->leftJoin('users as u', 'u.id', '=', 'c.created_by')
                 ->select(
                     'c.id as city_id',

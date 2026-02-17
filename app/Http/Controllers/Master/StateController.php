@@ -28,7 +28,7 @@ class StateController extends Controller
             $txtSearch= htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
-            $dataQuery = DB::table('states as s')
+            $dataQuery = DB::table('mst_states as s')
                             ->leftJoin('users as u', 'u.id', '=', 's.created_by')
                             ->select(
                                 's.id as state_id',
