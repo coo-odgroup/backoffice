@@ -130,7 +130,7 @@ class CitiesController extends Controller
                                         'synonym'       => $synonym,
                                         'active_status' => 1,
                                         'created_at'    => now(),
-                                        'created_by'    => 1 
+                                        'created_by'    => 1
                                     ];
                                 }
                             }
@@ -190,6 +190,10 @@ class CitiesController extends Controller
             $dataQuery = DB::table('mst_cities as c')
                 ->leftJoin('mst_states as s', 's.id', '=', 'c.state_id')
                 ->leftJoin('users as u', 'u.id', '=', 'c.created_by')
+                ->leftJoin('cities_synonyms as cs', function ($join) {
+                    $join->on('cs.cities_id', '=', 'c.id')
+                        ->where('cs.active_status', 1); // only active synonyms
+                })
                 ->select(
                     'c.id as city_id',
                     'c.city_name',
@@ -198,16 +202,31 @@ class CitiesController extends Controller
                     'c.created_at',
                     'c.created_by',
                     'u.name as created_by_name',
+                    'c.active_status',
+                    DB::raw("GROUP_CONCAT(cs.synonym ORDER BY cs.synonym SEPARATOR '||') as synonyms")
+                )
+                ->groupBy(
+                    'c.id',
+                    'c.city_name',
+                    'c.alias',
+                    's.state_name',
+                    'c.created_at',
+                    'c.created_by',
+                    'u.name',
                     'c.active_status'
                 );
+
+
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('c.alias', 'like', "%{$txtSearch}%");
+                        ->orWhere('c.alias', 'like', "%{$txtSearch}%")
+                        ->orWhere('cs.synonym', 'like', "%{$txtSearch}%");
                 });
             }
+
 
             if (isset($selStatus) && $selStatus != '') {
                 $dataQuery->where('c.active_status', $selStatus);
@@ -233,7 +252,15 @@ class CitiesController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 's.state_name', 3 => 'c.city_name', 4 => 'c.alias', 5 => 'c.synonymn', 6 => 'c.created_at', 7 => 'c.active_status'];
+                $columns = [
+                    2 => 's.state_name',
+                    3 => 'c.city_name',
+                    4 => 'c.alias',
+                    5 => 'synonyms',
+                    6 => 'c.created_at',
+                    7 => 'c.active_status'
+                ];
+
 
                 $orderBy       = request('order');
                 $orderColumn   = $columns[$orderBy[0]['column']] ?? 'c.city_name';
@@ -262,6 +289,10 @@ class CitiesController extends Controller
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
                     $val->enc_city_id   = Crypt::encryptString($val->city_id);
+
+                    $val->synonym = !empty($val->synonyms)
+                        ? implode('<br>', explode('||', $val->synonyms))
+                        : '--';
                 }
             }
 
