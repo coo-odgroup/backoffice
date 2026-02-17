@@ -164,13 +164,9 @@ class StateController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'txtCity' => 'bail|required',
-                    'txtCityAlias' => 'bail|required',
-                    'selState' => 'required',
+                    'txtState' => 'bail|required'
                 ], [
-                    'txtCity.required' => 'City Name cannot be left blank.',
-                    'txtCityAlias.required' => 'City Alias cannot be left blank.',
-                    'selState.required' => 'State cannot be left blank.',
+                    'txtState.required' => 'State Name cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
@@ -178,15 +174,9 @@ class StateController extends Controller
                 } else {
                     DB::beginTransaction();
 
-                    $selState  = (int)request('selState');
-                    $selDistrict  = (int)request('selDistrict');
-                    $txtCity  = htmlEncode(request('txtCity'));
-                    $txtCityAlias = htmlEncode(request('txtCityAlias'));
-                  
+                    $txtState  = htmlEncode(request('txtState'));
 
-                    $duplicate = Cities::select('id')
-                                        ->where(['city_name' => $txtCity,
-                                                 'alias'     => $txtCityAlias]);
+                    $duplicate = States::select('id')->where(['state_name' => $txtState]);
 
                     if ($id!=0) {
                         $duplicate->where('id', '!=', $id);
@@ -195,27 +185,22 @@ class StateController extends Controller
                     if ($duplicate->exists()) {
                         return back()->with([
                             'level'     => 'danger',
-                            'message'   => 'City already exist'
+                            'message'   => 'State already exist'
                         ])->withInput();
-                    }
-                    else {
-                        $obj = ($id!=0) ? Cities::find($id) : new Cities();
+                    }  else {
+                        $obj = ($id!=0) ? States::find($id) : new States();
+                        $obj->state_name = $txtState;
+                        $obj->created_by = 1;
+                        $obj->active_status = 1;
 
-                        $obj->state_id       = $selState;
-                        $obj->district_id       = $selDistrict ?? null;
-                        $obj->city_name      = $txtCity;
-                        $obj->alias       = $txtCityAlias;
-                        $obj->created_by      = 1;     //session('admin_session.user_id');
-                        $obj->active_status      = 1;
-                        if($id != 0){
-                            $obj->updated_by      = 1; //session('admin_session.user_id');
+                        if ($id != 0) {
+                            $obj->updated_by = 1;
                         }
 
                         $obj->save();
                         
-                        request()->session()->flash('level', 'success');
-                        request()->session()->flash('message', 'City '.(($id!=0) ?
-                                                    'updated': 'created').' successfully.');
+                        session()->flash('level', 'success');
+                        session()->flash('message', 'City '.(($id != 0) ? 'updated' : 'created').' successfully.');
                     }
                 
                     DB::commit();
@@ -224,7 +209,7 @@ class StateController extends Controller
             }
         } catch (\Throwable $t) {
             Log::error("Error", [
-                'Controller' => 'CitiesController',
+                'Controller' => 'StatesController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
@@ -239,5 +224,10 @@ class StateController extends Controller
             ])->withInput();
         }
         return view('Master.addStates',compact('data'));
+    }
+
+    public function edit($encId)
+    {
+        return $this->add($encId);
     }
 }

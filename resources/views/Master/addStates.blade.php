@@ -21,7 +21,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">States</h5>
     <div>
-        <a href="#" class="btn btn-success btn-sm">
+        <a href="{{ route('states.index') }}" class="btn btn-success btn-sm">
             View States
         </a>
     </div>
@@ -58,7 +58,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                                 @endif
 
-                                <!-- FILTER FIELDS -->
+                                <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-12 mb-3">
@@ -75,7 +75,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('cities.index') }}" class="btn btn-secondary btn-sm">
+                                        <a href="{{ route('states.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
                                         </a>
                                         @else
@@ -85,7 +85,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         @endif
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>

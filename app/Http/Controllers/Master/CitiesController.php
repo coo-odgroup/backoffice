@@ -114,7 +114,7 @@ class CitiesController extends Controller
 
                             if ($id != 0) {
                                 DB::table('cities_synonyms')
-                                    ->where('city_id', $cityId)
+                                    ->where('cities_id', $cityId)
                                     ->delete();
                             }
 
@@ -126,7 +126,7 @@ class CitiesController extends Controller
 
                                 if ($synonym !== '') {
                                     $insertData[] = [
-                                        'city_id'       => $cityId,
+                                        'cities_id'       => $cityId,
                                         'synonym'       => $synonym,
                                         'active_status' => 1,
                                         'created_at'    => now(),
