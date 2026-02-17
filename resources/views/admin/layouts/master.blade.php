@@ -137,6 +137,20 @@
     </div>
 </div>
 
+<div class="modal fade" id="logModal"  tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Audit Changes</h5>
+      </div>
+      <div class="modal-body">
+        <div id="logContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 @push('scripts')
 
 <script type="module">

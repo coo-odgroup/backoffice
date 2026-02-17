@@ -12,17 +12,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} State</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} District</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">States</h5>
+    <h5 id="page_title">Districts</h5>
     <div>
-        <a href="{{ route('states.index') }}" class="btn btn-success btn-sm">
-            View States
+        <a class="btn btn-success btn-sm" href="{{ route('district.index') }}">View Districts
         </a>
     </div>
 </div>
@@ -58,14 +57,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                                 @endif
 
-                                <!-- POST FIELDS -->
+                                <!-- FILTER FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-12 mb-3">
-                                            <label for="txtState">State Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtState" name="txtState" value="{{ $data['row']->state_name ?? '' }}">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="selState">State<span class="text-danger important">*</span></label>
+                                            <select class="form-select" id="selState" name="selState">
+                                                <option value="0">Select State</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="txtDistrict">District Name<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="txtDistrict" name="txtDistrict" value="{{ $data['row']->district_name ?? '' }}">
                                         </div>
                                     </div>
+
                                 </div>
 
                                 <!-- BUTTONS -->
@@ -75,7 +81,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('states.index') }}" class="btn btn-secondary btn-sm">
+                                        <a class="btn btn-secondary btn-sm" type="button" href="{{ route('district.index') }}">
                                             {{ $data['strReset'] }}
                                         </a>
                                         @else
@@ -85,6 +91,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         @endif
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -99,6 +106,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
+    document.getElementById('txtDistrict').addEventListener('input', function() {
+
+        let cityName = this.value;
+
+        let alias = cityName
+            .toLowerCase() // convert to lowercase
+            .trim() // remove extra spaces
+            .replace(/[^a-z0-9\s-]/g, '') // remove special characters
+            .replace(/\s+/g, '-') // replace spaces with -
+            .replace(/-+/g, '-'); // remove duplicate -
+
+    });
+
+
+    $(document).ready(function() {
+
+        commonAjax.initSelect2('#selState', 'Select State');
+
+        let state_id = <?= $data['row']->state_id ?? '0' ?>
+
+        commonAjax.loadStateList(state_id);
+    });
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -109,9 +139,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.blankCheck('txtState', 'State Name cannot be left blank'))
+        if (!validator.selectDropdown('selState', 'Select State'))
             return false;
-        if (!validator.maxLength('txtState', 100, 'State Name'))
+
+        if (!validator.blankCheck('txtDistrict', 'District Name cannot be left blank'))
+            return false;
+        if (!validator.maxLength('txtDistrict', 100, 'District Name'))
             return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');
@@ -126,4 +159,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 </script>
+
+
 @endpush

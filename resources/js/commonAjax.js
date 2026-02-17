@@ -255,3 +255,101 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
             $('.chkAll').prop('checked', false);
         }
     }
+
+
+    export function viewLogs(table, id) {
+
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "audit-logs/" + table + "/" + id,
+            data: {
+                table: table,
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+
+            success: function(response) {
+
+                let html = '';
+
+                if(response.length > 0) {
+
+                    $.each(response, function(index, log) {
+
+                        html += `
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-header bg-light d-flex justify-content-between">
+                                    <span>
+                                        <strong>${log.action}</strong>
+                                    </span>
+                                    <span class="text-muted">
+                                        ${log.created_at}
+                                    </span>
+                                </div>
+                                <div class="card-body p-2">
+                                    <table class="table table-sm table-bordered mb-0">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th width="30%">Field</th>
+                                                <th width="35%">Old Value</th>
+                                                <th width="35%">New Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                        `;
+
+                        if(log.changes && log.changes.length > 0) {
+
+                            $.each(log.changes, function(i, change) {
+
+                                html += `
+                                    <tr class="table-warning">
+                                        <td><strong>${change.field}</strong></td>
+                                        <td class="text-danger">
+                                            ${change.old ?? '-'}
+                                        </td>
+                                        <td class="text-success">
+                                            ${change.new ?? '-'}
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+
+                        } else {
+
+                            html += `
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">
+                                        No field changes
+                                    </td>
+                                </tr>
+                            `;
+                        }
+
+                        html += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                } else {
+                    html = `
+                        <div class="alert alert-info text-center">
+                            No audit logs found.
+                        </div>
+                    `;
+                }
+
+                $('#logContainer').html(html);
+                $('#logModal').modal('show');
+            },
+
+            error: function(xhr) {
+                console.log("Error loading audit logs");
+            }
+        });
+    }
+
