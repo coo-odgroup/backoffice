@@ -45,7 +45,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boarding.dropping');
     Route::get('/district', [DistrictController::class, 'district'])->name('district');
     Route::get('/seating-type', [SeatingTypeController::class, 'seatingType'])->name('seating.type');
-    Route::get('/bus-type', [BusTypeController::class, 'bustype'])->name('bus.type');
     Route::get('/amenities', [AmenitiesController::class, 'amenities'])->name('amenities');
 
 
@@ -56,10 +55,18 @@ Route::prefix('admin')->group(function () {
 
 
     // Jagan
+    // ---------------------------------------------------------------------------------------------------------------
+    // State
     Route::get('/states', [StateController::class, 'states'])->name('states.index');
     Route::match(['get', 'post'], 'states/add', [StateController::class, 'add'])->name('states.add');
     Route::post('states/dataTableView', [StateController::class, 'dataTableView'])->name('states.dataTableView');
     Route::match(['get', 'post'], 'states/edit/{encId}', [StateController::class, 'edit'])->name('states.edit');
+
+    // Bus Type
+    Route::get('/bustype', [BusTypeController::class, 'bus-type'])->name('bustype.index');
+    Route::match(['get', 'post'], 'bustype/add', [BusTypeController::class, 'add'])->name('bustype.add');
+    Route::post('bustype/dataTableView', [BusTypeController::class, 'dataTableView'])->name('bustype.dataTableView');
+    Route::match(['get', 'post'], 'bustype/edit/{encId}', [BusTypeController::class, 'edit'])->name('bustype.edit');
 
 
 
