@@ -16,12 +16,12 @@ class Districts extends Model
     // District belongs to state
     public function state()
     {
-        return $this->belongsTo(State::class);
+        return $this->belongsTo(States::class);
     }
 
     // District has many cities
     public function cities()
     {
-        return $this->hasMany(City::class);
+        return $this->hasMany(Cities::class);
     }
 }

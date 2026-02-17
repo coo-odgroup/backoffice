@@ -43,7 +43,6 @@ Route::prefix('admin')->group(function () {
 
     //Subhasis
     Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boarding.dropping');
-    Route::get('/district', [DistrictController::class, 'district'])->name('district');
     Route::get('/seating-type', [SeatingTypeController::class, 'seatingType'])->name('seating.type');
     Route::get('/amenities', [AmenitiesController::class, 'amenities'])->name('amenities');
 
@@ -71,12 +70,11 @@ Route::prefix('admin')->group(function () {
 
 
 
-
-
-
-
-    //sahil
-
+    //Add by sahil
+    Route::get('/district', [DistrictController::class, 'district'])->name('district.index');
+    Route::match(['get', 'post'], 'district/add', [DistrictController::class, 'add'])->name('district.add');
+    Route::post('district/dataTableView', [DistrictController::class, 'dataTableView'])->name('district.dataTableView');
+    Route::match(['get', 'post'], 'district/edit/{encId}', [DistrictController::class, 'edit'])->name('district.edit');
 
 
 });
