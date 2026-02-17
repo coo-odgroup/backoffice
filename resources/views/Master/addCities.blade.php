@@ -157,16 +157,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
-        let state_id = {
-            {
-                $data['row'] - > state_id ?? 0
-            }
-        };
-        let district_id = {
-            {
-                $data['row'] - > district_id ?? 0
-            }
-        };
+
+        let state_id = {{ $data['row']->state_id ?? 0 }};
+        let district_id = {{ $data['row']->district_id ?? 0 }};
+
         commonAjax.loadStateList(state_id);
         commonAjax.getDistrictList(state_id, district_id);
 

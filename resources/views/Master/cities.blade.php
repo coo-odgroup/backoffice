@@ -323,18 +323,6 @@ window.getDataTableView = function() {
 
     loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
 }
-
-
-export function checkFun(ctrId) {
-    console.log(ctrId);
-    if ($("#" + ctrId).is(':checked')) {
-        if ($('.chkItem:checked').length == $('.chkItem').length) {
-            $('.chkAll').prop('checked', true);
-        }
-    } else {
-        $('.chkAll').prop('checked', false);
-    }
-}
 </script>
 
 @endpush

@@ -47,7 +47,7 @@ class CitiesController extends Controller
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
-                $redirectPage = "admin/cities";
+                $redirectPage = "cities";
             }
 
             if(request()->isMethod('post')) {
@@ -135,7 +135,7 @@ class CitiesController extends Controller
 
     public function edit($encId) {
         return $this->add($encId);
-    } 
+    }
 
     public function dataTableView()
     {
