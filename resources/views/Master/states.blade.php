@@ -61,7 +61,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- BUTTONS -->
                         <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-check me-1"></i>Submit
+                                <i class="fa-solid fa-search me-1"></i>Search
                             </button>
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
