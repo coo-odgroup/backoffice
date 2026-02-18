@@ -24,20 +24,20 @@ class StateController extends Controller
         $data             = [];
 
         try {
-            
-            $txtSearch= htmlEncode(request('txtSearch'));
+
+            $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
             $dataQuery = DB::table('mst_states as s')
-                            ->leftJoin('users as u', 'u.id', '=', 's.created_by')
-                            ->select(
-                                's.id as state_id',
-                                's.state_name',
-                                's.created_at',
-                                's.created_by',
-                                'u.name as created_by_name',
-                                's.active_status'
-                            );
+                ->leftJoin('users as u', 'u.id', '=', 's.created_by')
+                ->select(
+                    's.id as state_id',
+                    's.state_name',
+                    's.created_at',
+                    's.created_by',
+                    'u.name as created_by_name',
+                    's.active_status'
+                );
 
             // Filters
             if (!empty($txtSearch)) {
@@ -64,9 +64,8 @@ class StateController extends Controller
                 $columns = [2 => 's.state_name', 3 => 's.created_at', 4 => 's.created_by', 4 => 's.active_status'];
 
                 $orderBy       = request('order');
-                $orderColumn   = $columns[$orderBy[0]['column']] ?? 'c.city_name';
+                $orderColumn   = $columns[$orderBy[0]['column']] ?? 's.state_name';
                 $orderType     = $orderBy[0]['dir'];
-
             } else {
                 $orderColumn = 's.state_name';
                 $orderType   = 'asc';
@@ -79,8 +78,8 @@ class StateController extends Controller
                 $arrRes = $dataQuery->get();
             } else {
                 $arrRes = $dataQuery->limit($length)
-                                    ->offset($start)
-                                    ->get();
+                    ->offset($start)
+                    ->get();
             }
             // Format Data
             if (count($arrRes) > 0) {
@@ -95,8 +94,6 @@ class StateController extends Controller
             $recordsTotal     = $count;
             $recordsFiltered  = $count;
             $data             = $arrRes;
-
-
         } catch (\Throwable $t) {
 
             Log::info("Exception occurred in StateController@dataTableView", [
@@ -115,7 +112,6 @@ class StateController extends Controller
             $recordsTotal     = 0;
             $recordsFiltered  = 0;
             $data            = [];
-            
         }
 
         return response()->json([
@@ -125,7 +121,8 @@ class StateController extends Controller
         ]);
     }
 
-    public function add($encId = null) {
+    public function add($encId = null)
+    {
 
         $data = [];
         $data['strPage'] = $method = 'Add';
@@ -138,7 +135,7 @@ class StateController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/states/edit/".$encId;
+                $redirectPage = "admin/states/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
@@ -147,7 +144,7 @@ class StateController extends Controller
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
-                if(empty($dataResQry)){
+                if (empty($dataResQry)) {
                     return redirect("states");
                 }
                 $data['row'] = $dataResQry;
@@ -156,7 +153,7 @@ class StateController extends Controller
                 $redirectPage = "admin/states";
             }
 
-            if(request()->isMethod('post')) {
+            if (request()->isMethod('post')) {
 
                 request()->replace(request()->all());
 
@@ -175,7 +172,7 @@ class StateController extends Controller
 
                     $duplicate = States::select('id')->where(['state_name' => $txtState]);
 
-                    if ($id!=0) {
+                    if ($id != 0) {
                         $duplicate->where('id', '!=', $id);
                     }
 
@@ -184,8 +181,8 @@ class StateController extends Controller
                             'level'     => 'danger',
                             'message'   => 'State already exist'
                         ])->withInput();
-                    }  else {
-                        $obj = ($id!=0) ? States::find($id) : new States();
+                    } else {
+                        $obj = ($id != 0) ? States::find($id) : new States();
                         $obj->state_name = $txtState;
                         $obj->created_by = 1;
                         $obj->active_status = 1;
@@ -195,11 +192,11 @@ class StateController extends Controller
                         }
 
                         $obj->save();
-                        
+
                         session()->flash('level', 'success');
-                        session()->flash('message', 'City '.(($id != 0) ? 'updated' : 'created').' successfully.');
+                        session()->flash('message', 'City ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     }
-                
+
                     DB::commit();
                     return redirect($redirectPage);
                 }
@@ -220,7 +217,7 @@ class StateController extends Controller
                 'message'   => $errorMsg
             ])->withInput();
         }
-        return view('Master.addStates',compact('data'));
+        return view('Master.addStates', compact('data'));
     }
 
     public function edit($encId)
