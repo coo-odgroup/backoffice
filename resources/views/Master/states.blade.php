@@ -112,7 +112,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
                 data-url="{{ route('states.dataTableView') }}"
                 data-edit-url="{{ route('states.edit', 'ID') }}">
                 <thead class="thead-light">
@@ -130,6 +131,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </thead>
                 <tbody></tbody>
             </table>
+            </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
@@ -249,7 +251,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
-                        <a class="btn btn-sm btn-info"
+                        <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_state_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
