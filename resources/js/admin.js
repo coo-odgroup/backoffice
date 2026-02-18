@@ -118,3 +118,12 @@ import * as commonAjax from './commonAjax';
 window.commonAjax = commonAjax; 
 window.actionRec = commonAjax.actionRec;
 
+$(document).on('click', '.btn-view-log', function() {
+
+    let table = $(this).data('table');
+    let id    = $(this).data('id');
+
+    commonAjax.viewLogs(table, id);
+});
+
+

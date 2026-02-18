@@ -255,3 +255,120 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
             $('.chkAll').prop('checked', false);
         }
     }
+
+
+    export function viewLogs(table, id) {
+
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "audit-logs",
+            data: {
+                table: table,
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+
+            success: function(response) {
+
+                let html = '';
+
+               // console.log(response);
+
+                if(response.length > 0) {
+
+                    $.each(response, function(index, log) {
+
+                        html += `
+                            <div class="card mb-1 shadow-sm">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <strong>${log.action}</strong>
+                                    </span>
+                                    <span class="text-muted">
+                                         ${formatDate(log.created_at)}
+                                    </span>
+                                </div>
+                                   <div class="card-body">                             
+                                     <table class="table table-bordered table-hover mb-0 align-middle table-md">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th>Field</th>
+                                                <th>Old Value</th>
+                                                <th>New Value</th>
+                                                <th>Changed By</th>                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                        `;
+
+                        if(log.changes && log.changes.length > 0) {
+
+                            $.each(log.changes, function(i, change) {
+
+                                html += `
+                                    <tr class="table-warning">
+                                        <td><strong>${change.field}</strong></td>
+                                        <td class="text-danger">
+                                            ${change.old ?? '-'}
+                                        </td>
+                                        <td class="text-success">
+                                            ${change.new ?? '-'}
+                                        </td>
+                                        <td>${log.created_by ?? '-'}</td>                                        
+                                    </tr>
+                                `;
+                            });
+
+                        } else {
+
+                            html += `
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">
+                                        No field changes
+                                    </td>
+                                </tr>
+                            `;
+                        }
+
+                        html += `
+                                        </tbody>
+                                    </table>
+                                </div>                           
+                            </div>
+                        `;
+                    });
+
+                } else {
+                    html = `
+                        <div class="alert alert-info text-center">
+                            No audit logs found.
+                        </div>
+                    `;
+                }
+
+                $('#logContainer').html(html);
+                const modalElement = document.getElementById('logModal');
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                // $('#logModal').modal('show');
+            },
+
+            error: function(xhr) {
+                console.log("Error loading audit logs");
+            }
+        });
+    }
+
+    export function formatDate(dateString) {
+        let date = new Date(dateString);
+
+        return date.toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+

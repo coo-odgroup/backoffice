@@ -39,6 +39,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-state-list', [CommonController::class, 'getStateList'])->name('get.state.list');
     Route::post('/get-district-list', [CommonController::class, 'getDistrictList'])->name('get.district.list');
     Route::post('/common-bulk-action', [CommonController::class, 'bulkAction'])->name('admin.bulkAction');
+    Route::post('/audit-logs', [CommonController::class, 'getLogs'])->name('admin.getLogs');
+
 
 
     //Subhasis

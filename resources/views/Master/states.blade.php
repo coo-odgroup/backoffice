@@ -253,6 +253,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         href="${editUrl.replace('ID', row.enc_state_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
+
+                        <a href="javascript:void(0);"
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="mst_states"
+                            data-id="${row.enc_state_id}">
+                                <i class="fa fa-history"></i> View Log
+                        </a>
+
                     `;
                 },
                 className: "noPrint text-center"

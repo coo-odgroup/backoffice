@@ -39,9 +39,6 @@ class StateController extends Controller
                                 's.active_status'
                             );
 
-
-                            // return $dataQuery->get();exit;
-
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {

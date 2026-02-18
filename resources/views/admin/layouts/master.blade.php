@@ -137,6 +137,20 @@
     </div>
 </div>
 
+<div class="modal fade" id="logModal" tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false"   aria-hidden="true">
+ <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Audit Changes</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="overflow-y:auto">
+        <div id="logContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 @push('scripts')
 
 <script type="module">
