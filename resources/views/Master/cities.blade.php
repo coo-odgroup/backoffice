@@ -21,9 +21,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
     <div>
-        <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
-            <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+        <button type="button"
+            class="btn btn-primary btn-sm"
+            id="filterToggleBtn"
+            onclick="toggleFilter()">
+            <i class="fa-solid fa-magnifying-glass me-1"></i>
+            <span class="btn-text">Search</span>
         </button>
+
         <a href="{{ route('cities.add') }}" class="btn btn-success btn-sm">
             + Add City
         </a>
@@ -169,172 +174,146 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
 
-    $('#backoffice-form').on('submit', function(e) {
-        e.preventDefault();
-    });
+    
+    $(document).ready(function () {
 
-
-    $(document).ready(function() {
-
+        // init selects
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
-        // By default hide filter
-        $("#filterBox").hide();
 
-        // Toggle on button click
-        window.toggleFilter = function() {
-            $("#filterBox").slideToggle(300);
-        };
+        // hide filter by default
+        $('#filterBox').hide();
+
+        // load data
         commonAjax.loadStateList();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
     });
 
+ 
+    let filterOpen = false;
 
-    $('#btnReset').click(function() {
-        $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
-        $('.form-select').val(0);
+    window.toggleFilter = function () {
+        const filterBox = $('#filterBox');
+        const btn = $('#filterToggleBtn');
+        const btnText = btn.find('.btn-text');
+        const btnIcon = btn.find('i');
+
+        if (!filterOpen) {
+            // OPEN
+            filterBox.slideDown(300);
+
+            btn.removeClass('btn-primary').addClass('btn-danger');
+            btnText.text('Close');
+
+            btnIcon
+                .removeClass('fa-magnifying-glass')
+                .addClass('fa-xmark');
+
+            filterOpen = true;
+        } else {
+            // CLOSE
+            filterBox.slideUp(300);
+
+            btn.removeClass('btn-danger').addClass('btn-primary');
+            btnText.text('Search');
+
+            btnIcon
+                .removeClass('fa-xmark')
+                .addClass('fa-magnifying-glass');
+
+            filterOpen = false;
+        }
+    };
+
+    $('#btnReset').on('click', function () {
+        $(':input', '#backoffice-form')
+            .not(':button, :submit, :reset, :hidden')
+            .val('');
+
         $('.form-select').val('').trigger('change');
 
         getDataTableView();
     });
 
-    $(document).on('change', '#selState', function() {
-        let state_id = $(this).val();
-        commonAjax.getDistrictList(state_id);
+
+    $(document).on('change', '#selState', function () {
+        commonAjax.getDistrictList($(this).val());
     });
 
 
-    function toggleFilter() {
-        console.log("toggleFilter called");
-        document.getElementById("filterBox").classList.toggle("d-none");
-    }
-
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    document.getElementById("menu-toggle")?.addEventListener("click", function () {
+        document.getElementById("sidebar-wrapper")?.classList.toggle("collapsed");
     });
 
-    window.getDataTableView = function() {
+
+    window.getDataTableView = function () {
 
         $('#pageSizeDatatable').val(10);
-        let txtSearch = '';
-        let selStatus = '';
-        let selState = 0;
-        let selDistrict = 0;
 
-        if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
-        }
-        if ($('#selStatus').val() != '') {
-            selStatus = $('#selStatus').val();
-        }
-        if ($('#selState').val() != 0) {
-            selState = $('#selState').val();
-        }
-        if ($('#selDistrict').val() != 0) {
-            selDistrict = $('#selDistrict').val();
-        }
+        let searchParams = {
+            txtsearch: $('#txtSearch').val() || '',
+            selstatus: $('#selStatus').val() || '',
+            selstate: $('#selState').val() || 0,
+            seldistrict: $('#selDistrict').val() || 0
+        };
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
-        let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus,
-            selstate: selState,
-            seldistrict: selDistrict
-        };
-        let displayColumns = [1, 2, 3, 4, 5, 6];
-        let dataTableColumns = [{
+
+        let dataTableColumns = [
+            {
                 data: '',
-                render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.city_id +
-                        '" name="chkStd' + row.city_id + '" value="' + row.city_id +
-                        '" >';
-                },
-                className: "noPrint text-center"
+                className: "noPrint text-center",
+                render: (d, t, r) =>
+                    `<input class="form-check-input chkItem" type="checkbox" value="${r.city_id}">`
             },
             {
-                data: 'slNo',
-                render: function(data, type, row, meta) {
-                    return meta.row + meta.settings._iDisplayStart + 1;
-                },
-                className: "text-center"
+                data: null,
+                className: "text-center",
+                render: (d, t, r, m) => m.row + m.settings._iDisplayStart + 1
             },
-            {
-                data: 'state_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'city_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'city_alias',
-                defaultContent: "--"
-            },
+            { data: 'state_name', defaultContent: "--" },
+            { data: 'city_name', defaultContent: "--" },
+            { data: 'city_alias', defaultContent: "--" },
             {
                 data: 'synonyms',
                 orderable: false,
                 searchable: false,
-                render: function(data) {
+                render: data => {
                     if (!data) return '--';
-
-                    // split by ||
-                    let items = data.split('||');
-                    let html = '';
-
-                    items.forEach((name, index) => {
-                        html += (index + 1) + '. ' + name.trim() + '<br>';
-                    });
-
-                    return html;
+                    return data
+                        .split('||')
+                        .map((v, i) => `${i + 1}. ${v.trim()}`)
+                        .join('<br>');
                 }
             },
-
+            { data: 'created_by_name', defaultContent: "--" },
+            { data: 'created_date', defaultContent: "--" },
             {
-                data: 'created_by_name',
-                defaultContent: "--"
-            }, {
-                data: 'created_date',
-                defaultContent: "--"
-            }, {
                 data: 'is_active',
-                render: function(data, type, row) {
-                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-                    return '<span class="' + cls + '">' + row.is_active + '</span>';
-                },
-                className: "text-center"
+                className: "text-center",
+                render: d =>
+                    `<span class="badge ${d === 'Active' ? 'bg-success' : 'bg-danger'}">${d}</span>`
             },
-
-            // {
-            //     data: 'created_date',
-            //     defaultContent: "--",
-            //     className: "text-center text-nowrap"
-            // },
-
             {
                 data: '',
-                render: function(data, type, row) {
-
-                    let editUrl = $('#' + tableId).data('edit-url');
-
-                    // console.log("Edit URL template: " + editUrl); // Debug log
-
-                    if (!editUrl) return '';
-
-                    return `
-                        <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_city_id)}">
-                        <i class="fa fa-edit"></i> Edit
-                        </a>
-                    `;
-                },
-                className: "noPrint text-center"
+                className: "noPrint text-center",
+                render: (d, t, r) => {
+                    let editUrl = $('#datatable').data('edit-url');
+                    return editUrl
+                        ? `<a class="btn btn-sm btn-info" href="${editUrl.replace('ID', r.enc_city_id)}">
+                               <i class="fa fa-edit"></i> Edit
+                           </a>`
+                        : '';
+                }
             }
-        ]
+        ];
 
-        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
-    }
+        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, [1,2,3,4,5,6]);
+    };
 </script>
+
+
 
 @endpush

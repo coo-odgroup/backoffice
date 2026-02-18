@@ -86,13 +86,44 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     </div>
                                     <div id="synonymContainer">
 
+                                        @if(!empty($data['synonyms']))
+                                        @foreach($data['synonyms'] as $index => $synonym)
                                         <div class="row mb-3 align-items-center synonym-row">
                                             <div class="col-md-1">
                                                 <label class="mb-0">Synonyms</label>
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                                                <input type="text"
+                                                    class="form-control synonym-input"
+                                                    name="txtSynonym[]"
+                                                    value="{{ $synonym }}">
+                                            </div>
+
+                                            <div class="col-md-1">
+                                                @if($index === 0)
+                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                                @else
+                                                <button type="button" class="btn btn-outline-danger btn-remove">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                        @else
+                                        {{-- ADD MODE: one empty field --}}
+                                        <div class="row mb-3 align-items-center synonym-row">
+                                            <div class="col-md-1">
+                                                <label class="mb-0">Synonyms</label>
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                <input type="text"
+                                                    class="form-control synonym-input"
+                                                    name="txtSynonym[]">
                                             </div>
 
                                             <div class="col-md-1">
@@ -101,8 +132,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 </button>
                                             </div>
                                         </div>
+                                        @endif
 
                                     </div>
+
 
                                 </div>
 
@@ -158,8 +191,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
 
-        let state_id = {{ $data['row']->state_id ?? 0 }};
-        let district_id = {{ $data['row']->district_id ?? 0 }};
+        let state_id = {{ $data['row'] -> state_id ?? 0 }};
+        let district_id = { { $data['row'] -> district_id ?? 0 } };
 
         commonAjax.loadStateList(state_id);
         commonAjax.getDistrictList(state_id, district_id);
@@ -223,18 +256,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
 
-    const container = document.getElementById('synonymContainer');
+        const container = document.getElementById('synonymContainer');
 
-    container.addEventListener('click', function (e) {
+        container.addEventListener('click', function(e) {
 
-        // Add synonym Field
-        if (e.target.closest('.btn-add')) {
-            const newRow = document.createElement('div');
-            newRow.className = 'row mb-3 align-items-center synonym-row';
+            // Add synonym Field
+            if (e.target.closest('.btn-add')) {
+                const newRow = document.createElement('div');
+                newRow.className = 'row mb-3 align-items-center synonym-row';
 
-            newRow.innerHTML = `
+                newRow.innerHTML = `
                 <div class="col-md-1">
                     <label class="mb-0">Synonyms</label>
                 </div>
@@ -248,21 +281,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             `;
 
-            container.appendChild(newRow);
-        }
-
-        // Remove synonym field
-        if (e.target.closest('.btn-remove')) {
-            const rows = container.querySelectorAll('.synonym-row');
-
-            if (rows.length > 1) {
-                e.target.closest('.synonym-row').remove();
+                container.appendChild(newRow);
             }
-        }
-    });
 
-});
+            // Remove synonym field
+            if (e.target.closest('.btn-remove')) {
+                const rows = container.querySelectorAll('.synonym-row');
+
+                if (rows.length > 1) {
+                    e.target.closest('.synonym-row').remove();
+                }
+            }
+        });
+
+    });
 </script>
+
 
 
 @endpush
