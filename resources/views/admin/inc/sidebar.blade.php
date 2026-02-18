@@ -21,13 +21,13 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
         data-bs-toggle="collapse"
         href="#busManagement"
-        aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*') ? 'true' : 'false' }}">
+        aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-bus me-2"></i> Bus Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*') ? 'show' : '' }}" id="busManagement">
+        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*') ? 'show' : '' }}" id="busManagement">
 
             <a href="{{ url('admin/states') }}"
             class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
@@ -42,6 +42,16 @@
             <a href="{{ url('admin/cities') }}"
             class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/cities*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location me-2"></i> City
+            </a>
+
+            <a href="{{ url('admin/bustype') }}"
+            class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/bustype*') ? 'active' : '' }}">
+                <i class="fa-solid fa-bus-simple me-2"></i> Bus Type
+            </a>
+
+            <a href="{{ url('admin/seatingtype') }}"
+            class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/seatingtype*') ? 'active' : '' }}">
+                <i class="fa-solid fa-bus-simple me-2"></i> Seating Type
             </a>
 
         </div>

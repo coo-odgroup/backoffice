@@ -62,10 +62,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'states/edit/{encId}', [StateController::class, 'edit'])->name('states.edit');
 
     // Bus Type
-    Route::get('/bustype', [BusTypeController::class, 'bus-type'])->name('bustype.index');
+    Route::get('/bustype', [BusTypeController::class, 'busType'])->name('bustype.index');
     Route::match(['get', 'post'], 'bustype/add', [BusTypeController::class, 'add'])->name('bustype.add');
     Route::post('bustype/dataTableView', [BusTypeController::class, 'dataTableView'])->name('bustype.dataTableView');
     Route::match(['get', 'post'], 'bustype/edit/{encId}', [BusTypeController::class, 'edit'])->name('bustype.edit');
+
+    // ---------------------------------------------------------------------------------------------------------------
 
 
 
