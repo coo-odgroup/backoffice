@@ -261,7 +261,7 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
 
         $.ajax({
             type: "POST",
-            url: ajaxUrl + "audit-logs/" + table + "/" + id,
+            url: ajaxUrl + "audit-logs",
             data: {
                 table: table,
                 id: id,
@@ -273,27 +273,30 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
 
                 let html = '';
 
+               // console.log(response);
+
                 if(response.length > 0) {
 
                     $.each(response, function(index, log) {
 
                         html += `
-                            <div class="card mb-3 shadow-sm">
-                                <div class="card-header bg-light d-flex justify-content-between">
+                            <div class="card mb-1 shadow-sm">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                     <span>
                                         <strong>${log.action}</strong>
                                     </span>
                                     <span class="text-muted">
-                                        ${log.created_at}
+                                         ${formatDate(log.created_at)}
                                     </span>
                                 </div>
-                                <div class="card-body p-2">
-                                    <table class="table table-sm table-bordered mb-0">
+                                   <div class="card-body">                             
+                                     <table class="table table-bordered table-hover mb-0 align-middle table-md">
                                         <thead class="table-secondary">
                                             <tr>
-                                                <th width="30%">Field</th>
-                                                <th width="35%">Old Value</th>
-                                                <th width="35%">New Value</th>
+                                                <th>Field</th>
+                                                <th>Old Value</th>
+                                                <th>New Value</th>
+                                                <th>Changed By</th>                                                
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -312,6 +315,7 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
                                         <td class="text-success">
                                             ${change.new ?? '-'}
                                         </td>
+                                        <td>${log.created_by ?? '-'}</td>                                        
                                     </tr>
                                 `;
                             });
@@ -330,7 +334,7 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
                         html += `
                                         </tbody>
                                     </table>
-                                </div>
+                                </div>                           
                             </div>
                         `;
                     });
@@ -344,12 +348,27 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
                 }
 
                 $('#logContainer').html(html);
-                $('#logModal').modal('show');
+                const modalElement = document.getElementById('logModal');
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+                // $('#logModal').modal('show');
             },
 
             error: function(xhr) {
                 console.log("Error loading audit logs");
             }
+        });
+    }
+
+    export function formatDate(dateString) {
+        let date = new Date(dateString);
+
+        return date.toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
         });
     }
 

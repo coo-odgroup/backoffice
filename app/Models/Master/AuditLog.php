@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class AuditLog extends Model
 {
+      protected $connection = 'mysql_log';
     protected $table = 'audit_logs_master';
+
     protected $fillable = [
         'table_name',
         'record_id',

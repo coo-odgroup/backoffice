@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Master\Districts;
 use App\Models\Master\States;
 use App\Models\Master\AuditLog;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -97,12 +98,25 @@ class CommonController extends Controller
         ]);
     }
 
-    public function getLogs($table, $id)
+    public function getLogs(Request $request)
     {
-        $logs = AuditLog::where('table_name', $table)
-                        ->where('record_id', $id)
-                        ->orderByDesc('created_at','DESC')
+        $table = $request->table;
+        $id = $request->id;
+
+        $id = Crypt::decryptString($id);
+
+       $logs = AuditLog::on('mysql_log')
+                        ->select(
+                            'audit_logs_master.*',
+                            'u.name as user_name'
+                        )
+                        ->leftJoin('odbusmaster.users as u', 'u.id', '=', 'audit_logs_master.created_by')
+                        ->where('audit_logs_master.table_name', $table)
+                        ->where('audit_logs_master.record_id', $id)
+                        ->orderByDesc('audit_logs_master.created_at')
+                        ->limit(5)
                         ->get();
+
 
         $formattedLogs = $logs->map(function ($log) {
 
@@ -126,7 +140,7 @@ class CommonController extends Controller
             return [
                 'id' => $log->id,
                 'action' => $log->action,
-                'created_by' => $log->performed_by,
+                'created_by' => $log->user_name,
                 'created_at' => $log->created_at,
                 'changes' => $changes
             ];
