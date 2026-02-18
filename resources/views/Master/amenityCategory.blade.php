@@ -2,7 +2,7 @@
 @section('content')
 
 <?php
-$page_name = 'All Amenities Categories';
+$page_name = 'All Amenity Category';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,20 +12,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">Amenities Categories</li>
+        <li class="breadcrumb-item active">Amenity Category</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Amenities Categories</h5>
+    <h5 id="page_title">Amenity Category</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('states.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('amenitycategory.add') }}" class="btn btn-success btn-sm">
             + Add Amenity Category
         </a>
     </div>
