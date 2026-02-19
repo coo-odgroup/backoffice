@@ -12,16 +12,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} District</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} Seat Type</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Districts</h5>
+    <h5 id="page_title">Seat Types</h5>
     <div>
-        <a class="btn btn-success btn-sm" href="{{ route('district.index') }}">View Districts
+        <a class="btn btn-success btn-sm" href="{{ route('seatingtype.index') }}">View Seat Types
         </a>
     </div>
 </div>
@@ -60,15 +60,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- FILTER FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="selState">State<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="selState" name="selState">
-                                                <option value="0">Select State</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="txtDistrict">District Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtDistrict" name="txtDistrict" value="{{ $data['row']->district_name ?? '' }}" placeholder="Enter District">
+                                        <div class="col-md-12 mb-3">
+                                            <label for="txtSeatType">Seat Type<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="txtSeatType" name="txtSeatType" value="{{ $data['row']->seat_type ?? '' }}" placeholder="Enter Seat Type">
                                         </div>
                                     </div>
 
@@ -106,28 +100,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-    document.getElementById('txtDistrict').addEventListener('input', function() {
+    // document.getElementById('txtDistrict').addEventListener('input', function() {
 
-        let cityName = this.value;
-
-        let alias = cityName
-            .toLowerCase() // convert to lowercase
-            .trim() // remove extra spaces
-            .replace(/[^a-z0-9\s-]/g, '') // remove special characters
-            .replace(/\s+/g, '-') // replace spaces with -
-            .replace(/-+/g, '-'); // remove duplicate -
-
-    });
+    // });
 
 
-    $(document).ready(function() {
+    // $(document).ready(function() {
 
-        commonAjax.initSelect2('#selState', 'Select State');
+    //     commonAjax.initSelect2('#selState', 'Select State');
 
-        let state_id = <?= $data['row']->state_id ?? '0' ?>
+    //     let state_id = <?= $data['row']->state_id ?? '0' ?>
 
-        commonAjax.loadStateList(state_id);
-    });
+    //     commonAjax.loadStateList(state_id);
+    // });
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -138,13 +123,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
-
-        if (!validator.selectDropdown('selState', 'Select State'))
+        if (!validator.blankCheck('txtSeatType', 'Seat Type cannot be left blank'))
             return false;
 
-        if (!validator.blankCheck('txtDistrict', 'District Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('txtDistrict', 100, 'District Name'))
+        if (!validator.maxLength('txtSeatType', 100, 'Seat Type'))
             return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');

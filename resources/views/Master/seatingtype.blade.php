@@ -2,8 +2,8 @@
 @section('content')
 
 <?php
-      $page_name = 'All Cities';
-      $listButtons = ['indicate'=>'N','print'=>'N','xls'=>'N','download'=>'N','back'=>'N','delete'=>'y', 'active' => 'y', 'inactive' => 'y'];
+$page_name = 'All Cities';
+$listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
 
@@ -11,21 +11,21 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Tables</li>
-        <li class="breadcrumb-item active">Data Tables</li>
+        <li class="breadcrumb-item">Master</li>
+        <li class="breadcrumb-item active">Seat Types List</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Cities</h5>
+    <h5 id="page_title">Seat Types</h5>
     <div>
         <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
             <i class="fa-solid fa-magnifying-glass me-1"></i> Search
         </button>
-        <button class="btn btn-success btn-sm">+ Add Bus
-        </button>
+        <a class="btn btn-success btn-sm" href="{{ route('seatingtype.add') }}">+ Add Seat Type
+        </a>
     </div>
 </div>
 
@@ -84,34 +84,34 @@
                 </div>
             </div>
             <!-- Table start -->
-             <div id="tableActions">
-                 <div class="d-flex justify-content-between mb-2">
-                <select id="pageSizeDatatable" class="form-select form-select-sm page-size">
-                    <option value="10" selected="selected">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="-1">All</option>
-                </select>
-                <div>
-                    <button type="button" id="btnDelete" class="btn btn-warning btn-sm">
-                        <i class="fa-solid fa-trash me-1"></i>
-                        Delete
-                    </button>
-                    <button type="button" id="btnActive" class="btn btn-success btn-sm text-white">
-                        <i class="fa-solid fa-circle-check me-1"></i>
-                        Active
-                    </button>
-                    <button type="button" id="btnInactive" class="btn btn-danger btn-sm">
-                        <i class="fa-solid fa-times me-1"></i>
-                        Inactive
-                    </button>
+            <div id="tableActions">
+                <div class="d-flex justify-content-between mb-2">
+                    <select id="pageSizeDatatable" class="form-select form-select-sm page-size">
+                        <option value="10" selected="selected">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="-1">All</option>
+                    </select>
+                    <div>
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm">
+                            <i class="fa-solid fa-trash me-1"></i>
+                            Delete
+                        </button>
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white">
+                            <i class="fa-solid fa-circle-check me-1"></i>
+                            Active
+                        </button>
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm">
+                            <i class="fa-solid fa-times me-1"></i>
+                            Inactive
+                        </button>
+
+                    </div>
 
                 </div>
-                
             </div>
-             </div>
-           
+
 
             <div class="d-flex justify-content-between align-items-center">
                 <div>
@@ -129,21 +129,18 @@
                 <div id="customPaginationTop"></div>
             </div>
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('cities.dataTableView') }}" data-edit-url="{{ route('cities.edit', 'ID') }}">
+                data-url="{{ route('seatingtype.dataTableView') }}" data-edit-url="{{ route('seatingtype.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th>Sl No</th>
-                        <th>State/District Name</th>
-                        <th>City Name</th>
-                        <th>Alias</th>
-                        <th>Synonymn</th>
+                        <th>Seat Type</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
-             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
@@ -160,152 +157,139 @@
 @push('scripts')
 
 <script type="module">
-
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
     });
 
 
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    commonAjax.initSelect2('#selState', 'Select State');
-    commonAjax.initSelect2('#selDistrict', 'Select District');
-    // By default hide filter
-    $("#filterBox").hide();
+        commonAjax.initSelect2('#selState', 'Select State');
+        commonAjax.initSelect2('#selDistrict', 'Select District');
+        // By default hide filter
+        $("#filterBox").hide();
 
-    // Toggle on button click
-    window.toggleFilter = function() {
-        $("#filterBox").slideToggle(300);
-    };
-    commonAjax.loadStateList();
-    getDataTableView();
-});
-
-
-$('#btnReset').click(function() {
-    $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
-    $('.form-select').val(0);
-    $('.form-select').val('').trigger('change');
-
-    getDataTableView();
-});
-
-$(document).on('change', '#selState', function() {
-    let state_id = $(this).val();
-    commonAjax.getDistrictList(state_id);
-});
+        // Toggle on button click
+        window.toggleFilter = function() {
+            $("#filterBox").slideToggle(300);
+        };
+        commonAjax.loadStateList();
+        getDataTableView();
+    });
 
 
-function toggleFilter() {
-    console.log("toggleFilter called");
-    document.getElementById("filterBox").classList.toggle("d-none");
-}
+    $('#btnReset').click(function() {
+        $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
+        $('.form-select').val(0);
+        $('.form-select').val('').trigger('change');
 
-document.getElementById("menu-toggle").addEventListener("click", function() {
-    document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-});
+        getDataTableView();
+    });
+
+    $(document).on('change', '#selState', function() {
+        let state_id = $(this).val();
+        commonAjax.getDistrictList(state_id);
+    });
 
 
-
-window.getDataTableView = function() {
-
-    $('#pageSizeDatatable').val(10);
-    let txtSearch = '';
-    let selStatus = '';
-    let selState = 0;
-    let selDistrict = 0;
-
-    if ($('#txtSearch').val() != '') {
-        txtSearch = $('#txtSearch').val();
-    }
-    if ($('#selStatus').val() != '') {
-        selStatus = $('#selStatus').val();
-    }
-    if ($('#selState').val() != 0) {
-        selState = $('#selState').val();
-    }
-    if ($('#selDistrict').val() != 0) {
-        selDistrict = $('#selDistrict').val();
+    function toggleFilter() {
+        console.log("toggleFilter called");
+        document.getElementById("filterBox").classList.toggle("d-none");
     }
 
-    let tableId = 'datatable';
-    let orderBy = [2, 'asc'];
-    let searchParams = {
-        txtsearch: txtSearch,
-        selstatus: selStatus,
-        selstate: selState,
-        seldistrict: selDistrict
-    };
-    let displayColumns = [1, 2, 3, 4, 5, 6];
-    let dataTableColumns = [
-        // {
-        //     data: '',
-        //     render: function(data, type, row) {
-        //         return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
-        //             '" name="chkStd' + row.id + '" value="' + row.id +
-        //             '" onclick="checkFun(this.id)">';
-        //     },
-        //     className: "noPrint text-center"
-        // },
-        {
-            data: 'slNo',
-            render: function(data, type, row, meta) {
-                return meta.row + meta.settings._iDisplayStart + 1;
+    document.getElementById("menu-toggle").addEventListener("click", function() {
+        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+
+
+    window.getDataTableView = function() {
+
+        $('#pageSizeDatatable').val(10);
+        let txtSearch = '';
+        let selStatus = '';
+        let selState = 0;
+        let selDistrict = 0;
+
+        if ($('#txtSearch').val() != '') {
+            txtSearch = $('#txtSearch').val();
+        }
+        if ($('#selStatus').val() != '') {
+            selStatus = $('#selStatus').val();
+        }
+        if ($('#selState').val() != 0) {
+            selState = $('#selState').val();
+        }
+        if ($('#selDistrict').val() != 0) {
+            selDistrict = $('#selDistrict').val();
+        }
+
+        let tableId = 'datatable';
+        let orderBy = [2, 'asc'];
+        let searchParams = {
+            txtsearch: txtSearch,
+            selstatus: selStatus,
+            selstate: selState,
+            seldistrict: selDistrict
+        };
+        let displayColumns = [1, 2, 3, 4, 5, 6];
+        let dataTableColumns = [
+            // {
+            //     data: '',
+            //     render: function(data, type, row) {
+            //         return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
+            //             '" name="chkStd' + row.id + '" value="' + row.id +
+            //             '" onclick="checkFun(this.id)">';
+            //     },
+            //     className: "noPrint text-center"
+            // },
+            {
+                data: 'slNo',
+                render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                },
+                className: "text-center"
             },
-            className: "text-center"
-        },
-        {
-            data: 'state_name',
-            defaultContent: "--"
-        },
-        {
-            data: 'city_name',
-            defaultContent: "--"
-        },
-        {
-            data: 'city_alias',
-            defaultContent: "--"
-        },
-        {
-            data: 'city_alias',
-            defaultContent: "--"
-        },
-        {
-            data: 'is_active',
-            render: function(data, type, row) {
-                var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-                return '<span class="' + cls + '">' + row.is_active + '</span>';
+            {
+                data: 'seat_type',
+                defaultContent: "--"
             },
-            className: "text-center"
-        },
+            {
+                data: 'is_active',
+                render: function(data, type, row) {
+                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
+                    return '<span class="' + cls + '">' + row.is_active + '</span>';
+                },
+                className: "text-center"
+            },
 
-        // {
-        //     data: 'created_date',
-        //     defaultContent: "--",
-        //     className: "text-center text-nowrap"
-        // },
+            // {
+            //     data: 'created_date',
+            //     defaultContent: "--",
+            //     className: "text-center text-nowrap"
+            // },
 
-        {
-            data: '',
-            render: function(data, type, row) {
+            {
+                data: '',
+                render: function(data, type, row) {
 
-                let editUrl = $('#' + tableId).data('edit-url');
+                    let editUrl = $('#' + tableId).data('edit-url');
 
-                if (!editUrl) return '';
+                    if (!editUrl) return '';
 
-                return `
+                    return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_city_id)}">
+                        href="${editUrl.replace('ID', row.enc_seat_type_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
                     `;
-            },
-            className: "noPrint text-center"
-        }
-    ]
+                },
+                className: "noPrint text-center"
+            }
+        ]
 
-    loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
-}
+        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+    }
 </script>
 
 @endpush
