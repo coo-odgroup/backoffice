@@ -68,7 +68,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="txtDistrict">District Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtDistrict" name="txtDistrict" value="{{ $data['row']->district_name ?? '' }}">
+                                            <input type="text" class="form-control" id="txtDistrict" name="txtDistrict" value="{{ $data['row']->district_name ?? '' }}" placeholder="Enter District">
                                         </div>
                                     </div>
 

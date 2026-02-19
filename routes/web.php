@@ -73,11 +73,21 @@ Route::prefix('admin')->group(function () {
 
 
     //Add by sahil
+    // ----------------------------------------------------------------------------------------------------------------
+    // Districts module
     Route::get('/district', [DistrictController::class, 'district'])->name('district.index');
     Route::match(['get', 'post'], 'district/add', [DistrictController::class, 'add'])->name('district.add');
     Route::post('district/dataTableView', [DistrictController::class, 'dataTableView'])->name('district.dataTableView');
     Route::match(['get', 'post'], 'district/edit/{encId}', [DistrictController::class, 'edit'])->name('district.edit');
 
+    //seating type module
+    Route::get('/seatingtype', [SeatingTypeController::class, 'seatingType'])->name('seatingtype.index');
+    Route::match(['get', 'post'], 'seatingtype/add', [SeatingTypeController::class, 'add'])->name('seatingtype.add');
+    Route::post('seatingtype/dataTableView', [SeatingTypeController::class, 'dataTableView'])->name('seatingtype.dataTableView');
+    Route::match(['get', 'post'], 'seatingtype/edit/{encId}', [SeatingTypeController::class, 'edit'])->name('seatingtype.edit');
+
+
+    // ---------------------------------------------------------------------------------------------------------------
+
 
 });
-        
