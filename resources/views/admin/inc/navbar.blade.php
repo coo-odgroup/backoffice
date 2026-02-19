@@ -6,7 +6,7 @@
              <i class="fa-solid fa-bars"></i>
          </button>
 
-         <a class="navbar-brand ms-3" href="#">Beyond Admin</a>
+         <a class="navbar-brand ms-3" href="#">SUPER ADMIN</a>
 
          <!-- Right Side Icons + User -->
          <div class="ms-auto d-flex align-items-center gap-3 text-white">
@@ -20,7 +20,7 @@
              <!-- Profile -->
              <div class="d-none d-md-flex align-items-center gap-2">
                  <img src="https://i.pravatar.cc/30" class="rounded-circle" width="30" height="30" alt="avatar">
-                 <span>David Stevenson</span>
+                 <span>ODBUS</span>
              </div>
 
          </div>

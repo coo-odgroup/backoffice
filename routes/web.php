@@ -11,6 +11,7 @@ use App\Http\Controllers\Master\DistrictController;
 use App\Http\Controllers\Master\SeatingTypeController;
 use App\Http\Controllers\Master\AmenitiesController;
 use App\Http\Controllers\Master\BusTypeController;
+use App\Http\Controllers\Master\AmenityCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,12 @@ Route::prefix('admin')->group(function () {
     Route::post('bustype/dataTableView', [BusTypeController::class, 'dataTableView'])->name('bustype.dataTableView');
     Route::match(['get', 'post'], 'bustype/edit/{encId}', [BusTypeController::class, 'edit'])->name('bustype.edit');
 
+    // Bus Type
+    Route::get('/amenitycategory', [AmenityCategoryController::class, 'amenityCategory'])->name('amenitycategory.index');
+    Route::match(['get', 'post'], 'amenitycategory/add', [AmenityCategoryController::class, 'add'])->name('amenitycategory.add');
+    Route::post('amenitycategory/dataTableView', [AmenityCategoryController::class, 'dataTableView'])->name('amenitycategory.dataTableView');
+    Route::match(['get', 'post'], 'amenitycategory/edit/{encId}', [AmenityCategoryController::class, 'edit'])->name('amenitycategory.edit');
+
     // ---------------------------------------------------------------------------------------------------------------
 
 
@@ -82,4 +89,3 @@ Route::prefix('admin')->group(function () {
 
 
 });
-        
