@@ -11,6 +11,8 @@
 
 body {
     background: #f5f5f5;
+    font-weight: 450 !important;
+    font-size: 14px !important
 }
 
 .card {
@@ -51,6 +53,14 @@ label {
 
 .table-responsive {
     overflow-x: auto;
+}
+
+.badge{
+    font-size: 12px !important;
+    padding: 5px 10px 5px 10px !important;
+     border-radius: 4px !important;
+     background-clip: padding-box !important;
+     font-weight: 300 !important;
 }
 
 /* table {
@@ -114,8 +124,8 @@ label {
     /* Filter Fields */
     .col-6,
     .col-sm-6 {
-        width: 50% !important;
-        max-width: 50% !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
     .col-12 {
@@ -128,8 +138,30 @@ label {
         overflow-x: auto;
     }
 
-    table {
+    .table_mob {
         min-width: 1200px;
+    }
+
+    .table{
+        font-size: 12px !important;
+    }
+
+    .btn-sm{
+        padding: 4px 4px;
+        font-size: 10px;
+    }
+
+    .d-flex.justify-content-between.align-items-center.mt-2{
+        display: block !important;
+    }
+
+    #customTableInfo{
+        text-align: center !important;
+    }
+
+    #customPagination{
+        margin: 0 auto !important;
+        display: table !important;
     }
 }
 
@@ -138,10 +170,20 @@ label {
    SMALL MOBILE (MAX 320px)
 ===================================================== */
 
-@media (max-width: 320px) {
+@media (min-width: 320px)
+and (max-width: 370px) {
+
+     /* Filter Buttons */
+     .action-btns {
+        justify-content: center !important;
+    }
     .booking-info {
         flex-direction: column;
         gap: 5px;
+    }
+    .btn-mob{
+        padding: 4px 4px !important;
+        font-size: 9px !important;
     }
 }
 
