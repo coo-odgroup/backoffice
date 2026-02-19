@@ -102,7 +102,6 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
         });
     }
 
-
     export function initTableCheckbox(headerSelector, itemSelector) {
 
         // ✅ Header → Select All
@@ -154,7 +153,6 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
 
         });
     }
-
 
    export function confirmAlert(message, callback) {
 
@@ -255,7 +253,6 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
             $('.chkAll').prop('checked', false);
         }
     }
-
 
     export function viewLogs(table, id) {
 
@@ -372,3 +369,65 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
         });
     }
 
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    });
+
+    $(document).on('change', '.order-input', function () {
+
+        let value = $(this).val();
+        let id = $(this).data('id');
+        let table = $(this).data('table');
+        let column = $(this).data('column');
+
+        $.ajax({
+            url: ajaxUrl + "update-sequence",
+            type: "POST",
+            data: {
+                table: table,
+                column: column,
+                value: value,
+                id: id
+            },
+            success: function (response) {
+                viewAlert('Order updated successfully');
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                viewAlert('Something went wrong');
+            }
+        });
+
+    });
+
+    export function loadAmenityCategory(cat_id = 0) {
+
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "get-amenity-category-list",
+            data: {
+                cat_id: cat_id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",           
+            success: function(response) {
+                let options = '<option value="">Select Amenity Category</option>';
+                if(response.status && response.data.length > 0) {
+
+                    $.each(response.data, function(index, cat) {
+                        let selected = (cat_id > 0 && cat.id == cat_id) ? 'selected' : '';
+                        options += `<option value="${cat.id}" ${selected}>
+                                        ${cat.category_name}
+                                    </option>`;
+                    });
+                }
+
+                $('#amenityCategory').html(options);             
+            },           
+            error: function(xhr) {
+                console.log("Error loading Amenity Category");
+            }
+        });
+    }

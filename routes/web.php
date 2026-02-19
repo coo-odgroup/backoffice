@@ -41,13 +41,14 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-district-list', [CommonController::class, 'getDistrictList'])->name('get.district.list');
     Route::post('/common-bulk-action', [CommonController::class, 'bulkAction'])->name('admin.bulkAction');
     Route::post('/audit-logs', [CommonController::class, 'getLogs'])->name('admin.getLogs');
+    Route::post('/update-sequence', [CommonController::class, 'updateSequence'])->name('common.updateSequence');
+    Route::post('/get-amenity-category-list', [CommonController::class, 'getAmenityCategoryList'])->name('get.amenity.category.list');
 
 
 
     //Subhasis
     Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boarding.dropping');
     Route::get('/seating-type', [SeatingTypeController::class, 'seatingType'])->name('seating.type');
-    Route::get('/amenities', [AmenitiesController::class, 'amenities'])->name('amenities');
 
 
 
@@ -70,11 +71,17 @@ Route::prefix('admin')->group(function () {
     Route::post('bustype/dataTableView', [BusTypeController::class, 'dataTableView'])->name('bustype.dataTableView');
     Route::match(['get', 'post'], 'bustype/edit/{encId}', [BusTypeController::class, 'edit'])->name('bustype.edit');
 
-    // Bus Type
+    // Amenity Category
     Route::get('/amenitycategory', [AmenityCategoryController::class, 'amenityCategory'])->name('amenitycategory.index');
     Route::match(['get', 'post'], 'amenitycategory/add', [AmenityCategoryController::class, 'add'])->name('amenitycategory.add');
     Route::post('amenitycategory/dataTableView', [AmenityCategoryController::class, 'dataTableView'])->name('amenitycategory.dataTableView');
     Route::match(['get', 'post'], 'amenitycategory/edit/{encId}', [AmenityCategoryController::class, 'edit'])->name('amenitycategory.edit');
+
+    // Amenities
+    Route::get('/amenities', [AmenitiesController::class, 'amenities'])->name('amenities.index');
+    Route::match(['get', 'post'], 'amenities/add', [AmenitiesController::class, 'add'])->name('amenities.add');
+    Route::post('amenities/dataTableView', [AmenitiesController::class, 'dataTableView'])->name('amenities.dataTableView');
+    Route::match(['get', 'post'], 'amenities/edit/{encId}', [AmenitiesController::class, 'edit'])->name('amenities.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 

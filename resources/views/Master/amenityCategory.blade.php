@@ -112,29 +112,33 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('states.dataTableView') }}"
-                data-edit-url="{{ route('states.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>State Name</th>
-                        <th>Created By</th>
-                        <th>Created On</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('amenitycategory.dataTableView') }}"
+                    data-edit-url="{{ route('amenitycategory.edit', 'ID') }}">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                            </th>
+                            <th>Sl No</th>
+                            <th>Category Name</th>
+                            <th>Description</th>
+                            <th width="100">Display Order</th>
+                            <th>Created By</th>
+                            <th>Created On</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="States">
+            <input type="hidden" id="hdn_model" value="AmenityCategory">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -207,8 +211,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.state_id +
-                        '" name="chkStd' + row.state_id + '" value="' + row.state_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.amenity_cat_id +
+                        '" name="chkStd' + row.amenity_cat_id + '" value="' + row.amenity_cat_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -221,7 +225,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'state_name',
+                data: 'category_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'description',
+                defaultContent: "--"
+            },
+            {
+                data: 'display_order',
+                render: function(data, type, row) {
+                    return `<input type="text"
+                    value="${data ?? ''}"
+                    class="form-control form-control-sm order-input"
+                    data-id="${row.enc_amenity_cat_id}"
+                    data-table="mst_amenity_categories"
+                    data-column="display_order">`;
+                },
                 defaultContent: "--"
             },
             {
@@ -250,14 +270,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_state_id)}">
+                        href="${editUrl.replace('ID', row.enc_amenity_cat_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_states"
-                            data-id="${row.enc_state_id}">
+                            data-table="mst_amenity_categories"
+                            data-id="${row.enc_amenity_cat_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
 

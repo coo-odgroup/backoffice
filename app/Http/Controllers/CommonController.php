@@ -54,6 +54,7 @@ class CommonController extends Controller
             'States' => \App\Models\Master\States::class,
             'Districts' => \App\Models\Master\Districts::class,
             'BusType' => \App\Models\Master\BusType::class,
+            'AmenityCategory' => \App\Models\Master\AmenityCategory::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -149,5 +150,28 @@ class CommonController extends Controller
         });
 
         return response()->json($formattedLogs);
+    }
+
+    public function updateSequence(Request $request)
+    {
+        $request->validate([
+            'table'  => 'required|string',
+            'column' => 'required|string',
+            'value'  => 'required',
+            'id' => 'required|string'
+        ]);
+
+        $id = Crypt::decryptString($request->id);
+
+        DB::table($request->table)
+            ->where('id', $id)
+            ->update([
+                $request->column => $request->value
+            ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Updated successfully'
+        ]);
     }
 }
