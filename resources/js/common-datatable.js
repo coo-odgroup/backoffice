@@ -120,6 +120,8 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
                 // Hide info text
                 $('#customTableInfo').hide();
                 $('#customTableInfoTop').hide();
+                $('#utilitiesTop').hide();
+
 
                 // Optional: show custom no record message
                 $('#norecord').show();
@@ -136,6 +138,7 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
             $('#customPaginationTop').show();
             $('#customTableInfo').show();
             $('#customTableInfoTop').show();
+            $('#utilitiesTop').show();
             $('#norecord').hide();
 
             let start = pageInfo.start + 1;
