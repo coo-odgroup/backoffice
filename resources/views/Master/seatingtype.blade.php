@@ -147,6 +147,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
+            <input type="hidden" id="hdn_model" value="SeatType">
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
                 <div id="customPagination"></div>
@@ -288,6 +289,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <a class="btn btn-sm btn-info"
                         href="${editUrl.replace('ID', row.enc_seat_type_id)}">
                         <i class="fa fa-edit"></i> Edit
+                        </a>
+
+                        <a href="javascript:void(0);"
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="mst_seat_type"
+                            data-id="${row.enc_seat_type_id}">
+                                <i class="fa fa-history"></i> View Log
                         </a>
                     `;
                 },
