@@ -138,6 +138,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
+
     document.getElementById('txtCity').addEventListener('input', function() {
 
         let cityName = this.value;
@@ -168,16 +169,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
             $('.form-select').val(0);
-
-            // $('.form-control-choosen option:selected').removeAttr('selected');
-            // $('.chosen-single span').html('-- Select --');
-
-            // $('.chosen-select').chosen('destroy');
-            // $('.chosen-select').prop("selectedIndex", -1);
-            // $('.chosen-select').chosen();
-
-            // $('input[type="radio"]').prop('checked', false);
-            // $('input[type="checkbox"]').prop('checked', false);
+          
         });
     });
 
@@ -218,50 +210,45 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-    });
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
 
-    const container = document.getElementById('synonymContainer');
+        const container = document.getElementById('synonymContainer');
 
-    container.addEventListener('click', function (e) {
+        container.addEventListener('click', function (e) {
 
-        // Add synonym Field
-        if (e.target.closest('.btn-add')) {
-            const newRow = document.createElement('div');
-            newRow.className = 'row mb-3 align-items-center synonym-row';
+            // Add synonym Field
+            if (e.target.closest('.btn-add')) {
+                const newRow = document.createElement('div');
+                newRow.className = 'row mb-3 align-items-center synonym-row';
 
-            newRow.innerHTML = `
-                <div class="col-md-1">
-                    <label class="mb-0">Synonyms</label>
-                </div>
-                <div class="col-md-5">
-                    <input type="text" class="form-control synonym-input" name="txtSynonym[]">
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-outline-danger btn-remove">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                </div>
-            `;
+                newRow.innerHTML = `
+                    <div class="col-md-1">
+                        <label class="mb-0">Synonyms</label>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-danger btn-remove">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                `;
 
-            container.appendChild(newRow);
-        }
-
-        // Remove synonym field
-        if (e.target.closest('.btn-remove')) {
-            const rows = container.querySelectorAll('.synonym-row');
-
-            if (rows.length > 1) {
-                e.target.closest('.synonym-row').remove();
+                container.appendChild(newRow);
             }
-        }
-    });
 
-});
+            // Remove synonym field
+            if (e.target.closest('.btn-remove')) {
+                const rows = container.querySelectorAll('.synonym-row');
+
+                if (rows.length > 1) {
+                    e.target.closest('.synonym-row').remove();
+                }
+            }
+        });
+
+    });
 </script>
 
 

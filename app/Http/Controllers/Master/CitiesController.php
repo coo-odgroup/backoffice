@@ -68,6 +68,7 @@ class CitiesController extends Controller
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 } else {
+                    
                     DB::beginTransaction();
 
                     $selState  = (int)request('selState');
@@ -98,10 +99,10 @@ class CitiesController extends Controller
                         $obj->district_id       = $selDistrict ?? null;
                         $obj->city_name      = $txtCity;
                         $obj->alias       = $txtCityAlias;
-                        $obj->created_by      = 1;     //session('admin_session.user_id');
+                        $obj->created_by      = 1;
                         $obj->active_status      = 1;
                         if ($id != 0) {
-                            $obj->updated_by      = 1; //session('admin_session.user_id');
+                            $obj->updated_by      = 1; 
                         }
 
                         $obj->save();
@@ -141,8 +142,8 @@ class CitiesController extends Controller
                         }
 
 
-                        request()->session()->flash('level', 'success');
-                        request()->session()->flash('message', 'City ' . (($id != 0) ?
+                        session()->flash('level', 'success');
+                        session()->flash('message', 'City ' . (($id != 0) ?
                             'updated' : 'created') . ' successfully.');
                     }
 
@@ -187,43 +188,41 @@ class CitiesController extends Controller
             $selState = (int) request('selState');
             $selDistrict = (int) request('selDistrict');
 
-            $dataQuery = DB::table('mst_cities as c')
-                ->leftJoin('mst_states as s', 's.id', '=', 'c.state_id')
-                ->leftJoin('users as u', 'u.id', '=', 'c.created_by')
-                ->leftJoin('cities_synonyms as cs', function ($join) {
-                    $join->on('cs.cities_id', '=', 'c.id')
-                        ->where('cs.active_status', 1); // only active synonyms
-                })
-                ->select(
-                    'c.id as city_id',
-                    'c.city_name',
-                    'c.alias',
-                    's.state_name',
-                    'c.created_at',
-                    'c.created_by',
-                    'u.name as created_by_name',
-                    'c.active_status',
-                    DB::raw("GROUP_CONCAT(cs.synonym ORDER BY cs.synonym SEPARATOR '||') as synonyms")
-                )
-                ->groupBy(
-                    'c.id',
-                    'c.city_name',
-                    'c.alias',
-                    's.state_name',
-                    'c.created_at',
-                    'c.created_by',
-                    'u.name',
-                    'c.active_status'
-                );
-
-
+           $dataQuery = DB::table('mst_cities as c')
+                            ->select(
+                                'c.id as city_id',
+                                'c.city_name',
+                                'c.alias',
+                                // State name subquery
+                                DB::raw('(SELECT state_name FROM mst_states as s WHERE s.id = c.state_id LIMIT 1) as state_name'),
+                                'c.created_at',
+                                'c.created_by',
+                                // Created by name subquery
+                                DB::raw('(SELECT name FROM users as u WHERE u.id = c.created_by LIMIT 1) as created_by_name'),
+                                'c.active_status',
+                                // Synonyms as GROUP_CONCAT subquery
+                                DB::raw('(
+                                    SELECT GROUP_CONCAT(synonym SEPARATOR "||")
+                                    FROM cities_synonyms
+                                    WHERE cities_synonyms.cities_id = c.id
+                                    AND cities_synonyms.active_status = 1
+                                ) as synonyms')
+                            );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
                         ->orWhere('c.alias', 'like', "%{$txtSearch}%")
-                        ->orWhere('cs.synonym', 'like', "%{$txtSearch}%");
+
+                        // Synonym search using EXISTS (no join)
+                       ->orWhereExists(function ($sub) use ($txtSearch) {
+                            $sub->select(DB::raw(1))
+                                ->from('cities_synonyms as cs')
+                                ->whereRaw('cs.city_id = c.id')
+                                ->where('cs.active_status', 1)
+                                ->where('cs.synonym', 'like', "%{$txtSearch}%");
+                        });
                 });
             }
 
@@ -243,6 +242,8 @@ class CitiesController extends Controller
 
             $count = $dataQuery->count('c.id');
 
+            log::info("Total count of cities: " . $count);
+
             $start  = request()->input('start', 0);
             $length = request()->input('length', 10);
 
@@ -253,7 +254,7 @@ class CitiesController extends Controller
             if (!empty(request('order'))) {
 
                 $columns = [
-                    2 => 's.state_name',
+                    2 => 'state_name',
                     3 => 'c.city_name',
                     4 => 'c.alias',
                     5 => 'synonyms',
@@ -280,6 +281,7 @@ class CitiesController extends Controller
                     ->offset($start)
                     ->get();
             }
+
             // Format Data
             if (count($arrRes) > 0) {
 
@@ -311,7 +313,7 @@ class CitiesController extends Controller
             Log::error("Error", [
                 'Controller' => 'CityController',
                 'Method'     => 'dataTableView',
-                'Error'      => $errorMsg
+                'Error'      =>  $errorMsg
             ]);
 
             $recordsTotal     = 0;

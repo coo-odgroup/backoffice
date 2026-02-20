@@ -288,11 +288,13 @@ and (max-width: 370px) {
 
 #sidebar-wrapper {
     width: 250px;
-    transition: 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 #sidebar-wrapper.collapsed {
-    margin-left: -250px;
+    margin-left: -250px !important;
+    transform: translateX(-100%);
+
 }
 
 /* Mobile Full Screen Sidebar */

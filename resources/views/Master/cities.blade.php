@@ -178,13 +178,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
-        // By default hide filter
-        $("#filterBox").hide();
-
-        // Toggle on button click
-        window.toggleFilter = function() {
-            $("#filterBox").slideToggle(300);
-        };
         commonAjax.loadStateList();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
@@ -195,8 +188,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
-
-        getDataTableView();
+        getDataTableView(true);
     });
 
     $(document).on('change', '#selState', function() {
@@ -204,17 +196,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.getDistrictList(state_id);
     });
 
+    window.getDataTableView = function(reset = true) {
 
-    function toggleFilter() {
-        console.log("toggleFilter called");
-        document.getElementById("filterBox").classList.toggle("d-none");
-    }
+        //  If table already initialized
+        if (window.dataTableInstance && reset) {
 
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-    });
+            // Clear saved state
+            window.dataTableInstance.state.clear();
 
-    window.getDataTableView = function() {
+            // Reset length dropdown UI
+            $('#pageSizeDatatable').val(10);
+
+            // Reset page length internally
+            window.dataTableInstance.page.len(10);
+
+            // Force first page
+            window.dataTableInstance.page(0);
+        }
 
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
@@ -278,8 +276,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 searchable: false,
                 render: function(data) {
                     if (!data) return '--';
-
-                    // split by ||
+                 
                     let items = data.split('||');
                     let html = '';
 
@@ -297,7 +294,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }, {
                 data: 'created_date',
                 defaultContent: "--"
-            }, {
+            },
+            {
                 data: 'is_active',
                 render: function(data, type, row) {
                     var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
@@ -305,20 +303,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-
-            // {
-            //     data: 'created_date',
-            //     defaultContent: "--",
-            //     className: "text-center text-nowrap"
-            // },
-
             {
                 data: '',
                 render: function(data, type, row) {
 
                     let editUrl = $('#' + tableId).data('edit-url');
-
-                    // console.log("Edit URL template: " + editUrl); // Debug log
 
                     if (!editUrl) return '';
 
