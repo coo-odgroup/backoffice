@@ -32,19 +32,28 @@ Route::prefix('admin')->group(function () {
     // DEFAULT ADMIN PAGE
     Route::get('/', [ModuleController::class, 'index'])->name('admin.dashboard');
     Route::get('/users', [UserController::class, 'index']);
-    Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
-    Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
-    Route::post('cities/dataTableView', [CitiesController::class, 'dataTableView'])->name('cities.dataTableView');
-    Route::match(['get', 'post'], 'cities/edit/{encId}', [CitiesController::class, 'edit'])->name('cities.edit');
+    
     Route::post('/get-state-list', [CommonController::class, 'getStateList'])->name('get.state.list');
     Route::post('/get-district-list', [CommonController::class, 'getDistrictList'])->name('get.district.list');
     Route::post('/common-bulk-action', [CommonController::class, 'bulkAction'])->name('admin.bulkAction');
     Route::post('/audit-logs', [CommonController::class, 'getLogs'])->name('admin.getLogs');
 
+    Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
+    Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
+    Route::post('cities/dataTableView', [CitiesController::class, 'dataTableView'])->name('cities.dataTableView');
+    Route::match(['get', 'post'], 'cities/edit/{encId}', [CitiesController::class, 'edit'])->name('cities.edit');
+
 
 
     //Subhasis
-    Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boarding.dropping');
+    Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boardingDropping.index');
+    Route::match(['get', 'post'], 'boardingDropping/add',[BoardingDroppingController::class, 'add'])->name('boardingDropping.add');
+    Route::post('boardingDropping/dataTableView', [BoardingDroppingController::class, 'dataTableView'])->name('boardingDropping.dataTableView');
+    Route::match(['get', 'post'], 'boardingDropping/edit/{encId}',[BoardingDroppingController::class, 'edit'])->name('boardingDropping.edit');
+    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
+
+
+
     Route::get('/seating-type', [SeatingTypeController::class, 'seatingType'])->name('seating.type');
     Route::get('/amenities', [AmenitiesController::class, 'amenities'])->name('amenities');
 

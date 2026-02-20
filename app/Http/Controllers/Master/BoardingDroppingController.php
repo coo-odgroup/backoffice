@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Master\Cities;
+use App\Models\Master\BoardingDropping;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
@@ -12,159 +13,155 @@ use Illuminate\Support\Facades\DB;
 
 class BoardingDroppingController extends Controller
 {
+
     public function boardingDropping()
     {
         return view('master.boardingDropping');
     }
-        public function add($encId = null)
-    {
 
+    public function add($encId = null)
+    {
         $data = [];
-        $data['strPage']    = $method = 'Add';
-        $data['strSubmit']  = 'Submit';
+        $data['strPage']   = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
         $data['strReset']  = 'Reset';
+
 
         try {
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
-
             if ($id > 0) {
+                $redirectPage = "admin/boardingDropping/edit/" . $encId;
+                $data['strPage']   = $method = 'Edit';
+                $data['strSubmit'] = 'Update';
+                $data['strReset']  = 'Cancel';
 
-                $redirectPage = "admin/cities/edit/" . $encId;
-                $data['strPage']    = $method = 'Edit';
-                $data['strSubmit']  = 'Update';
-                $data['strReset']   = 'Cancel';
+                $dataResQry['rows'] = DB::table('mst_boarding_droping')
+                    ->where('id', $id)
+                    ->where('active_status', 1)
+                    ->get();
 
-                $dataResQry = Cities::select('id', 'state_id', 'district_id', 'city_name', 'alias');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
-
-                if (empty($dataResQry)) {
-                    return redirect("cities");
+                if ($dataResQry['rows']->isEmpty()) {
+                    return redirect('admin/boardingDropping');
                 }
-                $data['row'] = $dataResQry;
             } else {
-                $id = 0;
-                $redirectPage = "admin/cities";
+                $redirectPage = "admin/boardingDropping";
             }
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
                 $validator = Validator::make(request()->all(), [
-                    'txtCity' => 'bail|required',
-                    'txtCityAlias' => 'bail|required',
-                    'selState' => 'required',
-                ], [
-                    'txtCity.required' => 'City Name cannot be left blank.',
-                    'txtCityAlias.required' => 'City Alias cannot be left blank.',
-                    'selState.required' => 'State cannot be left blank.',
+
+                    'selCity'                => 'required',
+                    'selCity.*'              => 'required|integer|exists:mst_cities,id',
+
+                    'type'                   => 'required|array',
+                    'type.*'                 => 'required|in:1,2',
+
+                    'brd_drp_point'          => 'required|array',
+                    'brd_drp_point.*'        => 'required|string|max:255',
+
+                    // Longitude: -180 to 180, DECIMAL(10,8)
+                    'longitude'              => 'nullable|array',
+                    'longitude.*'            => [
+                        'nullable',
+                        'numeric',
+                        'between:-180,180',
+                        'regex:/^-?\d{1,3}(\.\d{1,8})?$/'
+                    ],
+
+                    // Latitude: -90 to 90, DECIMAL(10,8)
+                    'latitude'               => 'nullable|array',
+                    'latitude.*'             => [
+                        'nullable',
+                        'numeric',
+                        'between:-90,90',
+                        'regex:/^-?\d{1,2}(\.\d{1,8})?$/'
+                    ],
+
+                    'sequence_no'            => 'nullable|array',
+                    'sequence_no.*'          => 'nullable|integer|min:1',
+
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $selState  = (int)request('selState');
-                    $selDistrict  = (int)request('selDistrict');
-                    $txtCity  = htmlEncode(request('txtCity'));
-                    $txtCityAlias = htmlEncode(request('txtCityAlias'));
-
-
-                    $duplicate = Cities::select('id')
-                        ->where([
-                            'city_name' => $txtCity,
-                            'alias'     => $txtCityAlias
-                        ]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'City already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? Cities::find($id) : new Cities();
-
-                        $obj->state_id       = $selState;
-                        $obj->district_id       = $selDistrict ?? null;
-                        $obj->city_name      = $txtCity;
-                        $obj->alias       = $txtCityAlias;
-                        $obj->created_by      = 1;     //session('admin_session.user_id');
-                        $obj->active_status      = 1;
-                        if ($id != 0) {
-                            $obj->updated_by      = 1; //session('admin_session.user_id');
-                        }
-
-                        $obj->save();
-                        //Save City Synonym
-                        $cityId = $obj->id;
-
-                        $synonyms = request('txtSynonym', []);
-
-                        if (!empty($synonyms)) {
-
-                            if ($id != 0) {
-                                DB::table('cities_synonyms')
-                                    ->where('cities_id', $cityId)
-                                    ->delete();
-                            }
-
-                            $insertData = [];
-
-                            foreach ($synonyms as $synonym) {
-
-                                $synonym = trim(htmlEncode($synonym));
-
-                                if ($synonym !== '') {
-                                    $insertData[] = [
-                                        'cities_id'       => $cityId,
-                                        'synonym'       => $synonym,
-                                        'active_status' => 1,
-                                        'created_at'    => now(),
-                                        'created_by'    => 1 
-                                    ];
-                                }
-                            }
-
-                            if (!empty($insertData)) {
-                                DB::table('cities_synonyms')->insert($insertData);
-                            }
-                        }
-
-
-                        request()->session()->flash('level', 'success');
-                        request()->session()->flash('message', 'City ' . (($id != 0) ?
-                            'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $cityId     = request('selCity')[0]; // single city
+                $types      = request('type', []);
+                $points     = request('brd_drp_point', []);
+                $landmarks  = request('landmark', []);
+                $latitudes  = request('latitude', []);
+                $longitudes = request('longitude', []);
+                $sequences  = request('sequence_no', []);
+
+                foreach ($types as $i => $type) {
+
+                    $exists = DB::table('mst_boarding_droping')
+                        ->where('cities_id', $cityId)
+                        ->where('type', $type)
+                        ->where('sequence_no', $sequences[$i] ?? null)
+                        ->where('active_status', 1)
+                        ->exists();
+
+                    if ($exists) {
+                        DB::rollBack();
+                        return back()->with([
+                            'level'   => 'danger',
+                            'message' => 'Duplicate sequence found for the same city & type.'
+                        ])->withInput();
+                    }
+                }
+
+                $insertData = [];
+
+                foreach ($types as $i => $type) {
+
+                    $insertData[] = [
+                        'cities_id'     => (int) $cityId,
+                        'type'          => (int) $type,
+                        'brd_drp_point' => htmlEncode(trim($points[$i] ?? '')),
+                        'landmark'      => htmlEncode(trim($landmarks[$i] ?? '')),
+                        'latitude'      => $latitudes[$i] ?? null,
+                        'longitude'     => $longitudes[$i] ?? null,
+                        'sequence_no'   => $sequences[$i] ?? null,
+                        'active_status' => 1,
+                        'created_at'    => now(),
+                        'created_by'    => 1,
+                    ];
+                }
+
+                DB::table('mst_boarding_droping')->insert($insertData);
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'Boarding / Dropping ' . (($id != 0) ?
+                    'updated' : 'created') . ' successfully.');
+
+                DB::commit();
+
+                return redirect($redirectPage);
             }
         } catch (\Throwable $t) {
-            Log::error("Error", [
-                'Controller' => 'CitiesController',
-                'Method'     => $method,
-                'Error'      => $t->getMessage()
-            ]);
 
             DB::rollBack();
 
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
+            Log::error('BoardingDropping add error', [
+                'Method' => $method,
+                'Error'  => $t->getMessage(),
+                'Trace'  => $t->getTraceAsString()
+            ]);
 
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
-        return view('Master.addCities', compact('data'));
+
+        return view('Master.addBoardingDropping', compact('data'));
     }
 
     public function edit($encId)
@@ -182,45 +179,34 @@ class BoardingDroppingController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $selState = (int) request('selState');
-            $selDistrict = (int) request('selDistrict');
 
-            $dataQuery = DB::table('mst_cities as c')
-                ->leftJoin('mst_states as s', 's.id', '=', 'c.state_id')
-                ->leftJoin('users as u', 'u.id', '=', 'c.created_by')
+            $dataQuery = DB::table('mst_boarding_droping as b')
+                ->leftJoin('mst_cities as c', 'c.id', '=', 'b.cities_id')
+                ->leftJoin('users as u', 'u.id', '=', 'b.created_by')
                 ->select(
-                    'c.id as city_id',
+                    'b.id as bd_id',
                     'c.city_name',
-                    'c.alias',
-                    's.state_name',
-                    'c.created_at',
-                    'c.created_by',
-                    'u.name as created_by_name',
-                    'c.active_status'
+                    'b.brd_drp_point',
+                    'b.type',
+                    'b.sequence_no',
+                    'b.active_status',
+                    'b.created_at',
+                    'u.name as created_by_name'
                 );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('c.alias', 'like', "%{$txtSearch}%");
+                        ->orWhere('s.state_name', 'like', "%{$txtSearch}%");
                 });
             }
 
             if (isset($selStatus) && $selStatus != '') {
-                $dataQuery->where('c.active_status', $selStatus);
+                $dataQuery->where('b.active_status', $selStatus);
             }
 
-            if ($selState > 0) {
-                $dataQuery->where('c.state_id', $selState);
-            }
-
-            if ($selDistrict > 0) {
-                $dataQuery->where('c.district_id', $selDistrict);
-            }
-
-
-            $count = $dataQuery->count('c.id');
+            $count = $dataQuery->count('b.id');
 
             $start  = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -231,7 +217,7 @@ class BoardingDroppingController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 's.state_name', 3 => 'c.city_name', 4 => 'c.alias', 5 => 'c.synonymn', 6 => 'c.created_at', 7 => 'c.active_status'];
+                $columns = [2 => 'c.city_name', 3 => 'b.created_at', 4 => 'b.created_by', 5 => 'b.active_status'];
 
                 $orderBy       = request('order');
                 $orderColumn   = $columns[$orderBy[0]['column']] ?? 'c.city_name';
@@ -255,11 +241,9 @@ class BoardingDroppingController extends Controller
             if (count($arrRes) > 0) {
 
                 foreach ($arrRes as $val) {
-
-                    $val->city_alias    = $val->alias ?? '--';
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_city_id   = Crypt::encryptString($val->city_id);
+                    $val->enc_bd_id   = Crypt::encryptString($val->bd_id);
                 }
             }
 
@@ -268,7 +252,7 @@ class BoardingDroppingController extends Controller
             $data             = $arrRes;
         } catch (\Throwable $t) {
 
-            log::info("Exception occurred in CitiesController@dataTableView", [
+            Log::info("Exception occurred in BoardingDroppingController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -276,7 +260,7 @@ class BoardingDroppingController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'CityController',
+                'Controller' => 'BoardingDroppingController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);

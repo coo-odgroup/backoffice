@@ -46,23 +46,16 @@ class CitiesController extends Controller
                     return redirect("cities");
                 }
                 $data['row'] = $dataResQry;
-
-                // Load city synonyms for edit
+                // Fetch synonyms for edit
                 $data['synonyms'] = DB::table('cities_synonyms')
                     ->where('cities_id', $id)
                     ->where('active_status', 1)
                     ->pluck('synonym')
                     ->toArray();
-
             } else {
                 $id = 0;
                 $redirectPage = "admin/cities";
             }
-
-            if (!isset($data['synonyms'])) {
-                $data['synonyms'] = [];
-            }
-
 
             if (request()->isMethod('post')) {
 
@@ -270,8 +263,9 @@ class CitiesController extends Controller
                     3 => 'c.city_name',
                     4 => 'c.alias',
                     5 => 'synonyms',
-                    6 => 'c.created_at',
-                    7 => 'c.active_status'
+                    6 => 'c.created_by',
+                    7 => 'c.created_at',
+                    8 => 'c.active_status'
                 ];
 
 

@@ -52,6 +52,7 @@ class CommonController extends Controller
             'Cities' => \App\Models\Master\Cities::class,
             'States' => \App\Models\Master\States::class,
             'Districts' => \App\Models\Master\Districts::class,
+            'BoardingDropping' => \App\Models\Master\BoardingDropping::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -96,6 +97,30 @@ class CommonController extends Controller
         return response()->json([
             'message' => 'Action completed successfully'
         ]);
+    }
+
+    public function getCityList(Request $request)
+    {
+        try {
+
+            $cities = DB::table('mst_cities')
+                ->select('id', 'city_name')
+                ->where('active_status', 1)
+                ->orderBy('city_name', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $cities
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ], 500);
+        }
     }
 
     public function getLogs(Request $request)

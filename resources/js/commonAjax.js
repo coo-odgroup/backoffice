@@ -14,7 +14,7 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
         if ($(selector).length) {
 
             if ($(selector).hasClass("select2-hidden-accessible")) {
-                $(selector).select2('destroy');
+                // $(selector).select2('destroy');
             }
 
             $(selector).select2({
@@ -372,3 +372,37 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
         });
     }
 
+    export function loadCityList(selected_city_id = 0) {
+
+        // console.log(selected_city_id);
+
+        $('.selCity').html('<option value="">Loading...</option>');
+
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "get-city-list",
+            data: {
+                selected_city_id: selected_city_id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function (response) {
+
+                let options = '<option value="">-- Select City --</option>';
+
+                if (response.status && response.data.length > 0) {
+                    response.data.forEach(function (city) {
+                        let selected = (city.id == selected_city_id) ? 'selected' : '';
+                        options += `<option value="${city.id}" ${selected}>${city.city_name}</option>`;
+                    });
+                }
+
+                $('.selCity').html(options);
+
+                console.log(options);
+            },
+            error: function () {
+                $('.selCity').html('<option value="">-- Select City --</option>');
+            }
+        });
+    }
