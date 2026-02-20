@@ -21,12 +21,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
     <div>
-        <button type="button"
-            class="btn btn-primary btn-sm"
-            id="filterToggleBtn"
-            onclick="toggleFilter()">
+        <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
-            <span class="btn-text">Search</span>
+            <span class="btn-text">Filter</span>
         </button>
 
         <a href="{{ route('cities.add') }}" class="btn btn-success btn-sm">
@@ -117,7 +114,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
             <div class="d-flex justify-content-between align-items-center">
-                <div>
+                <div id="utilitiesTop">
                     <button type="button" id="btnExcel" class="btn btn-success btn-sm">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>
@@ -297,13 +294,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return html;
                 }
             },
-            // {
-            //     data: 'created_by_name',
-            //     defaultContent: "--"
-            // }, {
-            //     data: 'created_date',
-            //     defaultContent: "--"
-            // },
            {
                 data: null,
                 render: function (data, type, row) {
@@ -313,9 +303,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt  = (row.updated_date) ? row.updated_date : '--';
-
-                    console.log(row);
-
+                 
                     // Show updated date if exists, else created date
                     let shortDate = row.updated_date
                         ? row.updated_date.split(' ')[0]
@@ -359,6 +347,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <a class="btn btn-sm btn-info"
                         href="${editUrl.replace('ID', row.enc_city_id)}">
                         <i class="fa fa-edit"></i> Edit
+                        </a>
+
+                         <a href="javascript:void(0);"
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="mst_cities"
+                            data-id="${row.enc_city_id}">
+                                <i class="fa fa-history"></i> View Log
                         </a>
                     `;
                 },
