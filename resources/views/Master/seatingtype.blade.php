@@ -94,15 +94,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -132,6 +132,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data-url="{{ route('seatingtype.dataTableView') }}" data-edit-url="{{ route('seatingtype.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
+                        <th class="noPrint no-sort">
+                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                        </th>
                         <th>Sl No</th>
                         <th>Seat Type</th>
                         <th>Status</th>
@@ -159,6 +162,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <script type="module">
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
+    });
+
+    $(document).ready(function() {
+        commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        getDataTableView();
     });
 
 
@@ -233,16 +241,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             seldistrict: selDistrict
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
-        let dataTableColumns = [
-            // {
-            //     data: '',
-            //     render: function(data, type, row) {
-            //         return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
-            //             '" name="chkStd' + row.id + '" value="' + row.id +
-            //             '" onclick="checkFun(this.id)">';
-            //     },
-            //     className: "noPrint text-center"
-            // },
+        let dataTableColumns = [{
+                data: '',
+                render: function(data, type, row) {
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
+                        '" name="chkStd' + row.id + '" value="' + row.id +
+                        '" onclick="checkFun(this.id)">';
+                },
+                className: "noPrint text-center"
+            },
             {
                 data: 'slNo',
                 render: function(data, type, row, meta) {
