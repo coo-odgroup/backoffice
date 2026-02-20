@@ -62,12 +62,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}" placeholder="Enter City Name">
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCityAlias" name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCityAlias" name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}" placeholder="Enter Alias">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -92,7 +92,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
                                             </div>
 
                                             <div class="col-md-1">
@@ -223,10 +223,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 newRow.innerHTML = `
                     <div class="col-md-1">
-                        <label class="mb-0">Synonyms</label>
+                     &nbsp;
                     </div>
                     <div class="col-md-5">
-                        <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-outline-danger btn-remove">
