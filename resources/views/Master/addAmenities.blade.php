@@ -61,11 +61,49 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="category_name">Category Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="category_name" name="category_name" value="{{ $data['row']->category_name ?? '' }}">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="amenityCategory">Amenity Category<span class="text-danger important">*</span></label>
+                                            <select class="form-select" id="amenityCategory" name="amenityCategory">
+                                                <option value="0">Select Amenity Category</option>
+                                            </select>
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="amenity_name">Amenity Name<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="amenity_name" name="amenity_name" value="{{ $data['row']->amenity_name ?? '' }}" placeholder="Enter Amenity Name">
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label for="icon">Icon<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="icon" name="icon" value="{{ $data['row']->icon ?? '' }}" placeholder="Icon Class Name Only">
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label for="is_paid">Is Paid</label>
+                                            <select class="form-select" id="is_paid" name="is_paid">
+                                                <option disabled selected>Select Is Paid</option>
+                                                <option value="1"
+                                                    {{ (isset($data['row']) && $data['row']->is_paid == 1) ? 'selected' : '' }}>
+                                                    Yes
+                                                </option>
+                                                <option value="2"
+                                                    {{ (isset($data['row']) && $data['row']->is_paid == 2) ? 'selected' : '' }}>
+                                                    No
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label for="is_seat_specific">Is Seat Specific</label>
+                                            <select class="form-select" id="is_seat_specific" name="is_seat_specific">
+                                                <option disabled selected>Select Is Seat Specific</option>
+                                                <option value="1"
+                                                    {{ (isset($data['row']) && $data['row']->is_seat_specific == 1) ? 'selected' : '' }}>
+                                                    Yes
+                                                </option>
+                                                <option value="2"
+                                                    {{ (isset($data['row']) && $data['row']->is_seat_specific == 2) ? 'selected' : '' }}>
+                                                    No
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
                                             <label for="description">Description</label>
                                             <textarea class="form-control" id="description" name="description">{{ $data['row']->description ?? '' }}</textarea>
                                         </div>
@@ -122,9 +160,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.blankCheck('category_name', 'Amenity Name cannot be left blank'))
+        if (!validator.selectDropdown('amenityCategory', 'Select Amenity Category'))
             return false;
-        if (!validator.maxLength('category_name', 100, 'Amenity Name'))
+
+        if (!validator.blankCheck('amenity_name', 'Amenity Name cannot be left blank'))
+            return false;
+        if (!validator.maxLength('amenity_name', 100, 'Amenity Name'))
+            return false;
+
+        if (!validator.blankCheck('icon', 'Icon Class cannot be left blank'))
             return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');

@@ -43,9 +43,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By State Name</label>
+                                    <label for="txtSearch">Search By Amenity</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="State Name">
+                                        placeholder="Amenity / Description">
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="amenityCategory">Category</label>
+                                    <select class="form-select" id="amenityCategory" name="amenityCategory">
+                                        <option value="">Select Category</option>
+                                    </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -122,9 +128,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                             </th>
                             <th>Sl No</th>
+                            <th>Amenity Name</th>
                             <th>Category Name</th>
+                            <th>Amenity Icon</th>
                             <th>Description</th>
-                            <th width="100">Display Order</th>
                             <th>Created By</th>
                             <th>Created On</th>
                             <th>Status</th>
@@ -138,7 +145,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="amenities">
+            <input type="hidden" id="hdn_model" value="Amenity">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -233,19 +240,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-                data: 'description',
-                defaultContent: "--"
-            },
-            {
                 data: 'icon',
                 defaultContent: "--"
             },
             {
-                data: 'is_paid',
-                defaultContent: "--"
-            },
-            {
-                data: 'is_seat_specific',
+                data: 'description',
                 defaultContent: "--"
             },
             {
@@ -293,5 +292,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
+
+    $(document).ready(function() {
+
+        commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
+
+        commonAjax.loadAmenityCategory(0);
+    });
 </script>
 @endpush

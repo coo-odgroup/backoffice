@@ -27,6 +27,7 @@ class AmenitiesController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $amenityCategory = (request('amenityCategory') !== null && request('amenityCategory') !== '') ? (int)request('amenityCategory') : '';
 
             $dataQuery = DB::table('mst_amenities as a')
                 ->leftJoin('mst_amenity_categories as ac', 'a.category_id', '=', 'ac.id')
@@ -52,6 +53,10 @@ class AmenitiesController extends Controller
                     $q->where('a.amenity_name', 'like', "%{$txtSearch}%")
                         ->orWhere('a.description', 'like', "%{$txtSearch}%");
                 });
+            }
+
+            if (isset($amenityCategory) && $amenityCategory != '') {
+                $dataQuery->where('a.category_id', $amenityCategory);
             }
 
             if (isset($selStatus) && $selStatus != '') {
@@ -143,22 +148,22 @@ class AmenitiesController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/amenitycategory/edit/" . $encId;
+                $redirectPage = "admin/amenities/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Amenity::select('id', 'category_name', 'description', 'display_order');
+                $dataResQry = Amenity::select('id', 'category_id', 'amenity_name', 'description', 'icon', 'is_paid', 'is_seat_specific');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
                 if (empty($dataResQry)) {
-                    return redirect("amenitycategory");
+                    return redirect("amenities");
                 }
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
-                $redirectPage = "admin/amenitycategory";
+                $redirectPage = "admin/amenities";
             }
 
             if (request()->isMethod('post')) {
@@ -166,9 +171,13 @@ class AmenitiesController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'category_name' => 'bail|required'
+                    'amenityCategory' => 'bail|required',
+                    'amenity_name' => 'bail|required',
+                    'icon' => 'bail|required'
                 ], [
-                    'category_name.required' => 'Amenity Category Name cannot be left blank.'
+                    'amenityCategory.required' => 'Amenity Category cannot be left blank.',
+                    'amenity_name.required' => 'Amenity Name cannot be left blank.',
+                    'icon.required' => 'Amenity Icon cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
@@ -176,10 +185,14 @@ class AmenitiesController extends Controller
                 } else {
                     DB::beginTransaction();
 
-                    $category_name = htmlEncode(request('category_name'));
+                    $category_id = (int)request('amenityCategory');
+                    $amenity_name = htmlEncode(request('amenity_name'));
+                    $icon = htmlEncode(request('icon'));
+                    $is_paid = (int)request('is_paid');
+                    $is_seat_specific = (int)request('is_seat_specific');
                     $description = htmlEncode(request('description'));
 
-                    $duplicate = Amenity::select('id')->where(['category_name' => $category_name]);
+                    $duplicate = Amenity::select('id')->where(['amenity_name' => $amenity_name]);
 
                     if ($id != 0) {
                         $duplicate->where('id', '!=', $id);
@@ -188,11 +201,15 @@ class AmenitiesController extends Controller
                     if ($duplicate->exists()) {
                         return back()->with([
                             'level'     => 'danger',
-                            'message'   => 'Amenity Category already exist'
+                            'message'   => 'Amenity already exist'
                         ])->withInput();
                     } else {
                         $obj = ($id != 0) ? Amenity::find($id) : new Amenity();
-                        $obj->category_name = $category_name;
+                        $obj->category_id = $category_id;
+                        $obj->amenity_name = $amenity_name;
+                        $obj->icon = $icon;
+                        $obj->is_paid = $is_paid;
+                        $obj->is_seat_specific = $is_seat_specific;
                         $obj->description = $description;
                         $obj->created_by = 1;
                         $obj->active_status = 1;
@@ -204,7 +221,7 @@ class AmenitiesController extends Controller
                         $obj->save();
 
                         session()->flash('level', 'success');
-                        session()->flash('message', 'Amenity Category ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                        session()->flash('message', 'Amenity ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     }
 
                     DB::commit();
@@ -213,7 +230,7 @@ class AmenitiesController extends Controller
             }
         } catch (\Throwable $t) {
             Log::error("Error", [
-                'Controller' => 'AmenityCategoryController',
+                'Controller' => 'AmenitiesController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);

@@ -66,7 +66,7 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', 'localhost'),
+            'host' => env('DB_HOST', '192.168.29.141'),
             'port' => env('DB_PORT', '3307'),
             'database' => env('DB_DATABASE', 'odbusmaster'),
             'username' => env('DB_USERNAME', 'networkuser'),
@@ -86,7 +86,7 @@ return [
         'mysql_log' => [
             'driver' => 'mysql',
             'url' => env('LOG_DATABASE_URL'),
-            'host' => env('LOG_DB_HOST', 'localhost'),
+            'host' => env('LOG_DB_HOST', '192.168.29.141'),
             'port' => env('LOG_DB_PORT', '3307'),
             'database' => env('LOG_DB_DATABASE', 'odbuslog'),
             'username' => env('LOG_DB_USERNAME', 'networkuser'),
@@ -106,7 +106,7 @@ return [
         'mysql_dev' => [
             'driver' => 'mysql',
             'url' => env('DEV_DATABASE_URL'),
-            'host' => env('DEV_DB_HOST', 'localhost'),
+            'host' => env('DEV_DB_HOST', '192.168.29.141'),
             'port' => env('DEV_DB_PORT', '3307'),
             'database' => env('DEV_DB_DATABASE', 'odbusdev'),
             'username' => env('DEV_DB_USERNAME', 'networkuser'),
@@ -126,7 +126,7 @@ return [
         'mysql_dev' => [
             'driver' => 'mysql',
             'url' => env('DEV_DATABASE_URL'),
-            'host' => env('DEV_DB_HOST', 'localhost'),
+            'host' => env('DEV_DB_HOST', '192.168.29.141'),
             'port' => env('DEV_DB_PORT', '3307'),
             'database' => env('DEV_DB_DATABASE', 'odbusdev'),
             'username' => env('DEV_DB_USERNAME', 'networkuser'),

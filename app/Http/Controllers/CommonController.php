@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
 use App\Models\Master\Districts;
 use App\Models\Master\States;
@@ -55,6 +56,8 @@ class CommonController extends Controller
             'Districts' => \App\Models\Master\Districts::class,
             'BusType' => \App\Models\Master\BusType::class,
             'AmenityCategory' => \App\Models\Master\AmenityCategory::class,
+            'Amenity' => \App\Models\Master\Amenity::class,
+            'SeatType' => \App\Models\Master\SeatType::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -172,6 +175,18 @@ class CommonController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Updated successfully'
+        ]);
+    }
+
+    public function getAmenityCategoryList(Request $request)
+    {
+        $data = AmenityCategory::where('active_status', 1)
+            ->orderBy('category_name')
+            ->get(['id', 'category_name']);
+
+        return response()->json([
+            'status' => true,
+            'data'   => $data
         ]);
     }
 }
