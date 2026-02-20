@@ -21,8 +21,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
     <div>
-        <button class="btn btn-success btn-sm" onclick="window.location='{{ route('cities.index') }}'">View Cities
-        </button>
+        <a class="btn btn-success btn-sm" href="{{ route('cities.index') }}">View Cities
+        </a>
     </div>
 </div>
 

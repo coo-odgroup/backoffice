@@ -68,7 +68,7 @@ class CitiesController extends Controller
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 } else {
-                    
+
                     DB::beginTransaction();
 
                     $selState  = (int)request('selState');
@@ -102,7 +102,7 @@ class CitiesController extends Controller
                         $obj->created_by      = 1;
                         $obj->active_status      = 1;
                         if ($id != 0) {
-                            $obj->updated_by      = 1; 
+                            $obj->updated_by      = 1;
                         }
 
                         $obj->save();
