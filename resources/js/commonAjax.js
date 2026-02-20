@@ -431,3 +431,24 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
             }
         });
     }
+
+    export function initTooltips() {
+
+        var tooltipTriggerList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
+
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+
+            // Dispose old tooltip (important for DataTables redraw)
+            if (bootstrap.Tooltip.getInstance(tooltipTriggerEl)) {
+                bootstrap.Tooltip.getInstance(tooltipTriggerEl).dispose();
+            }
+
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                html: true,          // ✅ allow HTML
+                sanitize: false      // ✅ allow div, hr etc.
+            });
+        });
+    }
+

@@ -105,8 +105,6 @@ class CitiesController extends Controller
                             $obj->updated_by    = 1;
                         }
 
-                        log::info($obj); exit;
-
                         $obj->save();
                         //Save City Synonym
                         $cityId = $obj->id;
@@ -195,14 +193,14 @@ class CitiesController extends Controller
                                 'c.id as city_id',
                                 'c.city_name',
                                 'c.alias',
-                                // State name subquery
                                 DB::raw('(SELECT state_name FROM mst_states as s WHERE s.id = c.state_id LIMIT 1) as state_name'),
                                 'c.created_at',
                                 'c.created_by',
-                                // Created by name subquery
+                                'c.updated_at',
+                                'c.updated_by',
                                 DB::raw('(SELECT name FROM users as u WHERE u.id = c.created_by LIMIT 1) as created_by_name'),
+                                DB::raw('(SELECT name FROM users as u WHERE u.id = c.updated_by LIMIT 1) as updated_by_name'),
                                 'c.active_status',
-                                // Synonyms as GROUP_CONCAT subquery
                                 DB::raw('(
                                     SELECT GROUP_CONCAT(synonym SEPARATOR "||")
                                     FROM cities_synonyms
@@ -243,9 +241,7 @@ class CitiesController extends Controller
 
 
             $count = $dataQuery->count('c.id');
-
-            log::info("Total count of cities: " . $count);
-
+          
             $start  = request()->input('start', 0);
             $length = request()->input('length', 10);
 
@@ -291,6 +287,7 @@ class CitiesController extends Controller
 
                     $val->city_alias    = $val->alias ?? '--';
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
                     $val->enc_city_id   = Crypt::encryptString($val->city_id);
 

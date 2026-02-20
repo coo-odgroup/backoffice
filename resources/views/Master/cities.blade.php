@@ -139,8 +139,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <th>City Name</th>
                         <th>Alias</th>
                         <th>Synonymn</th>
-                        <th>Created By</th>
-                        <th>Created At</th>
+                        <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
                     </tr>
@@ -180,6 +179,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#selDistrict', 'Select District');
         commonAjax.loadStateList();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initTooltips();
         getDataTableView();
     });
 
@@ -197,7 +197,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     window.getDataTableView = function(reset = true) {
-
+      
         //  If table already initialized
         if (window.dataTableInstance && reset) {
 
@@ -287,13 +287,49 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return html;
                 }
             },
+            // {
+            //     data: 'created_by_name',
+            //     defaultContent: "--"
+            // }, {
+            //     data: 'created_date',
+            //     defaultContent: "--"
+            // },
+           {
+                data: null,
+                render: function (data, type, row) {
 
-            {
-                data: 'created_by_name',
-                defaultContent: "--"
-            }, {
-                data: 'created_date',
-                defaultContent: "--"
+                    let createdBy  = row.created_by_name ?? '--';
+                    let createdAt  = row.created_date ?? '--';
+
+                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
+
+                    console.log(row);
+
+                    // Show updated date if exists, else created date
+                    let shortDate = row.updated_date
+                        ? row.updated_date.split(' ')[0]
+                        : (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
+
+                    return `
+                        <small
+                            class="text-primary fw-semibold"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${createdAt}
+                        </small>
+                    `;
+                }
             },
             {
                 data: 'is_active',

@@ -119,6 +119,7 @@ window.loadDataTable = loadDataTable;
 
 import * as commonAjax from './commonAjax';
 window.commonAjax = commonAjax; 
+window.initTooltips = commonAjax.initTooltips;
 window.actionRec = commonAjax.actionRec;
 
 $(document).on('click', '.btn-view-log', function() {
@@ -128,5 +129,6 @@ $(document).on('click', '.btn-view-log', function() {
 
     commonAjax.viewLogs(table, id);
 });
+
 
 
