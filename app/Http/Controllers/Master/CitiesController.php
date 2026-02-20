@@ -73,7 +73,7 @@ class CitiesController extends Controller
 
                     $selState  = (int)request('selState');
                     $selDistrict  = (int)request('selDistrict');
-                    $txtCity  = htmlEncode(request('txtCity'));
+                    $txtCity  = htmlEncode(ucwords(strtolower(request('txtCity'))));
                     $txtCityAlias = htmlEncode(request('txtCityAlias'));
 
 
@@ -95,15 +95,17 @@ class CitiesController extends Controller
                     } else {
                         $obj = ($id != 0) ? Cities::find($id) : new Cities();
 
-                        $obj->state_id       = $selState;
+                        $obj->state_id          = $selState;
                         $obj->district_id       = $selDistrict ?? null;
-                        $obj->city_name      = $txtCity;
-                        $obj->alias       = $txtCityAlias;
-                        $obj->created_by      = 1;
-                        $obj->active_status      = 1;
+                        $obj->city_name         = $txtCity;
+                        $obj->alias             = $txtCityAlias;
+                        $obj->created_by        = 1;
+                        $obj->active_status     = 1;
                         if ($id != 0) {
-                            $obj->updated_by      = 1;
+                            $obj->updated_by    = 1;
                         }
+
+                        log::info($obj); exit;
 
                         $obj->save();
                         //Save City Synonym
@@ -127,8 +129,8 @@ class CitiesController extends Controller
 
                                 if ($synonym !== '') {
                                     $insertData[] = [
-                                        'cities_id'       => $cityId,
-                                        'synonym'       => $synonym,
+                                        'cities_id'     => $cityId,
+                                        'synonym'       => ucwords(strtolower($synonym)),
                                         'active_status' => 1,
                                         'created_at'    => now(),
                                         'created_by'    => 1

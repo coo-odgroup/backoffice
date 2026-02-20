@@ -62,12 +62,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}" placeholder="Enter City Name">
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCityAlias" name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCityAlias"
+                                                   name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}"
+                                                   placeholder="Enter Alias"
+                                                   oninput="this.value = this.value.toLowerCase();">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -88,11 +91,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="row mb-3 align-items-center synonym-row">
                                             <div class="col-md-1">
-                                                <label class="mb-0">Synonyms</label>
+                                                <label for="txtSynonym" class="mb-0">Synonyms</label>
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
                                             </div>
 
                                             <div class="col-md-1">
@@ -188,19 +191,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.blankCheck('txtCity', 'City Name cannot be left blank'))
+        if (!validator.blankCheck('txtCity', 'City Name cannot be left blank')){
             return false;
-        if (!validator.maxLength('txtCity', 100, 'City Name'))
+        }
+            
+        if (!validator.maxLength('txtCity', 100, 'City Name')){
             return false;
+        }
 
-        if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank'))
+        if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank')){
             return false;
+        }
 
-        if (!validator.maxLength('txtCityAlias', 100, 'City Alias'))
+        if (!validator.maxLength('txtCityAlias', 100, 'City Alias')){
             return false;
+        }
 
-        if (!validator.selectDropdown('selState', 'Select State'))
+        if (!validator.selectDropdown('selState', 'Select State')){
             return false;
+        }
+
+        if (!validator.checkAlias('txtCityAlias', 'City Alias')){
+            return false;
+        }
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
@@ -223,10 +236,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 newRow.innerHTML = `
                     <div class="col-md-1">
-                        <label class="mb-0">Synonyms</label>
+                     &nbsp;
                     </div>
                     <div class="col-md-5">
-                        <input type="text" class="form-control synonym-input" name="txtSynonym[]">
+                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-outline-danger btn-remove">
