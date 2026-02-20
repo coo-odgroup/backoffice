@@ -1005,6 +1005,41 @@ export function compareCurDate(controlId, fieldName, flag) {
             return true;
     }
 }
+//=============== Function to for alias ==============
+export function checkAlias(controlId) {
+
+    var $input = $('#' + controlId);
+    var value = $input.val();
+
+    // 1️⃣ Convert spaces to hyphen
+    value = value.replace(/\s+/g, '-');
+
+    // 2️⃣ Convert to lowercase (optional but recommended)
+    value = value.toLowerCase();
+
+    // 3️⃣ Remove all characters except a-z, 0-9 and hyphen
+    value = value.replace(/[^a-z0-9-]/g, '-');
+
+    // 4️⃣ Prevent multiple consecutive hyphens
+    value = value.replace(/-+/g, '-');
+
+    // 5️⃣ Prevent hyphen at start or end
+    value = value.replace(/^-|-$/g, '');
+
+    // Set cleaned value back to input
+    $input.val(value);
+
+    // Final validation check
+    var regex = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+    if (!regex.test(value)) {
+        // viewAlert("Only letters, numbers and single hyphen between words are allowed!", controlId);
+        $input.focus();
+        return false;
+    }
+
+    return true;
+}
 
 //============ Function to Number and slash By Rasmi Ranjan swain on 15-oct-2014 ===============
 function validateNumberSlash(controlId, msg) {
