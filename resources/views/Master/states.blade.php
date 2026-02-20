@@ -81,15 +81,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white btn-mob" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm btn-mob" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -99,20 +99,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <button type="button" id="btnExcel" class="btn btn-success btn-sm">
+                    <button type="button" id="btnExcel" class="btn btn-success btn-sm btn-mob">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>
-                    <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white">
+                    <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white btn-mob">
                         <i class="fa-solid fa-file-pdf me-1"></i>
                     </button>
-                    <button type="button" id="btnPrint" class="btn btn-danger btn-sm">
+                    <button type="button" id="btnPrint" class="btn btn-danger btn-sm btn-mob">
                         <i class="fa-solid fa-print me-1"></i>
                     </button>
                 </div>
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
                 data-url="{{ route('states.dataTableView') }}"
                 data-edit-url="{{ route('states.edit', 'ID') }}">
                 <thead class="thead-light">
@@ -130,6 +131,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </thead>
                 <tbody></tbody>
             </table>
+            </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
@@ -249,7 +251,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
-                        <a class="btn btn-sm btn-info"
+                        <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_state_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>

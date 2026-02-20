@@ -11,6 +11,7 @@ use App\Http\Controllers\Master\DistrictController;
 use App\Http\Controllers\Master\SeatingTypeController;
 use App\Http\Controllers\Master\AmenitiesController;
 use App\Http\Controllers\Master\BusTypeController;
+use App\Http\Controllers\Master\AmenityCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-district-list', [CommonController::class, 'getDistrictList'])->name('get.district.list');
     Route::post('/common-bulk-action', [CommonController::class, 'bulkAction'])->name('admin.bulkAction');
     Route::post('/audit-logs', [CommonController::class, 'getLogs'])->name('admin.getLogs');
+    Route::post('/update-sequence', [CommonController::class, 'updateSequence'])->name('common.updateSequence');
+    Route::post('/get-amenity-category-list', [CommonController::class, 'getAmenityCategoryList'])->name('get.amenity.category.list');
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -55,7 +58,6 @@ Route::prefix('admin')->group(function () {
 
 
     Route::get('/seating-type', [SeatingTypeController::class, 'seatingType'])->name('seating.type');
-    Route::get('/amenities', [AmenitiesController::class, 'amenities'])->name('amenities');
 
 
 
@@ -73,20 +75,42 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'states/edit/{encId}', [StateController::class, 'edit'])->name('states.edit');
 
     // Bus Type
-    Route::get('/bustype', [BusTypeController::class, 'bus-type'])->name('bustype.index');
+    Route::get('/bustype', [BusTypeController::class, 'busType'])->name('bustype.index');
     Route::match(['get', 'post'], 'bustype/add', [BusTypeController::class, 'add'])->name('bustype.add');
     Route::post('bustype/dataTableView', [BusTypeController::class, 'dataTableView'])->name('bustype.dataTableView');
     Route::match(['get', 'post'], 'bustype/edit/{encId}', [BusTypeController::class, 'edit'])->name('bustype.edit');
+
+    // Amenity Category
+    Route::get('/amenitycategory', [AmenityCategoryController::class, 'amenityCategory'])->name('amenitycategory.index');
+    Route::match(['get', 'post'], 'amenitycategory/add', [AmenityCategoryController::class, 'add'])->name('amenitycategory.add');
+    Route::post('amenitycategory/dataTableView', [AmenityCategoryController::class, 'dataTableView'])->name('amenitycategory.dataTableView');
+    Route::match(['get', 'post'], 'amenitycategory/edit/{encId}', [AmenityCategoryController::class, 'edit'])->name('amenitycategory.edit');
+
+    // Amenities
+    Route::get('/amenities', [AmenitiesController::class, 'amenities'])->name('amenities.index');
+    Route::match(['get', 'post'], 'amenities/add', [AmenitiesController::class, 'add'])->name('amenities.add');
+    Route::post('amenities/dataTableView', [AmenitiesController::class, 'dataTableView'])->name('amenities.dataTableView');
+    Route::match(['get', 'post'], 'amenities/edit/{encId}', [AmenitiesController::class, 'edit'])->name('amenities.edit');
+
+    // ---------------------------------------------------------------------------------------------------------------
 
 
 
 
     //Add by sahil
+    // ----------------------------------------------------------------------------------------------------------------
+    // Districts module
     Route::get('/district', [DistrictController::class, 'district'])->name('district.index');
     Route::match(['get', 'post'], 'district/add', [DistrictController::class, 'add'])->name('district.add');
     Route::post('district/dataTableView', [DistrictController::class, 'dataTableView'])->name('district.dataTableView');
     Route::match(['get', 'post'], 'district/edit/{encId}', [DistrictController::class, 'edit'])->name('district.edit');
 
+    //seating type module
+    Route::get('/seatingtype', [SeatingTypeController::class, 'seatingType'])->name('seatingtype.index');
+    Route::match(['get', 'post'], 'seatingtype/add', [SeatingTypeController::class, 'add'])->name('seatingtype.add');
+    Route::post('seatingtype/dataTableView', [SeatingTypeController::class, 'dataTableView'])->name('seatingtype.dataTableView');
+    Route::match(['get', 'post'], 'seatingtype/edit/{encId}', [SeatingTypeController::class, 'edit'])->name('seatingtype.edit');
+
+    //--------------------------------------------------------------------------------------------------------------------
 
 });
-        

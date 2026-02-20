@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Master\States;
+use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class StateController extends Controller
+class AmenityCategoryController extends Controller
 {
-    public function states()
+    public function amenityCategory()
     {
-        return view('master.states');
+        return view('master.amenityCategory');
     }
 
     public function dataTableView()
@@ -28,29 +28,32 @@ class StateController extends Controller
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
-            $dataQuery = DB::table('mst_states as s')
-                ->leftJoin('users as u', 'u.id', '=', 's.created_by')
+            $dataQuery = DB::table('mst_amenity_categories as ac')
+                ->leftJoin('users as u', 'u.id', '=', 'ac.created_by')
                 ->select(
-                    's.id as state_id',
-                    's.state_name',
-                    's.created_at',
-                    's.created_by',
+                    'ac.id as amenity_cat_id',
+                    'ac.category_name',
+                    'ac.description',
+                    'ac.display_order',
+                    'ac.created_at',
+                    'ac.created_by',
                     'u.name as created_by_name',
-                    's.active_status'
+                    'ac.active_status'
                 );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('s.state_name', 'like', "%{$txtSearch}%");
+                    $q->where('ac.category_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('ac.description', 'like', "%{$txtSearch}%");
                 });
             }
 
             if (isset($selStatus) && $selStatus != '') {
-                $dataQuery->where('s.active_status', $selStatus);
+                $dataQuery->where('ac.active_status', $selStatus);
             }
 
-            $count = $dataQuery->count('s.id');
+            $count = $dataQuery->count('ac.id');
 
             $start  = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -61,13 +64,13 @@ class StateController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 's.state_name', 3 => 's.created_at', 4 => 's.created_by', 4 => 's.active_status'];
+                $columns = [2 => 'ac.category_name', 3 => 'ac.description', 4 => 'ac.display_order', 5 => 'ac.created_by', 6 => 'ac.active_status'];
 
                 $orderBy       = request('order');
-                $orderColumn   = $columns[$orderBy[0]['column']] ?? 's.state_name';
+                $orderColumn   = $columns[$orderBy[0]['column']] ?? 'ac.category_name';
                 $orderType     = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 's.state_name';
+                $orderColumn = 'ac.category_name';
                 $orderType   = 'asc';
             }
 
@@ -87,7 +90,7 @@ class StateController extends Controller
                 foreach ($arrRes as $val) {
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_state_id   = Crypt::encryptString($val->state_id);
+                    $val->enc_amenity_cat_id   = Crypt::encryptString($val->amenity_cat_id);
                 }
             }
 
@@ -96,7 +99,7 @@ class StateController extends Controller
             $data             = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in StateController@dataTableView", [
+            Log::info("Exception occurred in AmenityCategoryController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -104,7 +107,7 @@ class StateController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'StateController',
+                'Controller' => 'AmenityCategoryController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -135,22 +138,22 @@ class StateController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/states/edit/" . $encId;
+                $redirectPage = "admin/amenitycategory/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = States::select('id', 'state_name');
+                $dataResQry = AmenityCategory::select('id', 'category_name', 'description', 'display_order');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
                 if (empty($dataResQry)) {
-                    return redirect("states");
+                    return redirect("amenitycategory");
                 }
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
-                $redirectPage = "admin/states";
+                $redirectPage = "admin/amenitycategory";
             }
 
             if (request()->isMethod('post')) {
@@ -158,9 +161,9 @@ class StateController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'txtState' => 'bail|required'
+                    'category_name' => 'bail|required'
                 ], [
-                    'txtState.required' => 'State Name cannot be left blank.'
+                    'category_name.required' => 'Amenity Category Name cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
@@ -168,9 +171,10 @@ class StateController extends Controller
                 } else {
                     DB::beginTransaction();
 
-                    $txtState  = htmlEncode(request('txtState'));
+                    $category_name = htmlEncode(request('category_name'));
+                    $description = htmlEncode(request('description'));
 
-                    $duplicate = States::select('id')->where(['state_name' => $txtState]);
+                    $duplicate = AmenityCategory::select('id')->where(['category_name' => $category_name]);
 
                     if ($id != 0) {
                         $duplicate->where('id', '!=', $id);
@@ -179,11 +183,12 @@ class StateController extends Controller
                     if ($duplicate->exists()) {
                         return back()->with([
                             'level'     => 'danger',
-                            'message'   => 'State already exist'
+                            'message'   => 'Amenity Category already exist'
                         ])->withInput();
                     } else {
-                        $obj = ($id != 0) ? States::find($id) : new States();
-                        $obj->state_name = $txtState;
+                        $obj = ($id != 0) ? AmenityCategory::find($id) : new AmenityCategory();
+                        $obj->category_name = $category_name;
+                        $obj->description = $description;
                         $obj->created_by = 1;
                         $obj->active_status = 1;
 
@@ -194,7 +199,7 @@ class StateController extends Controller
                         $obj->save();
 
                         session()->flash('level', 'success');
-                        session()->flash('message', 'City ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                        session()->flash('message', 'Amenity Category ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     }
 
                     DB::commit();
@@ -203,7 +208,7 @@ class StateController extends Controller
             }
         } catch (\Throwable $t) {
             Log::error("Error", [
-                'Controller' => 'StatesController',
+                'Controller' => 'AmenityCategoryController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
@@ -217,7 +222,7 @@ class StateController extends Controller
                 'message'   => $errorMsg
             ])->withInput();
         }
-        return view('Master.addStates', compact('data'));
+        return view('Master.addAmenityCategory', compact('data'));
     }
 
     public function edit($encId)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
 use App\Models\Master\Districts;
 use App\Models\Master\States;
@@ -17,8 +18,8 @@ class CommonController extends Controller
     public function getStateList(Request $request)
     {
         $states = States::where('active_status', 1)
-                    ->orderBy('state_name')
-                    ->get(['id', 'state_name']);
+            ->orderBy('state_name')
+            ->get(['id', 'state_name']);
 
 
         return response()->json([
@@ -27,14 +28,15 @@ class CommonController extends Controller
         ]);
     }
 
-    public function getDistrictList(Request $request) {
+    public function getDistrictList(Request $request)
+    {
 
         $stateId = $request->state_id;
-       
+
         $districts = Districts::where('state_id', $stateId)
-                              ->where('active_status', 1)
-                              ->orderBy('district_name')
-                              ->get(['id', 'district_name']);
+            ->where('active_status', 1)
+            ->orderBy('district_name')
+            ->get(['id', 'district_name']);
 
         return response()->json([
             'status' => true,
@@ -53,6 +55,10 @@ class CommonController extends Controller
             'States' => \App\Models\Master\States::class,
             'Districts' => \App\Models\Master\Districts::class,
             'BoardingDropping' => \App\Models\Master\BoardingDropping::class,
+            'BusType' => \App\Models\Master\BusType::class,
+            'AmenityCategory' => \App\Models\Master\AmenityCategory::class,
+            'Amenity' => \App\Models\Master\Amenity::class,
+            'SeatType' => \App\Models\Master\SeatType::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -66,25 +72,25 @@ class CommonController extends Controller
         switch ($action) {
 
             case 'D':
-                  $model::whereIn('id', $ids)->update([
-                                  'deleted_at' => now(),
-                                  'deleted_by' => 1,   // Need to udpate with auth user id
+                $model::whereIn('id', $ids)->update([
+                    'deleted_at' => now(),
+                    'deleted_by' => 1, // Need to udpate with auth user id
                 ]);
                 break;
 
             case 'A':
                 $model::whereIn('id', $ids)->update([
-                            'active_status' => 1,
-                            'updated_at' => now(),
-                            'updated_by' => 1
-                    ]);  // Need to udpate with auth user id]);
+                    'active_status' => 1,
+                    'updated_at' => now(),
+                    'updated_by' => 1
+                ]); // Need to udpate with auth user id]);
                 break;
 
             case 'UN':
                 $model::whereIn('id', $ids)->update([
-                                'active_status' => 0,
-                                'updated_at' => now(),
-                                'updated_by' => 1,   // Need to udpate with auth user id]);
+                    'active_status' => 0,
+                    'updated_at' => now(),
+                    'updated_by' => 1, // Need to udpate with auth user id]);
                 ]);
                 break;
 
@@ -130,17 +136,17 @@ class CommonController extends Controller
 
         $id = Crypt::decryptString($id);
 
-       $logs = AuditLog::on('mysql_log')
-                        ->select(
-                            'audit_logs_master.*',
-                            'u.name as user_name'
-                        )
-                        ->leftJoin('odbusmaster.users as u', 'u.id', '=', 'audit_logs_master.created_by')
-                        ->where('audit_logs_master.table_name', $table)
-                        ->where('audit_logs_master.record_id', $id)
-                        ->orderByDesc('audit_logs_master.created_at')
-                        ->limit(5)
-                        ->get();
+        $logs = AuditLog::on('mysql_log')
+            ->select(
+                'audit_logs_master.*',
+                'u.name as user_name'
+            )
+            ->leftJoin('odbusmaster.users as u', 'u.id', '=', 'audit_logs_master.created_by')
+            ->where('audit_logs_master.table_name', $table)
+            ->where('audit_logs_master.record_id', $id)
+            ->orderByDesc('audit_logs_master.created_at')
+            ->limit(5)
+            ->get();
 
 
         $formattedLogs = $logs->map(function ($log) {
@@ -174,4 +180,38 @@ class CommonController extends Controller
         return response()->json($formattedLogs);
     }
 
+    public function updateSequence(Request $request)
+    {
+        $request->validate([
+            'table'  => 'required|string',
+            'column' => 'required|string',
+            'value'  => 'required',
+            'id' => 'required|string'
+        ]);
+
+        $id = Crypt::decryptString($request->id);
+
+        DB::table($request->table)
+            ->where('id', $id)
+            ->update([
+                $request->column => $request->value
+            ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Updated successfully'
+        ]);
+    }
+
+    public function getAmenityCategoryList(Request $request)
+    {
+        $data = AmenityCategory::where('active_status', 1)
+            ->orderBy('category_name')
+            ->get(['id', 'category_name']);
+
+        return response()->json([
+            'status' => true,
+            'data'   => $data
+        ]);
+    }
 }

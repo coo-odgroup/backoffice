@@ -12,6 +12,8 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
 
     if ($.fn.DataTable.isDataTable('#' + tableId)) {
 
+
+
         let table = $('#' + tableId).DataTable();
 
         table.state.clear();
@@ -95,7 +97,9 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
         }
     ],
         columns: dataTableColumns,
-        drawCallback: function(settings) {          
+        drawCallback: function(settings) { 
+            
+            commonAjax.initTooltips();
 
             let api = this.api();
             let pageInfo = api.page.info();

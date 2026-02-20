@@ -2,7 +2,7 @@
 @section('content')
 
 <?php
-$page_name = 'All States';
+$page_name = 'All Amenity Category';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,21 +12,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">Boarding Dropping</li>
+        <li class="breadcrumb-item active">Amenity Category</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Boarding Dropping</h5>
+    <h5 id="page_title">Amenity Category</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('boardingDropping.add') }}" class="btn btn-success btn-sm">
-            + Add Boarding Dropping
+        <a href="{{ route('amenitycategory.add') }}" class="btn btn-success btn-sm">
+            + Add Amenity Category
         </a>
     </div>
 </div>
@@ -43,9 +43,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Boarding/Dropping Name</label>
+                                    <label for="txtSearch">Search By State Name</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Boarding/Dropping Name">
+                                        placeholder="State Name">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -61,7 +61,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- BUTTONS -->
                         <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-check me-1"></i>Submit
+                                <i class="fa-solid fa-search me-1"></i>Search
                             </button>
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
@@ -112,32 +112,33 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('boardingDropping.dataTableView') }}"
-                data-edit-url="{{ route('boardingDropping.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>Boarding/Dropping Point</th>
-                        <th>City Name</th>
-                        <th>Type</th>
-                        <th width="100">Sequence No</th>
-                        <th>Created By</th>
-                        <th>Created On</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('amenitycategory.dataTableView') }}"
+                    data-edit-url="{{ route('amenitycategory.edit', 'ID') }}">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                            </th>
+                            <th>Sl No</th>
+                            <th>Category Name</th>
+                            <th>Description</th>
+                            <th width="100">Display Order</th>
+                            <th>Created By</th>
+                            <th>Created On</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BoardingDropping">
+            <input type="hidden" id="hdn_model" value="AmenityCategory">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -210,8 +211,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.bd_id +
-                        '" name="chkStd' + row.bd_id + '" value="' + row.bd_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.amenity_cat_id +
+                        '" name="chkStd' + row.amenity_cat_id + '" value="' + row.amenity_cat_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -224,38 +225,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'brd_drp_point',
+                data: 'category_name',
                 defaultContent: "--"
             },
             {
-                data: 'city_name',
+                data: 'description',
                 defaultContent: "--"
             },
             {
-                data: 'type',
-                render: function (data, type, row) {
-                    if (data == 1) {
-                        return 'BOARDING';
-                    } else if (data == 2) {
-                        return 'DROPPING';
-                    } else {
-                        return '--';
-                    }
-                }
-            },
-            {
-                data: 'sequence_no',
+                data: 'display_order',
                 render: function(data, type, row) {
                     return `<input type="text"
                     value="${data ?? ''}"
                     class="form-control form-control-sm order-input"
-                    data-id="${row.enc_bd_id}"
-                    data-table="mst_boarding_droping"
-                    data-column="sequence_no">`;
+                    data-id="${row.enc_amenity_cat_id}"
+                    data-table="mst_amenity_categories"
+                    data-column="display_order">`;
                 },
                 defaultContent: "--"
             },
-
             {
                 data: 'created_by_name',
                 defaultContent: "--"
@@ -282,9 +270,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_bd_id)}">
+                        href="${editUrl.replace('ID', row.enc_amenity_cat_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
+
+                        <a href="javascript:void(0);"
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="mst_amenity_categories"
+                            data-id="${row.enc_amenity_cat_id}">
+                                <i class="fa fa-history"></i> View Log
+                        </a>
+
                     `;
                 },
                 className: "noPrint text-center"

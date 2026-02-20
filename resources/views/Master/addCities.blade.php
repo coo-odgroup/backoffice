@@ -21,8 +21,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
     <div>
-        <button class="btn btn-success btn-sm" onclick="window.location='{{ route('cities.index') }}'">View Cities
-        </button>
+        <a class="btn btn-success btn-sm" href="{{ route('cities.index') }}">View Cities
+        </a>
     </div>
 </div>
 
@@ -62,12 +62,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}" placeholder="Enter City Name">
                                         </div>
 
                                         <div class="col-md-6 mb-3">
                                             <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCityAlias" name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}">
+                                            <input type="text" class="form-control" id="txtCityAlias"
+                                                   name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}"
+                                                   placeholder="Enter Alias"
+                                                   oninput="this.value = this.value.toLowerCase();">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -90,40 +93,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         @foreach($data['synonyms'] as $index => $synonym)
                                         <div class="row mb-3 align-items-center synonym-row">
                                             <div class="col-md-1">
-                                                <label class="mb-0">Synonyms</label>
+                                                <label for="txtSynonym" class="mb-0">Synonyms</label>
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text"
-                                                    class="form-control synonym-input"
-                                                    name="txtSynonym[]"
-                                                    value="{{ $synonym }}">
-                                            </div>
-
-                                            <div class="col-md-1">
-                                                @if($index === 0)
-                                                <button type="button" class="btn btn-outline-primary btn-add">
-                                                    <i class="fa fa-plus"></i>
-                                                </button>
-                                                @else
-                                                <button type="button" class="btn btn-outline-danger btn-remove">
-                                                    <i class="fa fa-minus"></i>
-                                                </button>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        @endforeach
-                                        @else
-                                        {{-- ADD MODE: one empty field --}}
-                                        <div class="row mb-3 align-items-center synonym-row">
-                                            <div class="col-md-1">
-                                                <label class="mb-0">Synonyms</label>
-                                            </div>
-
-                                            <div class="col-md-5">
-                                                <input type="text"
-                                                    class="form-control synonym-input"
-                                                    name="txtSynonym[]">
+                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
                                             </div>
 
                                             <div class="col-md-1">
@@ -171,6 +145,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
+
     document.getElementById('txtCity').addEventListener('input', function() {
 
         let cityName = this.value;
@@ -201,16 +176,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
             $('.form-select').val(0);
-
-            // $('.form-control-choosen option:selected').removeAttr('selected');
-            // $('.chosen-single span').html('-- Select --');
-
-            // $('.chosen-select').chosen('destroy');
-            // $('.chosen-select').prop("selectedIndex", -1);
-            // $('.chosen-select').chosen();
-
-            // $('input[type="radio"]').prop('checked', false);
-            // $('input[type="checkbox"]').prop('checked', false);
+          
         });
     });
 
@@ -229,19 +195,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.blankCheck('txtCity', 'City Name cannot be left blank'))
+        if (!validator.blankCheck('txtCity', 'City Name cannot be left blank')){
             return false;
-        if (!validator.maxLength('txtCity', 100, 'City Name'))
+        }
+            
+        if (!validator.maxLength('txtCity', 100, 'City Name')){
             return false;
+        }
 
-        if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank'))
+        if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank')){
             return false;
+        }
 
-        if (!validator.maxLength('txtCityAlias', 100, 'City Alias'))
+        if (!validator.maxLength('txtCityAlias', 100, 'City Alias')){
             return false;
+        }
 
-        if (!validator.selectDropdown('selState', 'Select State'))
+        if (!validator.selectDropdown('selState', 'Select State')){
             return false;
+        }
+
+        if (!validator.checkAlias('txtCityAlias', 'City Alias')){
+            return false;
+        }
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
@@ -251,16 +227,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
         const container = document.getElementById('synonymContainer');
 
-        container.addEventListener('click', function(e) {
+        container.addEventListener('click', function (e) {
 
             // Add synonym Field
             if (e.target.closest('.btn-add')) {
@@ -268,18 +239,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 newRow.className = 'row mb-3 align-items-center synonym-row';
 
                 newRow.innerHTML = `
-                <div class="col-md-1">
-                    <label class="mb-0">Synonyms</label>
-                </div>
-                <div class="col-md-5">
-                    <input type="text" class="form-control synonym-input" name="txtSynonym[]">
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-outline-danger btn-remove">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                </div>
-            `;
+                    <div class="col-md-1">
+                     &nbsp;
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-danger btn-remove">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+                `;
 
                 container.appendChild(newRow);
             }
@@ -296,7 +267,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 </script>
-
 
 
 @endpush

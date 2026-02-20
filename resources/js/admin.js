@@ -50,24 +50,27 @@ window.addEventListener('load', function () {
 
 });
 
+
 document.addEventListener('DOMContentLoaded', function () {
     
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.getElementById('sidebar-wrapper');
-
-    if (menuToggle && sidebar) {
-        menuToggle.addEventListener('click', function () {
-            sidebar.classList.toggle('collapsed');
-        });
-    }
+   
     const alerts = document.querySelectorAll('.alert');
 
     alerts.forEach(function (alert) {
         setTimeout(function () {
             const bsAlert = new bootstrap.Alert(alert);
             bsAlert.close();
-        }, 5000);
+        }, 10000);
     });
+
+    const btnToggle = document.getElementById('menu-toggle');
+
+    btnToggle.addEventListener('click', function () {
+         console.log("Toggle clicked");
+    });
+
+
+
 
     //For Toggle Filter Button
     const btn = document.getElementById('btnToggleFilter');
@@ -116,6 +119,7 @@ window.loadDataTable = loadDataTable;
 
 import * as commonAjax from './commonAjax';
 window.commonAjax = commonAjax; 
+window.initTooltips = commonAjax.initTooltips;
 window.actionRec = commonAjax.actionRec;
 
 $(document).on('click', '.btn-view-log', function() {
@@ -125,5 +129,6 @@ $(document).on('click', '.btn-view-log', function() {
 
     commonAjax.viewLogs(table, id);
 });
+
 
 

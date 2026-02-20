@@ -2,7 +2,7 @@
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All Bus Types';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,16 +12,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} District</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} Bus Type</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Districts</h5>
+    <h5 id="page_title">Bus Types</h5>
     <div>
-        <a class="btn btn-success btn-sm" href="{{ route('district.index') }}">View Districts
+        <a href="{{ route('bustype.index') }}" class="btn btn-success btn-sm">
+            View Bus Types
         </a>
     </div>
 </div>
@@ -57,21 +58,30 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                                 @endif
 
-                                <!-- FILTER FIELDS -->
+                                <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
-                                            <label for="selState">State<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="selState" name="selState">
-                                                <option value="0">Select State</option>
+                                            <label for="classType">Class Type<span class="text-danger important">*</span></label>
+                                            <select class="form-select" id="classType" name="classType">
+                                                <option disabled selected>Select Class Type</option>
+
+                                                <option value="1"
+                                                    {{ (isset($data['row']) && $data['row']->class_id == 1) ? 'selected' : '' }}>
+                                                    AC
+                                                </option>
+
+                                                <option value="2"
+                                                    {{ (isset($data['row']) && $data['row']->class_id == 2) ? 'selected' : '' }}>
+                                                    NON AC
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="txtDistrict">District Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtDistrict" name="txtDistrict" value="{{ $data['row']->district_name ?? '' }}" placeholder="Enter District">
+                                            <label for="busType">Bus Type<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="busType" name="busType" value="{{ $data['row']->bus_type ?? '' }}">
                                         </div>
                                     </div>
-
                                 </div>
 
                                 <!-- BUTTONS -->
@@ -81,7 +91,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <a class="btn btn-secondary btn-sm" type="button" href="{{ route('district.index') }}">
+                                        <a href="{{ route('states.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
                                         </a>
                                         @else
@@ -91,7 +101,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         @endif
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -106,29 +115,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-    document.getElementById('txtDistrict').addEventListener('input', function() {
-
-        let cityName = this.value;
-
-        let alias = cityName
-            .toLowerCase() // convert to lowercase
-            .trim() // remove extra spaces
-            .replace(/[^a-z0-9\s-]/g, '') // remove special characters
-            .replace(/\s+/g, '-') // replace spaces with -
-            .replace(/-+/g, '-'); // remove duplicate -
-
-    });
-
-
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#selState', 'Select State');
-
-        let state_id = <?= $data['row']->state_id ?? '0' ?>
-
-        commonAjax.loadStateList(state_id);
-    });
-
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -139,12 +125,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('selState', 'Select State'))
+        if (!validator.selectDropdown('classType', 'Select Class Type'))
             return false;
-
-        if (!validator.blankCheck('txtDistrict', 'District Name cannot be left blank'))
+        if (!validator.blankCheck('busType', 'Bus Type Name cannot be left blank'))
             return false;
-        if (!validator.maxLength('txtDistrict', 100, 'District Name'))
+        if (!validator.maxLength('busType', 100, 'Bus Type Name'))
             return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');
@@ -159,6 +144,4 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 </script>
-
-
 @endpush

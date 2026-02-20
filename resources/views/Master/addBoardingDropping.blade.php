@@ -74,8 +74,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label for="type">Type<span class="text-danger important">*</span></label>
                                                 <select class="form-select type" id="type" name="type[]">
                                                     <option disabled selected>Select Type</option>
-                                                    <option value="1">Boarding</option>
-                                                    <option value="2">Dropping</option>
+                                                    <option value="1"
+                                                        {{ (isset($data['row']) && $data['row']->type == 1) ? 'selected' : '' }}>
+                                                        Boarding
+                                                    </option>
+
+                                                    <option value="2"
+                                                        {{ (isset($data['row']) && $data['row']->type == 2) ? 'selected' : '' }}>
+                                                        Dropping
+                                                    </option>
                                                 </select>
                                             </div>
                                             <div class="col-md-4 mb-3">
@@ -98,12 +105,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label for="sequence_no">Sequence No</label>
                                                 <input type="text" class="form-control" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" value="{{ $data['row']->sequence_no ?? '1' }}">
                                             </div>
-                                            <?php
-                                            
-                                    
-                                            
-                                            $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
-                                            <div class="col-md-1 d-flex align-items-end mb-3 {{ $isEdit }}">
+                                            <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
+                                            <div class="col-md-1 d-flex align-items-end mb-3 <?= $isEdit ?>">
                                                 <button type="button" class="btn btn-outline-primary btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>

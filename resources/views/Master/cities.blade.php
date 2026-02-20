@@ -144,8 +144,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <th>City Name</th>
                         <th>Alias</th>
                         <th>Synonymn</th>
-                        <th>Created By</th>
-                        <th>Created At</th>
+                        <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
                     </tr>
@@ -180,13 +179,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         // init selects
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
-
-        // hide filter by default
-        $('#filterBox').hide();
-
-        // load data
         commonAjax.loadStateList();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initTooltips();
         getDataTableView();
     });
 
@@ -232,8 +227,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             .val('');
 
         $('.form-select').val('').trigger('change');
-
-        getDataTableView();
+        getDataTableView(true);
     });
 
 
@@ -241,13 +235,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.getDistrictList($(this).val());
     });
 
+    window.getDataTableView = function(reset = true) {
+      
+        //  If table already initialized
+        if (window.dataTableInstance && reset) {
 
-    document.getElementById("menu-toggle")?.addEventListener("click", function () {
-        document.getElementById("sidebar-wrapper")?.classList.toggle("collapsed");
-    });
+            // Clear saved state
+            window.dataTableInstance.state.clear();
 
+            // Reset length dropdown UI
+            $('#pageSizeDatatable').val(10);
 
-    window.getDataTableView = function () {
+            // Reset page length internally
+            window.dataTableInstance.page.len(10);
+
+            // Force first page
+            window.dataTableInstance.page(0);
+        }
 
         $('#pageSizeDatatable').val(10);
 
@@ -282,14 +286,61 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 searchable: false,
                 render: data => {
                     if (!data) return '--';
-                    return data
-                        .split('||')
-                        .map((v, i) => `${i + 1}. ${v.trim()}`)
-                        .join('<br>');
+                 
+                    let items = data.split('||');
+                    let html = '';
+
+                    items.forEach((name, index) => {
+                        html += (index + 1) + '. ' + name.trim() + '<br>';
+                    });
+
+                    return html;
                 }
             },
-            { data: 'created_by_name', defaultContent: "--" },
-            { data: 'created_date', defaultContent: "--" },
+            // {
+            //     data: 'created_by_name',
+            //     defaultContent: "--"
+            // }, {
+            //     data: 'created_date',
+            //     defaultContent: "--"
+            // },
+           {
+                data: null,
+                render: function (data, type, row) {
+
+                    let createdBy  = row.created_by_name ?? '--';
+                    let createdAt  = row.created_date ?? '--';
+
+                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
+
+                    console.log(row);
+
+                    // Show updated date if exists, else created date
+                    let shortDate = row.updated_date
+                        ? row.updated_date.split(' ')[0]
+                        : (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
+
+                    return `
+                        <small
+                            class="text-primary fw-semibold"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${createdAt}
+                        </small>
+                    `;
+                }
+            },
             {
                 data: 'is_active',
                 className: "text-center",
@@ -298,22 +349,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: '',
-                className: "noPrint text-center",
-                render: (d, t, r) => {
-                    let editUrl = $('#datatable').data('edit-url');
-                    return editUrl
-                        ? `<a class="btn btn-sm btn-info" href="${editUrl.replace('ID', r.enc_city_id)}">
-                               <i class="fa fa-edit"></i> Edit
-                           </a>`
-                        : '';
-                }
+                render: function(data, type, row) {
+
+                    let editUrl = $('#' + tableId).data('edit-url');
+
+                    if (!editUrl) return '';
+
+                    return `
+                        <a class="btn btn-sm btn-info"
+                        href="${editUrl.replace('ID', row.enc_city_id)}">
+                        <i class="fa fa-edit"></i> Edit
+                        </a>
+                    `;
+                },
+                className: "noPrint text-center"
             }
         ];
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, [1,2,3,4,5,6]);
     };
 </script>
-
-
 
 @endpush

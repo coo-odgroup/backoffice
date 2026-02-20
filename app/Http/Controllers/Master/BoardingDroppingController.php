@@ -37,15 +37,16 @@ class BoardingDroppingController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $dataResQry['rows'] = DB::table('mst_boarding_droping')
-                    ->where('id', $id)
-                    ->where('active_status', 1)
-                    ->get();
+                $dataResQry = BoardingDropping::select('id', 'cities_id', 'type', 'brd_drp_point', 'landmark', 'latitude', 'longitude', 'sequence_no');
 
-                if ($dataResQry['rows']->isEmpty()) {
-                    return redirect('admin/boardingDropping');
+                $dataResQry = $dataResQry->where('id', $id)->first();
+
+                if (empty($dataResQry)) {
+                    return redirect("boardingDropping");
                 }
+                $data['row'] = $dataResQry;
             } else {
+                $id = 0;
                 $redirectPage = "admin/boardingDropping";
             }
 
@@ -101,18 +102,25 @@ class BoardingDroppingController extends Controller
 
                 foreach ($types as $i => $type) {
 
-                    $exists = DB::table('mst_boarding_droping')
+                    $query = DB::table('mst_boarding_droping')
                         ->where('cities_id', $cityId)
-                        ->where('type', $type)
-                        ->where('sequence_no', $sequences[$i] ?? null)
-                        ->where('active_status', 1)
-                        ->exists();
+                        ->whereRaw('LOWER(brd_drp_point) = ?', [strtolower(trim($points[$i]))])
+                        ->where('active_status', 1);
 
-                    if ($exists) {
+                    if ($id > 0) {
+                        $query->where('id', '!=', $id);
+                    }
+
+                    $exists = $query->get();
+
+                    // echo "<pre>";
+                    // print_r($exists); exit;
+
+                    if ($exists->count() > 0) {
                         DB::rollBack();
                         return back()->with([
                             'level'   => 'danger',
-                            'message' => 'Duplicate sequence found for the same city & type.'
+                            'message' => 'Duplicate Boarding / Dropping found for the same city'
                         ])->withInput();
                     }
                 }
@@ -135,7 +143,11 @@ class BoardingDroppingController extends Controller
                     ];
                 }
 
-                DB::table('mst_boarding_droping')->insert($insertData);
+                if ($id > 0) {
+                    DB::table('mst_boarding_droping')->where('id', $id)->update($insertData[0]);
+                } else {
+                    DB::table('mst_boarding_droping')->insert($insertData);
+                }
 
                 session()->flash('level', 'success');
                 session()->flash('message', 'Boarding / Dropping ' . (($id != 0) ?
@@ -198,7 +210,7 @@ class BoardingDroppingController extends Controller
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('s.state_name', 'like', "%{$txtSearch}%");
+                        ->orWhere('b.brd_drp_point', 'like', "%{$txtSearch}%");
                 });
             }
 
