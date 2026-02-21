@@ -56,7 +56,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
                                     <label for="type">Type<span class="text-danger important">*</span></label>
-                                    <select class="form-select type" id="type" name="type[]">
+                                    <select class="form-select type" id="type" name="type">
                                         <option disabled selected>Select Type</option>
                                         <option value="1">
                                             Boarding
@@ -182,6 +182,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         //check box select/deselect
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
 
+
         commonAjax.initSelect2('#selCity', 'Select City');
         commonAjax.loadCityList(null, '#selCity');
         getDataTableView();
@@ -226,6 +227,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
+
         let searchParams = {
 
             type: $('#type').val(),

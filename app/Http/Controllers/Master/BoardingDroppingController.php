@@ -189,7 +189,7 @@ class BoardingDroppingController extends Controller
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
             $selCity = (int) request('selCity');
-            $selType = (int) request('type');
+            $selType = (int) request('type', 0);
 
             $dataQuery = DB::table('mst_boarding_droping as b')
                 ->leftJoin('mst_cities as c', 'c.id', '=', 'b.cities_id')
