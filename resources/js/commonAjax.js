@@ -395,19 +395,12 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
                 }
 
                 $('.selCity').html(options);
-
-                console.log(options);
             },
             error: function () {
                 $('.selCity').html('<option value="">-- Select City --</option>');
             }
         });
     }
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-    });
 
     $(document).on('change', '.order-input', function () {
 
@@ -423,7 +416,8 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
                 table: table,
                 column: column,
                 value: value,
-                id: id
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr('content')
             },
             success: function (response) {
                 viewAlert('Order updated successfully');

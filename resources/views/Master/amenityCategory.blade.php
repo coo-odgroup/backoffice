@@ -236,11 +236,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'display_order',
                 render: function(data, type, row) {
                     return `<input type="text"
-                    value="${data ?? ''}"
-                    class="form-control form-control-sm order-input"
-                    data-id="${row.enc_amenity_cat_id}"
-                    data-table="mst_amenity_categories"
-                    data-column="display_order">`;
+                            value="${data ?? ''}"
+                            minlength="1"
+                            maxlength="3"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            class="form-control form-control-sm order-input"
+                            data-id="${row.enc_amenity_cat_id}"
+                            data-table="mst_amenity_categories"
+                            data-column="display_order">`;
                 },
                 defaultContent: "--"
             },

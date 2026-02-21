@@ -273,18 +273,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'brd_drp_point',
                 defaultContent: "--"
             },
-            {
+          
+               {
                 data: 'sequence_no',
                 render: function(data, type, row) {
-
-                   
-
                     return `<input type="text"
-                    value="${data ?? ''}"
-                    class="form-control form-control-sm order-input"
-                    data-id="${row.enc_bd_id}"
-                    data-table="mst_boarding_droping"
-                    data-column="sequence_no">`;
+                            value="${data ?? ''}"
+                            minlength="1"
+                            maxlength="3"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            class="form-control form-control-sm order-input"
+                            data-id="${row.enc_bd_id}"
+                            data-table="mst_boarding_droping"
+                            data-column="sequence_no">`;
                 },
                 defaultContent: "--"
             },
