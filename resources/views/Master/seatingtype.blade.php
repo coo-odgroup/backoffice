@@ -114,7 +114,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
             <div class="d-flex justify-content-between align-items-center">
-                <div>
+                <div id="utilitiesTop">
                     <button type="button" id="btnExcel" class="btn btn-success btn-sm">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>
@@ -137,6 +137,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </th>
                         <th>Sl No</th>
                         <th>Seat Type</th>
+                        <th>Last Modified</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -263,6 +264,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
+                data: null,
+                render: function (data, type, row) {
+
+                    let createdBy  = row.created_by_name ?? '--';
+                    let createdAt  = row.created_date ?? '--';
+
+                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
+
+                    // Show updated date if exists, else created date
+                    let displayDate = (updatedAt!='--') ? updatedAt : createdAt;
+
+                    return `
+                        <small
+                            class="text-primary fw-semibold"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${displayDate}
+                        </small>
+                    `;
+                }
+            },
+            {
                 data: 'is_active',
                 render: function(data, type, row) {
                     var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
@@ -270,13 +304,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-
-            // {
-            //     data: 'created_date',
-            //     defaultContent: "--",
-            //     className: "text-center text-nowrap"
-            // },
-
             {
                 data: '',
                 render: function(data, type, row) {

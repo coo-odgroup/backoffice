@@ -29,14 +29,16 @@ class StateController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
             $dataQuery = DB::table('mst_states as s')
-                ->leftJoin('users as u', 'u.id', '=', 's.created_by')
                 ->select(
                     's.id as state_id',
                     's.state_name',
                     's.created_at',
                     's.created_by',
-                    'u.name as created_by_name',
-                    's.active_status'
+                    's.updated_at',
+                    's.updated_by',
+                    's.active_status',
+                    DB::raw('(SELECT name FROM users WHERE id = s.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = s.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters
@@ -86,6 +88,7 @@ class StateController extends Controller
 
                 foreach ($arrRes as $val) {
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
                     $val->enc_state_id   = Crypt::encryptString($val->state_id);
                 }

@@ -31,20 +31,18 @@ class DistrictController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
             $dataQuery = DB::table('mst_districts as d')
-                ->leftJoin('mst_states as s', 's.id', '=', 'd.state_id')
-                ->leftJoin('users as u', 'u.id', '=', 'd.created_by')
                 ->select(
                     'd.id as district_id',
                     'd.district_name',
-                    's.state_name',
                     'd.created_at',
                     'd.created_by',
-                    'u.name as created_by_name',
-                    'd.active_status'
+                    'd.updated_at',
+                    'd.updated_by',
+                    'd.active_status',
+                    DB::raw('(SELECT state_name FROM mst_states WHERE id = d.state_id LIMIT 1) as state_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = d.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = d.updated_by LIMIT 1) as updated_by_name')
                 );
-
-
-            // return $dataQuery->get();exit;
 
             // Filters
             if (!empty($txtSearch)) {
@@ -94,6 +92,7 @@ class DistrictController extends Controller
 
                 foreach ($arrRes as $val) {
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
                     $val->enc_district_id   = Crypt::encryptString($val->district_id);
                 }

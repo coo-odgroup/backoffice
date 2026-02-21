@@ -30,15 +30,17 @@ class BusTypeController extends Controller
             $classSearch = (request('classSearch') !== null && request('classSearch') !== '') ? (int)request('classSearch') : '';
 
             $dataQuery = DB::table('mst_bus_type as bt')
-                ->leftJoin('users as u', 'u.id', '=', 'bt.created_by')
                 ->select(
                     'bt.id as bustype_id',
                     'bt.class_id',
                     'bt.bus_type',
                     'bt.created_at',
                     'bt.created_by',
-                    'u.name as created_by_name',
-                    'bt.active_status'
+                    'bt.updated_at',
+                    'bt.updated_by',
+                    'bt.active_status',
+                    DB::raw('(SELECT name FROM users WHERE id = bt.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = bt.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters
@@ -67,7 +69,7 @@ class BusTypeController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'bt.bus_type', 3 => 'bt.created_at', 4 => 'bt.created_by', 4 => 'bt.active_status'];
+                $columns = [2 => 'bt.bus_type', 3 => 'bt.created_at', 4 => 'bt.created_by', 5 => 'bt.active_status'];
 
                 $orderBy       = request('order');
                 $orderColumn   = $columns[$orderBy[0]['column']] ?? 'bt.bus_type';
@@ -92,6 +94,7 @@ class BusTypeController extends Controller
 
                 foreach ($arrRes as $val) {
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
                     $val->enc_bustype_id   = Crypt::encryptString($val->bustype_id);
                 }
