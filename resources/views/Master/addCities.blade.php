@@ -88,25 +88,54 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                     </div>
                                     <div id="synonymContainer">
-
-                                        @if(!empty($data['synonyms']))
-                                            @foreach($data['synonyms'] ?? [] as $index => $synonym)
+                                        @if($data['strPage']=="Edit")
+                                            @if(!empty($data['synonyms']))
+                                                @foreach($data['synonyms'] ?? [] as $index => $synonym)
                                                 <div class="row mb-3 align-items-center synonym-row">
                                                     <div class="col-md-1">
-                                                        <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                                        <label for="txtSynonym" class="mb-0">
+                                                            @if ($index==0)
+                                                            Synonyms
+                                                            @else
+                                                            &nbsp;
+                                                            @endif
+                                                        </label>
                                                     </div>
 
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                                                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}">
                                                     </div>
 
                                                     <div class="col-md-1">
+                                                        @if ($index==0)
                                                         <button type="button" class="btn btn-outline-primary btn-add">
                                                             <i class="fa fa-plus"></i>
                                                         </button>
+                                                        @else
+                                                        <button type="button" class="btn btn-outline-danger btn-remove">
+                                                            <i class="fa fa-minus"></i>
+                                                        </button>
+                                                        @endif
                                                     </div>
                                                 </div>
-                                            @endforeach
+                                                @endforeach
+                                            @endif
+                                        @else
+                                        <div class="row mb-3 align-items-center synonym-row">
+                                            <div class="col-md-1">
+                                                <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                                            </div>
+
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                         @endif
                                     </div>
                                 </div>

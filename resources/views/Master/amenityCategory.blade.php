@@ -125,8 +125,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Category Name</th>
                             <th>Description</th>
                             <th width="100">Display Order</th>
-                            <th>Created By</th>
-                            <th>Created On</th>
+                            <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
                         </tr>
