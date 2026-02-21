@@ -145,8 +145,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <th>Type</th>
                         <th>Boarding/Dropping Point</th>
                         <th width="100">Sequence No</th>
-                        <th>Created By</th>
-                        <th>Created On</th>
+                        <th>Last Modefied</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
                     </tr>
@@ -234,8 +233,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             selCity: $('#selCity').val() || 0,
             txtsearch: $('#txtSearch').val() || '',
             selstatus: $('#selStatus').val() || '',
- 
- 
+
+
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -274,26 +273,56 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'brd_drp_point',
                 defaultContent: "--"
             },
-            {
+          
+               {
                 data: 'sequence_no',
                 render: function(data, type, row) {
                     return `<input type="text"
-                    value="${data ?? ''}"
-                    class="form-control form-control-sm order-input"
-                    data-id="${row.enc_bd_id}"
-                    data-table="mst_boarding_droping"
-                    data-column="sequence_no">`;
+                            value="${data ?? ''}"
+                            minlength="1"
+                            maxlength="3"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            class="form-control form-control-sm order-input"
+                            data-id="${row.enc_bd_id}"
+                            data-table="mst_boarding_droping"
+                            data-column="sequence_no">`;
                 },
                 defaultContent: "--"
             },
+            {
+                data: null,
+                render: function(data, type, row) {
 
-            {
-                data: 'created_by_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'created_date',
-                defaultContent: "--"
+                    let createdBy = row.created_by_name ?? '--';
+                    let createdAt = row.created_date ?? '--';
+
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
+
+                    // Show updated date if exists, else created date
+                    let shortDate = row.updated_date ?
+                        row.updated_date.split(' ')[0] :
+                        (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
+
+                    return `
+                        <span
+                            class="text-decoration-underline fw-semibold"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${createdAt}
+                        </span>
+                    `;
+                }
             },
             {
                 data: 'is_active',
@@ -315,6 +344,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <a class="btn btn-sm btn-info"
                         href="${editUrl.replace('ID', row.enc_bd_id)}">
                         <i class="fa fa-edit"></i> Edit
+                        </a>
+
+                         <a href="javascript:void(0);"
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="mst_cities"
+                            data-id="${row.enc_bd_id}">
+                                <i class="fa fa-history"></i> View Log
                         </a>
                     `;
                 },
