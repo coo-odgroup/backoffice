@@ -54,6 +54,7 @@ Route::prefix('admin')->group(function () {
     Route::post('boardingDropping/dataTableView', [BoardingDroppingController::class, 'dataTableView'])->name('boardingDropping.dataTableView');
     Route::match(['get', 'post'], 'boardingDropping/edit/{encId}',[BoardingDroppingController::class, 'edit'])->name('boardingDropping.edit');
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
+    Route::post('admin/boardingDropping/check-exists',[BoardingDroppingController::class, 'checkExists'])->name('boardingDropping.checkExists');
 
 
 

@@ -92,7 +92,7 @@ class BoardingDroppingController extends Controller
 
                 DB::beginTransaction();
 
-                $cityId     = request('selCity')[0]; // single city
+                $cityId     = request('selCity'); // single city
                 $types      = request('type', []);
                 $points     = request('brd_drp_point', []);
                 $landmarks  = request('landmark', []);
@@ -112,9 +112,6 @@ class BoardingDroppingController extends Controller
                     }
 
                     $exists = $query->get();
-
-                    // echo "<pre>";
-                    // print_r($exists); exit;
 
                     if ($exists->count() > 0) {
                         DB::rollBack();
@@ -191,6 +188,8 @@ class BoardingDroppingController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $selCity = (int) request('selCity');
+            $selType = (int) request('type');
 
             $dataQuery = DB::table('mst_boarding_droping as b')
                 ->leftJoin('mst_cities as c', 'c.id', '=', 'b.cities_id')
@@ -209,13 +208,20 @@ class BoardingDroppingController extends Controller
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('c.city_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('b.brd_drp_point', 'like', "%{$txtSearch}%");
+                    $q->where('b.brd_drp_point', 'like', "%{$txtSearch}%")
+                        ->orWhere('c.city_name', 'like', "%{$txtSearch}%");
                 });
             }
 
-            if (isset($selStatus) && $selStatus != '') {
-                $dataQuery->where('b.active_status', $selStatus);
+            if ($selStatus !== '' && $selStatus !== null) {
+                $dataQuery->where('b.active_status', (int)$selStatus);
+            }
+
+            if ($selCity > 0) {
+                $dataQuery->where('b.cities_id', $selCity);
+            }
+            if ($selType > 0) {
+                $dataQuery->where('b.type', $selType);
             }
 
             $count = $dataQuery->count('b.id');
@@ -286,6 +292,20 @@ class BoardingDroppingController extends Controller
             'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data'            => $data,
+        ]);
+    }
+
+    public function checkExists(Request $request)
+    {
+        $exists = DB::table('mst_boarding_droping')
+            ->where('cities_id', $request->city_id)
+            ->where('type', $request->type)
+            ->whereRaw('LOWER(brd_drp_point) = ?', [strtolower(trim($request->point))])
+            ->where('active_status', 1)
+            ->exists();
+
+        return response()->json([
+            'exists' => $exists
         ]);
     }
 }

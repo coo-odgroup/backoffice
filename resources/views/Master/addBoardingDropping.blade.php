@@ -87,7 +87,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="brd_drp_point">Boarding / Dropping Point<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control brd_drp_point" placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" value="{{ $data['row']->brd_drp_point ?? '' }}">
+                                                <input type="text" class="form-control brd_drp_point" data-check-url="{{ route('boardingDropping.checkExists') }}"
+                                                placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" value="{{ $data['row']->brd_drp_point ?? '' }}">
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="landmark">Landmark</label>
@@ -194,6 +195,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $(document).on('click', '.btn-add', function () {
 
+            const testVal = $('#selCity').val();
+
+            if (!testVal) {
+                commonAjax.confirmAlert('Please Select City');
+                $('#selCity').focus();
+                e.preventDefault();
+                return false;
+            }
+
             rowCount++;
 
             $("#boardingDroppingWrapper").append(
@@ -203,7 +213,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         "<div class='col-md-4 mb-3'>" +
                             "<label>Type<span class='text-danger important'>*</span></label>" +
-                            "<select class='form-select ' name='type[]'>" +
+                            "<select class='form-select type' name='type[]' >" +
                                 "<option disabled selected>Select Type</option>" +
                                 "<option value='1'>Boarding</option>" +
                                 "<option value='2'>Dropping</option>" +
@@ -212,22 +222,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         "<div class='col-md-4 mb-3'>" +
                             "<label>Boarding / Dropping Point<span class='text-danger important'>*</span></label>" +
-                            "<input type='text' class='form-control brd_drp_point' name='brd_drp_point[]'>" +
-                        "</div>" +
+                            "<input type='text' placeholder='Enter Boarding/Dropping Point' class='form-control brd_drp_point' "  +
+                                "data-check-url='{{ route('boardingDropping.checkExists') }}' " +
+                                "name='brd_drp_point[]'>" +
+                            "</div>" +
 
                         "<div class='col-md-4 mb-3'>" +
                             "<label>Landmark</label>" +
-                            "<input type='text' class='form-control' name='landmark[]'>" +
+                            "<input type='text' class='form-control'  placeholder='Enter Landmark' name='landmark[]'>" +
                         "</div>" +
 
                         "<div class='col-md-4 mb-3'>" +
                             "<label>Latitude</label>" +
-                            "<input type='text' class='form-control latitude' name='latitude[]'>" +
+                            "<input type='text' class='form-control latitude' placeholder='Enter Latitude' name='latitude[]'>" +
                         "</div>" +
 
                         "<div class='col-md-4 mb-3'>" +
                             "<label>Longitude</label>" +
-                            "<input type='text' class='form-control longitude' name='longitude[]'>" +
+                            "<input type='text' class='form-control longitude' placeholder='Enter Longitude' name='longitude[]'>" +
                         "</div>" +
 
                         "<div class='col-md-3 mb-3'>" +
@@ -254,6 +266,38 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if (!confirm('Are you sure to remove this entry !')) return;
 
         $("#" + $(this).data('id')).remove();
+    });
+    
+
+    $(document).on('blur', '.brd_drp_point', function () {
+
+        let $input = $(this);
+
+        let point = $.trim($input.val());
+        if (point === '') return;
+
+        let cityId = $('#selCity').val();
+        let type   = $input.closest('.row').find('select[name="type[]"]').val();
+
+        if (!cityId || !type) return;
+
+        $.ajax({
+            url: $input.data('check-url'),
+            type: 'POST',
+            data: {
+                city_id: cityId,
+                type: type,
+                point: point,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (res) {
+
+                if (res.exists) {
+                    commonAjax.confirmAlert('Boarding / Dropping point already exists');
+                    $input.val('').focus();
+                }
+            }
+        });
     });
 </script>
 @endpush

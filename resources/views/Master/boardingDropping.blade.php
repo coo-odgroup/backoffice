@@ -48,6 +48,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         placeholder="Boarding/Dropping Name">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="selCity">City<span class="text-danger important">*</span></label>
+                                    <select class="form-select selCity" id="selCity" name="selCity">
+                                        <option value="0">Select City</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="selStatus">Status</label>
+                                    <label for="type">Type<span class="text-danger important">*</span></label>
+                                    <select class="form-select type" id="type" name="type[]">
+                                        <option disabled selected>Select Type</option>
+                                        <option value="1">
+                                            Boarding
+                                        </option>
+
+                                        <option value="2">
+                                            Dropping
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
                                     <select class="form-select" id="selStatus" name="selStatus">
                                         <option value="">Select Status</option>
@@ -98,7 +118,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
-                <div>
+                <div id="utilitiesTop">
                     <button type="button" id="btnExcel" class="btn btn-success btn-sm">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>
@@ -121,9 +141,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                         </th>
                         <th>Sl No</th>
-                        <th>Boarding/Dropping Point</th>
                         <th>City Name</th>
                         <th>Type</th>
+                        <th>Boarding/Dropping Point</th>
                         <th width="100">Sequence No</th>
                         <th>Created By</th>
                         <th>Created On</th>
@@ -159,7 +179,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        //check box select/deselect
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+
+        commonAjax.initSelect2('#selCity', 'Select City');
+        commonAjax.loadCityList(null, '#selCity');
         getDataTableView();
     });
 
@@ -203,8 +227,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+
+            type: $('#type').val(),
+            selCity: $('#selCity').val() || 0,
+            txtsearch: $('#txtSearch').val() || '',
+            selstatus: $('#selStatus').val() || '',
+ 
+ 
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -224,16 +253,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'brd_drp_point',
-                defaultContent: "--"
-            },
-            {
                 data: 'city_name',
                 defaultContent: "--"
             },
             {
                 data: 'type',
-                render: function (data, type, row) {
+                render: function(data, type, row) {
                     if (data == 1) {
                         return 'BOARDING';
                     } else if (data == 2) {
@@ -242,6 +267,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         return '--';
                     }
                 }
+            },
+            {
+                data: 'brd_drp_point',
+                defaultContent: "--"
             },
             {
                 data: 'sequence_no',
