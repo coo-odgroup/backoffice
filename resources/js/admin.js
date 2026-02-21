@@ -80,13 +80,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     btn.addEventListener('click', function () {
 
-        // console.log("Toggle Filter Button Clicked");
-
         if (filterBox.classList.contains('d-none')) {
-             console.log("Toggle Filter Button Clicked");
             filterBox.classList.remove('d-none');
         } else {
-             console.log("Toggle Filter Button Clickedd");
             filterBox.classList.add('d-none');
         }
 

@@ -21,7 +21,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Cities</h5>
     <div>
-        <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
+         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
@@ -37,7 +37,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom" id="filterBox">
+            <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row">
                         <!-- FILTER FIELDS -->
