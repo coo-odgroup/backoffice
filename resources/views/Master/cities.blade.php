@@ -310,8 +310,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         : (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
+                        <span
+                            class="text-decoration-underline fw-semibold"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -325,7 +325,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${createdAt}
-                        </small>
+                        </span>
                     `;
                 }
             },
