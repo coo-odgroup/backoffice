@@ -233,8 +233,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             selCity: $('#selCity').val() || 0,
             txtsearch: $('#txtSearch').val() || '',
             selstatus: $('#selStatus').val() || '',
- 
- 
+
+
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -276,6 +276,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {
                 data: 'sequence_no',
                 render: function(data, type, row) {
+
+                   
+
                     return `<input type="text"
                     value="${data ?? ''}"
                     class="form-control form-control-sm order-input"
@@ -285,20 +288,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 defaultContent: "--"
             },
- {
+            {
                 data: null,
-                render: function (data, type, row) {
+                render: function(data, type, row) {
 
-                    let createdBy  = row.created_by_name ?? '--';
-                    let createdAt  = row.created_date ?? '--';
+                    let createdBy = row.created_by_name ?? '--';
+                    let createdAt = row.created_date ?? '--';
 
-                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
-                 
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
+
                     // Show updated date if exists, else created date
-                    let shortDate = row.updated_date
-                        ? row.updated_date.split(' ')[0]
-                        : (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
+                    let shortDate = row.updated_date ?
+                        row.updated_date.split(' ')[0] :
+                        (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
 
                     return `
                         <span
