@@ -91,6 +91,7 @@ class AmenityCategoryController extends Controller
 
                 foreach ($arrRes as $val) {
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
                     $val->enc_amenity_cat_id   = Crypt::encryptString($val->amenity_cat_id);
                 }
