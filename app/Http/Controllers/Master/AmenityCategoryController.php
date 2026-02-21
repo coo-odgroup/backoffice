@@ -29,7 +29,6 @@ class AmenityCategoryController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
             $dataQuery = DB::table('mst_amenity_categories as ac')
-                ->leftJoin('users as u', 'u.id', '=', 'ac.created_by')
                 ->select(
                     'ac.id as amenity_cat_id',
                     'ac.category_name',
@@ -37,8 +36,11 @@ class AmenityCategoryController extends Controller
                     'ac.display_order',
                     'ac.created_at',
                     'ac.created_by',
-                    'u.name as created_by_name',
-                    'ac.active_status'
+                    'ac.updated_at',
+                    'ac.updated_by',
+                    'ac.active_status',
+                    DB::raw('(SELECT name FROM users WHERE id = ac.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = ac.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters

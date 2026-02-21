@@ -30,21 +30,22 @@ class AmenitiesController extends Controller
             $amenityCategory = (request('amenityCategory') !== null && request('amenityCategory') !== '') ? (int)request('amenityCategory') : '';
 
             $dataQuery = DB::table('mst_amenities as a')
-                ->leftJoin('mst_amenity_categories as ac', 'a.category_id', '=', 'ac.id')
-                ->leftJoin('users as u', 'u.id', '=', 'a.created_by')
                 ->select(
                     'a.id as amenity_id',
                     'a.category_id',
                     'a.amenity_name',
-                    'ac.category_name',
                     'a.description',
                     'a.icon',
                     'a.is_paid',
                     'a.is_seat_specific',
                     'a.created_at',
                     'a.created_by',
-                    'u.name as created_by_name',
-                    'a.active_status'
+                    'a.updated_at',
+                    'a.updated_by',
+                    'a.active_status',
+                    DB::raw('(SELECT category_name FROM mst_amenity_categories WHERE id = a.category_id LIMIT 1) as category_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = a.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = a.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters
@@ -99,6 +100,7 @@ class AmenitiesController extends Controller
 
                 foreach ($arrRes as $val) {
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
                     $val->enc_amenity_id   = Crypt::encryptString($val->amenity_id);
                 }

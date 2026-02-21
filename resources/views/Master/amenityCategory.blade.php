@@ -98,7 +98,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
-                <div>
+                <div id="utilitiesTop">
                     <button type="button" id="btnExcel" class="btn btn-success btn-sm">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>

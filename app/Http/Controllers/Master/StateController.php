@@ -29,14 +29,13 @@ class StateController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
             $dataQuery = DB::table('mst_states as s')
-                ->leftJoin('users as u', 'u.id', '=', 's.created_by')
                 ->select(
                     's.id as state_id',
                     's.state_name',
                     's.created_at',
                     's.created_by',
-                    'u.name as created_by_name',
-                    's.active_status'
+                    's.active_status',
+                    DB::raw('(SELECT name FROM users WHERE id = s.created_by LIMIT 1) as created_by_name')
                 );
 
             // Filters
