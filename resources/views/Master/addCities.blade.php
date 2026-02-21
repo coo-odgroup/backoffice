@@ -90,27 +90,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div id="synonymContainer">
 
                                         @if(!empty($data['synonyms']))
-                                        @foreach($data['synonyms'] as $index => $synonym)
-                                        <div class="row mb-3 align-items-center synonym-row">
-                                            <div class="col-md-1">
-                                                <label for="txtSynonym" class="mb-0">Synonyms</label>
-                                            </div>
+                                            @foreach($data['synonyms'] ?? [] as $index => $synonym)
+                                                <div class="row mb-3 align-items-center synonym-row">
+                                                    <div class="col-md-1">
+                                                        <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                                    </div>
 
-                                            <div class="col-md-5">
-                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
-                                            </div>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                                                    </div>
 
-                                            <div class="col-md-1">
-                                                <button type="button" class="btn btn-outline-primary btn-add">
-                                                    <i class="fa fa-plus"></i>
-                                                </button>
-                                            </div>
-                                        </div>
+                                                    <div class="col-md-1">
+                                                        <button type="button" class="btn btn-outline-primary btn-add">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         @endif
-
                                     </div>
-
-
                                 </div>
 
                                 <!-- BUTTONS -->
@@ -120,9 +118,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <button class="btn btn-secondary btn-sm" type="button" onclick="window.location='{{ route('cities.index') }}'">
+                                        <a href="{{ route('cities.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
-                                        </button>
+                                        </a>
                                         @else
                                         <button class="btn btn-secondary btn-sm" id="btnReset" type="button" id="resetBtn">
                                             {{ $data['strReset'] }}
@@ -166,8 +164,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
 
-        let state_id = {{ $data['row'] -> state_id ?? 0 }};
-        let district_id = { { $data['row'] -> district_id ?? 0 } };
+        let state_id = <?=$data['row'] -> state_id ?? 0 ?>;
+        let district_id = <?=$data['row'] -> district_id ?? 0 ?>;
 
         commonAjax.loadStateList(state_id);
         commonAjax.getDistrictList(state_id, district_id);
@@ -267,6 +265,5 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 </script>
-
 
 @endpush

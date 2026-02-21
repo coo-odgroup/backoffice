@@ -2,7 +2,7 @@
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All Seat Types';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,7 +12,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">Seat Types List</li>
+        <li class="breadcrumb-item active">Seat Types</li>
     </ol>
 </nav>
 
@@ -21,10 +21,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">Seat Types</h5>
     <div>
-        <button type="button" class="btn btn-primary btn-sm" onclick="toggleFilter()">
-            <i class="fa-solid fa-magnifying-glass me-1"></i> Search
+        <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-magnifying-glass me-1"></i>
+            <span class="btn-text">Filter</span>
         </button>
-        <a class="btn btn-success btn-sm" href="{{ route('seatingtype.add') }}">+ Add Seat Type
+        <a href="{{ route('seatingtype.add') }}" class="btn btn-success btn-sm">
+            + Add Seat Type
         </a>
     </div>
 </div>
@@ -34,29 +36,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom" id="filterBox">
+            <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row">
                         <!-- FILTER FIELDS -->
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By City Name/Alias</label>
+                                    <label for="txtSearch">Search By Bus Type</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="City Name/Alias">
-                                </div>
-
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selState">State</label>
-                                    <select class="form-select" id="selState" name="selState">
-                                        <option value="0">Select State</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selDistrict">District</label>
-                                    <select class="form-select" id="selDistrict" name="selDistrict">
-                                        <option value="0">Select District</option>
-                                    </select>
+                                        placeholder="Bus Type">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -66,20 +55,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <option value="0">Inactive</option>
                                     </select>
                                 </div>
-
                             </div>
                         </div>
 
                         <!-- BUTTONS -->
                         <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-check me-1"></i>Submit
+                                <i class="fa-solid fa-search me-1"></i>Search
                             </button>
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -106,12 +93,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
-
                     </div>
-
                 </div>
             </div>
-
 
             <div class="d-flex justify-content-between align-items-center">
                 <div id="utilitiesTop">
@@ -124,12 +108,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <button type="button" id="btnPrint" class="btn btn-danger btn-sm">
                         <i class="fa-solid fa-print me-1"></i>
                     </button>
-
                 </div>
                 <div id="customPaginationTop"></div>
             </div>
+
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('seatingtype.dataTableView') }}" data-edit-url="{{ route('seatingtype.edit', 'ID') }}">
+                data-url="{{ route('seatingtype.dataTableView') }}"
+                data-edit-url="{{ route('seatingtype.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
@@ -139,7 +124,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <th>Seat Type</th>
                         <th>Last Modified</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th class="no-sort">Action</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -149,6 +134,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
             <input type="hidden" id="hdn_model" value="SeatType">
+
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
                 <div id="customPagination"></div>
@@ -162,6 +148,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
+    window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
+
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
     });
@@ -172,54 +160,34 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
 
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#selState', 'Select State');
-        commonAjax.initSelect2('#selDistrict', 'Select District');
-        // By default hide filter
-        $("#filterBox").hide();
-
-        // Toggle on button click
-        window.toggleFilter = function() {
-            $("#filterBox").slideToggle(300);
-        };
-        commonAjax.loadStateList();
-        getDataTableView();
-    });
-
-
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
-
-        getDataTableView();
+        getDataTableView(true);
     });
 
-    $(document).on('change', '#selState', function() {
-        let state_id = $(this).val();
-        commonAjax.getDistrictList(state_id);
-    });
+    window.getDataTableView = function(reset = true) {
 
+        //  If table already initialized
+        if (window.dataTableInstance && reset) {
 
-    function toggleFilter() {
-        console.log("toggleFilter called");
-        document.getElementById("filterBox").classList.toggle("d-none");
-    }
+            // Clear saved state
+            window.dataTableInstance.state.clear();
 
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-    });
+            // Reset length dropdown UI
+            $('#pageSizeDatatable').val(10);
 
+            // Reset page length internally
+            window.dataTableInstance.page.len(10);
 
-
-    window.getDataTableView = function() {
+            // Force first page
+            window.dataTableInstance.page(0);
+        }
 
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let selState = 0;
-        let selDistrict = 0;
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -227,28 +195,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
-        if ($('#selState').val() != 0) {
-            selState = $('#selState').val();
-        }
-        if ($('#selDistrict').val() != 0) {
-            selDistrict = $('#selDistrict').val();
-        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
             txtsearch: txtSearch,
-            selstatus: selStatus,
-            selstate: selState,
-            seldistrict: selDistrict
+            selstatus: selStatus
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.service_id +
-                        '" name="chkStd' + row.id + '" value="' + row.id +
-                        '" onclick="checkFun(this.id)">';
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.seat_type_id +
+                        '" name="chkStd' + row.seat_type_id + '" value="' + row.seat_type_id +
+                        '" >';
                 },
                 className: "noPrint text-center"
             },
@@ -320,7 +280,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_seat_type"
+                            data-table="mst_bus_type"
                             data-id="${row.enc_seat_type_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
@@ -333,5 +293,4 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
 </script>
-
 @endpush
