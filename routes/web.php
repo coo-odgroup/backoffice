@@ -12,12 +12,9 @@ use App\Http\Controllers\Master\SeatingTypeController;
 use App\Http\Controllers\Master\AmenitiesController;
 use App\Http\Controllers\Master\BusTypeController;
 use App\Http\Controllers\Master\AmenityCategoryController;
-<<<<<<< HEAD
 use App\Http\Controllers\Master\ApiAppsController;
 use App\Http\Controllers\Master\ApikeysController;
-=======
 use App\Http\Controllers\Master\RolesController;
->>>>>>> 875feb33d63d882001ad38b6130e96e0381b433e
 
 /*
 |--------------------------------------------------------------------------
