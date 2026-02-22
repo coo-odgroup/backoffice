@@ -119,6 +119,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     </div>
                                                 </div>
                                                 @endforeach
+                                            @else
+                                            <div class="row mb-3 align-items-center synonym-row">
+                                                <div class="col-md-1">
+                                                    <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                                </div>
+
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                                                </div>
+
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-outline-primary btn-add">
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
                                             @endif
                                         @else
                                         <div class="row mb-3 align-items-center synonym-row">

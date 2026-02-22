@@ -480,3 +480,32 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
         });
     }
 
+    export function loadApiAppsList(app_id = 0) {
+
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "get-apiapps-list",
+            data: {
+                app_id: app_id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            dataType: "json",
+            success: function(response) {
+                let options = '<option value="">Select Api App</option>';
+                if(response.status && response.data.length > 0) {
+
+                    $.each(response.data, function(index, app) {
+                        let selected = (app_id > 0 && app.id == app_id) ? 'selected' : '';
+                        options += `<option value="${app.id}" ${selected}>
+                                        ${app.app_name}
+                                    </option>`;
+                    });
+                }
+
+                $('#apiApp').html(options);             
+            },           
+            error: function(xhr) {
+                console.log("Error loading Api Apps");
+            }
+        });
+    }

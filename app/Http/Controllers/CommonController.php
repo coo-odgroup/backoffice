@@ -7,6 +7,7 @@ use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
 use App\Models\Master\Districts;
 use App\Models\Master\States;
+use App\Models\Master\ApiApps;
 use App\Models\Master\AuditLog;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
@@ -59,6 +60,8 @@ class CommonController extends Controller
             'AmenityCategory' => \App\Models\Master\AmenityCategory::class,
             'Amenity' => \App\Models\Master\Amenity::class,
             'SeatType' => \App\Models\Master\SeatType::class,
+            'ApiApps' => \App\Models\Master\ApiApps::class,
+            'ApiKeys' => \App\Models\Master\ApiKeys::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -212,6 +215,18 @@ class CommonController extends Controller
         return response()->json([
             'status' => true,
             'data'   => $data
+        ]);
+    }
+
+    public function getApiAppsList(Request $request)
+    {
+        $data = ApiApps::where('active_status', 1)
+            ->orderBy('app_name')
+            ->get(['id', 'app_name']);
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
         ]);
     }
 }
