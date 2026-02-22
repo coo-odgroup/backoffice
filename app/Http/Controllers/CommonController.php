@@ -59,6 +59,7 @@ class CommonController extends Controller
             'AmenityCategory' => \App\Models\Master\AmenityCategory::class,
             'Amenity' => \App\Models\Master\Amenity::class,
             'Roles' => \App\Models\Master\Roles::class,
+            'Modules' => \App\Models\Master\Modules::class,
             'SeatType' => \App\Models\Master\SeatType::class,
         ];
 

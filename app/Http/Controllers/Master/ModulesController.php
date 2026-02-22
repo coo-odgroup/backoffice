@@ -4,18 +4,18 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Master\Roles;
+use App\Models\Master\Modules;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
-class RolesController extends Controller
+class ModulesController extends Controller
 {
 
-    public function Roles()
+    public function modules()
     {
-        return view('master.roles');
+        return view('master.modules');
     }
 
     public function add($encId = null)
@@ -29,47 +29,52 @@ class RolesController extends Controller
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
+            /* =======================
+            * EDIT MODE
+            * ======================= */
             if ($id > 0) {
 
-                $redirectPage = "admin/roles/edit/" . $encId;
+                $redirectPage = "admin/modules/edit/" . $encId;
+
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = Roles::select(
+                $row = Modules::select(
                     'id',
                     'name',
                     'code',
-                    'description',
-                    'is_system_role'
+                    'sequence_no',
+                    'active_status'
                 )->where('id', $id)->first();
 
                 if (!$row) {
-                    return redirect('roles');
+                    return redirect('admin/modules');
                 }
 
                 $data['row'] = $row;
 
             } else {
-                $redirectPage = "admin/roles";
+                $redirectPage = "admin/modules";
             }
 
+            /* =======================
+            * POST (ADD / UPDATE)
+            * ======================= */
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'roleType'        => 'required|max:100',
-                    'roleCode'        => [
+                    'moduleName' => 'required|max:100',
+                    'moduleCode' => [
                         'required',
                         'max:100',
                         'regex:/^[A-Z]+(_[A-Z]+)*$/'
                     ],
-                    'Type'            => 'required|in:0,1',
-                    'description'     => 'nullable|max:256'
+                    'sequence_no'=> 'nullable|integer'
                 ], [
-                    'roleType.required' => 'Role Type cannot be left blank.',
-                    'roleCode.required' => 'Role Code cannot be left blank.',
-                    'roleCode.regex'    => 'Role Code must be CAPITAL letters separated by underscore (_).',
-                    'Type.required'     => 'Please select System Role type.'
+                    'moduleName.required' => 'Module Name cannot be blank.',
+                    'moduleCode.required' => 'Module Code cannot be blank.',
+                    'moduleCode.regex'    => 'Module Code must be CAPITAL letters with underscore (_).'
                 ]);
 
                 if ($validator->fails()) {
@@ -78,7 +83,8 @@ class RolesController extends Controller
 
                 DB::beginTransaction();
 
-                $duplicate = Roles::where('code', request('roleCode'));
+                /* DUPLICATE CHECK */
+                $duplicate = Modules::where('code', request('moduleCode'));
 
                 if ($id > 0) {
                     $duplicate->where('id', '!=', $id);
@@ -87,22 +93,22 @@ class RolesController extends Controller
                 if ($duplicate->exists()) {
                     return back()->with([
                         'level'   => 'danger',
-                        'message' => 'Role Code already exists.'
+                        'message' => 'Module Code already exists.'
                     ])->withInput();
                 }
 
-                $obj = ($id > 0) ? Roles::find($id) : new Roles();
+                /* SAVE DATA */
+                $obj = ($id > 0) ? Modules::find($id) : new Modules();
 
-                $obj->name = htmlEncode(request('roleType'));
-                $obj->code = htmlEncode(request('roleCode'));
-                $obj->description = htmlEncode(request('description'));
-                $obj->is_system_role = (int) request('Type');
-                $obj->active_status  = 1;
+                $obj->name        = htmlEncode(request('moduleName'));
+                $obj->code        = htmlEncode(request('moduleCode'));
+                $obj->sequence_no = request('sequence_no') ?? 0;
+                $obj->active_status = 1;
 
                 if ($id > 0) {
-                    $obj->updated_by = 1;
+                    $obj->updated_by = 1; // auth()->id()
                 } else {
-                    $obj->created_by = 1;
+                    $obj->created_by = 1; // auth()->id()
                 }
 
                 $obj->save();
@@ -112,7 +118,7 @@ class RolesController extends Controller
                 session()->flash('level', 'success');
                 session()->flash(
                     'message',
-                    'Role ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
+                    'Module ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
                 );
 
                 return redirect($redirectPage);
@@ -122,7 +128,7 @@ class RolesController extends Controller
 
             DB::rollBack();
 
-            Log::error("Error in RolesController@add", [
+            Log::error("Error in ModulesController@add", [
                 'method' => $method,
                 'error'  => $t->getMessage()
             ]);
@@ -133,12 +139,7 @@ class RolesController extends Controller
             ])->withInput();
         }
 
-        return view('Master.addRoles', compact('data'));
-    }
-
-    public function edit($encId)
-    {
-        return $this->add($encId);
+        return view('Master.addModules', compact('data'));
     }
 
     public function dataTableView()
@@ -149,68 +150,61 @@ class RolesController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '')? (int) request('selStatus'): '';
+            $txtSearch = htmlEncode(request('txtSearch'));$selStatus = (request('selStatus') !== null && request('selStatus') !== '')? (int) request('selStatus'): '';
 
-            $dataQuery = DB::table('mst_roles as r')
+            $dataQuery = DB::table('mst_modules as m')
                 ->select(
-                    'r.id as role_id',
-                    'r.name',
-                    'r.description',
-                    'r.code',
-                    'r.is_system_role',
-                    'r.active_status',
-                    'r.created_at',
-                    'r.updated_at',
-                    'r.created_by',
-                    'r.updated_by',
-                    DB::raw('(SELECT name FROM users WHERE id = r.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = r.updated_by LIMIT 1) as updated_by_name')
+                    'm.id as module_id',
+                    'm.name',
+                    'm.code',
+                    'm.sequence_no',
+                    'm.active_status',
+                    'm.created_at',
+                    'm.updated_at',
+                    'm.created_by',
+                    'm.updated_by',
+                    DB::raw('(SELECT name FROM users WHERE id = m.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = m.updated_by LIMIT 1) as updated_by_name')
                 );
 
-                
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('r.name', 'like', "%{$txtSearch}%")
-                    ->orWhere('r.code', 'like', "%{$txtSearch}%")
-                    ->orWhere('r.description', 'like', "%{$txtSearch}%");
+                    $q->where('m.name', 'like', "%{$txtSearch}%")
+                    ->orWhere('m.code', 'like', "%{$txtSearch}%");
                 });
             }
 
             if ($selStatus !== '' && $selStatus !== null) {
-                $dataQuery->where('r.active_status', (int) $selStatus);
+                $dataQuery->where('m.active_status', (int) $selStatus);
             }
 
-            
-            $recordsTotal = $dataQuery->count('r.id');
+            $recordsTotal    = $dataQuery->count('m.id');
             $recordsFiltered = $recordsTotal;
 
             $start  = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
 
-            
             if (!empty(request('order'))) {
 
-            
                 $columns = [
-                    2 => 'r.name',
-                    3 => 'r.code',
-                    4 => 'r.created_at',
-                    5 => 'r.active_status'
+                    2 => 'm.name',
+                    3 => 'm.code',
+                    4 => 'm.sequence_no',
+                    5 => 'm.created_at',
+                    6 => 'm.active_status'
                 ];
 
-                $order      = request('order');
-                $orderCol   = $columns[$order[0]['column']] ?? 'r.name';
-                $orderDir   = $order[0]['dir'] ?? 'asc';
+                $order    = request('order');
+                $orderCol = $columns[$order[0]['column']] ?? 'm.name';
+                $orderDir = $order[0]['dir'] ?? 'asc';
 
             } else {
-                $orderCol = 'r.name';
+                $orderCol = 'm.name';
                 $orderDir = 'asc';
             }
 
             $dataQuery->orderBy($orderCol, $orderDir);
 
-            
             if ($length === -1) {
                 $arrRes = $dataQuery->get();
             } else {
@@ -220,22 +214,23 @@ class RolesController extends Controller
                     ->get();
             }
 
-            
             foreach ($arrRes as $row) {
+
                 $row->created_date = date('d-M-Y H:i:s', strtotime($row->created_at));
                 $row->updated_date = $row->updated_at
                     ? date('d-M-Y H:i:s', strtotime($row->updated_at))
                     : null;
 
                 $row->is_active = ($row->active_status == 1) ? 'Active' : 'Inactive';
-                $row->enc_role_id = Crypt::encryptString($row->role_id);
+
+                $row->enc_module_id = Crypt::encryptString($row->module_id);
             }
 
             $data = $arrRes;
 
         } catch (\Throwable $t) {
 
-            Log::error("Exception in RolesController@dataTableView", [
+            Log::error("Exception in ModulesController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace'         => $t->getTraceAsString()
             ]);
@@ -251,4 +246,11 @@ class RolesController extends Controller
             'data'            => $data,
         ]);
     }
+
+    public function edit($encId)
+    {
+        return $this->add($encId);
+    }
+
+
 }

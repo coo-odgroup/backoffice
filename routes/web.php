@@ -13,6 +13,7 @@ use App\Http\Controllers\Master\AmenitiesController;
 use App\Http\Controllers\Master\BusTypeController;
 use App\Http\Controllers\Master\AmenityCategoryController;
 use App\Http\Controllers\Master\RolesController;
+use App\Http\Controllers\Master\ModulesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,12 +58,20 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/boardingDropping/check-exists',[BoardingDroppingController::class, 'checkExists'])->name('boardingDropping.checkExists');
 
-     Route::get('/roles', [RolesController::class, 'roles'])->name('roles.index');
+    Route::get('/roles', [RolesController::class, 'roles'])->name('roles.index');
     Route::match(['get', 'post'], 'roles/add',[RolesController::class, 'add'])->name('roles.add');
     Route::post('roles/dataTableView', [RolesController::class, 'dataTableView'])->name('roles.dataTableView');
     Route::match(['get', 'post'], 'roles/edit/{encId}',[RolesController::class, 'edit'])->name('roles.edit');
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/roles/check-exists',[RolesController::class, 'checkExists'])->name('roles.checkExists');
+
+     Route::get('/modules', [ModulesController::class, 'modules'])->name('modules.index');
+    Route::match(['get', 'post'], 'modules/add',[ModulesController::class, 'add'])->name('modules.add');
+    Route::post('modules/dataTableView', [ModulesController::class, 'dataTableView'])->name('modules.dataTableView');
+    Route::match(['get', 'post'], 'modules/edit/{encId}',[ModulesController::class, 'edit'])->name('modules.edit');
+    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
+    Route::post('admin/modules/check-exists',[ModulesController::class, 'checkExists'])->name('modules.checkExists');
+
 
 
 
