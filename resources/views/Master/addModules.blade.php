@@ -117,6 +117,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         if (!validator.blankCheck('moduleName', 'System Module Name cannot be left blank'))
             return false;
+        if (!validator.maxLength('moduleName', 100, 'Module Name'))
+            return false;
         if (!validator.blankCheck('moduleCode', 'Module Code cannot be left blank'))
             return false;
         if (!validator.maxLength('moduleCode', 100, 'Module Code'))

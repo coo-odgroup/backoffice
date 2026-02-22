@@ -58,9 +58,6 @@ class ModulesController extends Controller
                 $redirectPage = "admin/modules";
             }
 
-            /* =======================
-            * POST (ADD / UPDATE)
-            * ======================= */
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
@@ -83,7 +80,6 @@ class ModulesController extends Controller
 
                 DB::beginTransaction();
 
-                /* DUPLICATE CHECK */
                 $duplicate = Modules::where('code', request('moduleCode'));
 
                 if ($id > 0) {
@@ -97,7 +93,6 @@ class ModulesController extends Controller
                     ])->withInput();
                 }
 
-                /* SAVE DATA */
                 $obj = ($id > 0) ? Modules::find($id) : new Modules();
 
                 $obj->name        = htmlEncode(request('moduleName'));
@@ -106,9 +101,9 @@ class ModulesController extends Controller
                 $obj->active_status = 1;
 
                 if ($id > 0) {
-                    $obj->updated_by = 1; // auth()->id()
+                    $obj->updated_by = 1;
                 } else {
-                    $obj->created_by = 1; // auth()->id()
+                    $obj->created_by = 1;
                 }
 
                 $obj->save();
