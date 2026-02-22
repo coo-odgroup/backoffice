@@ -12,6 +12,7 @@ use App\Http\Controllers\Master\SeatingTypeController;
 use App\Http\Controllers\Master\AmenitiesController;
 use App\Http\Controllers\Master\BusTypeController;
 use App\Http\Controllers\Master\AmenityCategoryController;
+use App\Http\Controllers\Master\RolesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,14 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'boardingDropping/edit/{encId}',[BoardingDroppingController::class, 'edit'])->name('boardingDropping.edit');
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/boardingDropping/check-exists',[BoardingDroppingController::class, 'checkExists'])->name('boardingDropping.checkExists');
+
+     Route::get('/roles', [RolesController::class, 'roles'])->name('roles.index');
+    Route::match(['get', 'post'], 'roles/add',[RolesController::class, 'add'])->name('roles.add');
+    Route::post('roles/dataTableView', [RolesController::class, 'dataTableView'])->name('roles.dataTableView');
+    Route::match(['get', 'post'], 'roles/edit/{encId}',[RolesController::class, 'edit'])->name('roles.edit');
+    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
+    Route::post('admin/roles/check-exists',[RolesController::class, 'checkExists'])->name('roles.checkExists');
+
 
 
 

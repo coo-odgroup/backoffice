@@ -2,7 +2,7 @@
 @section('content')
 
 <?php
-$page_name = 'Boarding Dropping';
+$page_name = 'All Seat Types';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,21 +12,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">Boarding Dropping</li>
+        <li class="breadcrumb-item active">Roles</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Boarding Dropping</h5>
+    <h5 id="page_title">Roles</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('boardingDropping.add') }}" class="btn btn-success btn-sm">
-            + Add Boarding Dropping
+        <a href="{{ route('roles.add') }}" class="btn btn-success btn-sm">
+            + Add Role
         </a>
     </div>
 </div>
@@ -43,29 +43,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Boarding/Dropping Name</label>
+                                    <label for="txtSearch">Search By RoleType</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Boarding/Dropping Name">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selCity">City<span class="text-danger important">*</span></label>
-                                    <select class="form-select selCity" id="selCity" name="selCity">
-                                        <option value="0">Select City</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <label for="type">Type<span class="text-danger important">*</span></label>
-                                    <select class="form-select type" id="type" name="type">
-                                        <option  selected>Select Type</option>
-                                        <option value="1">
-                                            Boarding
-                                        </option>
-
-                                        <option value="2">
-                                            Dropping
-                                        </option>
-                                    </select>
+                                        placeholder="Role Type">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -81,7 +61,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- BUTTONS -->
                         <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-check me-1"></i>Submit
+                                <i class="fa-solid fa-search me-1"></i>Search
                             </button>
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
@@ -133,19 +113,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('boardingDropping.dataTableView') }}"
-                data-edit-url="{{ route('boardingDropping.edit', 'ID') }}">
+                data-url="{{ route('roles.dataTableView') }}"
+                data-edit-url="{{ route('roles.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
                             <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                         </th>
                         <th>Sl No</th>
-                        <th>City Name</th>
-                        <th>Type</th>
-                        <th>Boarding/Dropping Point</th>
-                        <th width="100">Sequence No</th>
-                        <th>Last Modefied</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>System Role</th>
+                        <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
                     </tr>
@@ -156,7 +135,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BoardingDropping">
+            <input type="hidden" id="hdn_model" value="Roles">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -178,12 +157,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
-        //check box select/deselect
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-
-
-        commonAjax.initSelect2('#selCity', 'Select City');
-        commonAjax.loadCityList(null, '#selCity');
         getDataTableView();
     });
 
@@ -226,22 +200,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
-
         let searchParams = {
-
-            type: $('#type').val(),
-            selCity: $('#selCity').val() || 0,
-            txtsearch: $('#txtSearch').val() || '',
-            selstatus: $('#selStatus').val() || '',
-
-
+            txtsearch: txtSearch,
+            selstatus: selStatus
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.bd_id +
-                        '" name="chkStd' + row.bd_id + '" value="' + row.bd_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.role_id +
+                        '" name="chkStd' + row.role_id + '" value="' + row.role_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -254,39 +222,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'city_name',
+                data: 'code',
                 defaultContent: "--"
             },
             {
-                data: 'type',
+                data: 'name',
+                defaultContent: "--"
+            },
+            {
+                data: 'is_system_role',
                 render: function(data, type, row) {
-                    if (data == 1) {
-                        return 'BOARDING';
-                    } else if (data == 2) {
-                        return 'DROPPING';
-                    } else {
-                        return '--';
+                    if (data === 1 || data === '1') {
+                        return 'True';
                     }
-                }
-            },
-            {
-                data: 'brd_drp_point',
-                defaultContent: "--"
-            },
-            {
-                data: 'sequence_no',
-                render: function(data, type, row) {
-                    return `<input type="text"
-                            value="${data ?? ''}"
-                            minlength="1"
-                            maxlength="3"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="form-control form-control-sm order-input"
-                            data-id="${row.enc_bd_id}"
-                            data-table="mst_boarding_droping"
-                            data-column="sequence_no">`;
+                    if (data === 0 || data === '0') {
+                        return 'False';
+                    }
+                    return '--';
                 },
-                defaultContent: "--"
+                className: "text-center"
             },
             {
                 data: null,
@@ -298,14 +252,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
-                    // Show updated date if exists, else created date
-                    let shortDate = row.updated_date ?
-                        row.updated_date.split(' ')[0] :
-                        (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
+                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <span
-                            class="text-decoration-underline fw-semibold"
+                        <small
+                            class="text-primary fw-semibold"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -318,8 +269,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div><strong>Updated At:</strong> ${updatedAt}</div>
                                 </div>
                             ">
-                            ${createdAt}
-                        </span>
+                            ${displayDate}
+                        </small>
                     `;
                 }
             },
@@ -341,14 +292,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_bd_id)}">
+                        href="${editUrl.replace('ID', row.enc_role_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
-                         <a href="javascript:void(0);"
+                        <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_cities"
-                            data-id="${row.enc_bd_id}">
+                            data-table="mst_roles"
+                            data-id="${row.enc_role_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
                     `;
