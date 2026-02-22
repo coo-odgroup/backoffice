@@ -12,6 +12,8 @@ use App\Http\Controllers\Master\SeatingTypeController;
 use App\Http\Controllers\Master\AmenitiesController;
 use App\Http\Controllers\Master\BusTypeController;
 use App\Http\Controllers\Master\AmenityCategoryController;
+use App\Http\Controllers\Master\ApiAppsController;
+use App\Http\Controllers\Master\ApikeysController;
 use App\Http\Controllers\Master\RolesController;
 use App\Http\Controllers\Master\ModulesController;
 
@@ -42,6 +44,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/audit-logs', [CommonController::class, 'getLogs'])->name('admin.getLogs');
     Route::post('/update-sequence', [CommonController::class, 'updateSequence'])->name('common.updateSequence');
     Route::post('/get-amenity-category-list', [CommonController::class, 'getAmenityCategoryList'])->name('get.amenity.category.list');
+    Route::post('/get-apiapps-list', [CommonController::class, 'getApiAppsList'])->name('getapiapps.list');
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -110,6 +113,18 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'amenities/add', [AmenitiesController::class, 'add'])->name('amenities.add');
     Route::post('amenities/dataTableView', [AmenitiesController::class, 'dataTableView'])->name('amenities.dataTableView');
     Route::match(['get', 'post'], 'amenities/edit/{encId}', [AmenitiesController::class, 'edit'])->name('amenities.edit');
+
+    // API App
+    Route::get('/apiapps', [ApiAppsController::class, 'apiApps'])->name('apiapps.index');
+    Route::match(['get', 'post'], 'apiapps/add', [ApiAppsController::class, 'add'])->name('apiapps.add');
+    Route::post('apiapps/dataTableView', [ApiAppsController::class, 'dataTableView'])->name('apiapps.dataTableView');
+    Route::match(['get', 'post'], 'apiapps/edit/{encId}', [ApiAppsController::class, 'edit'])->name('apiapps.edit');
+
+    // API Keys
+    Route::get('/apikeys', [ApikeysController::class, 'apiKeys'])->name('apikeys.index');
+    Route::match(['get', 'post'], 'apikeys/add', [ApikeysController::class, 'add'])->name('apikeys.add');
+    Route::post('apikeys/dataTableView', [ApikeysController::class, 'dataTableView'])->name('apikeys.dataTableView');
+    Route::match(['get', 'post'], 'apikeys/edit/{encId}', [ApikeysController::class, 'edit'])->name('apikeys.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 

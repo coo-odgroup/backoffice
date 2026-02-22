@@ -2,7 +2,7 @@
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All Api Keys';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,22 +12,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">City List</li>
+        <li class="breadcrumb-item active">Api Keys</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Cities</h5>
+    <h5 id="page_title">Api Keys</h5>
     <div>
-         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
+        <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-
-        <a href="{{ route('cities.add') }}" class="btn btn-success btn-sm">
-            + Add City
+        <a href="{{ route('apikeys.add') }}" class="btn btn-success btn-sm">
+            + Add Api Key
         </a>
     </div>
 </div>
@@ -44,21 +43,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By City Name/Alias</label>
+                                    <label for="txtSearch">Search By App Name / Code</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="City Name/Alias">
+                                        placeholder="App Name / Code">
                                 </div>
-
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selState">State</label>
-                                    <select class="form-select" id="selState" name="selState">
-                                        <option value="0">Select State</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selDistrict">District</label>
-                                    <select class="form-select" id="selDistrict" name="selDistrict">
-                                        <option value="0">Select District</option>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="apiApp">Api App</label>
+                                    <select class="form-select" id="apiApp" name="apiApp">
+                                        <option value="">Select Api App</option>
                                     </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
@@ -75,13 +67,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- BUTTONS -->
                         <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-check me-1"></i>Submit
+                                <i class="fa-solid fa-search me-1"></i>Search
                             </button>
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -96,15 +87,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white btn-mob" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm btn-mob" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -112,35 +103,33 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
             </div>
 
-
             <div class="d-flex justify-content-between align-items-center">
                 <div id="utilitiesTop">
-                    <button type="button" id="btnExcel" class="btn btn-success btn-sm">
+                    <button type="button" id="btnExcel" class="btn btn-success btn-sm btn-mob">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>
-                    <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white">
+                    <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white btn-mob">
                         <i class="fa-solid fa-file-pdf me-1"></i>
                     </button>
-                    <button type="button" id="btnPrint" class="btn btn-danger btn-sm">
+                    <button type="button" id="btnPrint" class="btn btn-danger btn-sm btn-mob">
                         <i class="fa-solid fa-print me-1"></i>
                     </button>
-
                 </div>
                 <div id="customPaginationTop"></div>
             </div>
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('cities.dataTableView') }}"
-                data-edit-url="{{ route('cities.edit', 'ID') }}">
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
+                data-url="{{ route('apikeys.dataTableView') }}"
+                data-edit-url="{{ route('apikeys.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
                             <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                         </th>
                         <th>Sl No</th>
-                        <th>State/District Name</th>
-                        <th>City Name</th>
-                        <th>Alias</th>
-                        <th>Synonymn</th>
+                        <th>App Name</th>
+                        <th>Api Key</th>
                         <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
@@ -148,11 +137,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </thead>
                 <tbody></tbody>
             </table>
+            </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Cities">
+            <input type="hidden" id="hdn_model" value="ApiKeys">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -164,7 +154,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 </form>
 
 @endsection
-
 @push('scripts')
 
 <script type="module">
@@ -173,69 +162,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
     });
-    
-    $(document).ready(function () {
-        // init selects
-        commonAjax.initSelect2('#selState', 'Select State');
-        commonAjax.initSelect2('#selDistrict', 'Select District');
-        commonAjax.loadStateList();
+
+    $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        commonAjax.initTooltips();
         getDataTableView();
     });
 
- 
-    let filterOpen = false;
+    $(document).ready(function() {
 
-    window.toggleFilter = function () {
-        const filterBox = $('#filterBox');
-        const btn = $('#filterToggleBtn');
-        const btnText = btn.find('.btn-text');
-        const btnIcon = btn.find('i');
+        commonAjax.initSelect2('#apiApp', 'Select Api App');
 
-        if (!filterOpen) {
-            // OPEN
-            filterBox.slideDown(300);
+        commonAjax.loadApiAppsList(0);
+    });
 
-            btn.removeClass('btn-primary').addClass('btn-danger');
-            btnText.text('Close');
-
-            btnIcon
-                .removeClass('fa-magnifying-glass')
-                .addClass('fa-xmark');
-
-            filterOpen = true;
-        } else {
-            // CLOSE
-            filterBox.slideUp(300);
-
-            btn.removeClass('btn-danger').addClass('btn-primary');
-            btnText.text('Search');
-
-            btnIcon
-                .removeClass('fa-xmark')
-                .addClass('fa-magnifying-glass');
-
-            filterOpen = false;
-        }
-    };
-
-    $('#btnReset').on('click', function () {
-        $(':input', '#backoffice-form')
-            .not(':button, :submit, :reset, :hidden')
-            .val('');
-
+    $('#btnReset').click(function() {
+        $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
+        $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
         getDataTableView(true);
     });
 
-
-    $(document).on('change', '#selState', function () {
-        commonAjax.getDistrictList($(this).val());
-    });
-
     window.getDataTableView = function(reset = true) {
-      
+
         //  If table already initialized
         if (window.dataTableInstance && reset) {
 
@@ -253,50 +201,53 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         }
 
         $('#pageSizeDatatable').val(10);
+        let txtSearch = '';
+        let selStatus = '';
+        let apiApp = '';
 
-        let searchParams = {
-            txtsearch: $('#txtSearch').val() || '',
-            selstatus: $('#selStatus').val() || '',
-            selstate: $('#selState').val() || 0,
-            seldistrict: $('#selDistrict').val() || 0
-        };
+        if ($('#txtSearch').val() != '') {
+            txtSearch = $('#txtSearch').val();
+        }
+        if ($('#selStatus').val() != '') {
+            selStatus = $('#selStatus').val();
+        }
+        if ($('#apiApp').val() != '') {
+            apiApp = $('#apiApp').val();
+        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
-
-        let dataTableColumns = [
-            {
+        let searchParams = {
+            txtsearch: txtSearch,
+            selstatus: selStatus,
+            apiApp: apiApp
+        };
+        let displayColumns = [1, 2, 3, 4, 5, 6];
+        let dataTableColumns = [{
                 data: '',
-                className: "noPrint text-center",
-                render: (d, t, r) =>
-                    `<input class="form-check-input chkItem" type="checkbox" value="${r.city_id}">`
+                render: function(data, type, row) {
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.api_key_id +
+                        '" name="chkStd' + row.api_key_id + '" value="' + row.api_key_id +
+                        '" >';
+                },
+                className: "noPrint text-center"
             },
             {
-                data: null,
-                className: "text-center",
-                render: (d, t, r, m) => m.row + m.settings._iDisplayStart + 1
+                data: 'slNo',
+                render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                },
+                className: "text-center"
             },
-            { data: 'state_name', defaultContent: "--" },
-            { data: 'city_name', defaultContent: "--" },
-            { data: 'city_alias', defaultContent: "--" },
             {
-                data: 'synonyms',
-                orderable: false,
-                searchable: false,
-                render: data => {
-                    if (!data) return '--';
-                 
-                    let items = data.split('||');
-                    let html = '';
-
-                    items.forEach((name, index) => {
-                        html += (index + 1) + '. ' + name.trim() + '<br>';
-                    });
-
-                    return html;
-                }
+                data: 'app_name',
+                defaultContent: "--"
             },
-           {
+            {
+                data: 'api_key',
+                defaultContent: "--"
+            },
+            {
                 data: null,
                 render: function (data, type, row) {
 
@@ -305,15 +256,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt  = (row.updated_date) ? row.updated_date : '--';
-                 
+
                     // Show updated date if exists, else created date
-                    let shortDate = row.updated_date
-                        ? row.updated_date.split(' ')[0]
-                        : (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
+                    let displayDate = (updatedAt!='--') ? updatedAt : createdAt;
 
                     return `
-                        <span
-                            class="text-decoration-underline fw-semibold"
+                        <small
+                            class="text-primary fw-semibold"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -326,16 +275,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div><strong>Updated At:</strong> ${updatedAt}</div>
                                 </div>
                             ">
-                            ${createdAt}
-                        </span>
+                            ${displayDate}
+                        </small>
                     `;
                 }
             },
             {
                 data: 'is_active',
-                className: "text-center",
-                render: d =>
-                    `<span class="badge ${d === 'Active' ? 'bg-success' : 'bg-danger'}">${d}</span>`
+                render: function(data, type, row) {
+                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
+                    return '<span class="' + cls + '">' + row.is_active + '</span>';
+                },
+                className: "text-center"
             },
             {
                 data: '',
@@ -346,25 +297,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
-                        <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_city_id)}">
+                        <a class="btn btn-sm btn-info text-white"
+                        href="${editUrl.replace('ID', row.enc_api_key_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
-                         <a href="javascript:void(0);"
+                        <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_cities"
-                            data-id="${row.enc_city_id}">
+                            data-table="api_keys"
+                            data-id="${row.enc_api_key_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
+
                     `;
                 },
                 className: "noPrint text-center"
             }
-        ];
+        ]
 
-        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, [1,2,3,4,5,6]);
-    };
+        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+    }
 </script>
-
 @endpush
