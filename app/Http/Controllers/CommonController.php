@@ -59,6 +59,7 @@ class CommonController extends Controller
             'BusType' => \App\Models\Master\BusType::class,
             'AmenityCategory' => \App\Models\Master\AmenityCategory::class,
             'Amenity' => \App\Models\Master\Amenity::class,
+            'Roles' => \App\Models\Master\Roles::class,
             'SeatType' => \App\Models\Master\SeatType::class,
             'ApiApps' => \App\Models\Master\ApiApps::class,
             'ApiKeys' => \App\Models\Master\ApiKeys::class,

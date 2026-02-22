@@ -104,7 +104,6 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
 
     export function initTableCheckbox(headerSelector, itemSelector) {
 
-        // ✅ Header → Select All
         $(document).on('change', headerSelector, function () {
 
             let isChecked = $(this).prop('checked');
@@ -113,7 +112,6 @@ let ajaxUrl = 'http://127.0.0.1:8000/admin/';
 
         });
 
-        // ✅ Row Checkbox → Sync Header
         $(document).on('change', itemSelector, function () {
 
             let totalItems = $(itemSelector).length;
