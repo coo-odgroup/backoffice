@@ -63,22 +63,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
                                             <label for="roleType">Role Type<span class="text-danger important" >*</span></label>
-                                            <input type="text" class="form-control" id="roleType" placeholder="Role Type" name="roleType" value="{{ $data['row']->role_type ?? '' }}">
+                                            <input type="text" class="form-control" id="roleType" placeholder="Role Type" name="roleType" value="{{ $data['row']->name ?? '' }}">
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="roleCode">Role Code<span class="text-danger important" >*</span></label>
-                                            <input type="text" class="form-control" id="roleCode" placeholder="Role Code" name="roleCode" value="{{ $data['row']->role_code ?? '' }}">
+                                            <input type="text" class="form-control" id="roleCode" placeholder="Role Code" name="roleCode" value="{{ $data['row']->code ?? '' }}">
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="systemRolesType">System Role Type<span class="text-danger important">*</span></label>
                                             <select class="form-select" id="systemRolesType" name="Type">
                                                 <option value="1"
-                                                    {{ (isset($data['row']) && $data['row']->class_id == 1) ? 'selected' : '' }}>
+                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 'selected' : '' }}>
                                                     True
                                                 </option>
 
                                                 <option value="0" selected
-                                                    {{ (isset($data['row']) && $data['row']->class_id == 0) ? 'selected' : '' }}>
+                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 0) ? 'selected' : '' }}>
                                                     False
                                                 </option>
                                             </select>
@@ -88,7 +88,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control" id="description" name="description" rows="3">{{ $data['row']->description ?? '' }}</textarea>
+                                            <textarea class="form-control" id="description" name="description" placeholder="Description" rows="3">{{ $data['row']->description ?? '' }}</textarea>
                                         </div>
                                     </div>
 
@@ -99,7 +99,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 {{ $data['strSubmit'] }}
                                             </button>
                                             @if($data['strReset'] == 'Cancel')
-                                            <a href="{{ route('states.index') }}" class="btn btn-secondary btn-sm">
+                                            <a href="{{ route('roles.index') }}" class="btn btn-secondary btn-sm">
                                                 {{ $data['strReset'] }}
                                             </a>
                                             @else
