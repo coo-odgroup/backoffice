@@ -64,6 +64,7 @@ class CommonController extends Controller
             'SeatType' => \App\Models\Master\SeatType::class,
             'ApiApps' => \App\Models\Master\ApiApps::class,
             'ApiKeys' => \App\Models\Master\ApiKeys::class,
+            'CityApis' => \App\Models\Master\CityApis::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
