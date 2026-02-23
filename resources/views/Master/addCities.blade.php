@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Cities')
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -11,17 +12,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Bus Management</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} City</li>
+        <li class="breadcrumb-item">Master</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Cities</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a class="btn btn-success btn-sm" href="{{ route('cities.index') }}">View Cities
+        <a class="btn btn-success btn-sm" href="{{ route('cities.index') }}">View @yield('page_title')
         </a>
     </div>
 </div>

@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -13,7 +13,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">City List</li>
+        <li class="breadcrumb-item active">@yield('page_title')</li>
     </ol>
 </nav>
 
@@ -28,7 +28,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </button>
 
         <a href="{{ route('cities.add') }}" class="btn btn-success btn-sm">
-            + Add City
+            + Add @yield('page_title')
         </a>
     </div>
 </div>

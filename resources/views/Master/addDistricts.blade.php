@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Districts')
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,16 +13,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} District</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Districts</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a class="btn btn-success btn-sm" href="{{ route('district.index') }}">View Districts
+        <a class="btn btn-success btn-sm" href="{{ route('district.index') }}">View @yield('page_title')
         </a>
     </div>
 </div>
