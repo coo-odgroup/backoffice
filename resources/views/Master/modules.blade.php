@@ -253,7 +253,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'sequence_no',
-                defaultContent: "--",
+                render: function(data, type, row) {
+                    return `<input type="text"
+                            value="${data ?? ''}"
+                            minlength="1"
+                            maxlength="3"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            class="form-control form-control-sm order-input"
+                            data-id="${row.enc_module_id}"
+                            data-table="mst_modules"
+                            data-column="sequence_no">`;
+                },
+                defaultContent: "--"
             },
             {
                 data: null,

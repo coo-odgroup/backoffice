@@ -187,7 +187,7 @@ class ModulesController extends Controller
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('m.name', 'like', "%{$txtSearch}%")
-                        ->orWhere('m.code', 'like', "%{$txtSearch}%")
+                        ->orWhere('m.code', 'like', "%{$txtSearch}%")  
                         ->orWhere('p.code', 'like', "%{$txtSearch}%")   ;
                 });
             }
