@@ -16,6 +16,7 @@ use App\Http\Controllers\Master\ApiAppsController;
 use App\Http\Controllers\Master\ApikeysController;
 use App\Http\Controllers\Master\RolesController;
 use App\Http\Controllers\Master\ModulesController;
+use App\Http\Controllers\Master\SeatLayoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,9 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
     Route::post('cities/dataTableView', [CitiesController::class, 'dataTableView'])->name('cities.dataTableView');
     Route::match(['get', 'post'], 'cities/edit/{encId}', [CitiesController::class, 'edit'])->name('cities.edit');
+
+    Route::get('/seat-layout', [SeatLayoutController::class, 'index'])->name('seatlayout.index');
+    Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
 
 
 

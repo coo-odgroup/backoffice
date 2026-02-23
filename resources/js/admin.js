@@ -126,5 +126,8 @@ $(document).on('click', '.btn-view-log', function() {
     commonAjax.viewLogs(table, id);
 });
 
+import * as seatAjax from './seat-layout';
+window.seatAjax = seatAjax; 
+
 
 

@@ -451,3 +451,20 @@ and (max-width: 370px) {
     padding: 10px 12px;
     border-radius: 8px;
 }
+
+/* Seat layout */
+
+table.seatGrid { border-collapse: collapse; margin-bottom:20px; }
+td.seat {
+    width:45px;
+    height:45px;
+    border:1px solid #888;
+    text-align:center;
+    vertical-align:middle;
+    cursor:pointer;
+    font-weight:600;
+}
+.seater { background:#4CAF50; color:#fff; }
+.sleeper-h { background:#2196F3; color:#fff; }
+.sleeper-v { background:#FF9800; color:#fff; }
+td:focus { outline:2px dashed #000; }
