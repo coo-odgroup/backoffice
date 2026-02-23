@@ -83,6 +83,13 @@ export function mark(td,type) {
         type === 'SEATER' ? 'seater' :
         type === 'SLEEPER' ? 'sleeper-h' : 'sleeper-v'
     );
+
+   updatePreview(
+        td.dataset.deck,
+        +td.dataset.row,
+        +td.dataset.col,
+        type
+    );
 }
 
 export function resetSeat(td) {
@@ -91,6 +98,69 @@ export function resetSeat(td) {
 }
 
 export function clearSeat(td) {
+
+    const cols = parseInt(document.getElementById('cols').value);
+    const index = (td.dataset.row - 1) * cols + (td.dataset.col - 1);
+
+    const layoutBox = td.dataset.deck === 'UPPER'
+        ? document.querySelectorAll('.layout-box')[0]
+        : document.querySelectorAll('.layout-box')[1];
+
+    const cell = layoutBox.children[index];
+
+    if (cell) {
+        cell.style.visibility = 'hidden';
+    }
+
     td.innerText = '';
     resetSeat(td);
+}
+
+function updatePreview(deck, row, col, type) {
+
+    const cols = parseInt(document.getElementById('cols').value);
+
+    const index = (row - 1) * cols + (col - 1);
+
+    const layoutBox = deck === 'UPPER'
+        ? document.querySelectorAll('.layout-box')[0]
+        : document.querySelectorAll('.layout-box')[1];
+
+    const cells = layoutBox.children;
+    const cell = cells[index];
+
+    if (!cell) return;
+
+    cell.style.visibility = 'visible';
+    cell.className = (type === 'SEATER')
+        ? 'seat_prv'
+        : 'sleeper_prv';
+}
+
+const previewSlots = {
+    UPPER: [],
+    LOWER: []
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const upperBox = document.querySelectorAll('.layout-box')[0];
+    const lowerBox = document.querySelectorAll('.layout-box')[1];
+
+   previewSlots.UPPER = Array.from(upperBox.querySelectorAll('.empty'));
+    previewSlots.LOWER = Array.from(lowerBox.querySelectorAll('.empty'));
+});
+
+function getNextFreeSlot(deck, count) {
+
+    const slots = previewSlots[deck];
+
+    for (let i = 0; i <= slots.length - count; i++) {
+        const group = slots.slice(i, i + count);
+
+        if (group.every(s => !s.dataset.seat)) {
+            return group;
+        }
+    }
+    return null;
 }

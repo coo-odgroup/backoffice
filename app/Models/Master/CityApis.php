@@ -4,15 +4,13 @@ namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ApiKeys extends Model
+class CityApis extends Model
 {
-    protected $table = 'api_keys';
+    protected $table = 'city_api_ids';
     protected $fillable = [
+        'city_id',
         'api_app_id',
-        'api_key',
-        'environment',
-        'last_used_at',
-        'expires_at',
+        'api_city_ids',
         'active_status'
     ];
 }

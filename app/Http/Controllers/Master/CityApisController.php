@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\ApiKeys;
+use App\Models\Master\CityApis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class ApiKeysController extends Controller
+class CityApisController extends Controller
 {
     public function apiKeys()
     {
@@ -34,7 +35,6 @@ class ApiKeysController extends Controller
                     'ak.id as api_key_id',
                     'ak.api_app_id',
                     'ak.api_key',
-                    'ak.environment',
                     'ak.created_at',
                     'ak.created_by',
                     'ak.updated_at',
@@ -71,7 +71,7 @@ class ApiKeysController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'ak.api_app_id', 3 => 'ak.api_key', 4 => 'ak.environment', 5 => 'ak.created_at', 6 => 'ak.created_by', 7 => 'ak.active_status'];
+                $columns = [2 => 'ak.api_app_id', 3 => 'ak.api_key', 4 => 'ak.created_at', 5 => 'ak.created_by', 6 => 'ak.active_status'];
 
                 $orderBy = request('order');
                 $orderColumn = $columns[$orderBy[0]['column']] ?? 'ak.api_key';
@@ -107,7 +107,7 @@ class ApiKeysController extends Controller
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in ApiKeysController@dataTableView", [
+            Log::info("Exception occurred in CityApisController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -115,7 +115,7 @@ class ApiKeysController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'ApiKeysController',
+                'Controller' => 'CityApisController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -146,22 +146,22 @@ class ApiKeysController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/apikeys/edit/" . $encId;
+                $redirectPage = "admin/cityapis/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = ApiKeys::select('id', 'api_app_id', 'api_key', 'last_used_at', 'expires_at', 'environment');
+                $dataResQry = CityApis::select('id', 'city_id', 'api_app_id', 'api_city_ids');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
                 if (empty($dataResQry)) {
-                    return redirect("apikeys");
+                    return redirect("cityapis");
                 }
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
-                $redirectPage = "admin/apikeys";
+                $redirectPage = "admin/cityapis";
             }
 
             if (request()->isMethod('post')) {
@@ -169,12 +169,13 @@ class ApiKeysController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
+                    'city_id' => 'bail|required',
                     'api_app_id' => 'bail|required',
-                    'api_key' => 'bail|required|max:100'
+                    'api_city_ids' => 'bail|required'
                 ], [
-                    'api_app_id.required' => 'App App cannot be left blank.',
-                    'api_key.required' => 'App Key cannot be left blank.',
-                    'api_key.max' => 'App Key cannot exceed 100 characters.'
+                    'city_id.required' => 'City cannot be left blank.',
+                    'api_app_id.required' => 'App cannot be left blank.',
+                    'api_city_ids.required' => 'App City Ids cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
@@ -182,11 +183,11 @@ class ApiKeysController extends Controller
                 } else {
                     DB::beginTransaction();
 
+                    $city_id = request('city_id');
                     $api_app_id = request('api_app_id');
-                    $environment = request('environment');
-                    $api_key = htmlEncode(request('api_key'));
+                    $api_city_ids = htmlEncode(request('api_city_ids'));
 
-                    $duplicate = ApiKeys::select('id')->where(['api_key' => $api_key]);
+                    $duplicate = CityApis::select('id')->where(['api_city_ids' => $api_city_ids]);
 
                     if ($id != 0) {
                         $duplicate->where('id', '!=', $id);
@@ -195,13 +196,13 @@ class ApiKeysController extends Controller
                     if ($duplicate->exists()) {
                         return back()->with([
                             'level' => 'danger',
-                            'message' => 'Api Keys already exist'
+                            'message' => 'Api City Id already exist'
                         ])->withInput();
                     } else {
-                        $obj = ($id != 0) ? ApiKeys::find($id) : new ApiKeys();
-                        $obj->api_key = $api_key;
+                        $obj = ($id != 0) ? CityApis::find($id) : new CityApis();
+                        $obj->city_id = $city_id;
                         $obj->api_app_id = $api_app_id;
-                        $obj->environment = $environment;
+                        $obj->api_city_ids = $api_city_ids;
                         $obj->created_by = 1;
                         $obj->active_status = 1;
 
@@ -212,7 +213,7 @@ class ApiKeysController extends Controller
                         $obj->save();
 
                         session()->flash('level', 'success');
-                        session()->flash('message', 'App Key ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                        session()->flash('message', 'Api City ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     }
 
                     DB::commit();
@@ -221,7 +222,7 @@ class ApiKeysController extends Controller
             }
         } catch (\Throwable $t) {
             Log::error("Error", [
-                'Controller' => 'ApiKeysController',
+                'Controller' => 'CityApisController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
@@ -235,7 +236,7 @@ class ApiKeysController extends Controller
                 'message' => $errorMsg
             ])->withInput();
         }
-        return view('Master.addApiKeys', compact('data'));
+        return view('Master.addCityApis', compact('data'));
     }
 
     public function edit($encId)

@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'App City Ids')
 @section('content')
 
 <?php
-$page_name = 'All Api Keys';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,17 +13,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} Api Keys</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Api Keys</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
         <a href="{{ route('apikeys.index') }}" class="btn btn-success btn-sm">
-            View Api Keys
+            View @yield('page_title')
         </a>
     </div>
 </div>
@@ -61,43 +62,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-3 mb-3">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="selCity">City<span class="text-danger important">*</span></label>
+                                            <select class="form-select selCity" id="selCity" name="city_id">
+                                                <option value="0">Select City</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
                                             <label for="apiApp">Api App<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="apiApp" name="api_app_id">
+                                            <select class="form-select apiApp" id="apiApp" name="api_app_id">
                                                 <option value="0">Select Api App</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label for="environment">Environment<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="environment" name="environment">
-                                                <option disabled selected>Select Environment</option>
-                                                <option value="1"
-                                                    {{ (isset($data['row']) && $data['row']->environment == 1) ? 'selected' : '' }}>
-                                                    Staging
-                                                </option>
-
-                                                <option value="2"
-                                                    {{ (isset($data['row']) && $data['row']->environment == 2) ? 'selected' : '' }}>
-                                                    Production
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="api_key">
-                                                Api Key<span class="text-danger important">*</span>
-                                            </label>
-
-                                            <div class="input-group">
-                                                <input type="text"
-                                                    class="form-control"
-                                                    id="api_key"
-                                                    name="api_key"
-                                                    value="{{ $data['row']->api_key ?? '' }}">
-
-                                                <button type="button" class="btn btn-primary" id="generateApiKey">
-                                                    Generate
-                                                </button>
-                                            </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="api_city_ids">App City Id<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="api_city_ids" name="api_city_ids" value="{{ $data['row']->api_city_ids ?? '' }}" placeholder="Enter App City Id">
                                         </div>
                                     </div>
                                 </div>
@@ -139,26 +118,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('.form-select').val('').trigger('change');
     });
 
-    document.getElementById('generateApiKey').addEventListener('click', function () {
-
-        function generateRandomCode(length = 64) {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            const array = new Uint8Array(length);
-            window.crypto.getRandomValues(array);
-
-            return Array.from(array, byte => chars[byte % chars.length]).join('');
-        }
-
-        document.getElementById('api_key').value = generateRandomCode(64);
-    });
-
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#apiApp', 'Select Api App');
+        commonAjax.initSelect2('.apiApp', 'Select Api App');
+        commonAjax.initSelect2('.selCity', 'Select City');
 
-        let api_app_id = <?= $data['row']->api_app_id ?? '0' ?>
+        let city_id = <?= $data['row']->city_id ?? '0' ?>
 
-        commonAjax.loadApiAppsList(api_app_id);
+        console.log(city_id);
+
+        commonAjax.loadApiAppsList(city_id);
+        commonAjax.loadCityList(city_id);
     });
 
     $('#backoffice-form').on('submit', function(e) {

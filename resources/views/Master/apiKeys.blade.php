@@ -130,6 +130,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <th>Sl No</th>
                         <th>App Name</th>
                         <th>Api Key</th>
+                        <th>Environment</th>
                         <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
@@ -246,6 +247,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {
                 data: 'api_key',
                 defaultContent: "--"
+            },
+            {
+                data: 'environment',
+                defaultContent: "--",
+                render: function (data, type, row) {
+                    if (data == 1) {
+                        return 'Staging';
+                    } else if (data == 2) {
+                        return 'Production';
+                    } else {
+                        return '--';
+                    }
+                }
             },
             {
                 data: null,
