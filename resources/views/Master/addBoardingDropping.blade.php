@@ -73,7 +73,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="col-md-4 mb-3">
                                                 <label for="type">Type<span class="text-danger important">*</span></label>
                                                 <select class="form-select type" id="type" name="type[]">
-                                                    <option disabled selected>Select Type</option>
+                                                    <option selected>Select Type</option>
                                                     <option value="1"
                                                         {{ (isset($data['row']) && $data['row']->type == 1) ? 'selected' : '' }}>
                                                         Boarding
@@ -88,7 +88,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="col-md-4 mb-3">
                                                 <label for="brd_drp_point">Boarding / Dropping Point<span class="text-danger important">*</span></label>
                                                 <input type="text" class="form-control brd_drp_point" data-check-url="{{ route('boardingDropping.checkExists') }}"
-                                                placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" value="{{ $data['row']->brd_drp_point ?? '' }}">
+                                                    placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" value="{{ $data['row']->brd_drp_point ?? '' }}">
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="landmark">Landmark</label>
@@ -112,10 +112,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
-                                    
+
                                 </div>
 
                                 <!-- BUTTONS -->
@@ -168,18 +168,43 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('selCity', 'Select City'))
+        //City validation
+        if (!validator.selectDropdown('selCity', 'Select City')) {
             return false;
+        }
 
-        if (!validator.selectDropdown('type', 'Select Type'))
-            return false;
+        let isValid = true;
 
-        if (!validator.blankCheck('brd_drp_point', 'Boarding/Dropping Point cannot be left blank'))
-            return false;
+        // Loop through each boarding / dropping row 
+        $('#boardingDroppingWrapper .row').each(function(index) {
+
+            let type = $(this).find('select[name="type[]"]');
+            let point = $(this).find('input[name="brd_drp_point[]"]');
+
+            if (!type.val() || type.val() === 'Select Type') {
+                commonAjax.confirmAlert(
+                    'Please select Type in row ' + (index + 1)
+                );
+                type.focus();
+                isValid = false;
+                return false; 
+            }
+
+            if ($.trim(point.val()) === '') {
+                commonAjax.confirmAlert(
+                    'Boarding / Dropping Point cannot be blank in row ' + (index + 1)
+                );
+                point.focus();
+                isValid = false;
+                return false;
+            }
+        });
+
+        if (!isValid) return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
-        $('#btnConfirmOk').on('click', function() {
+        $('#btnConfirmOk').off('click').on('click', function() {
             e.currentTarget.submit();
         });
 
@@ -191,9 +216,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     var rowCount = 1;
 
-    $(document).ready(function () {
+    $(document).ready(function() {
 
-        $(document).on('click', '.btn-add', function () {
+        $(document).on('click', '.btn-add', function() {
 
             const testVal = $('#selCity').val();
 
@@ -209,52 +234,52 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             $("#boardingDroppingWrapper").append(
                 "<div id='bd_row" + rowCount + "' class='boarding-dropping-item'>" +
 
-                    "<div class='row mb-3'>" +
+                "<div class='row mb-3'>" +
 
-                        "<div class='col-md-4 mb-3'>" +
-                            "<label>Type<span class='text-danger important'>*</span></label>" +
-                            "<select class='form-select type' name='type[]' >" +
-                                "<option disabled selected>Select Type</option>" +
-                                "<option value='1'>Boarding</option>" +
-                                "<option value='2'>Dropping</option>" +
-                            "</select>" +
-                        "</div>" +
+                "<div class='col-md-4 mb-3'>" +
+                "<label>Type<span class='text-danger important'>*</span></label>" +
+                "<select class='form-select type' id='type_" + rowCount + "' name='type[]' >" +
+                "<option  selected>Select Type</option>" +
+                "<option value='1'>Boarding</option>" +
+                "<option value='2'>Dropping</option>" +
+                "</select>" +
+                "</div>" +
 
-                        "<div class='col-md-4 mb-3'>" +
-                            "<label>Boarding / Dropping Point<span class='text-danger important'>*</span></label>" +
-                            "<input type='text' placeholder='Enter Boarding/Dropping Point' class='form-control brd_drp_point' "  +
-                                "data-check-url='{{ route('boardingDropping.checkExists') }}' " +
-                                "name='brd_drp_point[]'>" +
-                            "</div>" +
+                "<div class='col-md-4 mb-3'>" +
+                "<label>Boarding / Dropping Point<span class='text-danger important'>*</span></label>" +
+                "<input type='text' placeholder='Enter Boarding/Dropping Point' class='form-control brd_drp_point' " +
+                "data-check-url='{{ route('boardingDropping.checkExists') }}' " +
+                "name='brd_drp_point[]' id='brd_drp_point_" + rowCount + "' >" +
+                "</div>" +
 
-                        "<div class='col-md-4 mb-3'>" +
-                            "<label>Landmark</label>" +
-                            "<input type='text' class='form-control'  placeholder='Enter Landmark' name='landmark[]'>" +
-                        "</div>" +
+                "<div class='col-md-4 mb-3'>" +
+                "<label>Landmark</label>" +
+                "<input type='text' class='form-control'  placeholder='Enter Landmark' name='landmark[]'>" +
+                "</div>" +
 
-                        "<div class='col-md-4 mb-3'>" +
-                            "<label>Latitude</label>" +
-                            "<input type='text' class='form-control latitude' placeholder='Enter Latitude' name='latitude[]'>" +
-                        "</div>" +
+                "<div class='col-md-4 mb-3'>" +
+                "<label>Latitude</label>" +
+                "<input type='text' class='form-control latitude' placeholder='Enter Latitude' name='latitude[]'>" +
+                "</div>" +
 
-                        "<div class='col-md-4 mb-3'>" +
-                            "<label>Longitude</label>" +
-                            "<input type='text' class='form-control longitude' placeholder='Enter Longitude' name='longitude[]'>" +
-                        "</div>" +
+                "<div class='col-md-4 mb-3'>" +
+                "<label>Longitude</label>" +
+                "<input type='text' class='form-control longitude' placeholder='Enter Longitude' name='longitude[]'>" +
+                "</div>" +
 
-                        "<div class='col-md-3 mb-3'>" +
-                            "<label>Sequence No</label>" +
-                            "<input type='text' class='form-control' name='sequence_no[]' value='" + rowCount + "'>" +
-                        "</div>" +
+                "<div class='col-md-3 mb-3'>" +
+                "<label>Sequence No</label>" +
+                "<input type='text' class='form-control' name='sequence_no[]' value='" + rowCount + "'>" +
+                "</div>" +
 
-                        "<div class='col-md-1 d-flex align-items-end mb-3'>" +
-                            "<button type='button' class='btn btn-outline-danger btn-remove' data-id='bd_row" + rowCount + "'>" +
-                                "<i class='fa fa-trash'></i>" +
-                            "</button>" +
-                        "</div>" +
+                "<div class='col-md-1 d-flex align-items-end mb-3'>" +
+                "<button type='button' class='btn btn-outline-danger btn-remove' data-id='bd_row" + rowCount + "'>" +
+                "<i class='fa fa-trash'></i>" +
+                "</button>" +
+                "</div>" +
 
-                    "</div>" +
-                    "<hr>" +
+                "</div>" +
+                "<hr>" +
                 "</div>"
             );
         });
@@ -262,14 +287,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     /* remove row */
-    $(document).on('click', '.btn-remove', function () {
-        if (!confirm('Are you sure to remove this entry !')) return;
-
-        $("#" + $(this).data('id')).remove();
+    $(document).on('click', '.btn-remove', function() {
+        let id = $(this).data('id');
+        $('#' + id).remove();
     });
-    
 
-    $(document).on('blur', '.brd_drp_point', function () {
+    $(document).on('blur', '.brd_drp_point', function() {
 
         let $input = $(this);
 
@@ -277,7 +300,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if (point === '') return;
 
         let cityId = $('#selCity').val();
-        let type   = $input.closest('.row').find('select[name="type[]"]').val();
+        let type = $input.closest('.row').find('select[name="type[]"]').val();
 
         if (!cityId || !type) return;
 
@@ -290,7 +313,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 point: point,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
-            success: function (res) {
+            success: function(res) {
 
                 if (res.exists) {
                     commonAjax.confirmAlert('Boarding / Dropping point already exists');
