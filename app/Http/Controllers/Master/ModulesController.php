@@ -29,9 +29,6 @@ class ModulesController extends Controller
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
-            /* =======================
-            * EDIT MODE
-            * ======================= */
             if ($id > 0) {
 
                 $redirectPage = "admin/modules/edit/" . $encId;
@@ -40,20 +37,12 @@ class ModulesController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = Modules::select(
-                    'id',
-                    'name',
-                    'code',
-                    'sequence_no',
-                    'active_status'
-                )->where('id', $id)->first();
-
+                $row = Modules::find($id);
                 if (!$row) {
                     return redirect('admin/modules');
                 }
 
                 $data['row'] = $row;
-
             } else {
                 $redirectPage = "admin/modules";
             }
@@ -61,17 +50,14 @@ class ModulesController extends Controller
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'moduleName' => 'required|max:100',
-                    'moduleCode' => [
+                    'moduleCode.*' => [
                         'required',
                         'max:100',
                         'regex:/^[A-Z]+(_[A-Z]+)*$/'
                     ],
-                    'sequence_no'=> 'nullable|integer'
-                ], [
-                    'moduleName.required' => 'Module Name cannot be blank.',
-                    'moduleCode.required' => 'Module Code cannot be blank.',
-                    'moduleCode.regex'    => 'Module Code must be CAPITAL letters with underscore (_).'
+                    'moduleName.*' => 'required|max:100',
+                    'sequence_no.*' => 'nullable|integer',
+                    'selParent'    => 'nullable|integer'
                 ]);
 
                 if ($validator->fails()) {
@@ -80,33 +66,65 @@ class ModulesController extends Controller
 
                 DB::beginTransaction();
 
-                $duplicate = Modules::where('code', request('moduleCode'));
+                $parentId = (int) request('selParent', 0);
+
+                $codes = request('moduleCode', []);
+                $names = request('moduleName', []);
+                $seqs  = request('sequence_no', []);
 
                 if ($id > 0) {
-                    $duplicate->where('id', '!=', $id);
-                }
 
-                if ($duplicate->exists()) {
-                    return back()->with([
-                        'level'   => 'danger',
-                        'message' => 'Module Code already exists.'
-                    ])->withInput();
-                }
+                    // Duplicate check
+                    if (
+                        Modules::where('code', $codes[0])
+                        ->where('id', '!=', $id)
+                        ->exists()
+                    ) {
+                        DB::rollBack();
+                        return back()->with([
+                            'level'   => 'danger',
+                            'message' => 'Module Code already exists.'
+                        ])->withInput();
+                    }
 
-                $obj = ($id > 0) ? Modules::find($id) : new Modules();
+                    // Auto sequence if parent selected
+                    $sequence = ($parentId > 0)
+                        ? (Modules::where('parent_id', $parentId)->max('sequence_no') ?? 0) + 1
+                        : ($seqs[0] ?? 1);
 
-                $obj->name        = htmlEncode(request('moduleName'));
-                $obj->code        = htmlEncode(request('moduleCode'));
-                $obj->sequence_no = request('sequence_no') ?? 0;
-                $obj->active_status = 1;
-
-                if ($id > 0) {
-                    $obj->updated_by = 1;
+                    $row->update([
+                        'parent_id'   => $parentId,
+                        'code'        => htmlEncode($codes[0]),
+                        'name'        => htmlEncode($names[0]),
+                        'sequence_no' => $sequence,
+                        'updated_by'  => 1
+                    ]);
                 } else {
-                    $obj->created_by = 1;
-                }
 
-                $obj->save();
+                    foreach ($codes as $index => $code) {
+
+                        if (Modules::where('code', $code)->exists()) {
+                            DB::rollBack();
+                            return back()->with([
+                                'level'   => 'danger',
+                                'message' => "Module Code {$code} already exists."
+                            ])->withInput();
+                        }
+
+                        $sequence = ($parentId > 0)
+                            ? (Modules::where('parent_id', $parentId)->max('sequence_no') ?? 0) + 1
+                            : ($seqs[$index] ?? 1);
+
+                        Modules::create([
+                            'parent_id'     => $parentId,
+                            'code'          => htmlEncode($code),
+                            'name'          => htmlEncode($names[$index]),
+                            'sequence_no'   => $sequence,
+                            'active_status' => 1,
+                            'created_by'    => 1
+                        ]);
+                    }
+                }
 
                 DB::commit();
 
@@ -118,7 +136,6 @@ class ModulesController extends Controller
 
                 return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();
@@ -145,19 +162,24 @@ class ModulesController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtSearch'));$selStatus = (request('selStatus') !== null && request('selStatus') !== '')? (int) request('selStatus'): '';
+            $txtSearch = htmlEncode(request('txtSearch'));
+            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int) request('selStatus') : '';
+            $selParent = (request('selParent') !== null && request('selParent') !== '')? (int) request('selParent'): 0;
 
             $dataQuery = DB::table('mst_modules as m')
+                ->leftJoin('mst_modules as p', 'p.id', '=', 'm.parent_id')
                 ->select(
                     'm.id as module_id',
                     'm.name',
                     'm.code',
+                    'm.parent_id',
                     'm.sequence_no',
                     'm.active_status',
                     'm.created_at',
                     'm.updated_at',
                     'm.created_by',
                     'm.updated_by',
+                    DB::raw('(SELECT code FROM mst_modules WHERE id = m.parent_id LIMIT 1) as parent_module_name'),
                     DB::raw('(SELECT name FROM users WHERE id = m.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM users WHERE id = m.updated_by LIMIT 1) as updated_by_name')
                 );
@@ -165,12 +187,17 @@ class ModulesController extends Controller
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('m.name', 'like', "%{$txtSearch}%")
-                    ->orWhere('m.code', 'like', "%{$txtSearch}%");
+                        ->orWhere('m.code', 'like', "%{$txtSearch}%")  
+                        ->orWhere('p.code', 'like', "%{$txtSearch}%")   ;
                 });
             }
 
             if ($selStatus !== '' && $selStatus !== null) {
                 $dataQuery->where('m.active_status', (int) $selStatus);
+            }
+
+            if ($selParent > 0) {
+                $dataQuery->where('m.parent_id', $selParent);
             }
 
             $recordsTotal    = $dataQuery->count('m.id');
@@ -184,15 +211,15 @@ class ModulesController extends Controller
                 $columns = [
                     2 => 'm.name',
                     3 => 'm.code',
-                    4 => 'm.sequence_no',
-                    5 => 'm.created_at',
-                    6 => 'm.active_status'
+                    4 => 'parent_module_name',
+                    5 => 'm.sequence_no',
+                    6 => 'm.created_at',
+                    7 => 'm.active_status'
                 ];
 
                 $order    = request('order');
                 $orderCol = $columns[$order[0]['column']] ?? 'm.name';
                 $orderDir = $order[0]['dir'] ?? 'asc';
-
             } else {
                 $orderCol = 'm.name';
                 $orderDir = 'asc';
@@ -222,7 +249,6 @@ class ModulesController extends Controller
             }
 
             $data = $arrRes;
-
         } catch (\Throwable $t) {
 
             Log::error("Exception in ModulesController@dataTableView", [
@@ -246,6 +272,4 @@ class ModulesController extends Controller
     {
         return $this->add($encId);
     }
-
-
 }

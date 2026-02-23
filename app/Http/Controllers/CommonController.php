@@ -9,6 +9,7 @@ use App\Models\Master\Districts;
 use App\Models\Master\States;
 use App\Models\Master\ApiApps;
 use App\Models\Master\AuditLog;
+use App\Models\Master\Modules;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -232,4 +233,33 @@ class CommonController extends Controller
             'data' => $data
         ]);
     }
-}
+
+    // public function getParentModuleList(Request $request)
+    // {
+    //     $parentId = (int) $request->parent_id;
+
+    //     $modules = \App\Models\Master\Modules::where('parent_id', 0)
+    //         ->where('active_status', 1)
+    //         ->orderBy('sequence_no')
+    //         ->get(['id', 'code', 'name']);
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'data'   => $modules
+    //     ]);
+    // }
+    
+
+    public function getParentModuleList(Request $request)
+    {
+        $modules = Modules::where('parent_id', 0)
+            ->where('active_status', 1)
+            ->orderBy('sequence_no')
+            ->get(['id', 'code']); // ONLY code
+
+        return response()->json([
+            'status' => true,
+            'data'   => $modules
+        ]);
+    }
+    }

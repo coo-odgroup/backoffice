@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Modules')
 @section('content')
 
 <?php
-$page_name = 'All Seat Types';
+$page_name = 'All Modules';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -19,7 +20,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Modules</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
@@ -42,6 +43,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- FILTER FIELDS -->
                         <div class="col-12">
                             <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="selParent">Parent Module</label>
+                                    <select class="form-select selParent" id="selParent" name="selParent">
+                                        <option value="0">Select Parent Module</option>
+                                    </select>
+                                </div>
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
                                     <label for="txtSearch">Search By Module Type</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
@@ -123,6 +130,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <th>Sl No</th>
                         <th>Code</th>
                         <th>Name</th>
+                        <th>Parent Code</th>
                         <th>Sequence No</th>
                         <th>Last Modified</th>
                         <th>Status</th>
@@ -151,6 +159,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
+
+    $(document).ready(function() {
+
+        commonAjax.initSelect2('.selParent', 'Select Parent Module');
+
+        let parent_id = <?= $data['row']->parent_id ?? '0' ?>;
+
+        commonAjax.loadParentList(parent_id);
+    });
 
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
@@ -201,8 +218,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+            txtsearch: $('#txtSearch').val() || '',
+            selstatus: $('#selStatus').val() || '',
+            selParent: $('#selParent').val() || 0
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -230,8 +248,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
+                data: 'parent_module_name',
+                defaultContent: "--"
+            },
+            {
                 data: 'sequence_no',
-                defaultContent: "--",
+                render: function(data, type, row) {
+                    return `<input type="text"
+                            value="${data ?? ''}"
+                            minlength="1"
+                            maxlength="3"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            class="form-control form-control-sm order-input"
+                            data-id="${row.enc_module_id}"
+                            data-table="mst_modules"
+                            data-column="sequence_no">`;
+                },
+                defaultContent: "--"
             },
             {
                 data: null,
@@ -282,7 +315,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
-                        <a class="btn btn-sm btn-info"
+                        <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_module_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
@@ -293,6 +326,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             data-id="${row.enc_module_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
+
                     `;
                 },
                 className: "noPrint text-center"
