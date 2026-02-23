@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Amenity Category')
 @section('content')
 
 <?php
@@ -19,7 +20,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Amenity Category</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>

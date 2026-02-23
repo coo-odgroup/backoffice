@@ -80,19 +80,46 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
         { extend: 'excel', 
             className: 'd-none',
             exportOptions: {
-                columns: ':not(.noPrint)'
+                columns: ':not(.noPrint)',
+                format: {
+                    body: function (data, row, column, node) {
+                        let input = $('input', node);
+                        if (input.length) {
+                            return input.val();
+                        }
+                        return $(node).text().trim();
+                    }
+                }
             } 
          },
         { extend: 'pdfHtml5', 
             className: 'd-none',
             exportOptions: {
-                columns: ':not(.noPrint)'
+                columns: ':not(.noPrint)',
+                format: {
+                    body: function (data, row, column, node) {
+                        let input = $('input', node);
+                        if (input.length) {
+                            return input.val();
+                        }
+                        return $(node).text().trim();
+                    }
+                }
             } 
         },
         { extend: 'print', 
             className: 'd-none', 
             exportOptions: {
-                columns: ':not(.noPrint)'
+                columns: ':not(.noPrint)',
+                format: {
+                    body: function (data, row, column, node) {
+                        let input = $('input', node);
+                        if (input.length) {
+                            return input.val();
+                        }
+                        return $(node).text().trim();
+                    }
+                }
             } 
         }
     ],
