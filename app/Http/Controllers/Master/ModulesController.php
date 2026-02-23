@@ -167,6 +167,7 @@ class ModulesController extends Controller
             $selParent = (request('selParent') !== null && request('selParent') !== '')? (int) request('selParent'): 0;
 
             $dataQuery = DB::table('mst_modules as m')
+                ->leftJoin('mst_modules as p', 'p.id', '=', 'm.parent_id')
                 ->select(
                     'm.id as module_id',
                     'm.name',
@@ -186,7 +187,8 @@ class ModulesController extends Controller
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('m.name', 'like', "%{$txtSearch}%")
-                        ->orWhere('m.code', 'like', "%{$txtSearch}%");
+                        ->orWhere('m.code', 'like', "%{$txtSearch}%")
+                        ->orWhere('p.code', 'like', "%{$txtSearch}%")   ;
                 });
             }
 

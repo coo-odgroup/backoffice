@@ -75,10 +75,6 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'roles/add',[RolesController::class, 'add'])->name('roles.add');
     Route::post('roles/dataTableView', [RolesController::class, 'dataTableView'])->name('roles.dataTableView');
     Route::match(['get', 'post'], 'roles/edit/{encId}',[RolesController::class, 'edit'])->name('roles.edit');
-<<<<<<< HEAD
-=======
-    // Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
->>>>>>> d217da0f1c12c4b7387ce0f2bb6c5ef0a73b7657
     Route::post('admin/roles/check-exists',[RolesController::class, 'checkExists'])->name('roles.checkExists');
 
     // Modules
@@ -86,22 +82,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'modules/add',[ModulesController::class, 'add'])->name('modules.add');
     Route::post('modules/dataTableView', [ModulesController::class, 'dataTableView'])->name('modules.dataTableView');
     Route::match(['get', 'post'], 'modules/edit/{encId}',[ModulesController::class, 'edit'])->name('modules.edit');
-<<<<<<< HEAD
-=======
-    // Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
->>>>>>> d217da0f1c12c4b7387ce0f2bb6c5ef0a73b7657
     Route::post('admin/modules/check-exists',[ModulesController::class, 'checkExists'])->name('modules.checkExists');
-
-
-
-
-
-    Route::get('/seating-type', [SeatingTypeController::class, 'seatingType'])->name('seating.type');
-
-
-
-
-
 
 
 
