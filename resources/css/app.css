@@ -462,9 +462,97 @@ td.seat {
     text-align:center;
     vertical-align:middle;
     cursor:pointer;
-    font-weight:600;
+    font-weight:400;
+    font-size: 12px !important;
 }
 .seater { background:#4CAF50; color:#fff; }
 .sleeper-h { background:#2196F3; color:#fff; }
 .sleeper-v { background:#FF9800; color:#fff; }
 td:focus { outline:2px dashed #000; }
+
+
+
+/* LEFT SIDE */
+.seat-left {
+    flex: 0 0 720px; 
+}
+
+/* RIGHT SIDE */
+.seat-right {
+    flex: 0 0 260px;
+}
+
+/*  BUS LAYOUT  */
+.bus-layout {
+    background: #ebeae4;
+    padding: 20px;
+    border-radius: 14px;
+    margin: 0 auto;
+    display: table;
+}
+
+/* BERTH ROW */
+.berth-row {
+    display: flex;
+    gap: 16px;
+    margin: 14px 0;
+}
+
+/* LABEL */
+.berth-label {
+    width: 50px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #1b2155;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* GRID */
+.layout-box {
+    display: grid;
+    grid-template-columns: repeat(12, 42px);
+    gap: 8px;
+    background: #f6f6f2;
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.layout-box2 {
+    display: grid;
+    grid-template-columns: repeat(10, 40px);
+    gap: 8px;
+    background: #f6f6f2;
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.seat_prv,
+.sleeper_prv {
+    height: 36px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    visibility: hidden;
+}
+
+/* Default */
+.seat_prv {
+    background-image: url("../../public/assets/seats/Seat Gray.png");
+}
+
+.sleeper_prv {
+    grid-column: span 2;
+    background-image: url("../../public/assets/seats/Sleeper Gray.png");
+}
+
+
+/* EMPTY */
+.empty {
+    height: 36px;
+}
+
