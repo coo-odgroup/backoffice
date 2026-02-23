@@ -46,6 +46,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/update-sequence', [CommonController::class, 'updateSequence'])->name('common.updateSequence');
     Route::post('/get-amenity-category-list', [CommonController::class, 'getAmenityCategoryList'])->name('get.amenity.category.list');
     Route::post('/get-apiapps-list', [CommonController::class, 'getApiAppsList'])->name('getapiapps.list');
+    Route::post('get-parent-module-list', [CommonController::class, 'getParentModuleList'])->name('modules.parent.list');
+    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -58,25 +60,27 @@ Route::prefix('admin')->group(function () {
 
 
     //Subhasis
+   //___________________________________________________________________________________________________________________________________________________
+
+    // Boarding & Dropping Points
     Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boardingDropping.index');
     Route::match(['get', 'post'], 'boardingDropping/add',[BoardingDroppingController::class, 'add'])->name('boardingDropping.add');
     Route::post('boardingDropping/dataTableView', [BoardingDroppingController::class, 'dataTableView'])->name('boardingDropping.dataTableView');
     Route::match(['get', 'post'], 'boardingDropping/edit/{encId}',[BoardingDroppingController::class, 'edit'])->name('boardingDropping.edit');
-    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/boardingDropping/check-exists',[BoardingDroppingController::class, 'checkExists'])->name('boardingDropping.checkExists');
 
+    // Roles
     Route::get('/roles', [RolesController::class, 'roles'])->name('roles.index');
     Route::match(['get', 'post'], 'roles/add',[RolesController::class, 'add'])->name('roles.add');
     Route::post('roles/dataTableView', [RolesController::class, 'dataTableView'])->name('roles.dataTableView');
     Route::match(['get', 'post'], 'roles/edit/{encId}',[RolesController::class, 'edit'])->name('roles.edit');
-    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/roles/check-exists',[RolesController::class, 'checkExists'])->name('roles.checkExists');
 
-     Route::get('/modules', [ModulesController::class, 'modules'])->name('modules.index');
+    // Modules
+    Route::get('/modules', [ModulesController::class, 'modules'])->name('modules.index');
     Route::match(['get', 'post'], 'modules/add',[ModulesController::class, 'add'])->name('modules.add');
     Route::post('modules/dataTableView', [ModulesController::class, 'dataTableView'])->name('modules.dataTableView');
     Route::match(['get', 'post'], 'modules/edit/{encId}',[ModulesController::class, 'edit'])->name('modules.edit');
-    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/modules/check-exists',[ModulesController::class, 'checkExists'])->name('modules.checkExists');
 
 
