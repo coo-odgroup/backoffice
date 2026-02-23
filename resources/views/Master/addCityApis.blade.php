@@ -64,13 +64,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
                                             <label for="selCity">City<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="selCity" name="selCity">
+                                            <select class="form-select selCity" id="selCity" name="selCity">
                                                 <option value="0">Select City</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="apiApp">Api App<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="apiApp" name="api_app_id">
+                                            <select class="form-select apiApp" id="apiApp" name="api_app_id">
                                                 <option value="0">Select Api App</option>
                                             </select>
                                         </div>
@@ -120,8 +120,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('apiApp', 'Select Api App');
-        commonAjax.initSelect2('selCity', 'Select City');
+        commonAjax.initSelect2('.apiApp', 'Select Api App');
+        commonAjax.initSelect2('.selCity', 'Select City');
 
         let city_id = <?= $data['row']->city_id ?? '0' ?>
 
