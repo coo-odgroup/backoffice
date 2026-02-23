@@ -61,10 +61,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-3 mb-3">
                                             <label for="apiApp">Api App<span class="text-danger important">*</span></label>
                                             <select class="form-select" id="apiApp" name="api_app_id">
                                                 <option value="0">Select Api App</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="environment">Environment<span class="text-danger important">*</span></label>
+                                            <select class="form-select" id="environment" name="environment">
+                                                <option disabled selected>Select Environment</option>
+                                                <option value="1"
+                                                    {{ (isset($data['row']) && $data['row']->environment == 1) ? 'selected' : '' }}>
+                                                    Staging
+                                                </option>
+
+                                                <option value="2"
+                                                    {{ (isset($data['row']) && $data['row']->environment == 2) ? 'selected' : '' }}>
+                                                    Production
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">

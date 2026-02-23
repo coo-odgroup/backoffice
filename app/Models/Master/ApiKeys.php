@@ -10,6 +10,7 @@ class ApiKeys extends Model
     protected $fillable = [
         'api_app_id',
         'api_key',
+        'environment',
         'last_used_at',
         'expires_at',
         'active_status'

@@ -34,6 +34,7 @@ class ApiKeysController extends Controller
                     'ak.id as api_key_id',
                     'ak.api_app_id',
                     'ak.api_key',
+                    'ak.environment',
                     'ak.created_at',
                     'ak.created_by',
                     'ak.updated_at',
@@ -70,7 +71,7 @@ class ApiKeysController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'ak.api_app_id', 3 => 'ak.api_key', 4 => 'ak.created_at', 5 => 'ak.created_by', 6 => 'ak.active_status'];
+                $columns = [2 => 'ak.api_app_id', 3 => 'ak.api_key', 4 => 'ak.environment', 5 => 'ak.created_at', 6 => 'ak.created_by', 7 => 'ak.active_status'];
 
                 $orderBy = request('order');
                 $orderColumn = $columns[$orderBy[0]['column']] ?? 'ak.api_key';
@@ -150,7 +151,7 @@ class ApiKeysController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = ApiKeys::select('id', 'api_app_id', 'api_key', 'last_used_at', 'expires_at');
+                $dataResQry = ApiKeys::select('id', 'api_app_id', 'api_key', 'last_used_at', 'expires_at', 'environment');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
@@ -182,6 +183,7 @@ class ApiKeysController extends Controller
                     DB::beginTransaction();
 
                     $api_app_id = request('api_app_id');
+                    $environment = request('environment');
                     $api_key = htmlEncode(request('api_key'));
 
                     $duplicate = ApiKeys::select('id')->where(['api_key' => $api_key]);
@@ -199,6 +201,7 @@ class ApiKeysController extends Controller
                         $obj = ($id != 0) ? ApiKeys::find($id) : new ApiKeys();
                         $obj->api_key = $api_key;
                         $obj->api_app_id = $api_app_id;
+                        $obj->environment = $environment;
                         $obj->created_by = 1;
                         $obj->active_status = 1;
 

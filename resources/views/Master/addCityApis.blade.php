@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
                                             <label for="selCity">City<span class="text-danger important">*</span></label>
-                                            <select class="form-select selCity" id="selCity" name="selCity">
+                                            <select class="form-select selCity" id="selCity" name="city_id">
                                                 <option value="0">Select City</option>
                                             </select>
                                         </div>
