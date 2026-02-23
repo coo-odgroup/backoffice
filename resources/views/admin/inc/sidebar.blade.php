@@ -21,13 +21,13 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#busManagement"
-            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-bus me-2"></i> Bus Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*') ? 'show' : '' }}" id="busManagement">
+        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*') ? 'show' : '' }}" id="busManagement">
 
             <a href="{{ url('admin/states') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
@@ -87,6 +87,11 @@
             <a href="{{ url('admin/apikeys') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/apikeys*') ? 'active' : '' }}">
                 <i class="fa-solid fa-key me-2"></i> Api Keys
+            </a>
+
+            <a href="{{ url('admin/cityapis') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/cityapis*') ? 'active' : '' }}">
+                <i class="fa-solid fa-lock me-2"></i> City Apis
             </a>
 
         </div>

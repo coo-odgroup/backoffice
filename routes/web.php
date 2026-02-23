@@ -17,6 +17,7 @@ use App\Http\Controllers\Master\ApikeysController;
 use App\Http\Controllers\Master\RolesController;
 use App\Http\Controllers\Master\ModulesController;
 use App\Http\Controllers\Master\SeatLayoutController;
+use App\Http\Controllers\Master\CityApisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,14 +70,14 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'roles/add',[RolesController::class, 'add'])->name('roles.add');
     Route::post('roles/dataTableView', [RolesController::class, 'dataTableView'])->name('roles.dataTableView');
     Route::match(['get', 'post'], 'roles/edit/{encId}',[RolesController::class, 'edit'])->name('roles.edit');
-    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
+    // Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/roles/check-exists',[RolesController::class, 'checkExists'])->name('roles.checkExists');
 
      Route::get('/modules', [ModulesController::class, 'modules'])->name('modules.index');
     Route::match(['get', 'post'], 'modules/add',[ModulesController::class, 'add'])->name('modules.add');
     Route::post('modules/dataTableView', [ModulesController::class, 'dataTableView'])->name('modules.dataTableView');
     Route::match(['get', 'post'], 'modules/edit/{encId}',[ModulesController::class, 'edit'])->name('modules.edit');
-    Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
+    // Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('admin/modules/check-exists',[ModulesController::class, 'checkExists'])->name('modules.checkExists');
 
 
@@ -129,6 +130,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'apikeys/add', [ApikeysController::class, 'add'])->name('apikeys.add');
     Route::post('apikeys/dataTableView', [ApikeysController::class, 'dataTableView'])->name('apikeys.dataTableView');
     Route::match(['get', 'post'], 'apikeys/edit/{encId}', [ApikeysController::class, 'edit'])->name('apikeys.edit');
+
+    // City APIs
+    Route::get('/cityapis', [CityApisController::class, 'cityApis'])->name('cityapis.index');
+    Route::match(['get', 'post'], 'cityapis/add', [CityApisController::class, 'add'])->name('cityapis.add');
+    Route::post('cityapis/dataTableView', [CityApisController::class, 'dataTableView'])->name('cityapis.dataTableView');
+    Route::match(['get', 'post'], 'cityapis/edit/{encId}', [CityApisController::class, 'edit'])->name('cityapis.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 
