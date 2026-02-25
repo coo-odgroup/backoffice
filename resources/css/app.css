@@ -466,8 +466,8 @@ td.seat {
     font-size: 12px !important;
 }
 .seater { background:#4CAF50; color:#fff; }
-.sleeper-h { background:#2196F3; color:#fff; }
-.sleeper-v { background:#FF9800; color:#fff; }
+/* .sleeper-h { background:#2196F3; color:#fff; }
+.sleeper-v { background:#FF9800; color:#fff; } */
 td:focus { outline:2px dashed #000; }
 
 
@@ -530,6 +530,12 @@ td:focus { outline:2px dashed #000; }
     border-radius: 12px;
 }
 
+/* .preview-cell {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+} */
+
 .seat_prv,
 .sleeper_prv {
     height: 36px;
@@ -550,9 +556,29 @@ td:focus { outline:2px dashed #000; }
     background-image: url("../../public/assets/seats/Sleeper Gray.png");
 }
 
+.vertical_sleeper_prv {
+    grid-row: span 2;      /* vertical only */
+    background-image: url("../../public/assets/seats/Sleeper Gray.png");
+}
+
 
 /* EMPTY */
 .empty {
     height: 36px;
+}
+
+.seater { 
+    background:#4CAF50; 
+    color:#fff; 
+}
+
+.sleeper { 
+    background:#2196F3; 
+    color:#fff; 
+}
+
+.vertical-sleeper { 
+    background:#FF9800; 
+    color:#fff; 
 }
 
