@@ -1,13 +1,40 @@
 import $ from 'jquery';
 
-window.generateAll = function () {
-    createGrid('LOWER');
+export function initLayout(rows, cols) {
+
+    const upperPreview = document.querySelectorAll('.layout-box')[0];
+    const lowerPreview = document.querySelectorAll('.layout-box')[1];
+
+    // Left side grid
     createGrid('UPPER');
-};
+    createGrid('LOWER');
+
+    // Right side preview
+    generateAll(rows, cols, upperPreview);
+    generateAll(rows, cols, lowerPreview);
+}
+
+export function generateAll(rows, cols, container) {  
+
+    container.innerHTML = '';
+
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = `repeat(${cols}, 40px)`;
+    container.style.gap = '6px';
+
+    for (let i = 0; i < rows * cols; i++) {
+        const div = document.createElement('div');
+        div.className = 'preview-cell';
+        container.appendChild(div);
+    }
+}
 
 export function createGrid(deck) {
+
     let rowCount = parseInt(document.getElementById('rows').value);
     let colCount = parseInt(document.getElementById('cols').value);
+
+    if (!rowCount || !colCount) return;
 
     let html = `<table class="seatGrid"><tbody>`;
 
@@ -26,10 +53,12 @@ export function createGrid(deck) {
     }
 
     html += `</tbody></table>`;
+
     document.getElementById(deck).innerHTML = html;
 
     attachEvents();
 }
+
 
 export function attachEvents() {
         document.querySelectorAll('.seat').forEach(td => {
@@ -39,8 +68,6 @@ export function attachEvents() {
 }
 
 export function validateSeat(td) {
-
-    let name = td.innerText.trim();
     if (!name) return;
 
     let deck = td.dataset.deck;
@@ -77,14 +104,23 @@ export function validateSeat(td) {
     }
 }
 
-export function mark(td,type) {
-    td.dataset.type = type;
-    td.classList.add(
-        type === 'SEATER' ? 'seater' :
-        type === 'SLEEPER' ? 'sleeper-h' : 'sleeper-v'
-    );
+export function mark(td, type) {
 
-   updatePreview(
+    td.dataset.type = type;
+
+    td.classList.remove('seater','sleeper','vertical-sleeper');
+
+    if (type === 'SEATER') {
+        td.classList.add('seater');
+    }
+    else if (type === 'SLEEPER') {
+        td.classList.add('sleeper');
+    }
+    else if (type === 'VERTICAL_SLEEPER') {
+        td.classList.add('vertical-sleeper');
+    }
+
+    updatePreview(
         td.dataset.deck,
         +td.dataset.row,
         +td.dataset.col,
@@ -92,75 +128,102 @@ export function mark(td,type) {
     );
 }
 
+
 export function resetSeat(td) {
-    td.classList.remove('seater','sleeper-h','sleeper-v');
+    td.classList.remove('seater','sleeper');
     delete td.dataset.type;
 }
 
 export function clearSeat(td) {
 
-    const cols = parseInt(document.getElementById('cols').value);
-    const index = (td.dataset.row - 1) * cols + (td.dataset.col - 1);
+    const deck = td.dataset.deck;
+    const row  = +td.dataset.row;
+    const col  = +td.dataset.col;
 
-    const layoutBox = td.dataset.deck === 'UPPER'
-        ? document.querySelectorAll('.layout-box')[0]
-        : document.querySelectorAll('.layout-box')[1];
-
-    const cell = layoutBox.children[index];
-
-    if (cell) {
-        cell.style.visibility = 'hidden';
-    }
+    removePreview(deck, row, col);
 
     td.innerText = '';
     resetSeat(td);
 }
 
+// function updatePreview(deck, row, col, type) {
+
+//     const cols = parseInt(document.getElementById('cols').value);
+
+//     const index = (row - 1) * cols + (col - 1);
+
+//     const layoutBox = deck === 'UPPER'
+//         ? document.querySelectorAll('.layout-box')[0]
+//         : document.querySelectorAll('.layout-box')[1];
+
+//     const cells = layoutBox.children;
+//     const cell = cells[index];
+
+//     if (!cell) return;
+
+//     cell.style.visibility = 'visible';
+//     cell.className = (type === 'SEATER')
+//         ? 'seat_prv'
+//         : 'sleeper_prv';
+// }
+
 function updatePreview(deck, row, col, type) {
 
     const cols = parseInt(document.getElementById('cols').value);
-
     const index = (row - 1) * cols + (col - 1);
 
     const layoutBox = deck === 'UPPER'
         ? document.querySelectorAll('.layout-box')[0]
         : document.querySelectorAll('.layout-box')[1];
 
-    const cells = layoutBox.children;
-    const cell = cells[index];
-
+    const cell = layoutBox.children[index];
     if (!cell) return;
 
-    cell.style.visibility = 'visible';
-    cell.className = (type === 'SEATER')
-        ? 'seat_prv'
-        : 'sleeper_prv';
-}
+    cell.classList.remove(
+        'seat_prv',
+        'sleeper_prv',
+        'vertical_sleeper_prv'
+    );
 
-const previewSlots = {
-    UPPER: [],
-    LOWER: []
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-
-    const upperBox = document.querySelectorAll('.layout-box')[0];
-    const lowerBox = document.querySelectorAll('.layout-box')[1];
-
-   previewSlots.UPPER = Array.from(upperBox.querySelectorAll('.empty'));
-    previewSlots.LOWER = Array.from(lowerBox.querySelectorAll('.empty'));
-});
-
-function getNextFreeSlot(deck, count) {
-
-    const slots = previewSlots[deck];
-
-    for (let i = 0; i <= slots.length - count; i++) {
-        const group = slots.slice(i, i + count);
-
-        if (group.every(s => !s.dataset.seat)) {
-            return group;
-        }
+    if (type === 'SEATER') {
+        cell.classList.add('seat_prv');
     }
-    return null;
+    else if (type === 'SLEEPER') {
+        cell.classList.add('sleeper_prv');
+    }
+    else if (type === 'VERTICAL_SLEEPER') {
+        cell.classList.add('vertical_sleeper_prv');
+    }
+
+    cell.style.visibility = 'visible';
 }
+
+function removePreview(deck, row, col) {
+
+    const cols = parseInt(document.getElementById('cols').value);
+    const index = (row - 1) * cols + (col - 1);
+
+    const layoutBoxes = document.querySelectorAll('.layout-box');
+    const layoutBox = deck === 'UPPER'
+        ? layoutBoxes[0]
+        : layoutBoxes[1];
+
+    const cell = layoutBox.children[index];
+    if (!cell) return;
+
+    cell.classList.remove('seat_prv', 'sleeper_prv');
+    cell.style.visibility = 'hidden';
+}
+
+function removeSeat(td) {
+
+    const deck = td.dataset.deck;
+    const row  = +td.dataset.row;
+    const col  = +td.dataset.col;
+
+    removePreview(deck, row, col);
+
+    td.classList.remove('seater', 'sleeper');
+    delete td.dataset.type;
+}
+
