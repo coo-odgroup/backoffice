@@ -567,13 +567,11 @@ td:focus { outline:2px dashed #000; }
     height: 36px;
 }
 
-<<<<<<< HEAD
 .accordion-header button {
     font-size: 20px;
     text-transform: uppercase;
     font-weight: 600;
 }
-=======
 .seater { 
     background:#4CAF50; 
     color:#fff; 
@@ -589,4 +587,3 @@ td:focus { outline:2px dashed #000; }
     color:#fff; 
 }
 
->>>>>>> a3dfbbf302d9a8115bc69911367cb75b6aad897e
