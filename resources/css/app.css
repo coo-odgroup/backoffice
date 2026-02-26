@@ -543,22 +543,28 @@ td:focus { outline:2px dashed #000; }
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
-    visibility: hidden;
 }
 
 /* Default */
 .seat_prv {
-    background-image: url("../../public/assets/seats/Seat Gray.png");
+    background-image: url("../../public/assets/seats/SeatGray.png");
 }
 
 .sleeper_prv {
     grid-column: span 2;
-    background-image: url("../../public/assets/seats/Sleeper Gray.png");
+    background-image: url("../../public/assets/seats/SleeperGray.png");
 }
 
 .vertical_sleeper_prv {
-    grid-row: span 2;      /* vertical only */
-    background-image: url("../../public/assets/seats/Sleeper Gray.png");
+    grid-row: span 2;
+    width: 36px;
+    height: 80px;
+    background-image: url("../../public/assets/seats/SleeperGray.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: rotate(90deg);
+    transform-origin: center;
 }
 
 
@@ -573,12 +579,16 @@ td:focus { outline:2px dashed #000; }
 }
 
 .sleeper { 
-    background:#2196F3; 
+    background:#f32144; 
     color:#fff; 
 }
 
 .vertical-sleeper { 
     background:#FF9800; 
     color:#fff; 
+}
+
+#seat_layout{
+    display: none;
 }
 

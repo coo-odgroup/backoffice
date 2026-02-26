@@ -103,7 +103,7 @@ $page_name = 'Add Seat Layout';
                                     </div>
 
                                     <!-- Preview Seat Layout -->
-                                    <div class="row mb-2">
+                                    <div class="row mb-2" id="seat_layout">
                                         <div class="row">
                                             <div class="col-6">
                                                 <h5>Upper Berth</h5>
@@ -218,6 +218,7 @@ $page_name = 'Add Seat Layout';
             }
 
             seatAjax.initLayout(rows, cols);
+            document.getElementById('seat_layout').style.display = 'block';
         });
     }
 

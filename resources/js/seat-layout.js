@@ -1,46 +1,33 @@
 import $ from 'jquery';
 
+/* ================= INIT ================= */
+
 export function initLayout(rows, cols) {
 
-    const upperPreview = document.querySelectorAll('.layout-box')[0];
-    const lowerPreview = document.querySelectorAll('.layout-box')[1];
+    const layoutBoxes = document.querySelectorAll('.layout-box');
 
-    // Left side grid
-    createGrid('UPPER');
-    createGrid('LOWER');
+    // Reset preview containers
+    layoutBoxes.forEach(box => {
+        box.innerHTML = '';
+        box.style.display = 'grid';
+        box.style.gridTemplateColumns = `repeat(${cols}, 40px)`;
+        box.style.gridAutoRows = '40px';
+        box.style.gap = '6px';
+    });
 
-    // Right side preview
-    generateAll(rows, cols, upperPreview);
-    generateAll(rows, cols, lowerPreview);
+    createGrid('UPPER', rows, cols);
+    createGrid('LOWER', rows, cols);
 }
 
-export function generateAll(rows, cols, container) {  
+/* ================= LEFT GRID ================= */
 
-    container.innerHTML = '';
-
-    container.style.display = 'grid';
-    container.style.gridTemplateColumns = `repeat(${cols}, 40px)`;
-    container.style.gap = '6px';
-
-    for (let i = 0; i < rows * cols; i++) {
-        const div = document.createElement('div');
-        div.className = 'preview-cell';
-        container.appendChild(div);
-    }
-}
-
-export function createGrid(deck) {
-
-    let rowCount = parseInt(document.getElementById('rows').value);
-    let colCount = parseInt(document.getElementById('cols').value);
-
-    if (!rowCount || !colCount) return;
+export function createGrid(deck, rows, cols) {
 
     let html = `<table class="seatGrid"><tbody>`;
 
-    for (let r = 1; r <= rowCount; r++) {
+    for (let r = 1; r <= rows; r++) {
         html += `<tr>`;
-        for (let c = 1; c <= colCount; c++) {
+        for (let c = 1; c <= cols; c++) {
             html += `
                 <td class="seat"
                     contenteditable="true"
@@ -59,56 +46,183 @@ export function createGrid(deck) {
     attachEvents();
 }
 
+/* ================= EVENTS ================= */
 
 export function attachEvents() {
-        document.querySelectorAll('.seat').forEach(td => {
-            td.onkeydown = e => { if (e.key === 'Enter') e.preventDefault(); };
-            td.onblur = () => validateSeat(td);
-        });
+
+    document.querySelectorAll('.seat').forEach(td => {
+
+        td.onkeydown = e => {
+            if (e.key === 'Enter') e.preventDefault();
+        };
+
+        td.onblur = () => validateSeat(td);
+    });
 }
+
+/* ================= VALIDATION ================= */
+
+// export function validateSeat(td) {
+
+//     const name = td.innerText.trim();
+//     if (!name) return;
+
+//     const deck = td.dataset.deck;
+
+//     const matches = [...document.querySelectorAll(`.seat[data-deck="${deck}"]`)]
+//         .filter(s => s.innerText.trim() === name);
+
+//     // Reset existing preview
+//     matches.forEach(s => {
+//         removePreview(deck, +s.dataset.row, +s.dataset.col);
+//         resetSeat(s);
+//     });
+
+//     /* ---------- SINGLE SEAT ---------- */
+
+//     if (matches.length === 1) {
+//         mark(matches[0], 'SEATER');
+//         return;
+//     }
+
+//     /* ---------- MORE THAN TWO ---------- */
+
+//     if (matches.length > 2) {
+//         alert(`Seat "${name}" used more than twice`);
+//         matches.forEach(clearSeat);
+//         return;
+//     }
+
+//     /* ---------- TWO SEATS ---------- */
+
+//     const [a, b] = matches;
+
+//     const r1 = +a.dataset.row, c1 = +a.dataset.col;
+//     const r2 = +b.dataset.row, c2 = +b.dataset.col;
+
+//     // Horizontal sleeper
+//     if (r1 === r2 && Math.abs(c1 - c2) === 1) {
+
+//         const primary = c1 < c2 ? a : b;
+
+//         mark(primary, 'SLEEPER');
+//         return;
+//     }
+
+//     // Vertical sleeper
+//     if (c1 === c2 && Math.abs(r1 - r2) === 1) {
+
+//         const primary = r1 < r2 ? a : b;
+
+//         mark(primary, 'VERTICAL_SLEEPER');
+//         return;
+//     }
+
+//     alert(`Seat "${name}" must be adjacent`);
+//     matches.forEach(clearSeat);
+// }
 
 export function validateSeat(td) {
-    if (!name) return;
 
-    let deck = td.dataset.deck;
+    const name = td.innerText.trim();
+    const deck = td.dataset.deck;
+    const row = +td.dataset.row;
+    const col = +td.dataset.col;
 
-    let matches = [...document.querySelectorAll(`.seat[data-deck="${deck}"]`)]
-        .filter(s => s.innerText.trim() === name);
+    /* ================= EMPTY CASE ================= */
 
-    matches.forEach(resetSeat);
+    if (!name) {
 
-    if (matches.length === 1) {
-        mark(matches[0], 'SEATER');
+        removePreview(deck, row, col);
+        resetSeat(td);
+
+        // 🔥 Re-check all seats in this deck
+        reValidateDeck(deck);
+
         return;
     }
 
-    if (matches.length > 2) {
-        alert(`Seat "${name}" used more than twice`);
-        matches.forEach(clearSeat);
-        return;
-    }
-
-    let [a,b] = matches;
-    let r1 = +a.dataset.row, c1 = +a.dataset.col;
-    let r2 = +b.dataset.row, c2 = +b.dataset.col;
-
-    if (r1 === r2 && Math.abs(c1-c2) === 1) {
-        mark(a,'SLEEPER'); mark(b,'SLEEPER');
-    }
-    else if (c1 === c2 && Math.abs(r1-r2) === 1) {
-        mark(a,'VERTICAL_SLEEPER'); mark(b,'VERTICAL_SLEEPER');
-    }
-    else {
-        alert(`Seat "${name}" must be adjacent`);
-        matches.forEach(clearSeat);
-    }
+    reValidateDeck(deck);
 }
+
+
+function reValidateDeck(deck) {
+
+    const seats = [...document.querySelectorAll(`.seat[data-deck="${deck}"]`)];
+
+    // Group seats by number
+    const grouped = {};
+
+    seats.forEach(td => {
+        const value = td.innerText.trim();
+        if (!value) return;
+
+        if (!grouped[value]) grouped[value] = [];
+        grouped[value].push(td);
+    });
+
+    Object.values(grouped).forEach(matches => {
+
+        // Clear old state
+        matches.forEach(s => {
+            removePreview(deck, +s.dataset.row, +s.dataset.col);
+            resetSeat(s);
+        });
+
+        if (matches.length === 1) {
+            mark(matches[0], 'SEATER');
+            return;
+        }
+
+        if (matches.length > 2) {
+            alert(`Seat "${matches[0].innerText}" used more than twice`);
+            matches.forEach(clearSeat);
+            return;
+        }
+
+        const [a, b] = matches;
+
+        const r1 = +a.dataset.row, c1 = +a.dataset.col;
+        const r2 = +b.dataset.row, c2 = +b.dataset.col;
+
+        // Horizontal
+        if (r1 === r2 && Math.abs(c1 - c2) === 1) {
+            // Mark BOTH seats visually
+            a.classList.add('sleeper');
+            b.classList.add('sleeper');
+
+            // Choose one for preview rendering
+            const primary = c1 < c2 ? a : b;
+            updatePreview(deck, +primary.dataset.row, +primary.dataset.col, 'SLEEPER');
+            return;
+        }
+
+        // Vertical
+        if (c1 === c2 && Math.abs(r1 - r2) === 1) {
+            a.classList.add('vertical-sleeper');
+            b.classList.add('vertical-sleeper');
+
+            const primary = r1 < r2 ? a : b;
+            updatePreview(deck, +primary.dataset.row, +primary.dataset.col, 'VERTICAL_SLEEPER');
+            return;
+        }
+
+        alert(`Seat "${a.innerText}" must be adjacent`);
+        matches.forEach(clearSeat);
+    });
+}
+
+/* ================= MARKING ================= */
 
 export function mark(td, type) {
 
+    const deck = td.dataset.deck;
+    const row = +td.dataset.row;
+    const col = +td.dataset.col;
+
     td.dataset.type = type;
 
-    td.classList.remove('seater','sleeper','vertical-sleeper');
+    td.classList.remove('seater', 'sleeper', 'vertical-sleeper');
 
     if (type === 'SEATER') {
         td.classList.add('seater');
@@ -120,110 +234,62 @@ export function mark(td, type) {
         td.classList.add('vertical-sleeper');
     }
 
-    updatePreview(
-        td.dataset.deck,
-        +td.dataset.row,
-        +td.dataset.col,
-        type
-    );
+    updatePreview(deck, row, col, type);
 }
 
+/* ================= RESET ================= */
 
 export function resetSeat(td) {
-    td.classList.remove('seater','sleeper');
+    td.classList.remove('seater', 'sleeper', 'vertical-sleeper');
     delete td.dataset.type;
 }
 
 export function clearSeat(td) {
-
-    const deck = td.dataset.deck;
-    const row  = +td.dataset.row;
-    const col  = +td.dataset.col;
-
-    removePreview(deck, row, col);
-
     td.innerText = '';
     resetSeat(td);
 }
 
-// function updatePreview(deck, row, col, type) {
-
-//     const cols = parseInt(document.getElementById('cols').value);
-
-//     const index = (row - 1) * cols + (col - 1);
-
-//     const layoutBox = deck === 'UPPER'
-//         ? document.querySelectorAll('.layout-box')[0]
-//         : document.querySelectorAll('.layout-box')[1];
-
-//     const cells = layoutBox.children;
-//     const cell = cells[index];
-
-//     if (!cell) return;
-
-//     cell.style.visibility = 'visible';
-//     cell.className = (type === 'SEATER')
-//         ? 'seat_prv'
-//         : 'sleeper_prv';
-// }
+/* ================= PREVIEW SYSTEM ================= */
 
 function updatePreview(deck, row, col, type) {
 
-    const cols = parseInt(document.getElementById('cols').value);
-    const index = (row - 1) * cols + (col - 1);
+    const layoutBoxes = document.querySelectorAll('.layout-box');
+    const layoutBox = deck === 'UPPER' ? layoutBoxes[0] : layoutBoxes[1];
 
-    const layoutBox = deck === 'UPPER'
-        ? document.querySelectorAll('.layout-box')[0]
-        : document.querySelectorAll('.layout-box')[1];
+    const seat = document.createElement('div');
+    seat.className = 'preview-seat';
 
-    const cell = layoutBox.children[index];
-    if (!cell) return;
-
-    cell.classList.remove(
-        'seat_prv',
-        'sleeper_prv',
-        'vertical_sleeper_prv'
-    );
+    seat.style.gridColumnStart = col;
+    seat.style.gridRowStart = row;
 
     if (type === 'SEATER') {
-        cell.classList.add('seat_prv');
-    }
-    else if (type === 'SLEEPER') {
-        cell.classList.add('sleeper_prv');
-    }
-    else if (type === 'VERTICAL_SLEEPER') {
-        cell.classList.add('vertical_sleeper_prv');
+        seat.classList.add('seat_prv');
     }
 
-    cell.style.visibility = 'visible';
+    else if (type === 'SLEEPER') {
+        seat.classList.add('sleeper_prv');
+        seat.style.gridColumnEnd = 'span 2';
+    }
+
+    else if (type === 'VERTICAL_SLEEPER') {
+        seat.classList.add('vertical_sleeper_prv');
+        seat.style.gridRowEnd = 'span 2';
+    }
+
+    layoutBox.appendChild(seat);
 }
 
 function removePreview(deck, row, col) {
 
-    const cols = parseInt(document.getElementById('cols').value);
-    const index = (row - 1) * cols + (col - 1);
-
     const layoutBoxes = document.querySelectorAll('.layout-box');
-    const layoutBox = deck === 'UPPER'
-        ? layoutBoxes[0]
-        : layoutBoxes[1];
+    const layoutBox = deck === 'UPPER' ? layoutBoxes[0] : layoutBoxes[1];
 
-    const cell = layoutBox.children[index];
-    if (!cell) return;
+    layoutBox.querySelectorAll('.preview-seat').forEach(el => {
+        const r = parseInt(el.style.gridRowStart);
+        const c = parseInt(el.style.gridColumnStart);
 
-    cell.classList.remove('seat_prv', 'sleeper_prv');
-    cell.style.visibility = 'hidden';
+        if (r === row && c === col) {
+            el.remove();
+        }
+    });
 }
-
-function removeSeat(td) {
-
-    const deck = td.dataset.deck;
-    const row  = +td.dataset.row;
-    const col  = +td.dataset.col;
-
-    removePreview(deck, row, col);
-
-    td.classList.remove('seater', 'sleeper');
-    delete td.dataset.type;
-}
-
