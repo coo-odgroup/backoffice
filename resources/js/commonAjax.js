@@ -531,3 +531,32 @@ export function initCharCounter(fieldIds = []) {
     });
 
 }
+
+export function loadRoleList(role_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-role-list",
+        data: {
+            role_id: role_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select User Role</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        role_id > 0 && app.id == role_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                        ${app.name}
+                                    </option>`;
+                });
+            }
+
+            $("#userRole").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Roles");
+        },
+    });
+}
