@@ -63,7 +63,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCity" name="txtCity" value="{{ $data['row']->city_name ?? '' }}" placeholder="Enter City Name">
+                                            <input type="text" class="form-control"
+                                                               id="txtCity"
+                                                               name="txtCity"
+                                                               value="{{ $data['row']->city_name ?? '' }}"
+                                                               placeholder="Enter City Name"
+                                                               maxlength="100">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
 
                                         <div class="col-md-6 mb-3">
@@ -71,7 +77,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <input type="text" class="form-control" id="txtCityAlias"
                                                    name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}"
                                                    placeholder="Enter Alias"
-                                                   oninput="this.value = this.value.toLowerCase();">
+                                                   oninput="this.value = this.value.toLowerCase();"
+                                                   maxlength="100">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -104,7 +112,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     </div>
 
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}">
+                                                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
                                                     </div>
 
                                                     <div class="col-md-1">
@@ -127,7 +135,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 </div>
 
                                                 <div class="col-md-5">
-                                                    <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                                                    <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
                                                 </div>
 
                                                 <div class="col-md-1">
@@ -192,16 +200,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById('txtCity').addEventListener('input', function() {
 
+        this.value = this.value.replace(/\s+/g, ' ').trimStart();
+
         let cityName = this.value;
 
         let alias = cityName
             .toLowerCase() // convert to lowercase
             .trim() // remove extra spaces
-            .replace(/[^a-z0-9\s-]/g, '') // remove special characters
+            .replace(/[^a-z0-9-\s]/g, '') // remove special characters
             .replace(/\s+/g, '-') // replace spaces with -
             .replace(/-+/g, '-'); // remove duplicate -
 
         document.getElementById('txtCityAlias').value = alias;
+    });
+
+    document.getElementById('txtCityAlias').addEventListener('input', function () {
+
+        this.value = this.value
+            .toLowerCase()
+            .replace(/[^a-z0-9-]/g, '')   // allow only a-z, 0-9, -
+            .replace(/-+/g, '-')      // remove duplicate -
+            .replace(/^-+$/g, '');     // remove hyphen from start & end
+
     });
 
 
@@ -215,6 +235,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.loadStateList(state_id);
         commonAjax.getDistrictList(state_id, district_id);
+        commonAjax.initCharCounter(['txtCity','txtCityAlias']);
 
         $('#resetBtn').click(function() {
 
@@ -287,7 +308,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                      &nbsp;
                     </div>
                     <div class="col-md-5">
-                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-outline-danger btn-remove">

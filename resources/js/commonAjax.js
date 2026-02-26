@@ -506,3 +506,28 @@ export function loadParentList(parent_id = 0) {
         }
     });
 }
+
+export function initCharCounter(fieldIds = []) {
+
+    fieldIds.forEach(id => {
+
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        const counter = input.parentElement.querySelector('.char-counter');
+        const maxLength = input.getAttribute('maxlength');
+
+        if (!counter || !maxLength) return;
+
+        const updateCounter = () => {
+            const currentLength = input.value.length;
+            counter.textContent = `Remaining ${currentLength}/${maxLength}`;
+        };
+
+        input.addEventListener('input', updateCounter);
+
+        // Initialize on page load
+        updateCounter();
+    });
+
+}

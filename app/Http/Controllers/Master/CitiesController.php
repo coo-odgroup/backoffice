@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Mews\Purifier\Facades\Purifier;
 
 class CitiesController extends Controller
 {
@@ -62,13 +63,22 @@ class CitiesController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'txtCity' => 'bail|required',
-                    'txtCityAlias' => 'bail|required',
-                    'selState' => 'required',
+                    'txtCity' => 'bail|required|string|max:100',
+                    'txtCityAlias' => 'bail|required|string|regex:/^[a-z0-9-]+$/|max:100|unique:mst_cities,alias,'.$id,
+                    'selState' => 'required|integer',
                 ], [
                     'txtCity.required' => 'City Name cannot be left blank.',
+                    'txtCity.max' => 'City Name cannot exceed :max characters.',
+                    'txtCity.string' => 'City Name must be valid text.',
+
                     'txtCityAlias.required' => 'City Alias cannot be left blank.',
+                    'txtCityAlias.string' => 'City Alias must be valid text.',
+                    'txtCityAlias.max' => 'City Alias cannot exceed :max characters.',
+                    'txtCityAlias.regex' => 'City Alias is invalid',
+                    'txtCityAlias.unique' => 'Duplicate City Alias found',
+
                     'selState.required' => 'State cannot be left blank.',
+                   
                 ]);
 
                 if ($validator->fails()) {
@@ -77,11 +87,15 @@ class CitiesController extends Controller
 
                     DB::beginTransaction();
 
-                    $selState  = (int)request('selState');
-                    $selDistrict  = (int)request('selDistrict');
-                    $txtCity  = htmlEncode(ucwords(strtolower(request('txtCity'))));
-                    $txtCityAlias = htmlEncode(request('txtCityAlias'));
+                    $txtCity = Purifier::clean(request('txtCity'));
+                    $txtCityAlias = Purifier::clean(request('txtCityAlias'));
+                    $selState = Purifier::clean(request('selState'));
+                    $selDistrict = Purifier::clean(request('selDistrict'));
 
+                    $txtCity  = htmlEncode(ucwords(strtolower($txtCity)));
+                    $txtCityAlias = htmlEncode($txtCityAlias);
+                    $selState  = (int)$selState;
+                    $selDistrict  = (int)$selDistrict;
 
                     $duplicate = Cities::select('id')
                         ->where([

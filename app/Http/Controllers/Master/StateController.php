@@ -36,7 +36,7 @@ class StateController extends Controller
                 $from = $cities[$i];
                 $to   = $cities[$j];
 
-                $combinations[] = [$from,'->'.$to ];
+                $combinations[] = $from.'->'.$to ;
             }
         }
       
