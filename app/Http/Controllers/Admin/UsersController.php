@@ -258,7 +258,7 @@ class UsersController extends Controller
 
                         $obj->save();
 
-                        $users_id = $obj->id;
+                        $users_id = ($id != 0) ? $id : $obj->id;
 
                         $this->saveUsersInfo($users_id);
                         $this->saveAddress($users_id);
