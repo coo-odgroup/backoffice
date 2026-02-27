@@ -129,5 +129,45 @@ $(document).on('click', '.btn-view-log', function() {
 import * as seatAjax from './seat-layout';
 window.seatAjax = seatAjax; 
 
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
+// Global CKEditor registry
+window.ckEditors = {};
 
+/**
+ * Initialize CKEditor anywhere
+ * @param {string} selector
+ * @param {object} options
+ */
+window.initCkEditor = function (selector, options = {}) {
+
+    const element = document.querySelector(selector);
+    if (!element) return;
+
+    ClassicEditor
+        .create(element, {
+            toolbar: [
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'underline',
+                'link',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'blockQuote',
+                'insertTable',
+                '|',
+                'undo',
+                'redo'
+            ],
+            ...options
+        })
+        .then(editor => {
+            window.ckEditors[selector] = editor;
+        })
+        .catch(error => {
+            console.error('CKEditor init error:', error);
+        });
+};

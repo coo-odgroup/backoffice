@@ -18,6 +18,8 @@ use App\Http\Controllers\Master\RolesController;
 use App\Http\Controllers\Master\ModulesController;
 use App\Http\Controllers\Master\SeatLayoutController;
 use App\Http\Controllers\Master\CityApisController;
+use App\Http\Controllers\Master\FaqCategoryController;
+use App\Http\Controllers\Master\FaqController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,11 +51,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-apiapps-list', [CommonController::class, 'getApiAppsList'])->name('getapiapps.list');
     Route::post('get-parent-module-list', [CommonController::class, 'getParentModuleList'])->name('modules.parent.list');
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
-
-    Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
-    Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
-    Route::post('cities/dataTableView', [CitiesController::class, 'dataTableView'])->name('cities.dataTableView');
-    Route::match(['get', 'post'], 'cities/edit/{encId}', [CitiesController::class, 'edit'])->name('cities.edit');
+    Route::post('get-faq-category-list',[CommonController::class, 'getFaqCategoryList']);
 
     Route::get('/seat-layout', [SeatLayoutController::class, 'index'])->name('seatlayout.index');
     Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
@@ -62,6 +60,12 @@ Route::prefix('admin')->group(function () {
 
     //Subhasis
    //___________________________________________________________________________________________________________________________________________________
+
+    //cities
+    Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
+    Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
+    Route::post('cities/dataTableView', [CitiesController::class, 'dataTableView'])->name('cities.dataTableView');
+    Route::match(['get', 'post'], 'cities/edit/{encId}', [CitiesController::class, 'edit'])->name('cities.edit');
 
     // Boarding & Dropping Points
     Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boardingDropping.index');
@@ -83,6 +87,19 @@ Route::prefix('admin')->group(function () {
     Route::post('modules/dataTableView', [ModulesController::class, 'dataTableView'])->name('modules.dataTableView');
     Route::match(['get', 'post'], 'modules/edit/{encId}',[ModulesController::class, 'edit'])->name('modules.edit');
     Route::post('admin/modules/check-exists',[ModulesController::class, 'checkExists'])->name('modules.checkExists');
+
+    //FAQ Catagory
+    Route::get('/faqcategory', [FaqCategoryController::class, 'faqCategory'])->name('faqcategory.index');
+    Route::match(['get', 'post'], 'faqcategory/add', [FaqCategoryController::class, 'add'])->name('faqcategory.add');
+    Route::post('faqcategory/dataTableView', [FaqCategoryController::class, 'dataTableView'])->name('faqcategory.dataTableView');
+    Route::match(['get', 'post'], 'faqcategory/edit/{encId}', [FaqCategoryController::class, 'edit'])->name('faqcategory.edit');
+
+    // FAQs
+    Route::get('/faq', [FaqController::class, 'faq'])->name('faq.index');
+    Route::match(['get', 'post'], 'faq/add', [FaqController::class, 'add'])->name('faq.add');
+    Route::post('faq/dataTableView', [FaqController::class, 'dataTableView'])->name('faq.dataTableView');
+    Route::match(['get', 'post'], 'faq/edit/{encId}', [FaqController::class, 'edit'])->name('faq.edit');
+
 
 
 

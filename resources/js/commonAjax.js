@@ -506,3 +506,37 @@ export function loadParentList(parent_id = 0) {
         }
     });
 }
+
+
+export function loadFaqCategory(cat_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-faq-category-list",
+        data: {
+            cat_id: cat_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="0">Select FAQ Category</option>';
+
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, cat) {
+                    let selected =
+                        cat_id > 0 && cat.id == cat_id ? "selected" : "";
+
+                    options += `
+                        <option value="${cat.id}" ${selected}>
+                            ${cat.category_name}
+                        </option>`;
+                });
+            }
+
+            $("#faqCategory").html(options);
+        },
+        error: function () {
+            console.log("Error loading FAQ Category");
+        }
+    });
+}

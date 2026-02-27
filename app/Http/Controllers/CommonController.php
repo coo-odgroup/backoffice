@@ -10,6 +10,7 @@ use App\Models\Master\States;
 use App\Models\Master\ApiApps;
 use App\Models\Master\AuditLog;
 use App\Models\Master\Modules;
+use App\Models\Master\FaqCategory;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +63,8 @@ class CommonController extends Controller
             'Amenity' => \App\Models\Master\Amenity::class,
             'Roles' => \App\Models\Master\Roles::class,
             'Modules' => \App\Models\Master\Modules::class,
+            'FaqCategory' => \App\Models\Master\FaqCategory::class,
+            'Faq' => \App\Models\Master\Faq::class,
             'SeatType' => \App\Models\Master\SeatType::class,
             'ApiApps' => \App\Models\Master\ApiApps::class,
             'ApiKeys' => \App\Models\Master\ApiKeys::class,
@@ -232,21 +235,6 @@ class CommonController extends Controller
             'data' => $data
         ]);
     }
-
-    // public function getParentModuleList(Request $request)
-    // {
-    //     $parentId = (int) $request->parent_id;
-
-    //     $modules = \App\Models\Master\Modules::where('parent_id', 0)
-    //         ->where('active_status', 1)
-    //         ->orderBy('sequence_no')
-    //         ->get(['id', 'code', 'name']);
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'data'   => $modules
-    //     ]);
-    // }
     
 
     public function getParentModuleList(Request $request)
@@ -254,11 +242,25 @@ class CommonController extends Controller
         $modules = Modules::where('parent_id', 0)
             ->where('active_status', 1)
             ->orderBy('sequence_no')
-            ->get(['id', 'code']); // ONLY code
+            ->get(['id', 'code']);
 
         return response()->json([
             'status' => true,
             'data'   => $modules
         ]);
     }
+
+
+    public function getFaqCategoryList()
+    {
+        $data = FaqCategory::select('id', 'category_name')
+            ->where('active_status', 1)
+            ->orderBy('sequence_no')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data'   => $data
+        ]);
     }
+}
