@@ -128,7 +128,4 @@ $(document).on('click', '.btn-view-log', function() {
 });
 
 import * as seatAjax from './seat-layout';
-window.seatAjax = seatAjax; 
-
-
-
+window.seatAjax = seatAjax;
