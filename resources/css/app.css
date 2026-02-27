@@ -597,4 +597,11 @@ td:focus { outline:2px dashed #000; }
     display: none;
 }
 
+.char-counter {
+    display: block;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 700;
+}
+
 
