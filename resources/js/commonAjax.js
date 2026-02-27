@@ -508,12 +508,20 @@ export function loadParentList(parent_id = 0) {
 }
 
 
-export function loadFaqCategory(cat_id = 0) {
+// export function loadFaqCategory(cat_id = 0) {
+//     $.ajax({
+//         type: "POST",
+//         url: ajaxUrl + "get-faq-category-list",
+//         data: {
+//             cat_id: cat_id,
+
+
+export function loadRoleList(role_id = 0) {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-faq-category-list",
+        url: ajaxUrl + "get-role-list",
         data: {
-            cat_id: cat_id,
+            role_id: role_id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",

@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Seat Type')
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,16 +13,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} Seat Type</li>
+        <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Seat Types</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a class="btn btn-success btn-sm" href="{{ route('seatingtype.index') }}">View Seat Types
+        <a class="btn btn-success btn-sm" href="{{ route('seatingtype.index') }}">View @yield('page_title')
         </a>
     </div>
 </div>
@@ -100,20 +101,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-    // document.getElementById('txtDistrict').addEventListener('input', function() {
-
-    // });
-
-
-    // $(document).ready(function() {
-
-    //     commonAjax.initSelect2('#selState', 'Select State');
-
-    //     let state_id = <?= $data['row']->state_id ?? '0' ?>
-
-    //     commonAjax.loadStateList(state_id);
-    // });
-
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -141,6 +128,4 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 </script>
-
-
 @endpush

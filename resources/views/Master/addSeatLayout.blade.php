@@ -103,7 +103,7 @@ $page_name = 'Add Seat Layout';
                                     </div>
 
                                     <!-- Preview Seat Layout -->
-                                    <div class="row mb-2">
+                                    <div class="row mb-2" id="seat_layout">
                                         <div class="row">
                                             <div class="col-6">
                                                 <h5>Upper Berth</h5>
@@ -114,51 +114,7 @@ $page_name = 'Add Seat Layout';
                                                     <div class="berth-label">Upper Berth</div>
 
                                                     <div class="layout-box">
-                                                        <!-- 1st Sleeper Row -->
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-
-                                                        <!-- 2nd Sleeper Row -->
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-
-                                                        <!-- Center Empty Space Row -->
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-
-                                                        <!-- 3rd Sleeper Row -->
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-
-                                                        <!-- 4th Sleeper Row -->
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
-                                                        <div class="sleeper_prv" data-type="sleeper"></div>
+                                                       <!-- <div class="preview-cell"></div> -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -174,76 +130,7 @@ $page_name = 'Add Seat Layout';
 
                                                     <div class="layout-box">
                                                         <!-- 1st Seat Row -->
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-
-                                                        <!-- 2nd Seat Row -->
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-
-                                                        <!-- Center Empty Space Row -->
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="empty"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-
-                                                        <!-- 3rd Seat Row -->
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        
-                                                        <!-- 4th Seat Row -->
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-                                                        <div class="seat_prv" data-type="seat"></div>
-
-
+                                                        <!-- <div class="preview-cell"></div> -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -307,16 +194,34 @@ $page_name = 'Add Seat Layout';
 
     });
 
+    
+    document.addEventListener('DOMContentLoaded', () => {
 
-    document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('generateBtn');
+    const upperContainer = document.querySelectorAll('.layout-box')[0];
+    const lowerContainer = document.querySelectorAll('.layout-box')[1];
 
-        const btn = document.getElementById('generateBtn');
-        if (!btn) return; // safety check
+    if (!upperContainer || !lowerContainer) return;
 
-        btn.addEventListener('click', window.generateAll);
+    // Initial default grid
+    //seatAjax.initLayout(5, 10);
 
-        window.generateAll(); // initial load
+    if (btn) {
+        btn.addEventListener('click', () => {
 
-    });
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+
+            if (!rows || !cols) {
+                alert("Select rows and columns");
+                return;
+            }
+
+            seatAjax.initLayout(rows, cols);
+            document.getElementById('seat_layout').style.display = 'block';
+        });
+    }
+
+});
 </script>
 @endpush

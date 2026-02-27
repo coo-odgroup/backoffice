@@ -13,9 +13,9 @@ use Illuminate\Support\Facades\Validator;
 
 class CityApisController extends Controller
 {
-    public function apiKeys()
+    public function cityApis()
     {
-        return view('master.apiKeys');
+        return view('master.cityApis');
     }
 
     public function dataTableView()
@@ -29,38 +29,45 @@ class CityApisController extends Controller
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
             $apiApp = (request('apiApp') !== null && request('apiApp') !== '') ? (int)request('apiApp') : '';
+            $selCity = (request('selCity') !== null && request('selCity') !== '') ? (int)request('selCity') : '';
 
-            $dataQuery = DB::table('api_keys as ak')
+            $dataQuery = DB::table('city_api_ids as cp')
                 ->select(
-                    'ak.id as api_key_id',
-                    'ak.api_app_id',
-                    'ak.api_key',
-                    'ak.created_at',
-                    'ak.created_by',
-                    'ak.updated_at',
-                    'ak.updated_by',
-                    'ak.active_status',
-                    DB::raw('(SELECT app_name FROM api_apps WHERE id = ak.api_app_id LIMIT 1) as app_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = ak.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = ak.updated_by LIMIT 1) as updated_by_name')
+                    'cp.id as city_api_ids_id',
+                    'cp.city_id',
+                    'cp.api_app_id',
+                    'cp.api_city_ids',
+                    'cp.created_at',
+                    'cp.created_by',
+                    'cp.updated_at',
+                    'cp.updated_by',
+                    'cp.active_status',
+                    DB::raw('(SELECT city_name FROM mst_cities WHERE id = cp.city_id LIMIT 1) as city_name'),
+                    DB::raw('(SELECT app_name FROM api_apps WHERE id = cp.api_app_id LIMIT 1) as app_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = cp.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = cp.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('ak.api_key', 'like', "%{$txtSearch}%");
+                    $q->where('cp.api_city_ids', 'like', "%{$txtSearch}%");
                 });
             }
 
             if (isset($apiApp) && $apiApp != '') {
-                $dataQuery->where('ak.api_app_id', $apiApp);
+                $dataQuery->where('cp.api_app_id', $apiApp);
+            }
+
+            if (isset($selCity) && $selCity != '') {
+                $dataQuery->where('cp.city_id', $selCity);
             }
 
             if (isset($selStatus) && $selStatus != '') {
-                $dataQuery->where('ak.active_status', $selStatus);
+                $dataQuery->where('cp.active_status', $selStatus);
             }
 
-            $count = $dataQuery->count('ak.id');
+            $count = $dataQuery->count('cp.id');
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -71,13 +78,13 @@ class CityApisController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'ak.api_app_id', 3 => 'ak.api_key', 4 => 'ak.created_at', 5 => 'ak.created_by', 6 => 'ak.active_status'];
+                $columns = [2 => 'cp.api_app_id', 3 => 'cp.api_city_ids', 4 => 'cp.created_at', 5 => 'cp.created_by', 6 => 'cp.active_status'];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'ak.api_key';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'cp.api_city_ids';
                 $orderType = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'ak.api_key';
+                $orderColumn = 'cp.api_city_ids';
                 $orderType = 'asc';
             }
 
@@ -98,7 +105,7 @@ class CityApisController extends Controller
                     $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_api_key_id = Crypt::encryptString($val->api_key_id);
+                    $val->enc_city_api_ids_id = Crypt::encryptString($val->city_api_ids_id);
                 }
             }
 

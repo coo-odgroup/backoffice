@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Api Apps')
+@section('page_title', 'App City Ids')
 @section('content')
 
 <?php
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('apiapps.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('cityapis.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -44,9 +44,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By App Name / Code</label>
+                                    <label for="txtSearch">Search By City Api ID</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="App Name / Code">
+                                        placeholder="City Api ID">
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="selCity">City</label>
+                                    <select class="form-select selCity" id="selCity" name="selCity">
+                                        <option value="">Select City</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="apiApp">Api App</label>
+                                    <select class="form-select" id="apiApp" name="apiApp">
+                                        <option value="">Select Api App</option>
+                                    </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -115,16 +127,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
-                data-url="{{ route('apiapps.dataTableView') }}"
-                data-edit-url="{{ route('apiapps.edit', 'ID') }}">
+                data-url="{{ route('cityapis.dataTableView') }}"
+                data-edit-url="{{ route('cityapis.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
                             <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                         </th>
                         <th>Sl No</th>
+                        <th>City Name</th>
                         <th>App Name</th>
-                        <th>App Code</th>
+                        <th>Api City Id</th>
                         <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
@@ -137,7 +150,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="ApiApps">
+            <input type="hidden" id="hdn_model" value="ApiKeys">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -163,6 +176,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         getDataTableView();
     });
 
+    $(document).ready(function() {
+
+        commonAjax.initSelect2('#apiApp', 'Select Api App');
+        commonAjax.initSelect2('.selCity', 'Select City');
+
+        commonAjax.loadApiAppsList(0);
+        commonAjax.loadCityList(0);
+    });
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -192,6 +213,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let apiApp = '';
+        let selCity = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -199,19 +222,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
+        if ($('#apiApp').val() != '') {
+            apiApp = $('#apiApp').val();
+        }
+        if ($('#selCity').val() != '') {
+            selCity = $('#selCity').val();
+        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
             txtsearch: txtSearch,
-            selstatus: selStatus
+            selstatus: selStatus,
+            apiApp: apiApp,
+            selCity: selCity
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.api_app_id +
-                        '" name="chkStd' + row.api_app_id + '" value="' + row.api_app_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.city_api_ids_id +
+                        '" name="chkStd' + row.city_api_ids_id + '" value="' + row.city_api_ids_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -224,11 +255,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
+                data: 'city_name',
+                defaultContent: "--"
+            },
+            {
                 data: 'app_name',
                 defaultContent: "--"
             },
             {
-                data: 'app_code',
+                data: 'api_city_ids',
                 defaultContent: "--"
             },
             {
@@ -282,14 +317,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info text-white"
-                        href="${editUrl.replace('ID', row.enc_api_app_id)}">
+                        href="${editUrl.replace('ID', row.enc_city_api_ids_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="api_apps"
-                            data-id="${row.enc_api_app_id}">
+                            data-table="api_keys"
+                            data-id="${row.enc_city_api_ids_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
 

@@ -466,8 +466,8 @@ td.seat {
     font-size: 12px !important;
 }
 .seater { background:#4CAF50; color:#fff; }
-.sleeper-h { background:#2196F3; color:#fff; }
-.sleeper-v { background:#FF9800; color:#fff; }
+/* .sleeper-h { background:#2196F3; color:#fff; }
+.sleeper-v { background:#FF9800; color:#fff; } */
 td:focus { outline:2px dashed #000; }
 
 
@@ -530,6 +530,12 @@ td:focus { outline:2px dashed #000; }
     border-radius: 12px;
 }
 
+/* .preview-cell {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ccc;
+} */
+
 .seat_prv,
 .sleeper_prv {
     height: 36px;
@@ -537,17 +543,28 @@ td:focus { outline:2px dashed #000; }
     background-size: contain;
     background-repeat: no-repeat;
     cursor: pointer;
-    visibility: hidden;
 }
 
 /* Default */
 .seat_prv {
-    background-image: url("../../public/assets/seats/Seat Gray.png");
+    background-image: url("../../public/assets/seats/SeatGray.png");
 }
 
 .sleeper_prv {
     grid-column: span 2;
-    background-image: url("../../public/assets/seats/Sleeper Gray.png");
+    background-image: url("../../public/assets/seats/SleeperGray.png");
+}
+
+.vertical_sleeper_prv {
+    grid-row: span 2;
+    width: 36px;
+    height: 80px;
+    background-image: url("../../public/assets/seats/SleeperGray.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: rotate(90deg);
+    transform-origin: center;
 }
 
 
@@ -555,4 +572,29 @@ td:focus { outline:2px dashed #000; }
 .empty {
     height: 36px;
 }
+
+.accordion-header button {
+    font-size: 20px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+.seater { 
+    background:#4CAF50; 
+    color:#fff; 
+}
+
+.sleeper { 
+    background:#f32144; 
+    color:#fff; 
+}
+
+.vertical-sleeper { 
+    background:#FF9800; 
+    color:#fff; 
+}
+
+#seat_layout{
+    display: none;
+}
+
 

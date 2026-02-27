@@ -11,6 +11,7 @@ use App\Models\Master\ApiApps;
 use App\Models\Master\AuditLog;
 use App\Models\Master\Modules;
 use App\Models\Master\FaqCategory;
+use App\Models\Master\Roles;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -68,6 +69,7 @@ class CommonController extends Controller
             'SeatType' => \App\Models\Master\SeatType::class,
             'ApiApps' => \App\Models\Master\ApiApps::class,
             'ApiKeys' => \App\Models\Master\ApiKeys::class,
+            'CityApis' => \App\Models\Master\CityApis::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -261,6 +263,18 @@ class CommonController extends Controller
         return response()->json([
             'status' => true,
             'data'   => $data
+        ]);
+    }
+    
+    public function getRoleList(Request $request)
+    {
+        $data = Roles::where('active_status', 1)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
         ]);
     }
 }

@@ -22,7 +22,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a href="{{ route('apikeys.index') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('cityapis.index') }}" class="btn btn-success btn-sm">
             View @yield('page_title')
         </a>
     </div>
@@ -88,7 +88,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('apikeys.index') }}" class="btn btn-secondary btn-sm">
+                                        <a href="{{ route('cityapis.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
                                         </a>
                                         @else
@@ -123,11 +123,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('.apiApp', 'Select Api App');
         commonAjax.initSelect2('.selCity', 'Select City');
 
-        let city_id = <?= $data['row']->city_id ?? '0' ?>
+        let city_id = <?= $data['row']->city_id ?? '0' ?>;
+        let api_app_id = <?= $data['row']->api_app_id ?? '0' ?>;
 
-        console.log(city_id);
-
-        commonAjax.loadApiAppsList(city_id);
+        commonAjax.loadApiAppsList(api_app_id);
         commonAjax.loadCityList(city_id);
     });
 
@@ -135,14 +134,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
+        if (!validator.selectDropdown('selCity', 'Select City')) {
+            return false;
+        }
+
         if (!validator.selectDropdown('apiApp', 'Select Api App')) {
             return false;
         }
 
-        if (!validator.blankCheck('api_key', 'Api Key cannot be left blank'))
+        if (!validator.blankCheck('api_city_ids', 'Api City Ids cannot be left blank'))
             return false;
-        if (!validator.maxLength('api_key', 100, 'Api Key'))
+        
+        var apiCityIds = document.getElementById('api_city_ids').value.trim();
+
+        if (!/^\d+$/.test(apiCityIds)) {
+            commonAjax.viewAlert('Api City Ids must contain numbers only');
+            document.getElementById('api_city_ids').focus();
             return false;
+        }
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 

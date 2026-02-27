@@ -117,6 +117,7 @@ import * as commonAjax from './commonAjax';
 window.commonAjax = commonAjax; 
 window.initTooltips = commonAjax.initTooltips;
 window.actionRec = commonAjax.actionRec;
+window.initCharCounter = commonAjax.initCharCounter;
 
 $(document).on('click', '.btn-view-log', function() {
 
