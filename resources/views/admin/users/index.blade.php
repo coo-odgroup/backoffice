@@ -94,10 +94,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob" onclick="actionRec('D');">
-                            <i class="fa-solid fa-trash me-1"></i>
-                            Delete
-                        </button>
                         <button type="button" id="btnActive" class="btn btn-success btn-sm text-white btn-mob" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
@@ -128,10 +124,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
                 data-url="{{ route('users.dataTableView') }}"
-                data-edit-url="{{ route('users.edit', 'ID') }}"
-                data-edit-moreinfo-url="{{ route('users.edit', 'MOREINFOID') }}"
-                data-edit-address-url="{{ route('users.edit', 'ADDRESSID') }}"
-                data-edit-bankdetails-url="{{ route('users.edit', 'BANKDETAILSID') }}">
+                data-edit-url="{{ url('admin/users/edit/basic', 'ID') }}"
+                data-edit-moreinfo-url="{{ url('admin/users/edit/moreinfo', 'MOREINFOID') }}"
+                data-edit-address-url="{{ url('admin/users/edit/address', 'ADDRESSID') }}"
+                data-edit-bankdetails-url="{{ url('admin/users/edit/bankdetails', 'BANKDETAILSID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
@@ -156,7 +152,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="ApiKeys">
+            <input type="hidden" id="hdn_model" value="Users">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -353,7 +349,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a class="dropdown-item"
-                                        href="${moreInfoUrl}">
+                                        href="${url}">
                                         <i class="fa fa-pen"></i> Edit Basic Info
                                         </a>
                                     </li>
@@ -380,9 +376,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                             <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="api_keys"
+                            data-table="users"
                             data-id="${row.enc_users_id}">
                                 <i class="fa fa-history"></i>
+                            </a>
+
+                            <a href="javascript:void(0);"
+                            class="btn btn-sm btn-warning btn-view"
+                            data-table="users"
+                            data-id="${row.enc_users_id}">
+                                <i class="fa fa-eye"></i>
                             </a>
 
                         </div>

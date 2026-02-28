@@ -17,4 +17,19 @@ class Users extends Model
         'location',
         'active_status'
     ];
+
+    public function info()
+    {
+        return $this->hasOne(UsersInfo::class, 'users_id', 'id');
+    }
+
+    public function address()
+    {
+        return $this->hasOne(UsersAddress::class, 'users_id', 'id');
+    }
+
+    public function bankdetails()
+    {
+        return $this->hasOne(UsersBankDetails::class, 'users_id', 'id');
+    }
 }

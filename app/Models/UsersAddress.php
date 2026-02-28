@@ -19,4 +19,9 @@ class UsersAddress extends Model
         'pincode',
         'active_status'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(Users::class, 'users_id', 'id');
+    }
 }
