@@ -138,37 +138,17 @@ class UsersController extends Controller
         ]);
     }
 
-    public function add($encId = null)
+    public function add()
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
+        $data['edit_param'] = '';
 
         try {
 
-            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
-
-            if ($id > 0) {
-
-                $redirectPage = "admin/users/edit/" . $encId;
-                $data['strPage'] = $method = 'Edit';
-                $data['strSubmit'] = 'Update';
-                $data['strReset'] = 'Cancel';
-
-                $dataResQry = Users::select('id', 'user_role', 'unique_id', 'name', 'organization_name', 'primary_email', 'primary_contact', 'location');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
-
-                if (empty($dataResQry)) {
-                    return redirect("users");
-                }
-                $data['row'] = $dataResQry;
-            } else {
-                $id = 0;
-                $redirectPage = "admin/users";
-            }
+            $redirectPage = "admin/users";
 
             if (request()->isMethod('post')) {
 
@@ -224,10 +204,6 @@ class UsersController extends Controller
 
                     $duplicate = Users::select('id')->where(['name' => $name]);
 
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
                     if ($duplicate->exists()) {
                         return back()->with([
                             'level' => 'danger',
@@ -235,15 +211,9 @@ class UsersController extends Controller
                         ])->withInput();
                     } else {
 
-                        $obj = ($id != 0) ? Users::find($id) : new Users();
-
+                        $obj = new Users();
                         $obj->user_role = $user_role;
-
-                        // Only generate unique_id on create
-                        if ($id == 0) {
-                            $obj->unique_id = $unique_id;
-                        }
-
+                        $obj->unique_id = $unique_id;
                         $obj->name = $name;
                         $obj->organization_name = $organization_name;
                         $obj->primary_email = $primary_email;
@@ -252,22 +222,169 @@ class UsersController extends Controller
                         $obj->created_by = 1;
                         $obj->active_status = 1;
 
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
                         $obj->save();
 
-                        $users_id = ($id != 0) ? $id : $obj->id;
+                        $users_id = $obj->id;
 
                         $this->saveUsersInfo($users_id);
                         $this->saveAddress($users_id);
                         $this->saveBankDetails($users_id);
 
                         session()->flash('level', 'success');
-                        session()->flash('message', 'Users ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                        session()->flash('message', 'Users created successfully.');
                     }
 
+                    DB::commit();
+                    return redirect($redirectPage);
+                }
+            }
+        } catch (\Throwable $t) {
+            Log::error("Error", [
+                'Controller' => 'UsersController',
+                'Method' => $method,
+                'Error' => $t->getMessage()
+            ]);
+
+            DB::rollBack();
+
+            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
+
+            return back()->with([
+                'level' => 'danger',
+                'message' => $errorMsg
+            ])->withInput();
+        }
+        return view('admin.users.addUsers', compact('data'));
+    }
+
+    public function update($edit_param = null, $encId = null)
+    {
+
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        $data['edit_param'] = $edit_param;
+
+        try {
+
+            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+
+            if ($id > 0) {
+
+                $redirectPage = "admin/users/edit/" . $edit_param . "/" . $encId;
+                $data['strPage'] = $method = 'Edit';
+                $data['strSubmit'] = 'Update';
+                $data['strReset'] = 'Cancel';
+
+                $dataResQry = Users::with(['info', 'address', 'bankdetails']);
+
+                $dataResQry = $dataResQry->where('id', $id)->first();
+
+                if (empty($dataResQry)) {
+                    return redirect("users");
+                }
+                $data['row'] = $dataResQry;
+            }
+
+            if (request()->isMethod('post')) {
+
+                request()->replace(request()->all());
+
+                if ($edit_param == 'basic') {
+                    $validator = Validator::make(request()->all(), [
+                        'user_role' => 'bail|required|exists:mst_roles,id',
+
+                        'name' => 'bail|required|max:150',
+
+                        'organization_name' => 'bail|required|max:150',
+
+                        'primary_email' => 'bail|required|email|max:150|unique:users,primary_email,' . $id,
+
+                        'primary_contact' => 'bail|required|numeric|digits_between:10,15',
+
+                        'location' => 'bail|required|max:150'
+                    ], [
+                        'user_role.required' => 'User Role cannot be left blank.',
+                        'user_role.exists' => 'Selected User Role is invalid.',
+
+                        'name.required' => 'User Name cannot be left blank.',
+                        'name.max' => 'User Name cannot exceed 150 characters.',
+
+                        'organization_name.required' => 'Organization Name cannot be left blank.',
+                        'organization_name.max' => 'Organization Name cannot exceed 150 characters.',
+
+                        'primary_email.required' => 'Primary Email cannot be left blank.',
+                        'primary_email.email' => 'Enter a valid Email address.',
+                        'primary_email.max' => 'Email cannot exceed 150 characters.',
+                        'primary_email.unique' => 'Email already exists.',
+
+                        'primary_contact.required' => 'Primary Contact cannot be left blank.',
+                        'primary_contact.numeric' => 'Primary Contact must be numeric.',
+                        'primary_contact.digits_between' => 'Primary Contact must be between 10 to 15 digits.',
+
+                        'location.required' => 'Location cannot be left blank.',
+                        'location.max' => 'Location cannot exceed 150 characters.'
+                    ]);
+
+                    if ($validator->fails()) {
+                        return back()->withErrors($validator)->withInput();
+                    } else {
+                        DB::beginTransaction();
+
+                        $user_role = Purifier::clean(request('user_role'));
+                        $name = htmlEncode(Purifier::clean(request('name')));
+                        $organization_name = htmlEncode(Purifier::clean(request('organization_name')));
+                        $primary_email = htmlEncode(Purifier::clean(request('primary_email')));
+                        $primary_contact = htmlEncode(Purifier::clean(request('primary_contact')));
+                        $location = htmlEncode(Purifier::clean(request('location')));
+
+                        $duplicate = Users::select('id')->where(['name' => $name]);
+                        $duplicate->where('id', '!=', $id);
+
+                        if ($duplicate->exists()) {
+                            return back()->with([
+                                'level' => 'danger',
+                                'message' => 'User already exist'
+                            ])->withInput();
+                        } else {
+
+                            $obj = Users::find($id);
+
+                            $obj->user_role = $user_role;
+                            $obj->name = $name;
+                            $obj->organization_name = $organization_name;
+                            $obj->primary_email = $primary_email;
+                            $obj->primary_contact = $primary_contact;
+                            $obj->location = $location;
+                            $obj->active_status = 1;
+                            $obj->updated_by = 1;
+
+                            $obj->save();
+
+                            session()->flash('level', 'success');
+                            session()->flash('message', 'Users updated successfully.');
+                        }
+
+                        DB::commit();
+                        return redirect($redirectPage);
+                    }
+                } elseif ($edit_param == 'moreinfo') {
+                    $this->saveUsersInfo($id);
+                    session()->flash('level', 'success');
+                    session()->flash('message', 'Users Info updated successfully.');
+                    DB::commit();
+                    return redirect($redirectPage);
+                } elseif ($edit_param == 'address') {
+                    $this->saveAddress($id);
+                    session()->flash('level', 'success');
+                    session()->flash('message', 'Users Address updated successfully.');
+                    DB::commit();
+                    return redirect($redirectPage);
+                } elseif ($edit_param == 'bankdetails') {
+                    $this->saveBankDetails($id);
+                    session()->flash('level', 'success');
+                    session()->flash('message', 'Users Bank Details updated successfully.');
                     DB::commit();
                     return redirect($redirectPage);
                 }
@@ -378,8 +495,8 @@ class UsersController extends Controller
         }
     }
 
-    public function edit($encId)
+    public function edit($edit_param, $encId)
     {
-        return $this->add($encId);
+        return $this->update($edit_param, $encId);
     }
 }

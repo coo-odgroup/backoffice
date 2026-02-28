@@ -20,4 +20,9 @@ class UsersBankDetails extends Model
         'upi_id',
         'active_status'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(Users::class, 'users_id', 'id');
+    }
 }

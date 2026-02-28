@@ -21,4 +21,9 @@ class UsersInfo extends Model
         'gst_no',
         'active_status'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(Users::class, 'users_id', 'id');
+    }
 }

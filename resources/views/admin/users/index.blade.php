@@ -94,10 +94,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob" onclick="actionRec('D');">
-                            <i class="fa-solid fa-trash me-1"></i>
-                            Delete
-                        </button>
                         <button type="button" id="btnActive" class="btn btn-success btn-sm text-white btn-mob" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
@@ -128,10 +124,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
                 data-url="{{ route('users.dataTableView') }}"
-                data-edit-url="{{ route('users.edit', 'ID') }}"
-                data-edit-moreinfo-url="{{ route('users.edit', 'MOREINFOID') }}"
-                data-edit-address-url="{{ route('users.edit', 'ADDRESSID') }}"
-                data-edit-bankdetails-url="{{ route('users.edit', 'BANKDETAILSID') }}">
+                data-edit-url="{{ url('admin/users/edit/basic', 'ID') }}"
+                data-edit-moreinfo-url="{{ url('admin/users/edit/moreinfo', 'MOREINFOID') }}"
+                data-edit-address-url="{{ url('admin/users/edit/address', 'ADDRESSID') }}"
+                data-edit-bankdetails-url="{{ url('admin/users/edit/bankdetails', 'BANKDETAILSID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
@@ -353,7 +349,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a class="dropdown-item"
-                                        href="${moreInfoUrl}">
+                                        href="${url}">
                                         <i class="fa fa-pen"></i> Edit Basic Info
                                         </a>
                                     </li>

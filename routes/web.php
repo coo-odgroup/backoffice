@@ -134,7 +134,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::match(['get', 'post'], 'users/add', [UsersController::class, 'add'])->name('users.add');
     Route::post('users/dataTableView', [UsersController::class, 'dataTableView'])->name('users.dataTableView');
-    Route::match(['get', 'post'], 'users/edit/{encId}', [UsersController::class, 'edit'])->name('users.edit');
+    // Route::match(['get', 'post'], 'users/edit/{encId}', [UsersController::class, 'edit'])->name('users.edit');
+    Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
 
     // ---------------------------------------------------------------------------------------------------------------
 
