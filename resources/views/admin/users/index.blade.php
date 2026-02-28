@@ -152,7 +152,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="ApiKeys">
+            <input type="hidden" id="hdn_model" value="Users">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -376,9 +376,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                             <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="api_keys"
+                            data-table="users"
                             data-id="${row.enc_users_id}">
                                 <i class="fa fa-history"></i>
+                            </a>
+
+                            <a href="javascript:void(0);"
+                            class="btn btn-sm btn-warning btn-view"
+                            data-table="users"
+                            data-id="${row.enc_users_id}">
+                                <i class="fa fa-eye"></i>
                             </a>
 
                         </div>

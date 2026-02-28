@@ -333,6 +333,78 @@ export function viewLogs(table, id) {
     });
 }
 
+export function viewRecord(table, id) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "view-record",
+        data: {
+            table: table,
+            id: id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+            let html = "";
+
+            console.log(response);
+
+            // If single object
+            if (response && Object.keys(response).length > 0) {
+
+                html += `
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light">
+                            <strong>Record Details</strong>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover mb-0 align-middle">
+                                <tbody>
+                `;
+
+                $.each(response, function (key, value) {
+
+                    html += `
+                        <tr>
+                            <th class="text-capitalize" style="width: 30%">
+                                ${key.replaceAll('_', ' ')}
+                            </th>
+                            <td>
+                                ${value ? value : "-"}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+
+            } else {
+
+                html = `
+                    <div class="alert alert-info text-center">
+                        No record found.
+                    </div>
+                `;
+            }
+
+            $("#viewRecordContainer").html(html);
+
+            const modalElement = document.getElementById("viewRecord");
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        },
+
+        error: function (xhr) {
+            console.log("Error loading Records");
+        },
+    });
+}
+
 export function formatDate(dateString) {
     let date = new Date(dateString);
 
