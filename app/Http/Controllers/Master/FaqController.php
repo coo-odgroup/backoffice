@@ -45,7 +45,6 @@ class FaqController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = f.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // Log::info($txtSearch);
 
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
@@ -54,7 +53,6 @@ class FaqController extends Controller
                 });
             }
 
-            // Log::info($query->get());
 
             if ($categoryId !== null && $categoryId !== '') {
                 $query->where('f.faq_category_id', (int) $categoryId);

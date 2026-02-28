@@ -175,17 +175,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         //  If table already initialized
         if (window.dataTableInstance && reset) {
-
-            // Clear saved state
             window.dataTableInstance.state.clear();
-
-            // Reset length dropdown UI
             $('#pageSizeDatatable').val(10);
-
-            // Reset page length internally
             window.dataTableInstance.page.len(10);
-
-            // Force first page
             window.dataTableInstance.page(0);
         }
 
