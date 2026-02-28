@@ -75,6 +75,7 @@ class FaqController extends Controller
                     3 => 'c.category_name',
                     4 => 'f.content',
                     5 => 'f.sequence_no',
+                    6 =>'',
                     7 => 'f.active_status',
                 ];
 

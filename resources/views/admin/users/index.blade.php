@@ -128,7 +128,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
                 data-url="{{ route('users.dataTableView') }}"
-                data-edit-url="{{ route('users.edit', 'ID') }}">
+                data-edit-url="{{ route('users.edit', 'ID') }}"
+                data-edit-moreinfo-url="{{ route('users.edit', 'MOREINFOID') }}"
+                data-edit-address-url="{{ route('users.edit', 'ADDRESSID') }}"
+                data-edit-bankdetails-url="{{ route('users.edit', 'BANKDETAILSID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
@@ -317,42 +320,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-            // {
-            //     data: '',
-            //     render: function(data, type, row) {
-
-            //         let editUrl = $('#' + tableId).data('edit-url');
-
-            //         if (!editUrl) return '';
-
-            //         return `
-            //             <a class="btn btn-sm btn-info text-white"
-            //             href="${editUrl.replace('ID', row.enc_users_id)}">
-            //             <i class="fa fa-edit"></i> Edit
-            //             </a>
-
-            //             <a href="javascript:void(0);"
-            //                 class="btn btn-sm btn-success btn-view-log"
-            //                 data-table="api_keys"
-            //                 data-id="${row.enc_users_id}">
-            //                     <i class="fa fa-history"></i> View Log
-            //             </a>
-
-            //         `;
-            //     },
-            //     className: "noPrint text-center"
-            // },
             {
                 data: '',
                 render: function(data, type, row) {
 
-                    let editBasicUrl = $('#' + tableId).data('edit-basic-url');
-                    let editContactUrl = $('#' + tableId).data('edit-contact-url');
+                    let editUrl = $('#' + tableId).data('edit-url');
+                    let editMoreInfoUrl = $('#' + tableId).data('edit-moreinfo-url');
+                    let editAddressUrl = $('#' + tableId).data('edit-address-url');
+                    let editBankDetails = $('#' + tableId).data('edit-bankdetails-url');
 
-                    if (!editBasicUrl) return '';
+                    if (!editUrl) return '';
+                    if (!editMoreInfoUrl) return '';
+                    if (!editAddressUrl) return '';
+                    if (!editBankDetails) return '';
 
-                    let basicUrl = editBasicUrl.replace('ID1', row.enc_users_id);
-                    let contactUrl = editContactUrl.replace('ID2', row.enc_users_id);
+                    let url = editUrl.replace('ID', row.enc_users_id);
+                    let moreInfoUrl = editMoreInfoUrl.replace('MOREINFOID', row.enc_users_id);
+                    let contactUrl = editAddressUrl.replace('ADDRESSID', row.enc_users_id);
+                    let bankDetailsUrl = editBankDetails.replace('BANKDETAILSID', row.enc_users_id);
 
                     return `
                         <div class="d-inline-flex gap-1">
@@ -362,20 +347,32 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false">
-                                    <i class="fa fa-edit"></i>
+                                    <i class="fa fa-edit"></i> Edit
                                 </button>
 
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item bg-success text-white"
-                                        href="${basicUrl}">
+                                        <a class="dropdown-item"
+                                        href="${moreInfoUrl}">
                                         <i class="fa fa-pen"></i> Edit Basic Info
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${moreInfoUrl}">
+                                        <i class="fa fa-pencil-square"></i> Edit More Info
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item"
                                         href="${contactUrl}">
                                         <i class="fa fa-phone"></i> Edit Contact
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${bankDetailsUrl}">
+                                        <i class="fa fa-university"></i> Edit Contact
                                         </a>
                                     </li>
                                 </ul>
