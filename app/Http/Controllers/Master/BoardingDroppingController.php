@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Master\Cities;
@@ -92,13 +93,14 @@ class BoardingDroppingController extends Controller
 
                 DB::beginTransaction();
 
-                $cityId     = request('selCity'); // single city
-                $types      = request('type', []);
-                $points     = request('brd_drp_point', []);
-                $landmarks  = request('landmark', []);
-                $latitudes  = request('latitude', []);
-                $longitudes = request('longitude', []);
-                $sequences  = request('sequence_no', []);
+                $cityId     = (int) Purifier::clean(request('selCity'));
+
+                $types      = array_map(fn($val) => (int) Purifier::clean($val), request('type', []));
+                $points     = array_map(fn($val) => Purifier::clean($val), request('brd_drp_point', []));
+                $landmarks  = array_map(fn($val) => Purifier::clean($val), request('landmark', []));
+                $latitudes  = array_map(fn($val) => Purifier::clean($val), request('latitude', []));
+                $longitudes = array_map(fn($val) => Purifier::clean($val), request('longitude', []));
+                $sequences  = array_map(fn($val) => (int) Purifier::clean($val), request('sequence_no', []));
 
                 foreach ($types as $i => $type) {
 

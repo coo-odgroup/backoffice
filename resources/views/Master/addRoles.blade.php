@@ -62,12 +62,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
-                                            <label for="roleType">Role Type<span class="text-danger important" >*</span></label>
-                                            <input type="text" class="form-control" id="roleType" placeholder="Role Type" name="roleType" value="{{ $data['row']->name ?? '' }}">
+                                            <label for="roleType">Role Type<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="roleType" placeholder="Role Type" name="roleType" maxlength="100" value="{{ $data['row']->name ?? '' }}">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label for="roleCode">Role Code<span class="text-danger important" >*</span></label>
-                                            <input type="text" class="form-control" id="roleCode" placeholder="Role Code" name="roleCode" value="{{ $data['row']->code ?? '' }}">
+                                            <label for="roleCode">Role Code<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="roleCode" placeholder="Role Code" name="roleCode" maxlength="100" value="{{ $data['row']->code ?? '' }}">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="systemRolesType">System Role Type<span class="text-danger important">*</span></label>
@@ -88,7 +90,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control" id="description" name="description" placeholder="Description" rows="3">{{ $data['row']->description ?? '' }}</textarea>
+                                            <textarea class="form-control" id="description" name="description" placeholder="Description" maxlength="250" rows="3">{{ $data['row']->description ?? '' }}</textarea>
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
                                     </div>
 
@@ -142,6 +145,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if (!validator.maxLength('description', 256, 'Description'))
             return false;
 
+
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -154,9 +158,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
+        commonAjax.initCharCounter(['roleType', 'roleCode', 'description']);
 
-        $('#roleCode').on('keyup', function () {
+        $('#roleCode').on('keyup', function() {
 
             let val = $(this).val();
             val = val.toUpperCase();

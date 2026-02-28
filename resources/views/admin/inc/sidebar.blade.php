@@ -79,6 +79,16 @@
                 <i class="fa-solid fa-address-book me-2"></i> Modules
             </a>
 
+            <a href="{{ url('admin/faq') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/faq*') ? 'active' : '' }}">
+                <i class="fa-solid fa-address-book me-2"></i> FAQ
+            </a>
+
+            <a href="{{ url('admin/faqcategory') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/faqcategory*') ? 'active' : '' }}">
+                <i class="fa-solid fa-address-book me-2"></i> FAQ Category
+            </a>
+
             <a href="{{ url('admin/apiapps') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/apiapps*') ? 'active' : '' }}">
                 <i class="fa-solid fa-font me-2"></i> Api Apps

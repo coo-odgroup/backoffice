@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Master\Modules;
@@ -66,11 +67,19 @@ class ModulesController extends Controller
 
                 DB::beginTransaction();
 
-                $parentId = (int) request('selParent', 0);
+                $parentId = (int) Purifier::clean(request('selParent', 0));
 
-                $codes = request('moduleCode', []);
-                $names = request('moduleName', []);
-                $seqs  = request('sequence_no', []);
+                $codes = array_map(function ($val) {
+                    return strtoupper(trim(Purifier::clean($val)));
+                }, request('moduleCode', []));
+
+                $names = array_map(function ($val) {
+                    return trim(Purifier::clean($val));
+                }, request('moduleName', []));
+
+                $seqs = array_map(function ($val) {
+                    return (int) Purifier::clean($val);
+                }, request('sequence_no', []));
 
                 if ($id > 0) {
 
@@ -164,7 +173,7 @@ class ModulesController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int) request('selStatus') : '';
-            $selParent = (request('selParent') !== null && request('selParent') !== '')? (int) request('selParent'): 0;
+            $selParent = (request('selParent') !== null && request('selParent') !== '') ? (int) request('selParent') : 0;
 
             $dataQuery = DB::table('mst_modules as m')
                 ->leftJoin('mst_modules as p', 'p.id', '=', 'm.parent_id')
@@ -187,8 +196,8 @@ class ModulesController extends Controller
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('m.name', 'like', "%{$txtSearch}%")
-                        ->orWhere('m.code', 'like', "%{$txtSearch}%")  
-                        ->orWhere('p.code', 'like', "%{$txtSearch}%")   ;
+                        ->orWhere('m.code', 'like', "%{$txtSearch}%")
+                        ->orWhere('p.code', 'like', "%{$txtSearch}%");
                 });
             }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Master\Roles;
@@ -57,14 +58,14 @@ class RolesController extends Controller
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'roleType'        => 'required|max:100',
-                    'roleCode'        => [
+                    'roleType'    => 'required|max:100',
+                    'roleCode'    => [
                         'required',
                         'max:100',
                         'regex:/^[A-Z]+(_[A-Z]+)*$/'
                     ],
-                    'Type'            => 'required|in:0,1',
-                    'description'     => 'nullable|max:256'
+                    'Type'        => 'required|in:0,1',
+                    'description' => 'nullable|max:256'
                 ], [
                     'roleType.required' => 'Role Type cannot be left blank.',
                     'roleCode.required' => 'Role Code cannot be left blank.',
@@ -78,13 +79,19 @@ class RolesController extends Controller
 
                 DB::beginTransaction();
 
-                $duplicate = Roles::where('code', request('roleCode'));
+                $roleType    = trim(Purifier::clean(request('roleType')));
+                $roleCode    = strtoupper(trim(Purifier::clean(request('roleCode'))));
+                $description = trim(Purifier::clean(request('description')));
+                $roleFlag    = (int) Purifier::clean(request('Type'));
+
+                $duplicate = Roles::where('code', $roleCode);
 
                 if ($id > 0) {
                     $duplicate->where('id', '!=', $id);
                 }
 
                 if ($duplicate->exists()) {
+                    DB::rollBack();
                     return back()->with([
                         'level'   => 'danger',
                         'message' => 'Role Code already exists.'
@@ -93,11 +100,11 @@ class RolesController extends Controller
 
                 $obj = ($id > 0) ? Roles::find($id) : new Roles();
 
-                $obj->name = htmlEncode(request('roleType'));
-                $obj->code = htmlEncode(request('roleCode'));
-                $obj->description = htmlEncode(request('description'));
-                $obj->is_system_role = (int) request('Type');
-                $obj->active_status  = 1;
+                $obj->name            = htmlEncode($roleType);
+                $obj->code            = htmlEncode($roleCode);
+                $obj->description     = htmlEncode($description);
+                $obj->is_system_role  = $roleFlag;
+                $obj->active_status   = 1;
 
                 if ($id > 0) {
                     $obj->updated_by = 1;

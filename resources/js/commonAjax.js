@@ -507,27 +507,43 @@ export function loadParentList(parent_id = 0) {
     });
 }
 
-export function initCharCounter(fieldIds = []) {
+export function initCharCounter(fieldSelectors = []) {
 
-    fieldIds.forEach(id => {
+    fieldSelectors.forEach(selector => {
 
-        const input = document.getElementById(id);
-        if (!input) return;
+        let inputs = [];
 
-        const counter = input.parentElement.querySelector('.char-counter');
-        const maxLength = input.getAttribute('maxlength');
+        // If selector starts with . or [ → treat as querySelectorAll
+        if (selector.startsWith('.') || selector.startsWith('[') || selector.includes('name=')) {
+            inputs = document.querySelectorAll(selector);
+        } else {
+            // Otherwise treat as ID (for backward compatibility)
+            const element = document.getElementById(selector);
+            if (element) {
+                inputs = [element];
+            }
+        }
 
-        if (!counter || !maxLength) return;
+        if (!inputs.length) return;
 
-        const updateCounter = () => {
-            const currentLength = input.value.length;
-            counter.textContent = `Remaining ${currentLength}/${maxLength}`;
-        };
+        inputs.forEach(input => {
 
-        input.addEventListener('input', updateCounter);
+            const counter = input.parentElement.querySelector('.char-counter');
+            const maxLength = input.getAttribute('maxlength');
 
-        // Initialize on page load
-        updateCounter();
+            if (!counter || !maxLength) return;
+
+            const updateCounter = () => {
+                const currentLength = input.value.length;
+                counter.textContent = `Remaining ${currentLength}/${maxLength}`;
+            };
+
+            input.removeEventListener('input', updateCounter); // prevent duplicate binding
+            input.addEventListener('input', updateCounter);
+
+            updateCounter();
+        });
+
     });
 
 }
@@ -561,3 +577,45 @@ export function loadRoleList(role_id = 0) {
     });
 }
 
+
+export function loadFaqCategory(cat_id = 0) {
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-faq-category-list",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+
+            if (response.status === true) {
+
+                let $dropdown = $('#faqCategory');
+
+                $dropdown.empty();
+                $dropdown.append('<option value="0">Select FAQ Category</option>');
+
+                $.each(response.data, function (index, item) {
+
+                    let selected = (cat_id != 0 && cat_id == item.id) ? 'selected' : '';
+
+                    $dropdown.append(
+                        `<option value="${item.id}" ${selected}>
+                            ${item.category_name}
+                        </option>`
+                    );
+                });
+
+                if ($dropdown.hasClass("select2-hidden-accessible")) {
+                    $dropdown.trigger('change');
+                }
+
+            } else {
+                console.error('Failed to load FAQ categories');
+            }
+        },
+        error: function (xhr) {
+            console.error('AJAX Error:', xhr.responseText);
+        }
+    });
+}
