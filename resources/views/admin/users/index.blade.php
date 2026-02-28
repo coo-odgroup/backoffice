@@ -383,7 +383,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                             <a href="javascript:void(0);"
                             class="btn btn-sm btn-warning btn-view"
-                            data-table="users"
                             data-id="${row.enc_users_id}">
                                 <i class="fa fa-eye"></i>
                             </a>

@@ -129,10 +129,9 @@ $(document).on('click', '.btn-view-log', function() {
 
 $(document).on('click', '.btn-view', function() {
 
-    let table = $(this).data('table');
     let id = $(this).data('id');
 
-    commonAjax.viewUserRecord(table, id);
+    commonAjax.viewUserRecord(id);
 });
 
 import * as seatAjax from './seat-layout';

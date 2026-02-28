@@ -333,12 +333,11 @@ export function viewLogs(table, id) {
     });
 }
 
-export function viewUserRecord(table, id) {
+export function viewUserRecord(id) {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "viewuser",
         data: {
-            table: table,
             id: id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
@@ -347,20 +346,21 @@ export function viewUserRecord(table, id) {
         success: function (response) {
             let html = "";
 
-            console.log(response);
-
             // If single object
             if (response && Object.keys(response).length > 0) {
 
                 html += `
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm mb-2">
+                        <div class="card-header bg-light">
+                            <strong>Users Records</strong>
+                        </div>
                         <div class="card-body">
                             <table class="table table-bordered table-hover mb-0 align-middle">
                                 <tbody>
 
                                     <tr>
                                         <th style="width:25%">Users ID</th>
-                                        <td style="width:25%">${response.users_id ?? '-'}</td>
+                                        <td style="width:25%">${response.id ?? '-'}</td>
 
                                         <th style="width:25%">Unique ID</th>
                                         <td style="width:25%">${response.unique_id ?? '-'}</td>
@@ -368,7 +368,7 @@ export function viewUserRecord(table, id) {
 
                                     <tr>
                                         <th>User Name</th>
-                                        <td>${response.user_name ?? '-'}</td>
+                                        <td>${response.name ?? '-'}</td>
 
                                         <th>Organization Name</th>
                                         <td>${response.organization_name ?? '-'}</td>
@@ -391,22 +391,6 @@ export function viewUserRecord(table, id) {
                                     </tr>
 
                                     <tr>
-                                        <th>Created By</th>
-                                        <td>${response.created_by_name ?? '-'}</td>
-
-                                        <th>Created At</th>
-                                        <td>${response.created_at ?? '-'}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Updated By</th>
-                                        <td>${response.updated_by_name ?? '-'}</td>
-
-                                        <th>Updated At</th>
-                                        <td>${response.updated_at ?? '-'}</td>
-                                    </tr>
-
-                                    <tr>
                                         <th>Active Status</th>
                                         <td>${response.active_status == 1 ? 'Active' : 'Inactive'}</td>
 
@@ -419,7 +403,136 @@ export function viewUserRecord(table, id) {
                         </div>
                     </div>
                 `;
+                if (response.info) {
+                    html += `
+                        <div class="card shadow-sm mb-2">
+                            <div class="card-header bg-light">
+                                <strong>Users Info</strong>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover mb-0 align-middle">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width:25%">Secondary Email</th>
+                                            <td style="width:25%">${response.info.secondary_email ?? '-'}</td>
 
+                                            <th style="width:25%">Secondary Contact</th>
+                                            <td style="width:25%">${response.info.secondary_contact ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Aadhaar No</th>
+                                            <td>${response.info.aadhaar_no ?? '-'}</td>
+
+                                            <th>PAN Card No</th>
+                                            <td>${response.info.pancard_no ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>President Name</th>
+                                            <td>${response.info.president_name ?? '-'}</td>
+
+                                            <th>President Phone</th>
+                                            <td>${response.info.president_phone ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>General Secretary Name</th>
+                                            <td>${response.info.general_secretary_name ?? '-'}</td>
+
+                                            <th>General Secretary Phone</th>
+                                            <td>${response.info.general_secretary_phone ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>GST Available</th>
+                                            <td>${response.info.has_gst == 1 ? 'Yes' : 'No'}</td>
+
+                                            <th>GST No</th>
+                                            <td>${response.info.gst_no ?? '-'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
+                if (response.address) {
+                    html += `
+                        <div class="card shadow-sm mb-2">
+                            <div class="card-header bg-light">
+                                <strong>Users Address</strong>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover mb-0 align-middle">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width:25%">Address</th>
+                                            <td style="width:25%">${response.address.address ?? '-'}</td>
+
+                                            <th style="width:25%">Street</th>
+                                            <td style="width:25%">${response.address.street ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Landmark</th>
+                                            <td>${response.address.landmark ?? '-'}</td>
+
+                                            <th>City</th>
+                                            <td>${response.address.city ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Pincode</th>
+                                            <td>${response.address.pincode ?? '-'}</td>
+
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
+                if (response.bankdetails) {
+                    html += `
+                        <div class="card shadow-sm mb-2">
+                            <div class="card-header bg-light">
+                                <strong>Bank Details</strong>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered table-hover mb-0 align-middle">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width:25%">Account Name</th>
+                                            <td style="width:25%">${response.bankdetails.bank_account_name ?? '-'}</td>
+
+                                            <th style="width:25%">Bank Name</th>
+                                            <td style="width:25%">${response.bankdetails.bank_name ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Account Number</th>
+                                            <td>${response.bankdetails.bank_account_number ?? '-'}</td>
+
+                                            <th>IFSC</th>
+                                            <td>${response.bankdetails.bank_ifsc ?? '-'}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th>Bank Address</th>
+                                            <td>${response.bankdetails.bank_address ?? '-'}</td>
+
+                                            <th>UPI ID</th>
+                                            <td>${response.bankdetails.upi_id ?? '-'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                }
             } else {
 
                 html = `
