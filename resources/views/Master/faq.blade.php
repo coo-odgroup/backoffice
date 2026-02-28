@@ -295,7 +295,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
            {
-                data: '',
+                data: null,
                 render: function(data, type, row) {
 
                     let editUrl = $('#' + tableId).data('edit-url');

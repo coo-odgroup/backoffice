@@ -507,14 +507,46 @@ export function loadParentList(parent_id = 0) {
     });
 }
 
+export function initCharCounter(fieldSelectors = []) {
 
-// export function loadFaqCategory(cat_id = 0) {
-//     $.ajax({
-//         type: "POST",
-//         url: ajaxUrl + "get-faq-category-list",
-//         data: {
-//             cat_id: cat_id,
+    fieldSelectors.forEach(selector => {
 
+        let inputs = [];
+
+        // If selector starts with . or [ → treat as querySelectorAll
+        if (selector.startsWith('.') || selector.startsWith('[') || selector.includes('name=')) {
+            inputs = document.querySelectorAll(selector);
+        } else {
+            // Otherwise treat as ID (for backward compatibility)
+            const element = document.getElementById(selector);
+            if (element) {
+                inputs = [element];
+            }
+        }
+
+        if (!inputs.length) return;
+
+        inputs.forEach(input => {
+
+            const counter = input.parentElement.querySelector('.char-counter');
+            const maxLength = input.getAttribute('maxlength');
+
+            if (!counter || !maxLength) return;
+
+            const updateCounter = () => {
+                const currentLength = input.value.length;
+                counter.textContent = `Remaining ${currentLength}/${maxLength}`;
+            };
+
+            input.removeEventListener('input', updateCounter); // prevent duplicate binding
+            input.addEventListener('input', updateCounter);
+
+            updateCounter();
+        });
+
+    });
+
+}
 
 export function loadRoleList(role_id = 0) {
     $.ajax({
@@ -526,26 +558,64 @@ export function loadRoleList(role_id = 0) {
         },
         dataType: "json",
         success: function (response) {
-
-            let options = '<option value="0">Select FAQ Category</option>';
-
+            let options = '<option value="">Select User Role</option>';
             if (response.status && response.data.length > 0) {
-                $.each(response.data, function (index, cat) {
+                $.each(response.data, function (index, app) {
                     let selected =
-                        cat_id > 0 && cat.id == cat_id ? "selected" : "";
-
-                    options += `
-                        <option value="${cat.id}" ${selected}>
-                            ${cat.category_name}
-                        </option>`;
+                        role_id > 0 && app.id == role_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                        ${app.name}
+                                    </option>`;
                 });
             }
 
-            $("#faqCategory").html(options);
+            $("#userRole").html(options);
         },
-        error: function () {
-            console.log("Error loading FAQ Category");
-        }
+        error: function (xhr) {
+            console.log("Error loading Roles");
+        },
     });
 }
 
+
+export function loadFaqCategory(cat_id = 0) {
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-faq-category-list",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+
+            if (response.status === true) {
+
+                let $dropdown = $('#faqCategory');
+
+                $dropdown.empty();
+                $dropdown.append('<option value="0">Select FAQ Category</option>');
+
+                $.each(response.data, function (index, item) {
+
+                    let selected = (cat_id != 0 && cat_id == item.id) ? 'selected' : '';
+
+                    $dropdown.append(
+                        `<option value="${item.id}" ${selected}>
+                            ${item.category_name}
+                        </option>`
+                    );
+                });
+
+                if ($dropdown.hasClass("select2-hidden-accessible")) {
+                    $dropdown.trigger('change');
+                }
+
+            } else {
+                console.error('Failed to load FAQ categories');
+            }
+        },
+        error: function (xhr) {
+            console.error('AJAX Error:', xhr.responseText);
+        }
+    });
+}

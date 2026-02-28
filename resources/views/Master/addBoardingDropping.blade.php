@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Boarding / Dropping')
 @section('content')
 
 <?php
-$page_name = 'All Cities';
+$page_name = 'All Boarding and Dropping Points';
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -39,7 +40,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="card-body">
                             <div class="row">
                                 @if (session('message'))
-
                                 <div class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show" role="alert">
                                     {{ session('message') }}
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -88,26 +88,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="col-md-4 mb-3">
                                                 <label for="brd_drp_point">Boarding / Dropping Point<span class="text-danger important">*</span></label>
                                                 <input type="text" class="form-control brd_drp_point" data-check-url="{{ route('boardingDropping.checkExists') }}"
-                                                    placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" value="{{ $data['row']->brd_drp_point ?? '' }}">
+                                                    placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" maxlength="100" value="{{ $data['row']->brd_drp_point ?? '' }}">
+                                                <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="landmark">Landmark</label>
-                                                <input type="text" class="form-control" placeholder="Enter Landmark" name="landmark[]" value="{{ $data['row']->landmark ?? '' }}">
+                                                <input type="text" class="form-control" placeholder="Enter Landmark" id="landmark" name="landmark[]" maxlength="100" value="{{ $data['row']->landmark ?? '' }}">
+                                                <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="latitude">Latitude</label>
-                                                <input type="text" class="form-control latitude" placeholder="Enter Latitude" id="latitude" name="latitude[]" value="{{ $data['row']->latitude ?? '' }}">
+                                                <input type="text" class="form-control latitude" placeholder="Enter Latitude" id="latitude" name="latitude[]" maxlength="7" value="{{ $data['row']->latitude ?? '' }}">
+                                                <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="longitude">Longitude</label>
-                                                <input type="text" class="form-control longitude" placeholder="Enter Longitude" id="longitude" name="longitude[]" value="{{ $data['row']->longitude ?? '' }}">
+                                                <input type="text" class="form-control longitude" placeholder="Enter Longitude" id="longitude" name="longitude[]" maxlength="7" value="{{ $data['row']->longitude ?? '' }}">
+                                                <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-3 mb-3">
                                                 <label for="sequence_no">Sequence No</label>
-                                                <input type="text" class="form-control" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" value="{{ $data['row']->sequence_no ?? '1' }}">
+                                                <input type="text" class="form-control" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" maxlength="3" value="{{ $data['row']->sequence_no ?? '1' }}">
+                                                <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
-                                            <div class="col-md-1 d-flex align-items-end mb-3 <?= $isEdit ?>">
+                                            <div class="col-md-1 d-flex align-items-center mb-3 <?= $isEdit ?>">
                                                 <button type="button" class="btn btn-outline-primary btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
@@ -157,6 +162,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initCharCounter(['brd_drp_point', 'landmark','sequence_no', 'latitude', 'longitude', '']);
         commonAjax.initSelect2('.selCity', 'Select City');
 
         let cities_id = <?= $data['row']->cities_id ?? '0' ?>
@@ -187,7 +193,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 );
                 type.focus();
                 isValid = false;
-                return false; 
+                return false;
             }
 
             if ($.trim(point.val()) === '') {
@@ -216,75 +222,105 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     var rowCount = 1;
 
-    $(document).ready(function() {
+  $(document).ready(function() {
 
-        $(document).on('click', '.btn-add', function() {
+    $(document).on('click', '.btn-add', function(e) {
 
-            const testVal = $('#selCity').val();
+        e.preventDefault();
 
-            if (!testVal) {
-                commonAjax.confirmAlert('Please Select City');
-                $('#selCity').focus();
-                e.preventDefault();
-                return false;
-            }
+        const testVal = $('#selCity').val();
 
-            rowCount++;
+        if (!testVal || testVal == 0) {
+            commonAjax.confirmAlert('Please Select City');
+            $('#selCity').focus();
+            return false;
+        }
 
-            $("#boardingDroppingWrapper").append(
-                "<div id='bd_row" + rowCount + "' class='boarding-dropping-item'>" +
+        rowCount++;
+
+        $("#boardingDroppingWrapper").append(
+
+            "<div id='bd_row" + rowCount + "' class='boarding-dropping-item'>" +
 
                 "<div class='row mb-3'>" +
 
-                "<div class='col-md-4 mb-3'>" +
-                "<label>Type<span class='text-danger important'>*</span></label>" +
-                "<select class='form-select type' id='type_" + rowCount + "' name='type[]' >" +
-                "<option  selected>Select Type</option>" +
-                "<option value='1'>Boarding</option>" +
-                "<option value='2'>Dropping</option>" +
-                "</select>" +
-                "</div>" +
+                    "<div class='col-md-4 mb-3'>" +
+                        "<label>Type<span class='text-danger important'>*</span></label>" +
+                        "<select class='form-select type' name='type[]'>" +
+                            "<option selected>Select Type</option>" +
+                            "<option value='1'>Boarding</option>" +
+                            "<option value='2'>Dropping</option>" +
+                        "</select>" +
+                    "</div>" +
 
-                "<div class='col-md-4 mb-3'>" +
-                "<label>Boarding / Dropping Point<span class='text-danger important'>*</span></label>" +
-                "<input type='text' placeholder='Enter Boarding/Dropping Point' class='form-control brd_drp_point' " +
-                "data-check-url='{{ route('boardingDropping.checkExists') }}' " +
-                "name='brd_drp_point[]' id='brd_drp_point_" + rowCount + "' >" +
-                "</div>" +
+                    "<div class='col-md-4 mb-3'>" +
+                        "<label>Boarding / Dropping Point<span class='text-danger important'>*</span></label>" +
+                        "<input type='text' maxlength='100' " +
+                        "placeholder='Enter Boarding/Dropping Point' " +
+                        "class='form-control brd_drp_point' " +
+                        "data-check-url='{{ route('boardingDropping.checkExists') }}' " +
+                        "name='brd_drp_point[]'>" +
+                        "<small class='text-muted char-counter float-end'></small>" +
+                    "</div>" +
 
-                "<div class='col-md-4 mb-3'>" +
-                "<label>Landmark</label>" +
-                "<input type='text' class='form-control'  placeholder='Enter Landmark' name='landmark[]'>" +
-                "</div>" +
+                    "<div class='col-md-4 mb-3'>" +
+                        "<label>Landmark</label>" +
+                        "<input type='text' maxlength='100' " +
+                        "class='form-control landmark' " +
+                        "placeholder='Enter Landmark' " +
+                        "name='landmark[]'>" +
+                        "<small class='text-muted char-counter float-end'></small>" +
+                    "</div>" +
 
-                "<div class='col-md-4 mb-3'>" +
-                "<label>Latitude</label>" +
-                "<input type='text' class='form-control latitude' placeholder='Enter Latitude' name='latitude[]'>" +
-                "</div>" +
+                    "<div class='col-md-4 mb-3'>" +
+                        "<label>Latitude</label>" +
+                        "<input type='text' maxlength='7' " +
+                        "class='form-control latitude' " +
+                        "placeholder='Enter Latitude' " +
+                        "name='latitude[]'>" +
+                        "<small class='text-muted char-counter float-end'></small>" +
+                    "</div>" +
 
-                "<div class='col-md-4 mb-3'>" +
-                "<label>Longitude</label>" +
-                "<input type='text' class='form-control longitude' placeholder='Enter Longitude' name='longitude[]'>" +
-                "</div>" +
+                    "<div class='col-md-4 mb-3'>" +
+                        "<label>Longitude</label>" +
+                        "<input type='text' maxlength='7' " +
+                        "class='form-control longitude' " +
+                        "placeholder='Enter Longitude' " +
+                        "name='longitude[]'>" +
+                        "<small class='text-muted char-counter float-end'></small>" +
+                    "</div>" +
 
-                "<div class='col-md-3 mb-3'>" +
-                "<label>Sequence No</label>" +
-                "<input type='text' class='form-control' name='sequence_no[]' value='" + rowCount + "'>" +
-                "</div>" +
+                    "<div class='col-md-3 mb-3'>" +
+                        "<label>Sequence No</label>" +
+                        "<input type='text' maxlength='3' " +
+                        "class='form-control sequence_no' " +
+                        "name='sequence_no[]' value='" + rowCount + "'>" +
+                        "<small class='text-muted char-counter float-end'></small>" +
+                    "</div>" +
 
-                "<div class='col-md-1 d-flex align-items-end mb-3'>" +
-                "<button type='button' class='btn btn-outline-danger btn-remove' data-id='bd_row" + rowCount + "'>" +
-                "<i class='fa fa-trash'></i>" +
-                "</button>" +
-                "</div>" +
+                    "<div class='col-md-1 d-flex align-items-center mb-3'>" +
+                        "<button type='button' class='btn btn-outline-danger btn-remove' data-id='bd_row" + rowCount + "'>" +
+                            "<i class='fa fa-trash'></i>" +
+                        "</button>" +
+                    "</div>" +
 
                 "</div>" +
                 "<hr>" +
-                "</div>"
-            );
-        });
+            "</div>"
+        );
+
+        // ✅ Use SELECTORS (class based)
+        commonAjax.initCharCounter([
+            '.brd_drp_point',
+            '.landmark',
+            '.latitude',
+            '.longitude',
+            '.sequence_no'
+        ]);
 
     });
+
+});
 
     /* remove row */
     $(document).on('click', '.btn-remove', function() {

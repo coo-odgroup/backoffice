@@ -70,7 +70,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="faq_name">FAQ Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter FAQ Title">
+                                            <input type="text" class="form-control" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter FAQ Title"  maxlength="100">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="description">Content</label>
@@ -130,11 +131,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initCharCounter(['faq_name']);
         commonAjax.initSelect2('#faqCategory', 'Select FAQ Category');
 
         let category_id = <?= $data['row']->faq_category_id ?? '0' ?>;
 
         commonAjax.loadFaqCategory(category_id);
+
     });
     $('#backoffice-form').on('submit', function(e) {
 

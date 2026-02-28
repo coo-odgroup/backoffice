@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
 use App\Models\Master\FaqCategory;
 use Illuminate\Http\Request;
@@ -44,24 +45,20 @@ class FaqCategoryController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = fc.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            /* SEARCH FILTER */
             if (!empty($txtSearch)) {
                 $dataQuery->where('fc.category_name', 'like', "%{$txtSearch}%");
             }
 
-            /* STATUS FILTER */
             if ($selStatus !== '') {
                 $dataQuery->where('fc.active_status', $selStatus);
             }
 
-            /* TOTAL COUNT */
             $recordsTotal    = $dataQuery->count('fc.id');
             $recordsFiltered = $recordsTotal;
 
             $start  = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
 
-            /* ORDERING */
             if (!empty(request('order'))) {
 
                 $columns = [
@@ -74,7 +71,6 @@ class FaqCategoryController extends Controller
                 $order    = request('order');
                 $orderCol = $columns[$order[0]['column']] ?? 'fc.sequence_no';
                 $orderDir = $order[0]['dir'] ?? 'asc';
-
             } else {
                 $orderCol = 'fc.sequence_no';
                 $orderDir = 'asc';
@@ -82,7 +78,6 @@ class FaqCategoryController extends Controller
 
             $dataQuery->orderBy($orderCol, $orderDir);
 
-            /* PAGINATION */
             if ($length === -1) {
                 $arrRes = $dataQuery->get();
             } else {
@@ -92,7 +87,6 @@ class FaqCategoryController extends Controller
                     ->get();
             }
 
-            /* FORMAT DATA */
             foreach ($arrRes as $row) {
 
                 $row->created_date = date('d-M-Y H:i:s', strtotime($row->created_at));
@@ -105,7 +99,6 @@ class FaqCategoryController extends Controller
             }
 
             $data = $arrRes;
-
         } catch (\Throwable $t) {
 
             Log::error("Exception in FaqCategoryController@dataTableView", [
@@ -156,7 +149,6 @@ class FaqCategoryController extends Controller
                 }
 
                 $data['row'] = $row;
-
             } else {
                 $redirectPage = "admin/faqcategory";
             }
@@ -176,7 +168,11 @@ class FaqCategoryController extends Controller
 
                 DB::beginTransaction();
 
-                $categoryName = htmlEncode(request('category_name'));
+                $categoryName = htmlEncode(
+                    trim(
+                        Purifier::clean(request('category_name'))
+                    )
+                );
                 $duplicate = FaqCategory::where('category_name', $categoryName);
 
                 if ($id > 0) {
@@ -222,7 +218,6 @@ class FaqCategoryController extends Controller
 
                 return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();

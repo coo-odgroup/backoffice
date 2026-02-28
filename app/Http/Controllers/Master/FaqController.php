@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
 use App\Models\Master\Faq;
 use Illuminate\Http\Request;
@@ -37,13 +38,17 @@ class FaqController extends Controller
                     'f.content',
                     'f.sequence_no',
                     'f.active_status',
-                    'c.category_name'
+                    'c.category_name',
+                    'f.created_at',
+                    'f.updated_at',
+                    DB::raw('(SELECT name FROM users WHERE id = f.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = f.updated_by LIMIT 1) as updated_by_name')
                 );
 
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
                     $q->where('f.title', 'like', "%{$txtSearch}%")
-                    ->orWhere('f.content', 'like', "%{$txtSearch}%");
+                        ->orWhere('f.content', 'like', "%{$txtSearch}%");
                 });
             }
 
@@ -87,12 +92,19 @@ class FaqController extends Controller
             $rows = $query->get();
 
             foreach ($rows as $row) {
+
+                $row->created_date = $row->created_at
+                    ? date('d-M-Y H:i:s', strtotime($row->created_at))
+                    : '--';
+
+                $row->updated_date = $row->updated_at
+                    ? date('d-M-Y H:i:s', strtotime($row->updated_at))
+                    : '--';
+
                 $row->is_active   = $row->active_status == 1 ? 'Active' : 'Inactive';
                 $row->enc_faq_id  = Crypt::encryptString($row->faq_id);
             }
-
             $data = $rows;
-
         } catch (\Throwable $e) {
 
             Log::error('FAQ dataTableView error', [
@@ -111,7 +123,7 @@ class FaqController extends Controller
             'data'            => $data
         ]);
     }
-    
+
     public function add($encId = null)
     {
         $data = [];
@@ -145,7 +157,6 @@ class FaqController extends Controller
                 }
 
                 $data['row'] = $row;
-
             } else {
                 $redirectPage = "admin/faq";
             }
@@ -168,9 +179,9 @@ class FaqController extends Controller
 
                 DB::beginTransaction();
 
-                $categoryId = (int) request('faqCategory');
-                $title      = htmlEncode(request('faq_name'));
-                $content    = request('content'); // CKEditor HTML (DO NOT htmlEncode)
+                $categoryId = (int) Purifier::clean(request('faqCategory'));
+                $title = htmlEncode(trim(Purifier::clean(request('faq_name'))));
+                $content = Purifier::clean(request('content'));
 
                 /* ---------- DUPLICATE CHECK ---------- */
                 $duplicate = Faq::where('title', $title)
@@ -214,7 +225,6 @@ class FaqController extends Controller
 
                 return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();

@@ -113,6 +113,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-5">
                                                         <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
+                                                        <small class="text-muted char-counter float-end"></small>
                                                     </div>
 
                                                     <div class="col-md-1">
