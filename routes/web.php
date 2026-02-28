@@ -53,7 +53,6 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('get-faq-category-list',[CommonController::class, 'getFaqCategoryList']);
     Route::post('/get-role-list', [CommonController::class, 'getRoleList'])->name('get.role.list');
-    Route::post('/view-record', [CommonController::class, 'viewRecord'])->name('admin.viewRecord');
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -158,8 +157,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::match(['get', 'post'], 'users/add', [UsersController::class, 'add'])->name('users.add');
     Route::post('users/dataTableView', [UsersController::class, 'dataTableView'])->name('users.dataTableView');
-    // Route::match(['get', 'post'], 'users/edit/{encId}', [UsersController::class, 'edit'])->name('users.edit');
     Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
+    Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
 
     // ---------------------------------------------------------------------------------------------------------------
 

@@ -191,16 +191,6 @@ class CommonController extends Controller
         return response()->json($formattedLogs);
     }
 
-    public function viewRecord(Request $request)
-    {
-        $table = $request->table;
-        $id = Crypt::decryptString($request->id);
-
-        $record = DB::table($table)->find($id);
-
-        return response()->json($record ?? []);
-    }
-
     public function updateSequence(Request $request)
     {
         $request->validate([

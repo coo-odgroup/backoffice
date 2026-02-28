@@ -333,10 +333,10 @@ export function viewLogs(table, id) {
     });
 }
 
-export function viewRecord(table, id) {
+export function viewUserRecord(table, id) {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "view-record",
+        url: ajaxUrl + "viewuser",
         data: {
             table: table,
             id: id,
@@ -354,29 +354,66 @@ export function viewRecord(table, id) {
 
                 html += `
                     <div class="card shadow-sm">
-                        <div class="card-header bg-light">
-                            <strong>Record Details</strong>
-                        </div>
                         <div class="card-body">
                             <table class="table table-bordered table-hover mb-0 align-middle">
                                 <tbody>
-                `;
 
-                $.each(response, function (key, value) {
+                                    <tr>
+                                        <th style="width:25%">Users ID</th>
+                                        <td style="width:25%">${response.users_id ?? '-'}</td>
 
-                    html += `
-                        <tr>
-                            <th class="text-capitalize" style="width: 30%">
-                                ${key.replaceAll('_', ' ')}
-                            </th>
-                            <td>
-                                ${value ? value : "-"}
-                            </td>
-                        </tr>
-                    `;
-                });
+                                        <th style="width:25%">Unique ID</th>
+                                        <td style="width:25%">${response.unique_id ?? '-'}</td>
+                                    </tr>
 
-                html += `
+                                    <tr>
+                                        <th>User Name</th>
+                                        <td>${response.user_name ?? '-'}</td>
+
+                                        <th>Organization Name</th>
+                                        <td>${response.organization_name ?? '-'}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Primary Email</th>
+                                        <td>${response.primary_email ?? '-'}</td>
+
+                                        <th>Primary Contact</th>
+                                        <td>${response.primary_contact ?? '-'}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Location</th>
+                                        <td>${response.location ?? '-'}</td>
+
+                                        <th>User Role</th>
+                                        <td>${response.user_role ?? '-'}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Created By</th>
+                                        <td>${response.created_by_name ?? '-'}</td>
+
+                                        <th>Created At</th>
+                                        <td>${response.created_at ?? '-'}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Updated By</th>
+                                        <td>${response.updated_by_name ?? '-'}</td>
+
+                                        <th>Updated At</th>
+                                        <td>${response.updated_at ?? '-'}</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Active Status</th>
+                                        <td>${response.active_status == 1 ? 'Active' : 'Inactive'}</td>
+
+                                        <th></th>
+                                        <td></td>
+                                    </tr>
+
                                 </tbody>
                             </table>
                         </div>
@@ -392,15 +429,15 @@ export function viewRecord(table, id) {
                 `;
             }
 
-            $("#viewRecordContainer").html(html);
+            $("#viewUserRecordContainer").html(html);
 
-            const modalElement = document.getElementById("viewRecord");
+            const modalElement = document.getElementById("viewUserRecord");
             const modal = new bootstrap.Modal(modalElement);
             modal.show();
         },
 
         error: function (xhr) {
-            console.log("Error loading Records");
+            console.log("Error loading Users Record");
         },
     });
 }

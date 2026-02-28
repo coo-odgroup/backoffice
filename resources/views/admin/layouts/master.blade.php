@@ -151,7 +151,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="viewRecord" tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false"   aria-hidden="true">
+<div class="modal fade" id="viewUserRecord" tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false"   aria-hidden="true">
  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -159,7 +159,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body" style="overflow-y:auto">
-        <div id="viewRecordContainer"></div>
+        <div id="viewUserRecordContainer"></div>
       </div>
     </div>
   </div>

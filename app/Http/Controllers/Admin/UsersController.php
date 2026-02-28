@@ -7,6 +7,7 @@ use App\Models\Users;
 use App\Models\UsersAddress;
 use App\Models\UsersBankDetails;
 use App\Models\UsersInfo;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -498,5 +499,34 @@ class UsersController extends Controller
     public function edit($edit_param, $encId)
     {
         return $this->update($edit_param, $encId);
+    }
+
+    public function viewUserRecord(Request $request)
+    {
+        $table = $request->table;
+        $id = Crypt::decryptString($request->id);
+
+        // $record = DB::table($table)->find($id);
+
+        $record = DB::table($table.' as u')
+            ->select(
+                'u.id as users_id',
+                'u.unique_id',
+                'u.name as user_name',
+                'u.name as created_by_name',
+                'u.name as updated_by_name',
+                'u.organization_name',
+                'u.primary_email',
+                'u.primary_contact',
+                'u.location',
+                'u.created_at',
+                'u.created_by',
+                'u.updated_at',
+                'u.updated_by',
+                'u.active_status',
+                DB::raw('(SELECT name FROM mst_roles WHERE id = u.user_role LIMIT 1) as user_role')
+            )->find($id);
+
+        return response()->json($record ?? []);
     }
 }
