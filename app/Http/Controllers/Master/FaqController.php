@@ -26,9 +26,9 @@ class FaqController extends Controller
 
         try {
 
-            $txtSearch  = trim(request('txtsearch'));
-            $selStatus  = request('selstatus');
-            $categoryId = request('faqCategory');
+            $txtSearch = htmlEncode(request('txtSearch'));
+            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $categoryId = (request('faqCategory') !== null && request('faqCategory') !== '') ? (int)request('faqCategory') : '';
 
             $query = DB::table('faq as f')
                 ->leftJoin('faq_category as c', 'c.id', '=', 'f.faq_category_id')
@@ -45,12 +45,16 @@ class FaqController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = f.updated_by LIMIT 1) as updated_by_name')
                 );
 
+            // Log::info($txtSearch);
+
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
                     $q->where('f.title', 'like', "%{$txtSearch}%")
-                        ->orWhere('f.content', 'like', "%{$txtSearch}%");
+                        ->orWhere('c.category_name', 'like', "%{$txtSearch}%");
                 });
             }
+
+            // Log::info($query->get());
 
             if ($categoryId !== null && $categoryId !== '') {
                 $query->where('f.faq_category_id', (int) $categoryId);
@@ -91,6 +95,8 @@ class FaqController extends Controller
             }
 
             $rows = $query->get();
+            
+            // Log::info($rows);
 
             foreach ($rows as $row) {
 

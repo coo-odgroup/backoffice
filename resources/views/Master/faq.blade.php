@@ -200,6 +200,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let faqCategory = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -208,11 +209,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             selStatus = $('#selStatus').val();
         }
 
+        if ($('#faqCategory').val() != '') {
+            faqCategory = $('#faqCategory').val();
+        }
+
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+            txtSearch: txtSearch,
+            selStatus: selStatus,
+            faqCategory: faqCategory
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
