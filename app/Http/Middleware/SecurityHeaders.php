@@ -32,7 +32,7 @@ class SecurityHeaders
     $response->headers->set(
         'Content-Security-Policy',
         implode('; ', $csp) . ';'
-    );     
+    );
 
         return $response;
     }

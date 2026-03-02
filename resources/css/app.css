@@ -574,7 +574,7 @@ td:focus { outline:2px dashed #000; }
 }
 
 .accordion-header button {
-    font-size: 20px;
+    font-size: 14px;
     text-transform: uppercase;
     font-weight: 600;
 }
@@ -601,7 +601,9 @@ td:focus { outline:2px dashed #000; }
     display: block;
     font-size: 12px;
     margin-top: 4px;
-    font-weight: 700;
+    font-weight: 400;
 }
 
-
+.ck-editor__editable {
+    min-height: 400px;
+}

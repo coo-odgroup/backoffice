@@ -113,9 +113,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @endsection
 @push('scripts')
 <style>
-    .ck-editor__editable {
-        min-height: 400px;
-    }
+ 
 </style>
 
 <script type="module">

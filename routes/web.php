@@ -20,6 +20,7 @@ use App\Http\Controllers\Master\SeatLayoutController;
 use App\Http\Controllers\Master\CityApisController;
 use App\Http\Controllers\Master\FaqCategoryController;
 use App\Http\Controllers\Master\FaqController;
+use App\Http\Controllers\Admin\BlogCategoryController;
 
 
 /*
@@ -180,5 +181,13 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seatingtype/edit/{encId}', [SeatingTypeController::class, 'edit'])->name('seatingtype.edit');
 
     //--------------------------------------------------------------------------------------------------------------------
+
+
+    //Add By Chakra
+    Route::get('/blog-category', [BlogCategoryController::class, 'index'])->name('blog-category.index');
+    Route::match(['get', 'post'], 'blog-category/add', [BlogCategoryController::class, 'add'])->name('blog-category.add');
+    Route::post('blog-category/dataTableView', [BlogCategoryController::class, 'dataTableView'])->name('blog-category.dataTableView');
+    Route::match(['get', 'post'], 'blog-category/edit/{encId}', [BlogCategoryController::class, 'edit'])->name('blog-category.edit');
+   
 
 });
