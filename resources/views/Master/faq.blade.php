@@ -129,9 +129,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                             </th>
                             <th>Sl No</th>
-                            <th>FAQ Name</th>
                             <th>Category Name</th>
-                            <th>FAQ Content</th>
+                            <th>Title</th>
+                            <th>Content</th>
                             <th width="100">Display Sequence</th>
                             <th>Last Modified</th>
                             <th>Status</th>
@@ -238,11 +238,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'title',
+                data: 'category_name',
                 defaultContent: "--"
             },
             {
-                data: 'category_name',
+                data: 'title',
                 defaultContent: "--"
             },
             {
