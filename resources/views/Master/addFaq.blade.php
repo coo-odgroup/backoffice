@@ -69,8 +69,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </select>
                                         </div>
                                         <div class="col-md-12 mb-3">
-                                            <label for="faq_name">FAQ Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter FAQ Title"  maxlength="100">
+                                            <label for="faq_name">Title<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter Title"  maxlength="100">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                         <div class="col-md-12 mb-3">

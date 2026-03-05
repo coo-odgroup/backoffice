@@ -98,6 +98,8 @@ class FaqController extends Controller
 
             foreach ($rows as $row) {
 
+                $row->content = htmlDecode($row->content);
+
                 $row->created_date = $row->created_at
                     ? date('d-M-Y H:i:s', strtotime($row->created_at))
                     : '--';
@@ -166,7 +168,6 @@ class FaqController extends Controller
                 $redirectPage = "admin/faq";
             }
 
-            /* ---------- SAVE ---------- */
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
@@ -186,11 +187,9 @@ class FaqController extends Controller
 
                 $categoryId = (int) Purifier::clean(request('faqCategory'));
                 $title = htmlEncode(trim(Purifier::clean(request('faq_name'))));
-                $content = Purifier::clean(request('content'));
-
-                /* ---------- DUPLICATE CHECK ---------- */
+                $content = htmlEncode(Purifier::clean(request('content')));
                 $duplicate = Faq::where('title', $title)
-                    ->where('faq_category_id', $categoryId);
+                                ->where('faq_category_id', $categoryId);
 
                 if ($id > 0) {
                     $duplicate->where('id', '!=', $id);
@@ -204,7 +203,6 @@ class FaqController extends Controller
                     ])->withInput();
                 }
 
-                /* ---------- INSERT / UPDATE ---------- */
                 $faq = ($id > 0) ? Faq::find($id) : new Faq();
 
                 $faq->faq_category_id = $categoryId;
@@ -213,9 +211,9 @@ class FaqController extends Controller
                 $faq->active_status   = 1;
 
                 if ($id > 0) {
-                    $faq->updated_by = 1; // auth()->id()
+                    $faq->updated_by = 1;
                 } else {
-                    $faq->created_by = 1; // auth()->id()
+                    $faq->created_by = 1;
                 }
 
                 $faq->save();

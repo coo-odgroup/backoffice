@@ -33,3 +33,22 @@
             }
         }
     }
+
+        if (!function_exists('htmlDecode')) {
+            
+        /**
+         * Decode HTML special characters
+         *
+         * @param mixed $value
+         * @return string|null
+         */
+        function htmlDecode($value)
+        {
+            if (is_null($value)) {
+                return null;
+            }
+
+            return htmlspecialchars_decode(trim($value), ENT_QUOTES);
+        }
+
+    }
