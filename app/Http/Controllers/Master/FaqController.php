@@ -93,8 +93,7 @@ class FaqController extends Controller
             }
 
             $rows = $query->get();
-            
-            // Log::info($rows);
+             
 
             foreach ($rows as $row) {
 

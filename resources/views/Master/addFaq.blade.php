@@ -70,7 +70,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="faq_name">Title<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter Title"  maxlength="100">
+                                            <input type="text" class="form-control" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter Title" maxlength="100">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                         <div class="col-md-12 mb-3">
@@ -78,7 +78,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <textarea
                                                 class="form-control"
                                                 id="content"
-                                                name="content">{{ $data['row']->content ?? '' }}</textarea>
+                                                name="content">{{ htmlDecode($data['row']->content ?? '') }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -113,7 +113,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @endsection
 @push('scripts')
 <style>
- 
+
 </style>
 
 <script type="module">
@@ -168,14 +168,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-    const tooltipTriggerList = [].slice.call(
-        document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    );
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipTriggerList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        );
 
-    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-        new bootstrap.Tooltip(tooltipTriggerEl);
+        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     });
-});
 </script>
 @endpush

@@ -158,6 +158,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 @endsection
 @push('scripts')
+<style>
+.faq-content-col{
+    max-width:300px;
+    word-break: break-word;
+}
+
+.faq-content-col a{
+    color:#0d6efd;
+    font-size:12px;
+    cursor:pointer;
+}
+</style>
 
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
@@ -246,11 +258,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-                data: 'content',
-                render: function(data) {
-                    return data ? data.substring(0, 100) + '...' : '--';
-                }
-            },
+    data: 'content',
+    render: function(data) {
+
+        if (!data) return '--';
+
+        if (data.length <= 100) {
+            return `<div class="faq-content-col">${data}</div>`;
+        }
+
+        let firstPart = data.substring(0, 100);
+        let secondPart = data.substring(100);
+
+        return `
+        <div class="faq-content-col">
+            ${firstPart}<span class="dots">...</span>
+            <span class="more-text d-none">${secondPart}</span>
+            <a href="javascript:void(0)" class="toggle-view-btn"> View More</a>
+        </div>
+        `;
+    }
+},
             {
                 data: 'sequence_no',
                 render: function(data, type, row) {
@@ -300,7 +328,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-           {
+            {
                 data: null,
                 render: function(data, type, row) {
 
@@ -330,6 +358,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
+ $(document).on('click', '.toggle-view-btn', function () {
+
+    let container = $(this).closest('.faq-content-col');
+
+    container.find('.dots').toggle();
+    container.find('.more-text').toggleClass('d-none');
+
+    if ($(this).text().trim() === 'View More') {
+        $(this).text(' View Less');
+    } else {
+        $(this).text(' View More');
+    }
+
+}); 
 
     $(document).ready(function() {
 
