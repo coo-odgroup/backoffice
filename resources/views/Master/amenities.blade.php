@@ -133,6 +133,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Category Name</th>
                             <th>Amenity Icon</th>
                             <th>Description</th>
+                            <th style="width: 50px;">Sequence</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -248,6 +249,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
+                data: 'sequence_no',
+                render: function(data, type, row) {
+                    return `<input type="text"
+                            value="${data ?? ''}"
+                            minlength="1"
+                            maxlength="3"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            class="form-control form-control-sm order-input"
+                            data-id="${row.enc_amenity_id}"
+                            data-table="mst_amenities"
+                            data-column="sequence_no">`;
+                },
+                defaultContent: "--"
+            },
+            {
                 data: null,
                 render: function (data, type, row) {
 
@@ -304,7 +320,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_amenity_categories"
+                            data-table="mst_amenities"
                             data-id="${row.enc_amenity_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>

@@ -44,9 +44,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By State/District Name</label>
+                                    <label for="txtSearch">Search By District Name</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="State/District Name">
+                                        placeholder="District Name">
+                                </div>
+                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
+                                    <label for="selState">State</label>
+                                    <select class="form-select" id="selState" name="selState">
+                                        <option value="0">Select State</option>
+                                    </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -157,6 +163,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initSelect2('#selState', 'Select State');
+        commonAjax.loadStateList();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
     });
@@ -190,6 +198,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let selState = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -197,12 +206,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
+        if ($('#selState').val() != '') {
+            selState = $('#selState').val();
+        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
             txtsearch: txtSearch,
-            selstatus: selStatus
+            selstatus: selStatus,
+            selState: selState
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
