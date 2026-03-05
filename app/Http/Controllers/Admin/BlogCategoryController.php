@@ -30,43 +30,38 @@ class BlogCategoryController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $user_role = (request('user_role') !== null && request('user_role') !== '') ? (int)request('user_role') : '';
 
-            $dataQuery = DB::table('users as u')
+            $dataQuery = DB::table('odbusdev.blog_categories as bc')
                 ->select(
-                    'u.id as users_id',
-                    'u.unique_id',
-                    'u.name as user_name',
-                    'u.name as created_by_name',
-                    'u.name as updated_by_name',
-                    'u.organization_name',
-                    'u.primary_email',
-                    'u.primary_contact',
-                    'u.location',
-                    'u.created_at',
-                    'u.created_by',
-                    'u.updated_at',
-                    'u.updated_by',
-                    'u.active_status',
-                    DB::raw('(SELECT name FROM mst_roles WHERE id = u.user_role LIMIT 1) as user_role')
+                    'bc.id as blog_cat_id',
+                    'bc.category_name',
+                    'bc.slug',
+                    'bc.description',
+                    'bc.icon',
+                    'bc.alt_text',
+                    'bc.banner_image',
+                    'bc.sort_order',
+                    'bc.created_at',
+                    'bc.created_by',
+                    'bc.updated_at',
+                    'bc.updated_by',
+                    'bc.active_status',
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bc.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bc.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('u.name', 'like', "%{$txtSearch}%");
+                    $q->where('bc.category_name', 'like', "%{$txtSearch}%");
                 });
             }
 
-            if (isset($user_role) && $user_role != '') {
-                $dataQuery->where('u.user_role', $user_role);
-            }
-
             if (isset($selStatus) && $selStatus != '') {
-                $dataQuery->where('u.active_status', $selStatus);
+                $dataQuery->where('bc.active_status', $selStatus);
             }
 
-            $count = $dataQuery->count('u.id');
+            $count = $dataQuery->count('bc.id');
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -77,13 +72,13 @@ class BlogCategoryController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'u.name', 3 => 'u.organization_name', 4 => 'u.created_at', 5 => 'u.created_by', 6 => 'u.active_status'];
+                $columns = [2 => 'bc.category_name', 3 => 'bc.slug', 4 => 'bc.created_at', 5 => 'bc.created_by', 6 => 'bc.active_status'];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'u.name';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'bc.category_name';
                 $orderType = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'u.name';
+                $orderColumn = 'bc.category_name';
                 $orderType = 'asc';
             }
 
@@ -104,7 +99,7 @@ class BlogCategoryController extends Controller
                     $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_users_id = Crypt::encryptString($val->users_id);
+                    $val->enc_blog_cat_id = Crypt::encryptString($val->blog_cat_id);
                 }
             }
 
@@ -113,7 +108,7 @@ class BlogCategoryController extends Controller
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in UsersController@dataTableView", [
+            Log::info("Exception occurred in BlogCategoryController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -121,7 +116,7 @@ class BlogCategoryController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'UsersController',
+                'Controller' => 'BlogCategoryController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -144,11 +139,8 @@ class BlogCategoryController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        $data['edit_param'] = '';
 
         try {
-
-            $redirectPage = "admin/blog-category";
 
             $config = config('blog.category_banner');
 
@@ -162,7 +154,7 @@ class BlogCategoryController extends Controller
                 $data['strSubmit']  = 'Update';
                 $data['strReset']   = 'Cancel';
 
-                $dataResQry = BlogCategory::select('id', 'category_name', 'slug', 'description', 'icon','alt_text','banner_image');
+                $dataResQry = BlogCategory::select('id', 'category_name', 'slug', 'description', 'icon', 'alt_text', 'banner_image');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
@@ -183,12 +175,10 @@ class BlogCategoryController extends Controller
                     'categoryName' => 'required|max:50',
                     'categoryAlias' => 'required|max:50',
                     'banner_image' => [
-                                        'nullable',
-                                     //   'image',
-                                        'max:' . $config['max_size'], // in KB
-                                      //  'dimensions:width=' . $config['width'] . ',height=' . $config['height'],
-                                    ]
-                   
+                        'nullable',
+                        'max:' . $config['max_size'], // in KB
+                    ]
+
                 ], [
                     'categoryName.required' => 'Category name cannot be left blank.',
                     'categoryName.exists' => 'Category Name already exist.',
@@ -199,47 +189,66 @@ class BlogCategoryController extends Controller
                     'categoryAlias.max' => 'Category alias exceed max characters.',
                 ]);
 
-                
-
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 } else {
 
                     DB::beginTransaction();
-                  
+
                     $categoryName = htmlEncode(Purifier::clean(request('categoryName')));
                     $categoryAlias = htmlEncode(Purifier::clean(request('categoryAlias')));
-                    $categoryAlias = htmlEncode(Purifier::clean(request('categoryAlias')));
-                    $altText = (request('categoryAlias') !== null)?htmlEncode(Purifier::clean(request('categoryAlias'))):null;
-                    $icon = (request('icon') !== null)?htmlEncode(Purifier::clean(request('icon'))):null;
-                    $description = (request('description') !== null)?htmlEncode(Purifier::clean(request('description'))):null;
-                   
+                    $altText = (request('categoryAlias') !== null) ? htmlEncode(Purifier::clean(request('categoryAlias'))) : null;
+                    $icon = (request('icon') !== null) ? htmlEncode(Purifier::clean(request('icon'))) : null;
+                    $description = (request('description') !== null) ? htmlEncode(Purifier::clean(request('description'))) : null;
 
-                    $duplicate = BlogCategory::select('id')
-                                ->where(['category_name' => $categoryName]);
+                    $duplicate = BlogCategory::select('id')->where(['category_name' => $categoryName]);
+
+                    if ($id != 0) {
+                        $duplicate->where('id', '!=', $id);
+                    }
 
                     if ($duplicate->exists()) {
                         return back()->with([
                             'level' => 'danger',
-                            'message' => 'Category Name already exist'
+                            'message' => 'Category already exist'
                         ])->withInput();
                     } else {
-                     
+
+                        // $path = $config['path'];
+
+                        // if (!Storage::disk('public')->exists($path)) {
+                        //     Storage::disk('public')->makeDirectory($path);
+                        // }
+
+                        // if (request()->hasFile('banner_image')) {
+                        //     $file = request()->file('banner_image');
+                        //     $filename = Str::slug(request()->categoryName) . '-' . time() . '.' . $file->getClientOriginalExtension();
+                        //     $file->storeAs($path, $filename, 'public');
+                        // }
+
                         $path = $config['path'];
 
                         if (!Storage::disk('public')->exists($path)) {
                             Storage::disk('public')->makeDirectory($path);
                         }
 
+                        $filename = $data['row']->banner_image ?? null; // existing image from DB
+
                         if (request()->hasFile('banner_image')) {
+
+                            // delete old image
+                            if (!empty($data['row']->banner_image) && Storage::disk('public')->exists($path . '/' . $data['row']->banner_image)) {
+                                Storage::disk('public')->delete($path . '/' . $data['row']->banner_image);
+                            }
+
+                            // upload new image
                             $file = request()->file('banner_image');
                             $filename = Str::slug(request()->categoryName) . '-' . time() . '.' . $file->getClientOriginalExtension();
-                           $file->storeAs($path, $filename, 'public');
+
+                            $file->storeAs($path, $filename, 'public');
                         }
 
-                       
-
-                        $obj = new BlogCategory();
+                        $obj = ($id != 0) ? BlogCategory::find($id) : new BlogCategory();
                         $obj->category_name = $categoryName;
                         $obj->slug = $categoryAlias;
                         $obj->icon = $icon;
@@ -250,11 +259,9 @@ class BlogCategoryController extends Controller
                         $obj->active_status = 1;
 
                         $obj->save();
-                    
+
                         session()->flash('level', 'success');
-                        session()->flash('message', 'Blog Category ' . (($id != 0) ?
-                            'updated' : 'created') . ' successfully.');
-                        
+                        session()->flash('message', 'Blog Category ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     }
 
                     DB::commit();
@@ -263,7 +270,7 @@ class BlogCategoryController extends Controller
             }
         } catch (\Throwable $t) {
             Log::error("Error", [
-                'Controller' => 'UsersController',
+                'Controller' => 'BlogCategoryController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
@@ -280,8 +287,8 @@ class BlogCategoryController extends Controller
         return view('admin.blogs.addBlogCategory', compact('data'));
     }
 
-    public function edit($edit_param, $encId)
+    public function edit($encId)
     {
-        return $this->update($edit_param, $encId);
+        return $this->add($encId);
     }
 }

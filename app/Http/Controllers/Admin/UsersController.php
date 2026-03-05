@@ -38,8 +38,6 @@ class UsersController extends Controller
                     'u.id as users_id',
                     'u.unique_id',
                     'u.name as user_name',
-                    'u.name as created_by_name',
-                    'u.name as updated_by_name',
                     'u.organization_name',
                     'u.primary_email',
                     'u.primary_contact',
@@ -49,7 +47,9 @@ class UsersController extends Controller
                     'u.updated_at',
                     'u.updated_by',
                     'u.active_status',
-                    DB::raw('(SELECT name FROM mst_roles WHERE id = u.user_role LIMIT 1) as user_role')
+                    DB::raw('(SELECT name FROM mst_roles WHERE id = u.user_role LIMIT 1) as user_role'),
+                    DB::raw('(SELECT name FROM users WHERE id = u.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = u.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters

@@ -1,9 +1,9 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Blog Category')
+@section('page_title', 'Blogs')
 @section('content')
 
 <?php
-$page_name = 'All ' . trim($__env->yieldContent('page_title'));
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('blog-category.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('blogs.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -44,14 +44,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By FAQ</label>
+                                    <label for="txtSearch">Search By City Api ID</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="FAQ">
+                                        placeholder="City Api ID">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="faqCategory">Category</label>
-                                    <select class="form-select" id="faqCategory" name="faqCategory">
-                                        <option value="">Select Category</option>
+                                    <label for="selCity">City</label>
+                                    <select class="form-select selCity" id="selCity" name="selCity">
+                                        <option value="">Select City</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="apiApp">Api App</label>
+                                    <select class="form-select" id="apiApp" name="apiApp">
+                                        <option value="">Select Api App</option>
                                     </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
@@ -88,15 +94,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white btn-mob" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm btn-mob" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -106,13 +112,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="d-flex justify-content-between align-items-center">
                 <div id="utilitiesTop">
-                    <button type="button" id="btnExcel" class="btn btn-success btn-sm">
+                    <button type="button" id="btnExcel" class="btn btn-success btn-sm btn-mob">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>
-                    <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white">
+                    <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white btn-mob">
                         <i class="fa-solid fa-file-pdf me-1"></i>
                     </button>
-                    <button type="button" id="btnPrint" class="btn btn-danger btn-sm">
+                    <button type="button" id="btnPrint" class="btn btn-danger btn-sm btn-mob">
                         <i class="fa-solid fa-print me-1"></i>
                     </button>
                 </div>
@@ -120,32 +126,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                    data-url="{{ route('blog-category.dataTableView') }}"
-                    data-edit-url="{{ route('blog-category.edit', 'ID') }}">
-                    <thead class="thead-light">
-                        <tr>
-                            <th class="noPrint no-sort">
-                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                            </th>
-                            <th>Sl No</th>
-                            <th>Banner</th>
-                            <th>Category Name</th>
-                            <th>Description</th>
-                            <th width="60">Sequence</th>
-                            <th>Last Modified</th>
-                            <th>Status</th>
-                            <th class="no-sort">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
+                data-url="{{ route('blogs.dataTableView') }}"
+                data-edit-url="{{ route('blogs.edit', 'ID') }}">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="noPrint no-sort">
+                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                        </th>
+                        <th>Sl No</th>
+                        <th>City Name</th>
+                        <th>App Name</th>
+                        <th>Api City Id</th>
+                        <th>Last Modified</th>
+                        <th>Status</th>
+                        <th class="no-sort">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
             </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BlogCategory">
+            <input type="hidden" id="hdn_model" value="ApiKeys">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -169,6 +174,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
+    });
+
+    $(document).ready(function() {
+
+        commonAjax.initSelect2('#apiApp', 'Select Api App');
+        commonAjax.initSelect2('.selCity', 'Select City');
+
+        commonAjax.loadApiAppsList(0);
+        commonAjax.loadCityList(0);
     });
 
     $('#btnReset').click(function() {
@@ -199,7 +213,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let faqCategory = '';
+        let apiApp = '';
+        let selCity = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -207,25 +222,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
-
-        if ($('#faqCategory').val() != '') {
-            faqCategory = $('#faqCategory').val();
+        if ($('#apiApp').val() != '') {
+            apiApp = $('#apiApp').val();
+        }
+        if ($('#selCity').val() != '') {
+            selCity = $('#selCity').val();
         }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtSearch: txtSearch,
-            selStatus: selStatus,
-            faqCategory: faqCategory
+            txtsearch: txtSearch,
+            selstatus: selStatus,
+            apiApp: apiApp,
+            selCity: selCity
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return `<input class="form-check-input chkItem" type="checkbox"
-                id="check${row.blog_cat_id}"
-                value="${row.blog_cat_id}">`;
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.city_api_ids_id +
+                        '" name="chkStd' + row.city_api_ids_id + '" value="' + row.city_api_ids_id +
+                        '" >';
                 },
                 className: "noPrint text-center"
             },
@@ -237,83 +255,60 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'banner_image',
-                defaultContent: "--",
-                render: function(data, type, row) {
-                    if (data) {
-                        return `<img src="/storage/uploads/blog/categories/${data}" width="60" height="40" style="object-fit:cover;">`;
-                    }
-                    return "--";
-                }
-            },
-            {
-                data: 'category_name',
+                data: 'city_name',
                 defaultContent: "--"
             },
             {
-                data: 'description',
-                render: function(data) {
-                    if (!data) return '--';
-
-                    // Create temporary element to strip HTML
-                    let div = document.createElement("div");
-                    div.innerHTML = data;
-                    let text = div.textContent || div.innerText || "";
-
-                    return text.length > 100 ? text.substring(0, 100) + '...' : text;
-                }
+                data: 'app_name',
+                defaultContent: "--"
             },
             {
-                data: 'sort_order',
-                render: function(data, type, row) {
-                    return `<input type="text"
-                            value="${data ?? ''}"
-                            minlength="1"
-                            maxlength="3"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="form-control form-control-sm order-input"
-                            data-id="${row.enc_blog_cat_id}"
-                            data-table="odbusdev.blog_categories"
-                            data-column="sort_order">`;
-                },
+                data: 'api_city_ids',
                 defaultContent: "--"
             },
             {
                 data: null,
-                render: function(data, type, row) {
+                render: function (data, type, row) {
 
-                    let createdBy = row.created_by_name ?? '--';
-                    let createdAt = row.created_date ?? '--';
-                    let updatedBy = row.updated_by_name ?? '--';
-                    let updatedAt = row.updated_date ?? '--';
+                    let createdBy  = row.created_by_name ?? '--';
+                    let createdAt  = row.created_date ?? '--';
 
-                    let displayDate = updatedAt !== '--' ? updatedAt : createdAt;
+                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
+
+                    // Show updated date if exists, else created date
+                    let displayDate = (updatedAt!='--') ? updatedAt : createdAt;
 
                     return `
-                    <small class="text-primary fw-semibold"
-                        data-bs-toggle="tooltip"
-                        data-bs-html="true"
-                        title="
-                            <div><strong>Created By:</strong> ${createdBy}</div>
-                            <div><strong>Created At:</strong> ${createdAt}</div>
-                            <hr class='my-1'>
-                            <div><strong>Updated By:</strong> ${updatedBy}</div>
-                            <div><strong>Updated At:</strong> ${updatedAt}</div>
-                        ">
-                        ${displayDate}
-                    </small>`;
+                        <small
+                            class="text-primary fw-semibold"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${displayDate}
+                        </small>
+                    `;
                 }
             },
             {
                 data: 'is_active',
-                render: function(data) {
-                    let cls = data === 'Active' ? 'badge bg-success' : 'badge bg-danger';
-                    return `<span class="${cls}">${data}</span>`;
+                render: function(data, type, row) {
+                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
+                    return '<span class="' + cls + '">' + row.is_active + '</span>';
                 },
                 className: "text-center"
             },
             {
-                data: null,
+                data: '',
                 render: function(data, type, row) {
 
                     let editUrl = $('#' + tableId).data('edit-url');
@@ -322,14 +317,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info text-white"
-                        href="${editUrl.replace('ID', row.enc_blog_cat_id)}">
+                        href="${editUrl.replace('ID', row.enc_city_api_ids_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="faq_category"
-                            data-id="${row.enc_blog_cat_id}">
+                            data-table="api_keys"
+                            data-id="${row.enc_city_api_ids_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
 
@@ -337,16 +332,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "noPrint text-center"
             }
-        ];
-
+        ]
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
-
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#faqCategory', 'Select Category');
-        commonAjax.loadFaqCategory(0);
-    });
 </script>
 @endpush

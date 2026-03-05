@@ -21,7 +21,7 @@ use App\Http\Controllers\Master\CityApisController;
 use App\Http\Controllers\Master\FaqCategoryController;
 use App\Http\Controllers\Master\FaqController;
 use App\Http\Controllers\Admin\BlogCategoryController;
-
+use App\Http\Controllers\Admin\BlogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +160,12 @@ Route::prefix('admin')->group(function () {
     Route::post('users/dataTableView', [UsersController::class, 'dataTableView'])->name('users.dataTableView');
     Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
     Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
+
+    // Blogs
+    Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
+    Route::match(['get', 'post'], 'blogs/add', [BlogController::class, 'add'])->name('blogs.add');
+    Route::post('blogs/dataTableView', [BlogController::class, 'dataTableView'])->name('blogs.dataTableView');
+    Route::match(['get', 'post'], 'blogs/edit/{encId}', [BlogController::class, 'edit'])->name('blogs.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 

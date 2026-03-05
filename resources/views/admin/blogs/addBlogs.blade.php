@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Blog Category')
+@section('page_title', 'Blogs')
 @section('content')
 
 <?php
@@ -22,7 +22,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a href="{{ route('blog-category.index') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('blogs.index') }}" class="btn btn-success btn-sm">
             View @yield('page_title')
         </a>
     </div>
@@ -67,37 +67,40 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="p-3 border rounded bg-white">
                                                 <div class="row">
 
-                                                    <div class="col-md-6 mb-3">
-                                                        <label for="categoryName">Category Name <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="categoryName" name="categoryName"
-                                                            value="{{ $data['row']->category_name ?? '' }}"
-                                                            placeholder="Enter Category Name" maxlength="50">
+                                                    <div class="col-md-12 mb-3">
+                                                        <label for="title">Title <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="title" name="title"
+                                                            value="{{ $data['row']->title ?? '' }}"
+                                                            placeholder="Enter Title" maxlength="100">
                                                         <small class="text-muted char-counter float-end"></small>
                                                     </div>
 
-                                                    <div class="col-md-6 mb-3">
-                                                        <label for="alias">Alias <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="categoryAlias" name="categoryAlias"
+                                                    <div class="col-md-12 mb-3">
+                                                        <label for="blogAlias">Alias <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="blogAlias" name="slug"
                                                             value="{{ $data['row']->slug ?? '' }}"
                                                             placeholder="Enter Alias"
-                                                            maxlength="50">
+                                                            maxlength="100">
                                                         <small class="text-muted char-counter float-end"></small>
-                                                    </div>
-
-                                                    <div class="col-md-6 mb-3">
-                                                        <label for="icon">Icon</label>
-                                                        <input type="text" class="form-control" id="icon" name="icon"
-                                                            value="{{ $data['row']->icon ?? '' }}"
-                                                            placeholder="Icon Class Name Only">
                                                     </div>
 
                                                     <div class="col-12 mb-3">
-                                                        <label for="description">Content</label>
+                                                        <label for="short_description">Short Description</label>
                                                         <textarea
                                                             class="form-control"
-                                                            id="description"
-                                                            name="description"
-                                                            maxlength="512">{{ strip_tags(html_entity_decode($data['row']->description ?? '')) }}</textarea>
+                                                            id="short_description"
+                                                            name="short_description"
+                                                            maxlength="512">{{ strip_tags(html_entity_decode($data['row']->short_description ?? '')) }}</textarea>
+                                                        <small class="text-muted char-counter float-end"></small>
+                                                    </div>
+
+                                                    <div class="col-12 mb-3">
+                                                        <label for="content">Content</label>
+                                                        <textarea
+                                                            class="form-control"
+                                                            id="content"
+                                                            name="content"
+                                                            maxlength="512">{{ strip_tags(html_entity_decode($data['row']->content ?? '')) }}</textarea>
                                                         <small class="text-muted char-counter float-end"></small>
                                                     </div>
 
@@ -108,39 +111,105 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <!-- RIGHT COLUMN (4) -->
                                         <div class="col-md-4">
 
-                                            <div class="mb-3">
-                                                <label for="alt_text">Alt Text</label>
-                                                <input type="text" class="form-control" id="alt_text" name="alt_text"
-                                                    value="{{ $data['row']->alt_text ?? '' }}"
-                                                    placeholder="Enter Image Alt Text">
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="banner_image">Banner Image</label>
-                                                <input type="file" class="form-control" id="bannerImageInput" name="banner_image" accept="image/*">
-                                                <small class="text-muted text-md-end mt-2">
-                                                    Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
-                                                </small>
-                                            </div>
-
-                                            <div id="previewContainer" class="{{ empty($data['row']->banner_image) ? 'd-none' : '' }}">
-
-                                                <div class="mb-3">
-                                                    <img id="bannerPreview"
-                                                        src="{{ !empty($data['row']->banner_image) ? asset('storage/uploads/blog/categories/'.$data['row']->banner_image) : '#' }}"
-                                                        alt="Preview"
-                                                        class="img-fluid border p-1 {{ empty($data['row']->banner_image) ? 'd-none' : '' }}">
+                                            <div class="p-3 border rounded bg-white mb-3">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="category_id">Category</label>
+                                                        <select class="form-select" id="category_id" name="category_id">
+                                                            <option disabled selected>Select Category</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="is_featured">Is Featured</label>
+                                                        <select class="form-select" id="is_featured" name="is_featured">
+                                                            <option disabled selected>Select</option>
+                                                            <option value="1"
+                                                                {{ (isset($data['row']) && $data['row']->is_featured == 1) ? 'selected' : '' }}>
+                                                                Yes
+                                                            </option>
+                                                            <option value="2"
+                                                                {{ (isset($data['row']) && $data['row']->is_featured == 2) ? 'selected' : '' }}>
+                                                                No
+                                                            </option>
+                                                        </select>
+                                                    </div>
                                                 </div>
-
-                                                <div class="mb-1">
-                                                    <button type="button"
-                                                        id="removeImageBtn"
-                                                        class="btn btn-danger btn-sm">
-                                                        Remove Image
-                                                    </button>
-                                                </div>
-
                                             </div>
+
+                                            <div class="p-3 border rounded bg-white">
+                                                <div class="row">
+                                                    <div class="mb-3">
+                                                        <label for="thumb_alt_text">Thumb Image Alt Text</label>
+                                                        <input type="text" class="form-control" id="thumb_alt_text" name="thumb_alt_text"
+                                                            value="{{ $data['row']->thumb_alt_text ?? '' }}"
+                                                            placeholder="Enter Thumb Image Alt Text">
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="thumb_image">Thumb Image</label>
+                                                        <input type="file" class="form-control" id="img_1" name="thumb_image" accept="image/*">
+                                                        <small class="text-muted text-md-end mt-2">
+                                                            Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
+                                                        </small>
+                                                    </div>
+
+                                                    <div id="previewContainer_1" class="{{ empty($data['row']->thumb_image) ? 'd-none' : '' }}">
+
+                                                        <div class="mb-3">
+                                                            <img id="prv_1"
+                                                                src="{{ !empty($data['row']->thumb_image) ? asset('storage/uploads/blog/thumbs/'.$data['row']->thumb_image) : '#' }}"
+                                                                alt="Preview"
+                                                                class="img-fluid border p-1 {{ empty($data['row']->thumb_image) ? 'd-none' : '' }}">
+                                                        </div>
+
+                                                        <div class="mb-1">
+                                                            <button type="button"
+                                                                id="removeImageBtn_1"
+                                                                class="btn btn-danger btn-sm">
+                                                                Remove Image
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <hr />
+
+                                                    <div class="mb-3">
+                                                        <label for="feature_alt_text">Featured Image Alt Text</label>
+                                                        <input type="text" class="form-control" id="feature_alt_text" name="feature_alt_text"
+                                                            value="{{ $data['row']->feature_alt_text ?? '' }}"
+                                                            placeholder="Enter Featured Image Alt Text">
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label for="featured_image">Featured Image</label>
+                                                        <input type="file" class="form-control" id="img_2" name="featured_image" accept="image/*">
+                                                        <small class="text-muted text-md-end mt-2">
+                                                            Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
+                                                        </small>
+                                                    </div>
+
+                                                    <div id="previewContainer_2" class="{{ empty($data['row']->featured_image) ? 'd-none' : '' }}">
+
+                                                        <div class="mb-3">
+                                                            <img id="prv_2"
+                                                                src="{{ !empty($data['row']->featured_image) ? asset('storage/uploads/blog/thumbs/'.$data['row']->featured_image) : '#' }}"
+                                                                alt="Preview"
+                                                                class="img-fluid border p-1 {{ empty($data['row']->featured_image) ? 'd-none' : '' }}">
+                                                        </div>
+
+                                                        <div class="mb-1">
+                                                            <button type="button"
+                                                                id="removeImageBtn_2"
+                                                                class="btn btn-danger btn-sm">
+                                                                Remove Image
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -227,7 +296,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('blog-category.index') }}" class="btn btn-secondary btn-sm">
+                                        <a href="{{ route('blogs.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
                                         </a>
                                         @else
@@ -244,7 +313,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
         </div>
     </div>
-    </div>
 </form>
 
 @endsection
@@ -252,15 +320,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 <script type="module">
     document.addEventListener('DOMContentLoaded', function() {
-        initCkEditor('#description');
+        initCkEditor('#content');
     });
 
     document.addEventListener('DOMContentLoaded', function() {
 
-        const input = document.getElementById('bannerImageInput');
-        const preview = document.getElementById('bannerPreview');
-        const previewContainer = document.getElementById('previewContainer');
-        const removeBtn = document.getElementById('removeImageBtn');
+        const input = document.getElementById('img_1');
+        const preview = document.getElementById('prv_1');
+        const previewContainer_1 = document.getElementById('previewContainer_1');
+        const removeBtn = document.getElementById('removeImageBtn_1');
 
         if (!input) return;
 
@@ -271,10 +339,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             // 2MB validation
             if (file.size > 2 * 1024 * 1024) {
-                commonAjax.viewAlert("File size must be less than 2MB", 'bannerImageInput');
+                commonAjax.viewAlert("File size must be less than 2MB", 'img_1');
                 input.value = '';
 
-                previewContainer.classList.add('d-none');
+                previewContainer_1.classList.add('d-none');
                 preview.classList.add('d-none');
                 return;
             }
@@ -286,14 +354,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             //  Validate Extension
             if (!allowedExtensions.includes(fileExtension)) {
-                commonAjax.viewAlert("Only JPG, JPEG, and PNG images are allowed.", 'bannerImageInput');
+                commonAjax.viewAlert("Only JPG, JPEG, and PNG images are allowed.", 'img_1');
                 resetImage();
                 return;
             }
 
             //  Validate MIME Type
             if (!allowedMimeTypes.includes(file.type)) {
-                commonAjax.viewAlert("Invalid image format.", 'bannerImageInput');
+                commonAjax.viewAlert("Invalid image format.", 'img_1');
                 resetImage();
                 return;
             }
@@ -303,7 +371,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             reader.onload = function(e) {
                 preview.src = e.target.result;
 
-                previewContainer.classList.remove('d-none');
+                previewContainer_1.classList.remove('d-none');
                 preview.classList.remove('d-none');
             };
 
@@ -318,7 +386,76 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 preview.src = '#';
 
                 preview.classList.add('d-none');
-                previewContainer.classList.add('d-none');
+                previewContainer_1.classList.add('d-none');
+            });
+        }
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const input = document.getElementById('img_2');
+        const preview = document.getElementById('prv_2');
+        const previewContainer_1 = document.getElementById('previewContainer_2');
+        const removeBtn = document.getElementById('removeImageBtn_2');
+
+        if (!input) return;
+
+        input.addEventListener('change', function(event) {
+
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 2MB validation
+            if (file.size > 2 * 1024 * 1024) {
+                commonAjax.viewAlert("File size must be less than 2MB", 'img_2');
+                input.value = '';
+
+                previewContainer_1.classList.add('d-none');
+                preview.classList.add('d-none');
+                return;
+            }
+
+            const allowedExtensions = ['jpg', 'jpeg', 'png'];
+            const allowedMimeTypes = ['image/jpeg', 'image/png'];
+
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            //  Validate Extension
+            if (!allowedExtensions.includes(fileExtension)) {
+                commonAjax.viewAlert("Only JPG, JPEG, and PNG images are allowed.", 'img_2');
+                resetImage();
+                return;
+            }
+
+            //  Validate MIME Type
+            if (!allowedMimeTypes.includes(file.type)) {
+                commonAjax.viewAlert("Invalid image format.", 'img_2');
+                resetImage();
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+
+                previewContainer_1.classList.remove('d-none');
+                preview.classList.remove('d-none');
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        // Remove image
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+
+                input.value = '';
+                preview.src = '#';
+
+                preview.classList.add('d-none');
+                previewContainer_1.classList.add('d-none');
             });
         }
 
@@ -393,7 +530,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
-    document.getElementById('categoryName').addEventListener('input', function() {
+    document.getElementById('title').addEventListener('input', function() {
 
         this.value = this.value.replace(/\s+/g, ' ').trimStart();
 
@@ -406,10 +543,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             .replace(/\s+/g, '-') // replace spaces with -
             .replace(/-+/g, '-'); // remove duplicate -
 
-        document.getElementById('categoryAlias').value = alias;
+        document.getElementById('blogAlias').value = alias;
     });
 
-    document.getElementById('categoryAlias').addEventListener('input', function() {
+    document.getElementById('blogAlias').addEventListener('input', function() {
 
         this.value = this.value
             .toLowerCase()
@@ -428,24 +565,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initCharCounter(['categoryName', 'categoryAlias']);
+        commonAjax.initCharCounter(['title', 'blogAlias']);
     });
 
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
 
-        if (!validator.blankCheck('categoryName', 'Category Name cannot be left blank')) {
+        if (!validator.blankCheck('title', 'Category Name cannot be left blank')) {
             return false;
         }
-        if (!validator.maxLength('categoryName', 50, 'Category Name')) {
+        if (!validator.maxLength('title', 50, 'Category Name')) {
             return false;
         }
 
-        if (!validator.blankCheck('categoryAlias', 'Category Alias cannot be left blank')) {
+        if (!validator.blankCheck('blogAlias', 'Category Alias cannot be left blank')) {
             return false;
         }
-        if (!validator.maxLength('categoryAlias', 50, 'Category Alias')) {
+        if (!validator.maxLength('blogAlias', 50, 'Category Alias')) {
             return false;
         }
 
@@ -459,18 +596,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-    });
-
-    $(document).ready(function() {
-
-        $('#has_gst').on('change', function() {
-            if ($(this).is(':checked')) {
-                $('#gst_no').prop('disabled', false);
-            } else {
-                $('#gst_no').prop('disabled', true).val('');
-            }
-        });
-
     });
 </script>
 @endpush
