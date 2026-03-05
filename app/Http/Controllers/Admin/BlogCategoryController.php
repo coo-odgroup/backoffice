@@ -177,7 +177,7 @@ class BlogCategoryController extends Controller
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());          
+                request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
                     'categoryName' => 'required|max:50',
