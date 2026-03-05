@@ -29,6 +29,7 @@ class DistrictController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $selState = (request('selState') !== null && request('selState') !== '') ? (int)request('selState') : '';
 
             $dataQuery = DB::table('mst_districts as d')
                 ->select(
@@ -47,9 +48,12 @@ class DistrictController extends Controller
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('d.district_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('s.state_name', 'like', "%{$txtSearch}%");
+                    $q->where('d.district_name', 'like', "%{$txtSearch}%");
                 });
+            }
+
+            if (isset($selState) && $selState != 0) {
+                $dataQuery->where('d.state_id', $selState);
             }
 
             if (isset($selStatus) && $selStatus != '') {

@@ -38,6 +38,7 @@ class AmenitiesController extends Controller
                     'a.icon',
                     'a.is_paid',
                     'a.is_seat_specific',
+                    'a.sequence_no',
                     'a.created_at',
                     'a.created_by',
                     'a.updated_at',
