@@ -29,7 +29,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 </div>
 
 <!-- TABLE -->
-<form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
+<form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form" enctype="multipart/form-data">
     {{csrf_field()}}
     <div class="row">
         <div class="col-12">

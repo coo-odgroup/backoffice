@@ -138,7 +138,7 @@ class BlogCategoryController extends Controller
         ]);
     }
 
-    public function add()
+    public function add($encId = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
@@ -152,18 +152,41 @@ class BlogCategoryController extends Controller
 
             $config = config('blog.category_banner');
 
+            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+
+
+            if ($id > 0) {
+
+                $redirectPage = "admin/blog-category/edit/" . $encId;
+                $data['strPage']    = $method = 'Edit';
+                $data['strSubmit']  = 'Update';
+                $data['strReset']   = 'Cancel';
+
+                $dataResQry = BlogCategory::select('id', 'category_name', 'slug', 'description', 'icon','alt_text','banner_image');
+
+                $dataResQry = $dataResQry->where('id', $id)->first();
+
+                if (empty($dataResQry)) {
+                    return redirect("admin/blog-category");
+                }
+                $data['row'] = $dataResQry;
+            } else {
+                $id = 0;
+                $redirectPage = "admin/blog-category";
+            }
+
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
+                request()->replace(request()->all());          
 
                 $validator = Validator::make(request()->all(), [
-                    'categoryName' => 'required|exists:blog_categories,id|max:50',
+                    'categoryName' => 'required|max:50',
                     'categoryAlias' => 'required|max:50',
                     'banner_image' => [
                                         'nullable',
-                                        'image',
+                                     //   'image',
                                         'max:' . $config['max_size'], // in KB
-                                        'dimensions:width=' . $config['width'] . ',height=' . $config['height'],
+                                      //  'dimensions:width=' . $config['width'] . ',height=' . $config['height'],
                                     ]
                    
                 ], [
@@ -181,25 +204,15 @@ class BlogCategoryController extends Controller
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 } else {
+
                     DB::beginTransaction();
-
-                    $bannerPath = null;
-
-                    if ($request->hasFile('banner_image')) {
-
-                        $file = $request->file('banner_image');
-
-                        $filename = Str::slug($request->category_name) . '-' . time() . '.' . $file->getClientOriginalExtension();
-
-                        $bannerPath = $file->storeAs(
-                            $config['path'],
-                            $filename,
-                            'public'
-                        );
-                    }
                   
                     $categoryName = htmlEncode(Purifier::clean(request('categoryName')));
                     $categoryAlias = htmlEncode(Purifier::clean(request('categoryAlias')));
+                    $categoryAlias = htmlEncode(Purifier::clean(request('categoryAlias')));
+                    $altText = (request('categoryAlias') !== null)?htmlEncode(Purifier::clean(request('categoryAlias'))):null;
+                    $icon = (request('icon') !== null)?htmlEncode(Purifier::clean(request('icon'))):null;
+                    $description = (request('description') !== null)?htmlEncode(Purifier::clean(request('description'))):null;
                    
 
                     $duplicate = BlogCategory::select('id')
@@ -211,22 +224,37 @@ class BlogCategoryController extends Controller
                             'message' => 'Category Name already exist'
                         ])->withInput();
                     } else {
+                     
+                        $path = $config['path'];
+
+                        if (!Storage::disk('public')->exists($path)) {
+                            Storage::disk('public')->makeDirectory($path);
+                        }
+
+                        if (request()->hasFile('banner_image')) {
+                            $file = request()->file('banner_image');
+                            $filename = Str::slug(request()->categoryName) . '-' . time() . '.' . $file->getClientOriginalExtension();
+                           $file->storeAs($path, $filename, 'public');
+                        }
+
+                       
 
                         $obj = new BlogCategory();
                         $obj->category_name = $categoryName;
                         $obj->slug = $categoryAlias;
-                        $obj->primary_email = $primary_email;
-                        $obj->primary_contact = $primary_contact;
-                        $obj->location = $location;
+                        $obj->icon = $icon;
+                        $obj->description = $description;
+                        $obj->alt_text = $altText;
+                        $obj->banner_image = $filename;
                         $obj->created_by = 1;
                         $obj->active_status = 1;
 
                         $obj->save();
-
-                        $users_id = $obj->id;
                     
                         session()->flash('level', 'success');
-                        session()->flash('message', 'Users created successfully.');
+                        session()->flash('message', 'Blog Category ' . (($id != 0) ?
+                            'updated' : 'created') . ' successfully.');
+                        
                     }
 
                     DB::commit();
