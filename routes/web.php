@@ -54,12 +54,6 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('get-faq-category-list',[CommonController::class, 'getFaqCategoryList']);
     Route::post('/get-role-list', [CommonController::class, 'getRoleList'])->name('get.role.list');
-
-    Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
-    Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
-    Route::post('cities/dataTableView', [CitiesController::class, 'dataTableView'])->name('cities.dataTableView');
-    Route::match(['get', 'post'], 'cities/edit/{encId}', [CitiesController::class, 'edit'])->name('cities.edit');
-
     Route::get('/seat-layout', [SeatLayoutController::class, 'index'])->name('seatlayout.index');
     Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
 

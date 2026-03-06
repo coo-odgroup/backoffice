@@ -158,19 +158,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 @endsection
 @push('scripts')
-<style>
-.faq-content-col{
-    max-width:300px;
-    word-break: break-word;
-}
-
-.faq-content-col a{
-    color:#0d6efd;
-    font-size:12px;
-    cursor:pointer;
-}
-</style>
-
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
 
@@ -258,27 +245,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-    data: 'content',
-    render: function(data) {
+                data: 'content',
+                render: function(data) {
 
-        if (!data) return '--';
+                    if (!data) return '--';
 
-        if (data.length <= 100) {
-            return `<div class="faq-content-col">${data}</div>`;
-        }
+                    if (data.length <= 100) {
+                        return `<div class="faq-content-col">${data}</div>`;
+                    }
 
-        let firstPart = data.substring(0, 100);
-        let secondPart = data.substring(100);
+                    let firstPart = data.substring(0, 100);
+                    let secondPart = data.substring(100);
 
-        return `
+                    return `
         <div class="faq-content-col">
             ${firstPart}<span class="dots">...</span>
             <span class="more-text d-none">${secondPart}</span>
             <a href="javascript:void(0)" class="toggle-view-btn"> View More</a>
         </div>
         `;
-    }
-},
+                }
+            },
             {
                 data: 'sequence_no',
                 render: function(data, type, row) {
@@ -344,7 +331,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="faq_category"
+                            data-table="faq"
                             data-id="${row.enc_faq_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
@@ -355,28 +342,32 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         ];
 
+        if (window.dataTableInstance) {
+            window.dataTableInstance.destroy();
+            $('#datatable tbody').empty();
+        }
 
-        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+        window.dataTableInstance = loadDataTable(tableId,dataTableColumns,orderBy,searchParams,displayColumns);
     }
- $(document).on('click', '.toggle-view-btn', function () {
+    $(document).on('click', '.toggle-view-btn', function() {
 
-    let container = $(this).closest('.faq-content-col');
+        let container = $(this).closest('.faq-content-col');
 
-    container.find('.dots').toggle();
-    container.find('.more-text').toggleClass('d-none');
+        container.find('.dots').toggle();
+        container.find('.more-text').toggleClass('d-none');
 
-    if ($(this).text().trim() === 'View More') {
-        $(this).text(' View Less');
-    } else {
-        $(this).text(' View More');
-    }
+        if ($(this).text().trim() === 'View More') {
+            $(this).text(' View Less');
+        } else {
+            $(this).text(' View More');
+        }
 
-}); 
+    });
 
     $(document).ready(function() {
-
         commonAjax.initSelect2('#faqCategory', 'Select Category');
         commonAjax.loadFaqCategory(0);
     });
+    
 </script>
 @endpush

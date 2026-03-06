@@ -62,8 +62,10 @@ class FaqController extends Controller
                 $query->where('f.active_status', (int) $selStatus);
             }
 
-            $recordsTotal = $query->count('f.id');
-            $recordsFiltered = $recordsTotal;
+            $countQuery = clone $query;
+
+            $recordsFiltered = $countQuery->count('f.id');
+            $recordsTotal = DB::table('faq')->count();
 
             $start  = (int) request('start', 0);
             $length = (int) request('length', 10);
@@ -77,7 +79,7 @@ class FaqController extends Controller
                     3 => 'c.category_name',
                     4 => 'f.content',
                     5 => 'f.sequence_no',
-                    6 =>'',
+                    6 => '',
                     7 => 'f.active_status',
                 ];
 
@@ -93,7 +95,7 @@ class FaqController extends Controller
             }
 
             $rows = $query->get();
-             
+
 
             foreach ($rows as $row) {
 
@@ -188,7 +190,7 @@ class FaqController extends Controller
                 $title = htmlEncode(trim(Purifier::clean(request('faq_name'))));
                 $content = htmlEncode(Purifier::clean(request('content')));
                 $duplicate = Faq::where('title', $title)
-                                ->where('faq_category_id', $categoryId);
+                    ->where('faq_category_id', $categoryId);
 
                 if ($id > 0) {
                     $duplicate->where('id', '!=', $id);
