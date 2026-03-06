@@ -60,8 +60,10 @@ class FaqController extends Controller
                 $query->where('f.active_status', (int) $selStatus);
             }
 
-            $recordsTotal = $query->count('f.id');
-            $recordsFiltered = $recordsTotal;
+            $countQuery = clone $query;
+
+            $recordsFiltered = $countQuery->count('f.id');
+            $recordsTotal = DB::table('faq')->count();
 
             $start  = (int) request('start', 0);
             $length = (int) request('length', 10);

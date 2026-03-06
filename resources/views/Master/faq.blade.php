@@ -379,7 +379,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         ]
 
-        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+        window.dataTableInstance = loadDataTable(tableId,dataTableColumns,orderBy,searchParams,displayColumns);
     }
 </script>
 @endpush

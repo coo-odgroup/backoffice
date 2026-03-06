@@ -133,7 +133,8 @@ export function actionRec(action) {
 
     let message = "";
 
-    if (action === "D") message = "Are you sure to delete selected record(s)?";
+    if (action === "D")
+        message = "Are you sure to delete selected record(s)?";
     if (action === "A")
         message = "Are you sure to activate selected record(s)?";
     if (action === "UN")
