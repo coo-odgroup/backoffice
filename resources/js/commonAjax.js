@@ -801,6 +801,34 @@ export function loadRoleList(role_id = 0) {
     });
 }
 
+export function loadBlogCategoryList(cat_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-blog-category-list",
+        data: {
+            cat_id: cat_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Blog Category</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        cat_id > 0 && app.id == cat_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                        ${app.category_name}
+                                    </option>`;
+                });
+            }
+
+            $("#blogCategory").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Blog Category");
+        },
+    });
+}
 
 export function loadFaqCategory(cat_id = 0) {
 

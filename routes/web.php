@@ -54,6 +54,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
     Route::post('get-faq-category-list',[CommonController::class, 'getFaqCategoryList']);
     Route::post('/get-role-list', [CommonController::class, 'getRoleList'])->name('get.role.list');
+    Route::post('/get-blog-category-list', [CommonController::class, 'getBlogCategoryList'])->name('get.blogcategory.list');
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');

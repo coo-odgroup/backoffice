@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\blogs\BlogCategory;
 use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
 use App\Models\Master\Districts;
@@ -272,6 +273,18 @@ class CommonController extends Controller
         $data = Roles::where('active_status', 1)
             ->orderBy('name')
             ->get(['id', 'name']);
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
+        ]);
+    }
+
+    public function getBlogCategoryList(Request $request)
+    {
+        $data = BlogCategory::where('active_status', 1)
+            ->orderBy('category_name')
+            ->get(['id', 'category_name']);
 
         return response()->json([
             'status' => true,

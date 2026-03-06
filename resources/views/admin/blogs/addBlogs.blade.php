@@ -114,8 +114,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="p-3 border rounded bg-white mb-3">
                                                 <div class="row">
                                                     <div class="col-md-6 mb-3">
-                                                        <label for="category_id">Category</label>
-                                                        <select class="form-select" id="category_id" name="category_id">
+                                                        <label for="blogCategory">Category</label>
+                                                        <select class="form-select" id="blogCategory" name="category_id">
                                                             <option disabled selected>Select Category</option>
                                                         </select>
                                                     </div>
@@ -596,6 +596,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+    $(document).ready(function() {
+
+        commonAjax.initSelect2('#blogCategory', 'Select Blog Category');
+
+        let category_id = <?= $data['row']->category_id ?? '0' ?>
+
+        commonAjax.loadBlogCategoryList(category_id);
     });
 </script>
 @endpush

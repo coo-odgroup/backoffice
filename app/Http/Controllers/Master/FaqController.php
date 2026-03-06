@@ -28,37 +28,35 @@ class FaqController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $categoryId = (request('faqCategory') !== null && request('faqCategory') !== '') ? (int)request('faqCategory') : '';
+            $faq_cat = (request('faq_cat') !== null && request('faq_cat') !== '') ? (int)request('faq_cat') : '';
 
             $query = DB::table('faq as f')
-                ->leftJoin('faq_category as c', 'c.id', '=', 'f.faq_category_id')
                 ->select(
                     'f.id as faq_id',
                     'f.title',
                     'f.content',
                     'f.sequence_no',
-                    'f.active_status',
-                    'c.category_name',
                     'f.created_at',
+                    'f.created_by',
                     'f.updated_at',
+                    'f.updated_by',
+                    'f.active_status',
+                    DB::raw('(SELECT category_name FROM faq_category WHERE id = f.faq_category_id LIMIT 1) as category_name'),
                     DB::raw('(SELECT name FROM users WHERE id = f.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM users WHERE id = f.updated_by LIMIT 1) as updated_by_name')
                 );
 
-
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
-                    $q->where('f.title', 'like', "%{$txtSearch}%")
-                        ->orWhere('c.category_name', 'like', "%{$txtSearch}%");
+                    $q->where('f.title', 'like', "%{$txtSearch}%");
                 });
             }
 
-
-            if ($categoryId !== null && $categoryId !== '') {
-                $query->where('f.faq_category_id', (int) $categoryId);
+            if ($faq_cat !== 0 && $faq_cat !== null) {
+                $query->where('f.faq_category_id', (int) $faq_cat);
             }
 
-            if ($selStatus !== null && $selStatus !== '') {
+            if ($selStatus !== '' && $selStatus !== null) {
                 $query->where('f.active_status', (int) $selStatus);
             }
 
@@ -77,7 +75,7 @@ class FaqController extends Controller
                     3 => 'c.category_name',
                     4 => 'f.content',
                     5 => 'f.sequence_no',
-                    6 =>'',
+                    6 => '',
                     7 => 'f.active_status',
                 ];
 
@@ -93,7 +91,7 @@ class FaqController extends Controller
             }
 
             $rows = $query->get();
-             
+
 
             foreach ($rows as $row) {
 
@@ -188,7 +186,7 @@ class FaqController extends Controller
                 $title = htmlEncode(trim(Purifier::clean(request('faq_name'))));
                 $content = htmlEncode(Purifier::clean(request('content')));
                 $duplicate = Faq::where('title', $title)
-                                ->where('faq_category_id', $categoryId);
+                    ->where('faq_category_id', $categoryId);
 
                 if ($id > 0) {
                     $duplicate->where('id', '!=', $id);

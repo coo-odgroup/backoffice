@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\blogs\BlogCategory;
+use App\Models\blogs\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -113,7 +114,7 @@ class BlogController extends Controller
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in CityApisController@dataTableView", [
+            Log::info("Exception occurred in BlogController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -121,7 +122,7 @@ class BlogController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'CityApisController',
+                'Controller' => 'BlogController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -157,7 +158,7 @@ class BlogController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = BlogCategory::select('id', 'category_name', 'slug', 'description', 'icon', 'alt_text', 'banner_image', 'meta_title', 'meta_keywords', 'meta_description');
+                $dataResQry = Blog::select('id', 'category_id','title','slug','short_description','content','thumb_alt_text','thumb_image','feature_alt_text','featured_image','author_name','is_featured','active_status','published_at','meta_title','meta_description','meta_keywords','og_image','canonical_url','view_count');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
@@ -175,13 +176,15 @@ class BlogController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'city_id' => 'bail|required',
-                    'api_app_id' => 'bail|required',
-                    'api_city_ids' => 'bail|required'
+                    'title' => 'bail|required',
+                    'slug' => 'bail|required',
+                    'short_description' => 'bail|required',
+                    'category_id' => 'bail|required'
                 ], [
-                    'city_id.required' => 'City cannot be left blank.',
-                    'api_app_id.required' => 'App cannot be left blank.',
-                    'api_city_ids.required' => 'App City Ids cannot be left blank.'
+                    'title.required' => 'Title cannot be left blank.',
+                    'slug.required' => 'Slug cannot be left blank.',
+                    'short_description.required' => 'Short Description cannot be left blank.',
+                    'category_id.required' => 'Category cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
@@ -189,11 +192,20 @@ class BlogController extends Controller
                 } else {
                     DB::beginTransaction();
 
-                    $city_id = request('city_id');
-                    $api_app_id = request('api_app_id');
-                    $api_city_ids = htmlEncode(request('api_city_ids'));
+                    $title = htmlEncode(request('title'));
+                    $slug = htmlEncode(request('slug'));
+                    $short_description = htmlEncode(request('short_description'));
+                    $content = htmlEncode(request('content'));
+                    $category_id = request('category_id');
+                    $is_featured = request('is_featured');
+                    $thumb_alt_text = htmlEncode(request('thumb_alt_text'));
+                    $feature_alt_text = htmlEncode(request('feature_alt_text'));
+                    $meta_title = htmlEncode(request('meta_title'));
+                    $canonical_url = htmlEncode(request('canonical_url'));
+                    $meta_description = htmlEncode(request('meta_description'));
+                    $meta_keywords = htmlEncode(request('meta_keywords'));
 
-                    $duplicate = BlogCategory::select('id')->where(['api_city_ids' => $api_city_ids]);
+                    $duplicate = BlogCategory::select('id')->where(['title' => $title]);
 
                     if ($id != 0) {
                         $duplicate->where('id', '!=', $id);
@@ -206,9 +218,18 @@ class BlogController extends Controller
                         ])->withInput();
                     } else {
                         $obj = ($id != 0) ? BlogCategory::find($id) : new BlogCategory();
-                        $obj->city_id = $city_id;
-                        $obj->api_app_id = $api_app_id;
-                        $obj->api_city_ids = $api_city_ids;
+                        $obj->title = $title;
+                        $obj->slug = $slug;
+                        $obj->short_description = $short_description;
+                        $obj->content = $content;
+                        $obj->category_id = $category_id;
+                        $obj->is_featured = $is_featured;
+                        $obj->thumb_alt_text = $thumb_alt_text;
+                        $obj->feature_alt_text = $feature_alt_text;
+                        $obj->meta_title = $meta_title;
+                        $obj->canonical_url = $canonical_url;
+                        $obj->meta_description = $meta_description;
+                        $obj->meta_keywords = $meta_keywords;
                         $obj->created_by = 1;
                         $obj->active_status = 1;
 
@@ -219,7 +240,7 @@ class BlogController extends Controller
                         $obj->save();
 
                         session()->flash('level', 'success');
-                        session()->flash('message', 'Api City ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                        session()->flash('message', 'Blog Category ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     }
 
                     DB::commit();
@@ -228,7 +249,7 @@ class BlogController extends Controller
             }
         } catch (\Throwable $t) {
             Log::error("Error", [
-                'Controller' => 'CityApisController',
+                'Controller' => 'BlogController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
