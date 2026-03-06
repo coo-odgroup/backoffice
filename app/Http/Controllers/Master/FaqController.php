@@ -96,6 +96,9 @@ class FaqController extends Controller
             if (count($arrRes) > 0) {
 
                 foreach ($arrRes as $val) {
+
+                    $val->content = htmlDecode($val->content);
+
                     $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';

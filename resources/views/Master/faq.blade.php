@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@section('page_title', 'FAQ')
 @section('content')
 
 <?php
@@ -354,7 +355,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_faq"
+                            data-table="faq"
                             data-id="${row.enc_faq_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
