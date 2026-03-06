@@ -157,17 +157,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                         <div class="mb-3">
                                                             <img id="prv_1"
-                                                                src="{{ !empty($data['row']->thumb_image) ? asset('storage/uploads/blog/thumbs/'.$data['row']->thumb_image) : '#' }}"
+                                                                src="{{ !empty($data['row']->thumb_image) ? asset('storage/uploads/blog/'.$data['row']->thumb_image) : '#' }}"
                                                                 alt="Preview"
                                                                 class="img-fluid border p-1 {{ empty($data['row']->thumb_image) ? 'd-none' : '' }}">
                                                         </div>
 
                                                         <div class="mb-1">
+                                                            @if($data['strPage']=='Add')
                                                             <button type="button"
                                                                 id="removeImageBtn_1"
                                                                 class="btn btn-danger btn-sm">
                                                                 Remove Image
                                                             </button>
+                                                            @else
+                                                            <button type="button"
+                                                                class="btn btn-danger btn-sm remove-image"
+                                                                data-id="{{ $data['row']->id }}"
+                                                                data-table="odbusdev.blogs"
+                                                                data-column="thumb_image"
+                                                                data-path="uploads/blog"
+                                                                data-container="previewContainer_1">
+                                                                Remove Image
+                                                            </button>
+                                                            @endif
                                                         </div>
 
                                                     </div>
@@ -193,17 +205,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                         <div class="mb-3">
                                                             <img id="prv_2"
-                                                                src="{{ !empty($data['row']->featured_image) ? asset('storage/uploads/blog/thumbs/'.$data['row']->featured_image) : '#' }}"
+                                                                src="{{ !empty($data['row']->featured_image) ? asset('storage/uploads/blog/'.$data['row']->featured_image) : '#' }}"
                                                                 alt="Preview"
                                                                 class="img-fluid border p-1 {{ empty($data['row']->featured_image) ? 'd-none' : '' }}">
                                                         </div>
 
                                                         <div class="mb-1">
+                                                            @if($data['strPage']=='Add')
                                                             <button type="button"
                                                                 id="removeImageBtn_2"
                                                                 class="btn btn-danger btn-sm">
                                                                 Remove Image
                                                             </button>
+                                                            @else
+                                                            <button type="button"
+                                                                class="btn btn-danger btn-sm remove-image"
+                                                                data-id="{{ $data['row']->id }}"
+                                                                data-table="odbusdev.blogs"
+                                                                data-column="featured_image"
+                                                                data-path="uploads/blog"
+                                                                data-container="previewContainer_2">
+                                                                Remove Image
+                                                            </button>
+                                                            @endif
                                                         </div>
 
                                                     </div>
@@ -267,17 +291,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                                 <div class="mb-3">
                                                                     <img id="prv_3"
-                                                                        src="{{ !empty($data['row']->og_image) ? asset('storage/uploads/blog/thumbs/'.$data['row']->og_image) : '#' }}"
+                                                                        src="{{ !empty($data['row']->og_image) ? asset('storage/uploads/blog/'.$data['row']->og_image) : '#' }}"
                                                                         alt="Preview"
                                                                         class="img-fluid border p-1 {{ empty($data['row']->og_image) ? 'd-none' : '' }}">
                                                                 </div>
 
                                                                 <div class="mb-1">
+                                                                    @if($data['strPage']=='Add')
                                                                     <button type="button"
                                                                         id="removeImageBtn_3"
                                                                         class="btn btn-danger btn-sm">
                                                                         Remove Image
                                                                     </button>
+                                                                    @else
+                                                                    <button type="button"
+                                                                        class="btn btn-danger btn-sm remove-image"
+                                                                        data-id="{{ $data['row']->id }}"
+                                                                        data-table="odbusdev.blogs"
+                                                                        data-column="og_image"
+                                                                        data-path="uploads/blog"
+                                                                        data-container="previewContainer_3">
+                                                                        Remove Image
+                                                                    </button>
+                                                                    @endif
                                                                 </div>
 
                                                             </div>
@@ -325,14 +361,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.addEventListener('DOMContentLoaded', function() {
 
-        const input = document.getElementById('img_1');
-        const preview = document.getElementById('prv_1');
+        const input_1 = document.getElementById('img_1');
+        const preview_1 = document.getElementById('prv_1');
         const previewContainer_1 = document.getElementById('previewContainer_1');
-        const removeBtn = document.getElementById('removeImageBtn_1');
+        const removeBtn_1 = document.getElementById('removeImageBtn_1');
 
-        if (!input) return;
+        if (!input_1) return;
 
-        input.addEventListener('change', function(event) {
+        input_1.addEventListener('change', function(event) {
 
             const file = event.target.files[0];
             if (!file) return;
@@ -340,10 +376,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // 2MB validation
             if (file.size > 2 * 1024 * 1024) {
                 commonAjax.viewAlert("File size must be less than 2MB", 'img_1');
-                input.value = '';
+                input_1.value = '';
 
                 previewContainer_1.classList.add('d-none');
-                preview.classList.add('d-none');
+                preview_1.classList.add('d-none');
                 return;
             }
 
@@ -369,23 +405,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                preview.src = e.target.result;
+                preview_1.src = e.target.result;
 
                 previewContainer_1.classList.remove('d-none');
-                preview.classList.remove('d-none');
+                preview_1.classList.remove('d-none');
             };
 
             reader.readAsDataURL(file);
         });
 
         // Remove image
-        if (removeBtn) {
-            removeBtn.addEventListener('click', function() {
+        if (removeBtn_1) {
+            removeBtn_1.addEventListener('click', function() {
 
-                input.value = '';
-                preview.src = '#';
+                input_1.value = '';
+                preview_1.src = '#';
 
-                preview.classList.add('d-none');
+                preview_1.classList.add('d-none');
                 previewContainer_1.classList.add('d-none');
             });
         }
@@ -394,14 +430,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.addEventListener('DOMContentLoaded', function() {
 
-        const input = document.getElementById('img_2');
-        const preview = document.getElementById('prv_2');
-        const previewContainer_1 = document.getElementById('previewContainer_2');
-        const removeBtn = document.getElementById('removeImageBtn_2');
+        const input_2 = document.getElementById('img_2');
+        const preview_2 = document.getElementById('prv_2');
+        const previewContainer_2 = document.getElementById('previewContainer_2');
+        const removeBtn_2 = document.getElementById('removeImageBtn_2');
 
-        if (!input) return;
+        if (!input_2) return;
 
-        input.addEventListener('change', function(event) {
+        input_2.addEventListener('change', function(event) {
 
             const file = event.target.files[0];
             if (!file) return;
@@ -409,10 +445,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // 2MB validation
             if (file.size > 2 * 1024 * 1024) {
                 commonAjax.viewAlert("File size must be less than 2MB", 'img_2');
-                input.value = '';
+                input_2.value = '';
 
-                previewContainer_1.classList.add('d-none');
-                preview.classList.add('d-none');
+                previewContainer_2.classList.add('d-none');
+                preview_2.classList.add('d-none');
                 return;
             }
 
@@ -421,14 +457,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             const fileExtension = file.name.split('.').pop().toLowerCase();
 
-            //  Validate Extension
+            // Validate Extension
             if (!allowedExtensions.includes(fileExtension)) {
                 commonAjax.viewAlert("Only JPG, JPEG, and PNG images are allowed.", 'img_2');
                 resetImage();
                 return;
             }
 
-            //  Validate MIME Type
+            // Validate MIME Type
             if (!allowedMimeTypes.includes(file.type)) {
                 commonAjax.viewAlert("Invalid image format.", 'img_2');
                 resetImage();
@@ -438,24 +474,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                preview.src = e.target.result;
+                preview_2.src = e.target.result;
 
-                previewContainer_1.classList.remove('d-none');
-                preview.classList.remove('d-none');
+                previewContainer_2.classList.remove('d-none');
+                preview_2.classList.remove('d-none');
             };
 
             reader.readAsDataURL(file);
         });
 
         // Remove image
-        if (removeBtn) {
-            removeBtn.addEventListener('click', function() {
+        if (removeBtn_2) {
+            removeBtn_2.addEventListener('click', function() {
 
-                input.value = '';
-                preview.src = '#';
+                input_2.value = '';
+                preview_2.src = '#';
 
-                preview.classList.add('d-none');
-                previewContainer_1.classList.add('d-none');
+                preview_2.classList.add('d-none');
+                previewContainer_2.classList.add('d-none');
             });
         }
 
@@ -463,14 +499,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.addEventListener('DOMContentLoaded', function() {
 
-        const input = document.getElementById('img_3');
-        const preview = document.getElementById('prv_3');
-        const previewContainer_1 = document.getElementById('previewContainer_3');
-        const removeBtn = document.getElementById('removeImageBtn_3');
+        const input_3 = document.getElementById('img_3');
+        const preview_3 = document.getElementById('prv_3');
+        const previewContainer_3 = document.getElementById('previewContainer_3');
+        const removeBtn_3 = document.getElementById('removeImageBtn_3');
 
-        if (!input) return;
+        if (!input_3) return;
 
-        input.addEventListener('change', function(event) {
+        input_3.addEventListener('change', function(event) {
 
             const file = event.target.files[0];
             if (!file) return;
@@ -478,10 +514,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // 2MB validation
             if (file.size > 2 * 1024 * 1024) {
                 commonAjax.viewAlert("File size must be less than 2MB", 'img_3');
-                input.value = '';
+                input_3.value = '';
 
-                previewContainer_1.classList.add('d-none');
-                preview.classList.add('d-none');
+                previewContainer_3.classList.add('d-none');
+                preview_3.classList.add('d-none');
                 return;
             }
 
@@ -490,14 +526,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             const fileExtension = file.name.split('.').pop().toLowerCase();
 
-            //  Validate Extension
+            // Validate Extension
             if (!allowedExtensions.includes(fileExtension)) {
                 commonAjax.viewAlert("Only JPG, JPEG, and PNG images are allowed.", 'img_3');
                 resetImage();
                 return;
             }
 
-            //  Validate MIME Type
+            // Validate MIME Type
             if (!allowedMimeTypes.includes(file.type)) {
                 commonAjax.viewAlert("Invalid image format.", 'img_3');
                 resetImage();
@@ -507,24 +543,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                preview.src = e.target.result;
+                preview_3.src = e.target.result;
 
-                previewContainer_1.classList.remove('d-none');
-                preview.classList.remove('d-none');
+                previewContainer_3.classList.remove('d-none');
+                preview_3.classList.remove('d-none');
             };
 
             reader.readAsDataURL(file);
         });
 
         // Remove image
-        if (removeBtn) {
-            removeBtn.addEventListener('click', function() {
+        if (removeBtn_3) {
+            removeBtn_3.addEventListener('click', function() {
 
-                input.value = '';
-                preview.src = '#';
+                input_3.value = '';
+                preview_3.src = '#';
 
-                preview.classList.add('d-none');
-                previewContainer_1.classList.add('d-none');
+                preview_3.classList.add('d-none');
+                previewContainer_3.classList.add('d-none');
             });
         }
 
