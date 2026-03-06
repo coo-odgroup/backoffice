@@ -135,9 +135,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                         </th>
                         <th>Sl No</th>
-                        <th>City Name</th>
-                        <th>App Name</th>
-                        <th>Api City Id</th>
+                        <th>Category Name</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Author</th>
+                        <th>Published Date</th>
                         <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
@@ -150,7 +152,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="ApiKeys">
+            <input type="hidden" id="hdn_model" value="Blog">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -213,8 +215,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let apiApp = '';
-        let selCity = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -222,27 +222,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
-        if ($('#apiApp').val() != '') {
-            apiApp = $('#apiApp').val();
-        }
-        if ($('#selCity').val() != '') {
-            selCity = $('#selCity').val();
-        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
             txtsearch: txtSearch,
-            selstatus: selStatus,
-            apiApp: apiApp,
-            selCity: selCity
+            selstatus: selStatus
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.city_api_ids_id +
-                        '" name="chkStd' + row.city_api_ids_id + '" value="' + row.city_api_ids_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.blog_id +
+                        '" name="chkStd' + row.blog_id + '" value="' + row.blog_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -255,15 +247,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'city_name',
+                data: 'category_name',
                 defaultContent: "--"
             },
             {
-                data: 'app_name',
+                data: 'title',
                 defaultContent: "--"
             },
             {
-                data: 'api_city_ids',
+                data: 'short_description',
+                defaultContent: "--"
+            },
+            {
+                data: 'author_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'published_at',
                 defaultContent: "--"
             },
             {
@@ -317,14 +317,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info text-white"
-                        href="${editUrl.replace('ID', row.enc_city_api_ids_id)}">
+                        href="${editUrl.replace('ID', row.enc_blog_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="api_keys"
-                            data-id="${row.enc_city_api_ids_id}">
+                            data-table="blog"
+                            data-id="${row.enc_blog_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
 

@@ -16,7 +16,7 @@ use App\Models\Master\Roles;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Storage;
 
 class CommonController extends Controller
 {
@@ -72,6 +72,7 @@ class CommonController extends Controller
             'ApiKeys' => \App\Models\Master\ApiKeys::class,
             'CityApis' => \App\Models\Master\CityApis::class,
             'BlogCategory' => \App\Models\blogs\BlogCategory::class,
+            'Blog' => \App\Models\blogs\Blog::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -132,7 +133,6 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $cities
             ]);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -239,7 +239,7 @@ class CommonController extends Controller
             'data' => $data
         ]);
     }
-    
+
 
     public function getParentModuleList(Request $request)
     {
@@ -267,7 +267,7 @@ class CommonController extends Controller
             'data'   => $data
         ]);
     }
-    
+
     public function getRoleList(Request $request)
     {
         $data = Roles::where('active_status', 1)
@@ -289,6 +289,39 @@ class CommonController extends Controller
         return response()->json([
             'status' => true,
             'data' => $data
+        ]);
+    }
+
+    public function removeImage(Request $request)
+    {
+        $table = $request->table;
+        $id = $request->id;
+        $column = $request->column;
+        $path = $request->path;
+
+        $data = DB::table($table)->where('id', $id)->first();
+
+        if ($data && $data->$column) {
+
+            $filePath = $path . '/' . $data->$column;
+
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+
+            DB::table($table)
+                ->where('id', $id)
+                ->update([$column => null]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Image removed successfully'
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Image not found'
         ]);
     }
 }

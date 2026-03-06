@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { Modal } from "bootstrap";
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+// import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 let ajaxUrl = "http://127.0.0.1:8000/admin/";
 
@@ -772,7 +772,6 @@ export function initCharCounter(fieldSelectors = []) {
 
 }
 
-
 export function loadRoleList(role_id = 0) {
     $.ajax({
         type: "POST",
@@ -872,3 +871,36 @@ export function loadFaqCategory(cat_id = 0) {
         }
     });
 }
+
+$(document).on('click', '.remove-image', function () {
+
+    let button = $(this);
+    let containerId = button.data('container');
+
+    confirmAlert('Are you sure to proceed!', function () {
+
+        $.ajax({
+            url: ajaxUrl + "remove-image",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                id: button.data('id'),
+                table: button.data('table'),
+                column: button.data('column'),
+                path: button.data('path')
+            },
+            success: function (response) {
+
+                if (response.status) {
+                    $('#' + containerId).addClass('d-none');
+                    viewAlert(response.message);
+                } else {
+                    viewAlert(response.message);
+                }
+
+            }
+        });
+
+    });
+
+});

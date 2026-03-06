@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\blogs\BlogCategory;
 use App\Models\blogs\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -28,46 +29,44 @@ class BlogController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $apiApp = (request('apiApp') !== null && request('apiApp') !== '') ? (int)request('apiApp') : '';
-            $selCity = (request('selCity') !== null && request('selCity') !== '') ? (int)request('selCity') : '';
 
-            $dataQuery = DB::table('city_api_ids as cp')
+            $dataQuery = DB::table('odbusdev.blogs as b')
                 ->select(
-                    'cp.id as city_api_ids_id',
-                    'cp.city_id',
-                    'cp.api_app_id',
-                    'cp.api_city_ids',
-                    'cp.created_at',
-                    'cp.created_by',
-                    'cp.updated_at',
-                    'cp.updated_by',
-                    'cp.active_status',
-                    DB::raw('(SELECT city_name FROM mst_cities WHERE id = cp.city_id LIMIT 1) as city_name'),
-                    DB::raw('(SELECT app_name FROM api_apps WHERE id = cp.api_app_id LIMIT 1) as app_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = cp.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = cp.updated_by LIMIT 1) as updated_by_name')
+                    'b.id as blog_id',
+                    'b.title',
+                    'b.slug',
+                    'b.short_description',
+                    'b.content',
+                    'b.thumb_alt_text',
+                    'b.thumb_image',
+                    'b.feature_alt_text',
+                    'b.featured_image',
+                    'b.author_name',
+                    'b.is_featured',
+                    'b.published_at',
+                    'b.view_count',
+                    'b.created_at',
+                    'b.created_by',
+                    'b.updated_at',
+                    'b.updated_by',
+                    'b.active_status',
+                    DB::raw('(SELECT category_name FROM odbusdev.blog_categories WHERE id = b.category_id LIMIT 1) as category_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = b.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = b.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('cp.api_city_ids', 'like', "%{$txtSearch}%");
+                    $q->where('b.title', 'like', "%{$txtSearch}%");
                 });
             }
 
-            if (isset($apiApp) && $apiApp != '') {
-                $dataQuery->where('cp.api_app_id', $apiApp);
-            }
-
-            if (isset($selCity) && $selCity != '') {
-                $dataQuery->where('cp.city_id', $selCity);
-            }
-
             if (isset($selStatus) && $selStatus != '') {
-                $dataQuery->where('cp.active_status', $selStatus);
+                $dataQuery->where('b.active_status', $selStatus);
             }
 
-            $count = $dataQuery->count('cp.id');
+            $count = $dataQuery->count('b.id');
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -78,13 +77,13 @@ class BlogController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'cp.api_app_id', 3 => 'cp.api_city_ids', 4 => 'cp.created_at', 5 => 'cp.created_by', 6 => 'cp.active_status'];
+                $columns = [2 => 'b.title', 3 => 'b.author_name', 4 => 'b.created_at', 5 => 'b.created_by', 6 => 'b.active_status'];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'cp.api_city_ids';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'b.title';
                 $orderType = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'cp.api_city_ids';
+                $orderColumn = 'b.title';
                 $orderType = 'asc';
             }
 
@@ -105,7 +104,7 @@ class BlogController extends Controller
                     $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_city_api_ids_id = Crypt::encryptString($val->city_api_ids_id);
+                    $val->enc_blog_id = Crypt::encryptString($val->blog_id);
                 }
             }
 
@@ -142,6 +141,8 @@ class BlogController extends Controller
     public function add($encId = null)
     {
 
+        $config = config('blog.blog');
+
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -158,7 +159,7 @@ class BlogController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Blog::select('id', 'category_id','title','slug','short_description','content','thumb_alt_text','thumb_image','feature_alt_text','featured_image','author_name','is_featured','active_status','published_at','meta_title','meta_description','meta_keywords','og_image','canonical_url','view_count');
+                $dataResQry = Blog::select('id', 'category_id', 'title', 'slug', 'short_description', 'content', 'thumb_alt_text', 'thumb_image', 'feature_alt_text', 'featured_image', 'author_name', 'is_featured', 'active_status', 'published_at', 'meta_title', 'meta_description', 'meta_keywords', 'og_image', 'canonical_url', 'view_count');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
@@ -205,7 +206,7 @@ class BlogController extends Controller
                     $meta_description = htmlEncode(request('meta_description'));
                     $meta_keywords = htmlEncode(request('meta_keywords'));
 
-                    $duplicate = BlogCategory::select('id')->where(['title' => $title]);
+                    $duplicate = Blog::select('id')->where(['title' => $title]);
 
                     if ($id != 0) {
                         $duplicate->where('id', '!=', $id);
@@ -217,7 +218,7 @@ class BlogController extends Controller
                             'message' => 'Blog already exist'
                         ])->withInput();
                     } else {
-                        $obj = ($id != 0) ? BlogCategory::find($id) : new BlogCategory();
+                        $obj = ($id != 0) ? Blog::find($id) : new Blog();
                         $obj->title = $title;
                         $obj->slug = $slug;
                         $obj->short_description = $short_description;
@@ -230,11 +231,66 @@ class BlogController extends Controller
                         $obj->canonical_url = $canonical_url;
                         $obj->meta_description = $meta_description;
                         $obj->meta_keywords = $meta_keywords;
+                        $obj->published_at = now();
                         $obj->created_by = 1;
                         $obj->active_status = 1;
 
                         if ($id != 0) {
                             $obj->updated_by = 1;
+                        }
+
+                        $path = $config['path'];
+
+                        if (!Storage::disk('public')->exists($path)) {
+                            Storage::disk('public')->makeDirectory($path);
+                        }
+
+                        if (request()->hasFile('thumb_image')) {
+
+                            // delete old image
+                            if (!empty($data['row']->thumb_image) && Storage::disk('public')->exists($path . '/' . $data['row']->thumb_image)) {
+                                Storage::disk('public')->delete($path . '/' . $data['row']->thumb_image);
+                            }
+
+                            // upload new image
+                            $file = request()->file('thumb_image');
+                            $thumb_image = 'thumb-' . time() . rand() . '.' . $file->getClientOriginalExtension();
+
+                            $file->storeAs($path, $thumb_image, 'public');
+
+                            $obj->thumb_image = $thumb_image;
+                        }
+
+                        if (request()->hasFile('featured_image')) {
+
+                            // delete old image
+                            if (!empty($data['row']->featured_image) && Storage::disk('public')->exists($path . '/' . $data['row']->featured_image)) {
+                                Storage::disk('public')->delete($path . '/' . $data['row']->featured_image);
+                            }
+
+                            // upload new image
+                            $file2 = request()->file('featured_image');
+                            $featured_image = 'featured-' . time() . rand() . '.' . $file2->getClientOriginalExtension();
+
+                            $file2->storeAs($path, $featured_image, 'public');
+
+                            $obj->featured_image = $featured_image;
+                        }
+
+                        if (request()->hasFile('og_image')) {
+
+                            // delete old image
+                            if (!empty($data['row']->og_image) && Storage::disk('public')->exists($path . '/' . $data['row']->og_image)) {
+                                Storage::disk('public')->delete($path . '/' . $data['row']->og_image);
+                            }
+
+                            // upload new image
+                            $file2 = request()->file('og_image');
+                            $og_image = 'featured-' . time() . rand() . '.' . $file2->getClientOriginalExtension();
+
+                            $file2->storeAs($path, $og_image, 'public');
+
+                            $obj->og_image = $og_image;
                         }
 
                         $obj->save();
