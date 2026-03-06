@@ -20,9 +20,9 @@ class FaqController extends Controller
 
     public function dataTableView()
     {
-        $recordsTotal    = 0;
-        $recordsFiltered = 0;
-        $data            = [];
+        $recordsTotal     = 0;
+        $recordsFiltered  = 0;
+        $data             = [];
 
         try {
 
@@ -30,7 +30,7 @@ class FaqController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
             $faq_cat = (request('faq_cat') !== null && request('faq_cat') !== '') ? (int)request('faq_cat') : '';
 
-            $query = DB::table('faq as f')
+            $dataQuery = DB::table('faq as f')
                 ->select(
                     'f.id as faq_id',
                     'f.title',
@@ -46,76 +46,79 @@ class FaqController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = f.updated_by LIMIT 1) as updated_by_name')
                 );
 
+            // Filters
             if (!empty($txtSearch)) {
-                $query->where(function ($q) use ($txtSearch) {
+                $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('f.title', 'like', "%{$txtSearch}%");
                 });
             }
 
-            if ($faq_cat !== 0 && $faq_cat !== null) {
-                $query->where('f.faq_category_id', (int) $faq_cat);
+            if (isset($faq_cat) && $faq_cat != 0) {
+                $dataQuery->where('f.faq_category_id', $faq_cat);
             }
 
-            if ($selStatus !== '' && $selStatus !== null) {
-                $query->where('f.active_status', (int) $selStatus);
+            if (isset($selStatus) && $selStatus != '') {
+                $dataQuery->where('f.active_status', $selStatus);
             }
 
-            $countQuery = clone $query;
+            $count = $dataQuery->count('f.id');
 
-            $recordsFiltered = $countQuery->count('f.id');
-            $recordsTotal = DB::table('faq')->count();
+            $start = request()->input('start', 0);
+            $length = request()->input('length', 10);
 
-            $start  = (int) request('start', 0);
-            $length = (int) request('length', 10);
+            $start = is_numeric($start) ? (int)$start : 0;
+            $length = is_numeric($length) ? (int)$length : 10;
 
-            $orderColumn = 'f.sequence_no';
-            $orderDir    = 'asc';
-
+            // Ordering
             if (!empty(request('order'))) {
-                $columns = [
-                    2 => 'f.title',
-                    3 => 'c.category_name',
-                    4 => 'f.content',
-                    5 => 'f.sequence_no',
-                    6 => '',
-                    7 => 'f.active_status',
-                ];
 
-                $orderIndex  = request('order')[0]['column'];
-                $orderDir    = request('order')[0]['dir'];
-                $orderColumn = $columns[$orderIndex] ?? 'f.sequence_no';
+                $columns = [2 => 'f.title', 3 => 'f.sequence_no', 4 => 'f.created_at', 5 => 'f.created_by', 6 => 'f.active_status'];
+
+                $orderBy = request('order');
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'f.title';
+                $orderType = $orderBy[0]['dir'];
+            } else {
+                $orderColumn = 'f.title';
+                $orderType = 'asc';
             }
 
-            $query->orderBy($orderColumn, $orderDir);
+            $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
 
-            if ($length != -1) {
-                $query->offset($start)->limit($length);
+            // Pagination
+            if ($length == -1) {
+                $arrRes = $dataQuery->get();
+            } else {
+                $arrRes = $dataQuery->limit($length)
+                    ->offset($start)
+                    ->get();
+            }
+            // Format Data
+            if (count($arrRes) > 0) {
+
+                foreach ($arrRes as $val) {
+                    $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
+                    $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
+                    $val->enc_faq_id = Crypt::encryptString($val->faq_id);
+                }
             }
 
-            $rows = $query->get();
+            $recordsTotal = $count;
+            $recordsFiltered = $count;
+            $data = $arrRes;
+        } catch (\Throwable $t) {
 
+            Log::info("Exception occurred in FaqController@dataTableView", [
+                'error_message' => $t->getMessage(),
+                'trace' => $t->getTraceAsString()
+            ]);
 
-            foreach ($rows as $row) {
+            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
-                $row->content = htmlDecode($row->content);
-
-                $row->created_date = $row->created_at
-                    ? date('d-M-Y H:i:s', strtotime($row->created_at))
-                    : '--';
-
-                $row->updated_date = $row->updated_at
-                    ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                    : '--';
-
-                $row->is_active   = $row->active_status == 1 ? 'Active' : 'Inactive';
-                $row->enc_faq_id  = Crypt::encryptString($row->faq_id);
-            }
-            $data = $rows;
-        } catch (\Throwable $e) {
-
-            Log::error('FAQ dataTableView error', [
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString()
+            Log::error("Error", [
+                'Controller' => 'FaqController',
+                'Method'     => 'dataTableView',
+                'Error'      => $errorMsg
             ]);
 
             $recordsTotal = 0;
@@ -124,9 +127,9 @@ class FaqController extends Controller
         }
 
         return response()->json([
-            'recordsTotal'    => $recordsTotal,
+            'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data'            => $data
+            'data' => $data,
         ]);
     }
 

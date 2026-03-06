@@ -1,9 +1,8 @@
 @extends('admin.layouts.master')
-@section('page_title', 'FAQ')
 @section('content')
 
 <?php
-$page_name = 'All Amenities';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -13,7 +12,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">FAQ</li>
+        <li class="breadcrumb-item active">@yield('page_title')</li>
     </ol>
 </nav>
 
@@ -27,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <span class="btn-text">Filter</span>
         </button>
         <a href="{{ route('faq.add') }}" class="btn btn-success btn-sm">
-            + Add FAQ
+            + Add @yield('page_title')
         </a>
     </div>
 </div>
@@ -44,9 +43,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By FAQ</label>
+                                    <label for="txtSearch">Search By RoleType</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="FAQ">
+                                        placeholder="Role Type">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="faqCategory">Category</label>
@@ -119,28 +118,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                    data-url="{{ route('faq.dataTableView') }}"
-                    data-edit-url="{{ route('faq.edit', 'ID') }}">
-                    <thead class="thead-light">
-                        <tr>
-                            <th class="noPrint no-sort">
-                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                            </th>
-                            <th>Sl No</th>
-                            <th>Category Name</th>
-                            <th>Title</th>
-                            <th>Content</th>
-                            <th width="100">Display Sequence</th>
-                            <th>Last Modified</th>
-                            <th>Status</th>
-                            <th class="no-sort">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                data-url="{{ route('faq.dataTableView') }}"
+                data-edit-url="{{ route('faq.edit', 'ID') }}">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="noPrint no-sort">
+                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                        </th>
+                        <th>Sl No</th>
+                        <th>Category Name</th>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Sequence</th>
+                        <th>Last Modified</th>
+                        <th>Status</th>
+                        <th class="no-sort">Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
@@ -158,18 +155,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 @endsection
 @push('scripts')
-<style>
-    .faq-content-col {
-        max-width: 300px;
-        word-break: break-word;
-    }
-
-    .faq-content-col a {
-        color: #0d6efd;
-        font-size: 12px;
-        cursor: pointer;
-    }
-</style>
 
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
@@ -191,11 +176,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         getDataTableView(true);
     });
 
-    $(document).ready(function() {
-        commonAjax.initSelect2('#faqCategory', 'Select Category');
-        commonAjax.loadFaqCategory();
-    });
-
     $(document).on('click', '.toggle-view-btn', function() {
 
         let container = $(this).closest('.faq-content-col');
@@ -209,6 +189,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             $(this).text(' View More');
         }
 
+    });
+
+    $(document).ready(function() {
+        commonAjax.initSelect2('#faqCategory', 'Select Category');
+        commonAjax.loadFaqCategory();
     });
 
     window.getDataTableView = function(reset = true) {
@@ -369,7 +354,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="faq"
+                            data-table="mst_faq"
                             data-id="${row.enc_faq_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
@@ -379,7 +364,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         ]
 
-        window.dataTableInstance = loadDataTable(tableId,dataTableColumns,orderBy,searchParams,displayColumns);
+        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
 </script>
 @endpush
