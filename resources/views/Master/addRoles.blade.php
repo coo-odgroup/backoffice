@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Add Roles')
 @section('content')
 
 <?php
-$page_name = 'All Roles';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,14 +13,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">{{ $data['strPage'] }} Roles</li>
+        <li class="breadcrumb-item active">@yield('page_title')</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Roles</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
         <a href="{{ route('roles.index') }}" class="btn btn-success btn-sm">
             View Roles

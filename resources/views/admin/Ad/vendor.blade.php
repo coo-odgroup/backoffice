@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'FAQ ')
+@section('page_title', 'Vendor')
 @section('content')
 
 <?php
@@ -26,8 +26,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('faq.add') }}" class="btn btn-success btn-sm">
-            + Add @yield('page_title')
+        <a href="{{ route('vendor.add') }}" class="btn btn-success btn-sm">
+             + Add @yield('page_title')
         </a>
     </div>
 </div>
@@ -47,12 +47,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <label for="txtSearch">Search By RoleType</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
                                         placeholder="Role Type">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="faqCategory">Category</label>
-                                    <select class="form-select" id="faqCategory" name="faq_cat">
-                                        <option value="0">Select Category</option>
-                                    </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -88,7 +82,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
@@ -120,18 +114,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('faq.dataTableView') }}"
-                data-edit-url="{{ route('faq.edit', 'ID') }}">
+                data-url="{{ route('roles.dataTableView') }}"
+                data-edit-url="{{ route('roles.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
                             <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                         </th>
                         <th>Sl No</th>
-                        <th>Category Name</th>
-                        <th>Title</th>
-                        <th>Content</th>
-                        <th>Sequence</th>
+                        <th>Company Name</th>
+                        <th>Person Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>GST</th>
                         <th>Last Modified</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
@@ -143,7 +138,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Faq">
+            <input type="hidden" id="hdn_model" value="vendors">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -177,26 +172,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         getDataTableView(true);
     });
 
-    $(document).on('click', '.toggle-view-btn', function() {
-
-        let container = $(this).closest('.faq-content-col');
-
-        container.find('.dots').toggle();
-        container.find('.more-text').toggleClass('d-none');
-
-        if ($(this).text().trim() === 'View More') {
-            $(this).text(' View Less');
-        } else {
-            $(this).text(' View More');
-        }
-
-    });
-
-    $(document).ready(function() {
-        commonAjax.initSelect2('#faqCategory', 'Select Category');
-        commonAjax.loadFaqCategory();
-    });
-
     window.getDataTableView = function(reset = true) {
 
         //  If table already initialized
@@ -218,7 +193,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let faq_cat = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -226,23 +200,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
-        if ($('#faq_cat').val() != '') {
-            faq_cat = $('#faq_cat').val();
-        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
             txtsearch: txtSearch,
-            selstatus: selStatus,
-            faq_cat: faq_cat
+            selstatus: selStatus
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.faq_id +
-                        '" name="chkStd' + row.faq_id + '" value="' + row.faq_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.role_id +
+                        '" name="chkStd' + row.role_id + '" value="' + row.role_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -255,48 +225,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'category_name',
+                data: 'companyName',
+                defaultContent: "--"
+            },
+             {
+                data: 'PersonName',
+                defaultContent: "--"
+            },
+             {
+                data: 'Email',
                 defaultContent: "--"
             },
             {
-                data: 'title',
+                data: 'Phone',
                 defaultContent: "--"
             },
             {
-                data: 'content',
-                render: function(data) {
-
-                    if (!data) return '--';
-
-                    if (data.length <= 100) {
-                        return `<div class="faq-content-col">${data}</div>`;
-                    }
-
-                    let firstPart = data.substring(0, 100);
-                    let secondPart = data.substring(100);
-
-                    return `
-                        <div class="faq-content-col">
-                            ${firstPart}<span class="dots">...</span>
-                            <span class="more-text d-none">${secondPart}</span>
-                            <a href="javascript:void(0)" class="toggle-view-btn"> View More</a>
-                        </div>
-                        `;
-                }
-            },
-            {
-                data: 'sequence_no',
-                render: function(data, type, row) {
-                    return `<input type="text"
-                            value="${data ?? ''}"
-                            minlength="1"
-                            maxlength="3"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="form-control form-control-sm order-input"
-                            data-id="${row.enc_faq_id}"
-                            data-table="faq"
-                            data-column="sequence_no">`;
-                },
+                data: 'Gst ',
                 defaultContent: "--"
             },
             {
@@ -349,14 +294,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_faq_id)}">
+                        href="${editUrl.replace('ID', row.enc_role_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="faq"
-                            data-id="${row.enc_faq_id}">
+                            data-table="mst_roles"
+                            data-id="${row.enc_role_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
                     `;

@@ -22,6 +22,7 @@ use App\Http\Controllers\Master\FaqCategoryController;
 use App\Http\Controllers\Master\FaqController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\Ad\VendorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,6 +108,13 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'faq/add', [FaqController::class, 'add'])->name('faq.add');
     Route::post('faq/dataTableView', [FaqController::class, 'dataTableView'])->name('faq.dataTableView');
     Route::match(['get', 'post'], 'faq/edit/{encId}', [FaqController::class, 'edit'])->name('faq.edit');
+
+    //Vendors
+    Route::get('/vendor', [VendorController::class, 'index'])->name('vendor.index');
+    Route::match(['get', 'post'], 'vendor/add',[VendorController::class, 'add'])->name('vendor.add');
+    Route::post('vendor/dataTableView', [VendorController::class, 'dataTableView'])->name('vendor.dataTableView');
+    Route::match(['get', 'post'], 'vendor/edit/{encId}',[VendorController::class, 'edit'])->name('vendor.edit');
+    Route::post('admin/Ad/vendor/check-exists',[VendorController::class, 'checkExists'])->name('vendor.checkExists');
 
 
 

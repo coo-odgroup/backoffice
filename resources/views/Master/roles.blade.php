@@ -1,8 +1,9 @@
 @extends('admin.layouts.master')
+@section('page_title', 'Roles ')
 @section('content')
 
 <?php
-$page_name = 'All Seat Types';
+$page_name = 'All '.trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,21 +13,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
         <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">Roles</li>
+        <li class="breadcrumb-item active">@yield('page_title')</li>
     </ol>
 </nav>
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Roles</h5>
+    <h5 id="page_title">@yield('page_title')</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
         <a href="{{ route('roles.add') }}" class="btn btn-success btn-sm">
-            + Add Role
+             + Add @yield('page_title')
         </a>
     </div>
 </div>
