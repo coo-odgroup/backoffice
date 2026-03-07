@@ -66,7 +66,7 @@ class RolesController extends Controller
                         'max:100',
                         'regex:/^[A-Z]+(_[A-Z]+)*$/'
                     ],
-                    'Type'        => 'required|in:0,1',
+                    'Type'        => 'required|in:1,2',
                     'description' => 'nullable|max:256'
                 ], [
                     'roleType.required' => 'Role Type cannot be left blank.',
@@ -217,8 +217,8 @@ class RolesController extends Controller
                 $orderDir   = $order[0]['dir'] ?? 'asc';
 
             } else {
-                $orderCol = 'r.name';
-                $orderDir = 'asc';
+                $orderCol = 'r.id';
+                $orderDir = 'desc';
             }
 
             $dataQuery->orderBy($orderCol, $orderDir);

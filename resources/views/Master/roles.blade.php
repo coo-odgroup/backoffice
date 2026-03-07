@@ -53,7 +53,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <select class="form-select" id="selSystemRole" name="selSystemRole">
                                         <option value="">Select</option>
                                         <option value="1">True</option>
-                                        <option value="0">False</option>
+                                        <option value="2">False</option>
                                     </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
@@ -248,7 +248,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (data === 1 || data === '1') {
                         return 'True';
                     }
-                    if (data === 0 || data === '0') {
+                    if (data === 2 || data === '2') {
                         return 'False';
                     }
                     return '--';
