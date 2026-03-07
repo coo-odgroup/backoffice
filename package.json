@@ -8,7 +8,7 @@
     "devDependencies": {
         "axios": "^1.6.4",
         "laravel-vite-plugin": "^1.0.0",
-        "vite": "^7.3.1"
+        "vite": "^6.0.0"
     },
     "dependencies": {
         "@ckeditor/ckeditor5-build-classic": "^39.0.2",
