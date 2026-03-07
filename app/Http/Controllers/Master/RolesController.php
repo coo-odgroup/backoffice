@@ -45,6 +45,8 @@ class RolesController extends Controller
                     'is_system_role'
                 )->where('id', $id)->first();
 
+                log::info($row);
+
                 if (!$row) {
                     return redirect('roles');
                 }
@@ -158,6 +160,7 @@ class RolesController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '')? (int) request('selStatus'): '';
+            $selSystemRole = (request('selSystemRole') !== null && request('selSystemRole') !== '')? (int) request('selSystemRole'): '';
 
             $dataQuery = DB::table('mst_roles as r')
                 ->select(
@@ -188,6 +191,9 @@ class RolesController extends Controller
                 $dataQuery->where('r.active_status', (int) $selStatus);
             }
 
+            if ($selSystemRole !== '' && $selSystemRole !== null) {
+                $dataQuery->where('r.is_system_role', (int) $selSystemRole);
+            }
             
             $recordsTotal = $dataQuery->count('r.id');
             $recordsFiltered = $recordsTotal;

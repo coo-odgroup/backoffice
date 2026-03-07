@@ -80,7 +80,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     True
                                                 </option>
 
-                                                <option value="0" selected
+                                                <option value="0"
                                                     {{ (isset($data['row']) && $data['row']->is_system_role == 0) ? 'selected' : '' }}>
                                                     False
                                                 </option>
