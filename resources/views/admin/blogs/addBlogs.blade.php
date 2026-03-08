@@ -260,19 +260,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         <div class="col-md-8 mb-3">
                                                             <div class="row">
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="meta_title">Meta Title<span class="text-danger important">*</span></label>
+                                                                    <label for="meta_title">Meta Title</label>
                                                                     <input type="text" class="form-control" id="meta_title" name="meta_title" value="{{ $data['row']->meta_title ?? old('meta_title') }}" placeholder="Enter Meta Title">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="canonical_url">Canonical Url<span class="text-danger important">*</span></label>
+                                                                    <label for="canonical_url">Canonical Url</label>
                                                                     <input type="text" class="form-control" id="canonical_url" name="canonical_url" value="{{ $data['row']->canonical_url ?? old('canonical_url') }}" placeholder="Enter Canonical Url">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="meta_description">Meta Description<span class="text-danger important">*</span></label>
+                                                                    <label for="meta_description">Meta Description</label>
                                                                     <textarea class="form-control" id="meta_description" name="meta_description" placeholder="Enter Meta Description">{{ $data['row']->meta_description ?? old('meta_description') }}</textarea>
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="meta_keywords">Meta Keywords<span class="text-danger important">*</span></label>
+                                                                    <label for="meta_keywords">Meta Keywords</label>
                                                                     <textarea class="form-control" id="meta_keywords" name="meta_keywords" placeholder="Enter Meta Keywords">{{ $data['row']->meta_keywords ?? old('meta_keywords') }}</textarea>
                                                                 </div>
                                                             </div>

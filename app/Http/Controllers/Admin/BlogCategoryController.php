@@ -154,7 +154,7 @@ class BlogCategoryController extends Controller
                 $data['strSubmit']  = 'Update';
                 $data['strReset']   = 'Cancel';
 
-                $dataResQry = BlogCategory::select('id', 'category_name', 'slug', 'description', 'icon', 'alt_text', 'banner_image');
+                $dataResQry = BlogCategory::select('id', 'category_name', 'slug', 'description', 'icon', 'alt_text', 'banner_image', 'meta_title', 'meta_description', 'meta_keywords', 'og_image', 'canonical_url');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
@@ -201,6 +201,11 @@ class BlogCategoryController extends Controller
                     $icon = (request('icon') !== null) ? htmlEncode(Purifier::clean(request('icon'))) : null;
                     $description = (request('description') !== null) ? htmlEncode(Purifier::clean(request('description'))) : null;
 
+                    $meta_title = htmlEncode(request('meta_title'));
+                    $canonical_url = htmlEncode(request('canonical_url'));
+                    $meta_description = htmlEncode(request('meta_description'));
+                    $meta_keywords = htmlEncode(request('meta_keywords'));
+
                     $duplicate = BlogCategory::select('id')->where(['category_name' => $categoryName]);
 
                     if ($id != 0) {
@@ -213,26 +218,24 @@ class BlogCategoryController extends Controller
                             'message' => 'Category already exist'
                         ])->withInput();
                     } else {
-
-                        // $path = $config['path'];
-
-                        // if (!Storage::disk('public')->exists($path)) {
-                        //     Storage::disk('public')->makeDirectory($path);
-                        // }
-
-                        // if (request()->hasFile('banner_image')) {
-                        //     $file = request()->file('banner_image');
-                        //     $filename = Str::slug(request()->categoryName) . '-' . time() . '.' . $file->getClientOriginalExtension();
-                        //     $file->storeAs($path, $filename, 'public');
-                        // }
+                        $obj = ($id != 0) ? BlogCategory::find($id) : new BlogCategory();
+                        $obj->category_name = $categoryName;
+                        $obj->slug = $categoryAlias;
+                        $obj->icon = $icon;
+                        $obj->description = $description;
+                        $obj->alt_text = $altText;
+                        $obj->meta_title = $meta_title;
+                        $obj->canonical_url = $canonical_url;
+                        $obj->meta_description = $meta_description;
+                        $obj->meta_keywords = $meta_keywords;
+                        $obj->created_by = 1;
+                        $obj->active_status = 1;
 
                         $path = $config['path'];
 
                         if (!Storage::disk('public')->exists($path)) {
                             Storage::disk('public')->makeDirectory($path);
                         }
-
-                        $filename = $data['row']->banner_image ?? null; // existing image from DB
 
                         if (request()->hasFile('banner_image')) {
 
@@ -243,20 +246,28 @@ class BlogCategoryController extends Controller
 
                             // upload new image
                             $file = request()->file('banner_image');
-                            $filename = Str::slug(request()->categoryName) . '-' . time() . '.' . $file->getClientOriginalExtension();
+                            $filename = 'banner-' . time() . rand() . '.' . $file->getClientOriginalExtension();
 
                             $file->storeAs($path, $filename, 'public');
+
+                            $obj->banner_image = $filename;
                         }
 
-                        $obj = ($id != 0) ? BlogCategory::find($id) : new BlogCategory();
-                        $obj->category_name = $categoryName;
-                        $obj->slug = $categoryAlias;
-                        $obj->icon = $icon;
-                        $obj->description = $description;
-                        $obj->alt_text = $altText;
-                        $obj->banner_image = $filename;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
+                        if (request()->hasFile('og_image')) {
+
+                            // delete old image
+                            if (!empty($data['row']->og_image) && Storage::disk('public')->exists($path . '/' . $data['row']->og_image)) {
+                                Storage::disk('public')->delete($path . '/' . $data['row']->og_image);
+                            }
+
+                            // upload new image
+                            $file3 = request()->file('og_image');
+                            $og_image = 'og-' . time() . rand() . '.' . $file3->getClientOriginalExtension();
+
+                            $file3->storeAs($path, $og_image, 'public');
+
+                            $obj->og_image = $og_image;
+                        }
 
                         $obj->save();
 

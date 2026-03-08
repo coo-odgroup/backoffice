@@ -133,11 +133,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 </div>
 
                                                 <div class="mb-1">
+                                                    @if($data['strPage']=='Add')
                                                     <button type="button"
                                                         id="removeImageBtn"
                                                         class="btn btn-danger btn-sm">
                                                         Remove Image
                                                     </button>
+                                                    @else
+                                                    <button type="button"
+                                                        class="btn btn-danger btn-sm remove-image"
+                                                        data-id="{{ $data['row']->id }}"
+                                                        data-table="odbusdev.blog_categories"
+                                                        data-column="banner_image"
+                                                        data-path="uploads/blog/categories"
+                                                        data-container="previewContainer">
+                                                        Remove Image
+                                                    </button>
+                                                    @endif
                                                 </div>
 
                                             </div>
@@ -167,19 +179,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         <div class="col-md-8 mb-3">
                                                             <div class="row">
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="meta_title">Meta Title<span class="text-danger important">*</span></label>
+                                                                    <label for="meta_title">Meta Title</label>
                                                                     <input type="text" class="form-control" id="meta_title" name="meta_title" value="{{ $data['row']->meta_title ?? old('meta_title') }}" placeholder="Enter Meta Title">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="canonical_url">Canonical Url<span class="text-danger important">*</span></label>
+                                                                    <label for="canonical_url">Canonical Url</label>
                                                                     <input type="text" class="form-control" id="canonical_url" name="canonical_url" value="{{ $data['row']->canonical_url ?? old('canonical_url') }}" placeholder="Enter Canonical Url">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="meta_description">Meta Description<span class="text-danger important">*</span></label>
+                                                                    <label for="meta_description">Meta Description</label>
                                                                     <textarea class="form-control" id="meta_description" name="meta_description" placeholder="Enter Meta Description">{{ $data['row']->meta_description ?? old('meta_description') }}</textarea>
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
-                                                                    <label for="meta_keywords">Meta Keywords<span class="text-danger important">*</span></label>
+                                                                    <label for="meta_keywords">Meta Keywords</label>
                                                                     <textarea class="form-control" id="meta_keywords" name="meta_keywords" placeholder="Enter Meta Keywords">{{ $data['row']->meta_keywords ?? old('meta_keywords') }}</textarea>
                                                                 </div>
                                                             </div>
@@ -198,17 +210,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                                 <div class="mb-3">
                                                                     <img id="prv_3"
-                                                                        src="{{ !empty($data['row']->og_image) ? asset('storage/uploads/blog/thumbs/'.$data['row']->og_image) : '#' }}"
+                                                                        src="{{ !empty($data['row']->og_image) ? asset('storage/uploads/blog/categories/'.$data['row']->og_image) : '#' }}"
                                                                         alt="Preview"
                                                                         class="img-fluid border p-1 {{ empty($data['row']->og_image) ? 'd-none' : '' }}">
                                                                 </div>
 
                                                                 <div class="mb-1">
+                                                                    @if($data['strPage']=='Add')
                                                                     <button type="button"
                                                                         id="removeImageBtn_3"
                                                                         class="btn btn-danger btn-sm">
                                                                         Remove Image
                                                                     </button>
+                                                                    @else
+                                                                    <button type="button"
+                                                                        class="btn btn-danger btn-sm remove-image"
+                                                                        data-id="{{ $data['row']->id }}"
+                                                                        data-table="odbusdev.blog_categories"
+                                                                        data-column="og_image"
+                                                                        data-path="uploads/blog/categories"
+                                                                        data-container="previewContainer_3">
+                                                                        Remove Image
+                                                                    </button>
+                                                                    @endif
                                                                 </div>
 
                                                             </div>
