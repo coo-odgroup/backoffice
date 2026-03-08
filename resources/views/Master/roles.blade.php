@@ -48,6 +48,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
                                         placeholder="Role Type">
                                 </div>
+                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="selStatus">System Role</label>
+                                    <select class="form-select" id="selSystemRole" name="selSystemRole">
+                                        <option value="">Select</option>
+                                        <option value="1">True</option>
+                                        <option value="2">False</option>
+                                    </select>
+                                </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
                                     <select class="form-select" id="selStatus" name="selStatus">
@@ -60,7 +68,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <div class="col-12 d-flex justify-content-end flex-wrap action-btns">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -191,12 +199,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let selSystemRole = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
         }
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
+        }
+        if ($('#selSystemRole').val() != '') {
+            selStatus = $('#selSystemRole').val();
         }
 
         let tableId = 'datatable';
@@ -236,7 +248,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (data === 1 || data === '1') {
                         return 'True';
                     }
-                    if (data === 0 || data === '0') {
+                    if (data === 2 || data === '2') {
                         return 'False';
                     }
                     return '--';

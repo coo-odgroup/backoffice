@@ -73,15 +73,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label for="systemRolesType">System Role Type<span class="text-danger important">*</span></label>
+                                            <label for="systemRolesType">Is System Role<span class="text-danger important">*</span></label>
                                             <select class="form-select" id="systemRolesType" name="Type">
+                                                 <option value="">Select System Role</option>
                                                 <option value="1"
                                                     {{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 'selected' : '' }}>
                                                     True
                                                 </option>
 
-                                                <option value="0" selected
-                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 0) ? 'selected' : '' }}>
+                                                <option value="2"
+                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 2) ? 'selected' : '' }}>
                                                     False
                                                 </option>
                                             </select>
