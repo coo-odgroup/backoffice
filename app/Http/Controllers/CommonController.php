@@ -73,6 +73,7 @@ class CommonController extends Controller
             'CityApis' => \App\Models\Master\CityApis::class,
             'BlogCategory' => \App\Models\blogs\BlogCategory::class,
             'Blog' => \App\Models\blogs\Blog::class,
+            'Vendor' => \App\Models\Ad\Vendor::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {

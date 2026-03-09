@@ -63,29 +63,34 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
-                                            <label for="roleType">Company Name<span class="text-danger important">*</span></label>
+                                            <label for="companyName">Company Name</label>
                                             <input type="text" class="form-control" id="companyName" placeholder="Company Name" name="companyName" maxlength="50" value="{{ $data['row']->company_name ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label for="roleCode">Person Name<span class="text-danger important">*</span></label>
+                                            <label for="personName">Person Name<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control" id="personName" placeholder="Person Name" name="personName" maxlength="100" value="{{ $data['row']->contact_person ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label for="roleType">Email Id<span class="text-danger important">*</span></label>
+                                            <label for="email">Email Id<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control" id="email" placeholder="Email Id" name="email" maxlength="100" value="{{ $data['row']->email ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label for="roleCode">Phone Number<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="phone" placeholder="Phone Number" name="phone" maxlength="13" value="{{ $data['row']->phone ?? '' }}">
+                                            <label for="phone">Phone Number<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="phone" placeholder="Phone Number" name="phone" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" value="{{ $data['row']->phone ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
-                                            <label for="roleCode">GST Number<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="gst" placeholder="GST Number" name="gst" maxlength="20" value="{{ $data['row']->gst ?? '' }}">
-
+                                            <label for="gst">GST Number<span class="text-danger important">*</span></label>
+                                            <input type="text"
+                                                class="form-control"
+                                                id="gst"
+                                                placeholder="GST Number"
+                                                name="gst"
+                                                maxlength="15"
+                                                oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')" value="{{ $data['row']->gst_number ?? '' }}">
                                         </div>
 
 
@@ -96,7 +101,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     {{ $data['strSubmit'] }}
                                                 </button>
                                                 @if($data['strReset'] == 'Cancel')
-                                                <a href="{{ route('roles.index') }}" class="btn btn-secondary btn-sm">
+                                                <a href="{{ route('vendor.index') }}" class="btn btn-secondary btn-sm">
                                                     {{ $data['strReset'] }}
                                                 </a>
                                                 @else
@@ -130,47 +135,46 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-
         if (!validator.blankCheck('personName', 'Person Name cannot be left blank'))
             return false;
 
-        if (!validator.maxLength('personName', 100, 'Person Name cannot be more than 100 characters'))
-            return false;
+        let name = $('#personName').val().trim();
 
-        if (!validator.regex(
-                'personName',
-                /^[A-Za-z\s]{3,}$/,
-                'Person Name must contain at least 3 letters'
-            ))
+        if (name.length < 3) {
+            commonAjax.viewAlert('Person Name must contain at least 3 letters');
             return false;
+        }
+
+        if (name.length > 100) {
+            commonAjax.viewAlert('Person Name cannot be more than 100 characters');
+            return false;
+        }
+        if (!validator.isOnlyCharString(name)) {
+            commonAjax.viewAlert('Person Name must contain only letters');
+            return false;
+        }
+
         if (!validator.blankCheck('email', 'Email cannot be left blank'))
             return false;
 
         if (!validator.maxLength('email', 100, 'Email Id cannot be more than 100 characters'))
             return false;
 
-        if (!validator.regex(
-                'email',
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                'Please enter a valid Email Id'
-            ))
+        if (!validator.validEmail('email', 'Please enter a valid Email Id'))
             return false;
+
+        if (!validator.maxLength('gst', 15, 'GST Number cannot be more than 15 characters'))
+            return false;
+
         if (!validator.blankCheck('phone', 'Phone Number cannot be left blank'))
             return false;
 
         if (!validator.maxLength('phone', 10, 'Phone Number cannot be more than 10 digits'))
             return false;
 
-        if (!validator.regex(
-                'phone',
-                /^[0-9]{10}$/,
-                'Phone Number must be exactly 10 digits'
-            ))
-            return false;
-
         commonAjax.confirmAlert('Are you sure to proceed !');
 
-        $('#btnConfirmOk').on('click', function() {
+        $('#btnConfirmOk').off('click').on('click', function() {
             e.currentTarget.submit();
         });
 

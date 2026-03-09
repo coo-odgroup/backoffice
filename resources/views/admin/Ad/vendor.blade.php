@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -27,7 +27,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <span class="btn-text">Filter</span>
         </button>
         <a href="{{ route('vendor.add') }}" class="btn btn-success btn-sm">
-             + Add @yield('page_title')
+            + Add @yield('page_title')
         </a>
     </div>
 </div>
@@ -44,9 +44,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By RoleType</label>
+                                    <label for="txtSearch">Search By Company Name</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Role Type">
+                                        placeholder="Company Name">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -114,8 +114,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('roles.dataTableView') }}"
-                data-edit-url="{{ route('roles.edit', 'ID') }}">
+                data-url="{{ route('vendor.dataTableView') }}"
+                data-edit-url="{{ route('vendor.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
@@ -138,7 +138,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="vendors">
+            <input type="hidden" id="hdn_model" value="Vendor  ">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -204,15 +204,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+            txtSearch: txtSearch,
+            selStatus: selStatus
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.role_id +
-                        '" name="chkStd' + row.role_id + '" value="' + row.role_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.vendor_id +
+                        '" name="chkStd' + row.vendor_id + '" value="' + row.vendor_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -225,23 +225,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'companyName',
-                defaultContent: "--"
-            },
-             {
-                data: 'PersonName',
-                defaultContent: "--"
-            },
-             {
-                data: 'Email',
+                data: 'company_name',
                 defaultContent: "--"
             },
             {
-                data: 'Phone',
+                data: 'contact_person',
                 defaultContent: "--"
             },
             {
-                data: 'Gst ',
+                data: 'email',
+                defaultContent: "--"
+            },
+            {
+                data: 'phone',
+                defaultContent: "--"
+            },
+            {
+                data: 'gst_number',
                 defaultContent: "--"
             },
             {
@@ -294,14 +294,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_role_id)}">
+                        href="${editUrl.replace('ID', row.enc_vendor_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_roles"
-                            data-id="${row.enc_role_id}">
+                            data-table="vendors"
+                            data-id="${row.enc_vendor_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
                     `;

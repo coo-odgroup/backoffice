@@ -20,6 +20,7 @@ class VendorController extends Controller
     {
         return view('admin.Ad.vendor');
     }
+
     public function add($encId = null)
     {
         $data = [];
@@ -38,16 +39,17 @@ class VendorController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = Roles::select(
+                $row = Vendor::select(
                     'id',
-                    'name',
-                    'code',
-                    'description',
-                    'is_system_role'
+                    'company_name',
+                    'contact_person',
+                    'email',
+                    'phone',
+                    'gst_number',
                 )->where('id', $id)->first();
 
                 if (!$row) {
-                    return redirect('roles');
+                    return redirect('vendor');
                 }
 
                 $data['row'] = $row;
@@ -58,53 +60,80 @@ class VendorController extends Controller
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'roleType'    => 'required|max:100',
-                    'roleCode'    => [
-                        'required',
-                        'max:100',
-                        'regex:/^[A-Z]+(_[A-Z]+)*$/'
-                    ],
-                    'Type'        => 'required|in:0,1',
-                    'description' => 'nullable|max:256'
-                ], [
-                    'roleType.required' => 'Role Type cannot be left blank.',
-                    'roleCode.required' => 'Role Code cannot be left blank.',
-                    'roleCode.regex'    => 'Role Code must be CAPITAL letters separated by underscore (_).',
-                    'Type.required'     => 'Please select System Role type.'
-                ]);
 
+                    'id'             => 'nullable',
+
+                    'companyName'   => 'nullable|max:150',
+
+                    'personName' => 'required|max:100',
+
+                    'email'          => 'required|email|max:100',
+
+                    'phone'          => [
+                        'required',
+                        'regex:/^[0-9]{10}$/'
+                    ],
+
+                    'gst'     => 'nullable|max:15'
+
+                ], [
+
+                    'personName.required' => 'Contact Person cannot be left blank.',
+                    'personName.max'      => 'Contact Person cannot be more than 100 characters.',
+
+                    'email.required'          => 'Email cannot be left blank.',
+                    'email.email'             => 'Please enter a valid Email Id.',
+                    'email.max'               => 'Email cannot be more than 100 characters.',
+
+                    'phone.required'          => 'Phone Number cannot be left blank.',
+                    'phone.regex'             => 'Enter a valid 10 digit mobile number.',
+
+                    'companyName.max'        => 'Company Name cannot be more than 150 characters.',
+
+                    'gst.max'          => 'GST Number cannot be more than 15 characters.'
+                ]);
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 }
 
                 DB::beginTransaction();
 
-                $roleType    = trim(Purifier::clean(request('roleType')));
-                $roleCode    = strtoupper(trim(Purifier::clean(request('roleCode'))));
-                $description = trim(Purifier::clean(request('description')));
-                $roleFlag    = (int) Purifier::clean(request('Type'));
+                $companyName    = trim(Purifier::clean(request('companyName')));
+                $personName     = trim(Purifier::clean(request('personName')));
+                $email          = trim(Purifier::clean(request('email')));
+                $phone          = trim(Purifier::clean(request('phone')));
+                $gst            = trim(Purifier::clean(request('gst')));
 
-                $duplicate = Roles::where('code', $roleCode);
+                $duplicateEmail = Vendor::where('email', $email);
+                $duplicatePhone = Vendor::where('phone', $phone);
 
                 if ($id > 0) {
-                    $duplicate->where('id', '!=', $id);
+                    $duplicateEmail->where('id', '!=', $id);
                 }
 
-                if ($duplicate->exists()) {
+                if ($duplicateEmail->exists()) {
                     DB::rollBack();
                     return back()->with([
                         'level'   => 'danger',
-                        'message' => 'Role Code already exists.'
+                        'message' => 'Email Id  already exists.'
                     ])->withInput();
                 }
 
-                $obj = ($id > 0) ? Roles::find($id) : new Roles();
+                if ($duplicatePhone->exists()) {
+                    DB::rollBack();
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Phone Number already exists.'
+                    ])->withInput();
+                }
 
-                $obj->name            = htmlEncode($roleType);
-                $obj->code            = htmlEncode($roleCode);
-                $obj->description     = htmlEncode($description);
-                $obj->is_system_role  = $roleFlag;
-                $obj->active_status   = 1;
+                $obj = ($id > 0) ? Vendor::find($id) : new Vendor();
+
+                $obj->company_name            = htmlEncode($companyName);
+                $obj->contact_person          = htmlEncode($personName);
+                $obj->email                   = htmlEncode($email);
+                $obj->phone                   = htmlEncode($phone);
+                $obj->gst_number              = htmlEncode($gst);
 
                 if ($id > 0) {
                     $obj->updated_by = 1;
@@ -119,7 +148,7 @@ class VendorController extends Controller
                 session()->flash('level', 'success');
                 session()->flash(
                     'message',
-                    'Role ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
+                    'Vendor ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
                 );
 
                 return redirect($redirectPage);
@@ -128,7 +157,7 @@ class VendorController extends Controller
 
             DB::rollBack();
 
-            Log::error("Error in RolesController@add", [
+            Log::error("Error in VendorController@add", [
                 'method' => $method,
                 'error'  => $t->getMessage()
             ]);
@@ -155,41 +184,41 @@ class VendorController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtSearch'));
+            $txtSearch = trim(htmlEncode(request('txtSearch')));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int) request('selStatus') : '';
 
-            $dataQuery = DB::table('mst_roles as r')
+            $dataQuery = DB::connection('mysql_dev')->table('vendors as v')
                 ->select(
-                    'r.id as role_id',
-                    'r.name',
-                    'r.description',
-                    'r.code',
-                    'r.is_system_role',
-                    'r.active_status',
-                    'r.created_at',
-                    'r.updated_at',
-                    'r.created_by',
-                    'r.updated_by',
-                    DB::raw('(SELECT name FROM users WHERE id = r.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = r.updated_by LIMIT 1) as updated_by_name')
+                    'v.id as vendor_id',
+                    'v.company_name',
+                    'v.contact_person',
+                    'v.email',
+                    'v.phone',
+                    'v.gst_number',
+                    'v.active_status',
+                    'v.created_at',
+                    'v.updated_at',
+                    'v.created_by',
+                    'v.updated_by',
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = v.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = v.updated_by LIMIT 1) as updated_by_name')
                 );
 
 
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('r.name', 'like', "%{$txtSearch}%")
-                        ->orWhere('r.code', 'like', "%{$txtSearch}%")
-                        ->orWhere('r.description', 'like', "%{$txtSearch}%");
+                    $q->where('v.company_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('v.contact_person', 'like', "%{$txtSearch}%");
                 });
             }
 
             if ($selStatus !== '' && $selStatus !== null) {
-                $dataQuery->where('r.active_status', (int) $selStatus);
+                $dataQuery->where('v.active_status', (int) $selStatus);
             }
 
 
-            $recordsTotal = $dataQuery->count('r.id');
-            $recordsFiltered = $recordsTotal;
+            $recordsTotal = DB::connection('mysql_dev')->table('vendors')->count();
+            $recordsFiltered = (clone $dataQuery)->count();
 
             $start  = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
@@ -199,17 +228,20 @@ class VendorController extends Controller
 
 
                 $columns = [
-                    2 => 'r.name',
-                    3 => 'r.code',
-                    4 => 'r.created_at',
-                    5 => 'r.active_status'
+                    2 => 'v.company_name',
+                    3 => 'v.contact_person',
+                    4 => 'v.email',
+                    5 => 'v.phone',
+                    6 => 'v.gst_number',
+                    7 => 'v.created_at',
+                    8 => 'v.active_status'
                 ];
 
                 $order      = request('order');
-                $orderCol   = $columns[$order[0]['column']] ?? 'r.name';
+                $orderCol   = $columns[$order[0]['column']] ?? 'v.company_name';
                 $orderDir   = $order[0]['dir'] ?? 'asc';
             } else {
-                $orderCol = 'r.name';
+                $orderCol = 'v.company_name';
                 $orderDir = 'asc';
             }
 
@@ -233,13 +265,13 @@ class VendorController extends Controller
                     : null;
 
                 $row->is_active = ($row->active_status == 1) ? 'Active' : 'Inactive';
-                $row->enc_role_id = Crypt::encryptString($row->role_id);
+                $row->enc_vendor_id = Crypt::encryptString($row->vendor_id);
             }
 
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::error("Exception in RolesController@dataTableView", [
+            Log::error("Exception in VendorController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace'         => $t->getTraceAsString()
             ]);
