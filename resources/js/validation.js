@@ -473,6 +473,27 @@ export  function blockspecialchar_first(e) {
     }
 
 }
+
+export function isOnlyCharSpace(evt) {
+
+    let charCode = (evt.which) ? evt.which : evt.keyCode;
+
+    // Allow backspace, delete, tab, enter
+    if (charCode === 8 || charCode === 9 || charCode === 13 || charCode === 32)
+        return true;
+
+    // Allow A-Z
+    if (charCode >= 65 && charCode <= 90)
+        return true;
+
+    // Allow a-z
+    if (charCode >= 97 && charCode <= 122)
+        return true;
+
+    return false;
+}
+
+
 //============ Function to block special characters in the field on key press ===============
 export function blockspecialchar(event) {
     var str;

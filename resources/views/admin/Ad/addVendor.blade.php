@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="personName">Person Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="personName" placeholder="Person Name" name="personName" maxlength="100" value="{{ $data['row']->contact_person ?? '' }}">
+                                            <input type="text" class="form-control" id="personName" placeholder="Person Name" name="personName" onkeypress="return validator.isOnlyCharSpace(event)" maxlength="100" value="{{ $data['row']->contact_person ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
