@@ -146,6 +146,7 @@ class AdPlacementController extends Controller
 
             $txtSearch = trim(htmlEncode(request('txtSearch')));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int) request('selStatus') : '';
+            $selModel = (request('selModel') !== null && request('selModel') !== '') ? (int) request('selModel') : '';
 
             $dataQuery = DB::connection('mysql_dev')->table('ad_placements as a')
                 ->select(
@@ -175,6 +176,10 @@ class AdPlacementController extends Controller
 
             if ($selStatus !== '' && $selStatus !== null) {
                 $dataQuery->where('a.active_status', (int) $selStatus);
+            }
+
+            if ($selModel !== '' && $selModel !== null) {
+                $dataQuery->where('a.default_model', (int) $selModel);
             }
 
 

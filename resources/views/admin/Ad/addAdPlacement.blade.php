@@ -63,16 +63,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-3">
 
-                                        <div class="col-md-4 mb-3">
+                                     <div class="row mb-3">
+                                        <div class="col-md-6 mb-3">
                                             <label for="placement">Placement<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="placement" placeholder="Add Placement" name="placement" onkeypress="return validator.isOnlyCharSpace(event)" maxlength="100" value="{{ $data['row']->name ?? '' }}">
-
+                                            <input type="text" class="form-control"
+                                                               id="placement"
+                                                               name="placement"
+                                                               value="{{ $data['row']->name ?? '' }}"
+                                                               placeholder="Enter Placement"
+                                                               maxlength="100">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="slug">Slug<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="slug" placeholder="Add Slug" name="slug" maxlength="100" value="{{ $data['row']->slug ?? '' }}">
 
+                                        <div class="col-md-6 mb-3">
+                                            <label for="slug">Alias<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="slug"
+                                                   name="slug" value="{{ $data['row']->slug ?? '' }}"
+                                                   placeholder="Enter Alias"
+                                                   oninput="this.value = this.value.toLowerCase();"
+                                                   maxlength="100">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
+
+                                        
 
                                         <div class="col-md-4 mb-3">
                                             <label for="defaultModel">Default Model<span class="text-danger important">*</span></label>
@@ -133,6 +146,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
+
+      document.getElementById('placement').addEventListener('input', function() {
+
+        this.value = this.value.replace(/\s+/g, ' ').trimStart();
+
+        let cityName = this.value;
+
+        let alias = cityName
+            .toLowerCase() // convert to lowercase
+            .trim() // remove extra spaces
+            .replace(/[^a-z0-9-\s]/g, '') // remove special characters
+            .replace(/\s+/g, '-') // replace spaces with -
+            .replace(/-+/g, '-'); // remove duplicate -
+
+        document.getElementById('slug').value = alias;
+    });
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);

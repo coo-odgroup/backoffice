@@ -46,7 +46,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
                                     <label for="txtSearch">Search By placement / Slug</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Company Name">
+                                        placeholder="Placement / slug">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -54,6 +54,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                                    <label for="selModel">Status</label>
+                                    <select class="form-select" id="selModel" name="selModel">
+                                        <option value="">Select Deafult Model</option>
+                                        <option value="1">CPC</option>
+                                        <option value="2">CPM</option>
+                                        <option value="3">FIXED</option>
                                     </select>
                                 </div>
                             </div>
@@ -124,7 +134,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <th>Sl No</th>
                         <th>Placement</th>
                         <th>Slug</th>
-                        <th>Description</th>
                         <th>Default Model</th>
                         <th>Last Modified</th>
                         <th>Status</th>
@@ -192,6 +201,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let selModel = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -200,11 +210,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             selStatus = $('#selStatus').val();
         }
 
+        if ($('#selModel').val() != '') {
+            selModel = $('#selModel').val();
+        }
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
             txtSearch: txtSearch,
-            selStatus: selStatus
+            selStatus: selStatus,
+            selModel: selModel
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -229,10 +243,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'slug',
-                defaultContent: "--"
-            },
-            {
-                data: 'description',
                 defaultContent: "--"
             },
             {
