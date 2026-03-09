@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\Ad;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ad\AdPlacement;
-use App\Models\Ad\Vendor;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -42,7 +41,6 @@ class AdPlacementController extends Controller
                 $row = AdPlacement::select(
                     'id',
                     'name',
-                    'placement',
                     'slug',
                     'description',
                     'default_model'

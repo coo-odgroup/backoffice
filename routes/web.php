@@ -16,6 +16,7 @@ use App\Http\Controllers\Master\AmenityCategoryController;
 use App\Http\Controllers\Master\ApiAppsController;
 use App\Http\Controllers\Master\ApikeysController;
 use App\Http\Controllers\Master\RolesController;
+use App\Http\Controllers\Master\ReasonController;
 use App\Http\Controllers\Master\ModulesController;
 use App\Http\Controllers\Master\SeatLayoutController;
 use App\Http\Controllers\Master\CityApisController;
@@ -123,12 +124,21 @@ Route::prefix('admin')->group(function () {
     Route::post('admin/Ad/vendor/check-exists', [VendorController::class, 'checkExists'])->name('vendor.checkExists');
 
     //Ad Placements
-
     Route::get('/ad-placement', [AdPlacementController::class, 'index'])->name('AdPlacement.index');
     Route::match(['get', 'post'], 'ad-placement/add', [AdPlacementController::class, 'add'])->name('AdPlacement.add');
     Route::post('ad-placement/dataTableView', [AdPlacementController::class, 'dataTableView'])->name('AdPlacement.dataTableView');
     Route::match(['get', 'post'], 'ad-placement/edit/{encId}', [AdPlacementController::class, 'edit'])->name('AdPlacement.edit');
     Route::post('ad-placement/check-exists', [AdPlacementController::class, 'checkExists'])->name('AdPlacement.checkExists');
+
+    // Reason
+    Route::get('/reason', [ReasonController::class, 'reason'])->name('reason.index');
+    Route::match(['get', 'post'], 'reason/add', [ReasonController::class, 'add'])->name('reason.add');
+    Route::post('reason/dataTableView', [ReasonController::class, 'dataTableView'])->name('reason.dataTableView');
+    Route::match(['get', 'post'], 'reason/edit/{encId}', [ReasonController::class, 'edit'])->name('reason.edit');
+    Route::post('admin/reason/check-exists', [ReasonController::class, 'checkExists'])->name('reason.checkExists');
+
+
+
 
 
 

@@ -21,13 +21,13 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#busManagement"
-            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-bus me-2"></i> Bus Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*') ? 'show' : '' }}" id="busManagement">
+        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*') ? 'show' : '' }}" id="busManagement">
 
             <a href="{{ url('admin/states') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
@@ -67,6 +67,11 @@
             <a href="{{ url('admin/roles') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/roles*') ? 'active' : '' }}">
                 <i class="fa-solid fa-user me-2"></i> Roles
+            </a>
+
+            <a href="{{ url('admin/reason') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/reason*') ? 'active' : '' }}">
+                <i class="fa-solid fa-user me-2"></i> Reason
             </a>
 
             <a href="{{ url('admin/boardingDropping') }}"
@@ -154,14 +159,17 @@
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/vendor*') ? 'show' : '' }}" id="adManagement">
+        <div class="collapse {{ Request::is('admin/vendor*','admin/ad-placement*') ? 'show' : '' }}" id="adManagement">
 
             <a href="{{ url('admin/vendor') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/vendor*') ? 'active' : '' }}">
                 <i class="fa-solid fa-building me-2"></i> Vendor
             </a>
 
-            
+            <a href="{{ url('admin/ad-placement') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/ad-placement*') ? 'active' : '' }}">
+                <i class="fa-solid fa-building me-2"></i> Ad Placement
+            </a>
 
         </div>
     </div>

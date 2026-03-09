@@ -76,6 +76,7 @@ class CommonController extends Controller
             'Blog' => \App\Models\blogs\Blog::class,
             'Vendor' => \App\Models\Ad\Vendor::class,
             'AdPlacement' => \App\Models\Ad\AdPlacement::class,
+            'Reason' => \App\Models\Master\Reason::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
