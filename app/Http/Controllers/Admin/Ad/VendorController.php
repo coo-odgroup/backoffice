@@ -208,7 +208,9 @@ class VendorController extends Controller
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('v.company_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('v.contact_person', 'like', "%{$txtSearch}%");
+                        ->orWhere('v.contact_person', 'like', "%{$txtSearch}%")
+                        ->orWhere('v.email', 'like', "%{$txtSearch}%")
+                        ->orWhere('v.phone', 'like', "%{$txtSearch}%");
                 });
             }
 

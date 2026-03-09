@@ -1,0 +1,252 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Ad;
+
+use App\Http\Controllers\Controller;
+use App\Models\Ad\AdPlacement;
+use App\Models\Ad\Vendor;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Mews\Purifier\Facades\Purifier;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class AdPlacementController extends Controller
+{
+    public function index()
+    {
+        return view('admin.Ad.AdPlacement');
+    }
+
+    public function add($encId = null)
+    {
+        $data = [];
+        $data['strPage']   = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset']  = 'Reset';
+
+        try {
+
+            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+
+            if ($id > 0) {
+
+                $redirectPage = route('AdPlacement.edit', $encId);
+
+                $data['strPage']   = $method = 'Edit';
+                $data['strSubmit'] = 'Update';
+                $data['strReset']  = 'Cancel';
+
+                $row = AdPlacement::select(
+                    'id',
+                    'name',
+                    'placement',
+                    'slug',
+                    'description',
+                    'default_model'
+                )->where('id', $id)->first();
+
+                if (!$row) {
+                    return redirect()->route('AdPlacement.index');
+                }
+
+                $data['row'] = $row;
+            } else {
+                $redirectPage = route('AdPlacement.index');
+            }
+
+            if (request()->isMethod('post')) {
+
+                $validator = Validator::make(request()->all(), [
+
+                    'placement'     => 'required|max:100',
+                    'slug'          => 'required|max:100',
+                    'description'   => 'max:500',
+                    'defaultModel'  => 'required',
+
+                ], [
+
+                    'placement.required'   => 'Placement cannot be left blank.',
+                    'placement.max'        => 'Placement cannot be more than 100 characters.',
+
+                    'slug.required'        => 'Slug cannot be left blank.',
+                    'slug.max'             => 'Slug cannot be more than 100 characters.',
+
+                    'description.max'      => 'Description cannot be more than 500 characters.',
+
+                    'defaultModel.required' => 'Default Model must be selected.',
+                ]);
+
+                if ($validator->fails()) {
+                    return back()->withErrors($validator)->withInput();
+                }
+
+                DB::beginTransaction();
+
+                $placement    = trim(Purifier::clean(request('placement')));
+                $slug         = trim(Purifier::clean(request('slug')));
+                $description  = trim(Purifier::clean(request('description')));
+                $defaultModel = trim(Purifier::clean(request('defaultModel')));
+
+                $obj = ($id > 0) ? AdPlacement::find($id) : new AdPlacement();
+
+                $obj->name          = htmlEncode($placement);
+                $obj->slug          = htmlEncode($slug);
+                $obj->description   = htmlEncode($description);
+                $obj->default_model = $defaultModel;
+
+                if ($id > 0) {
+                    $obj->updated_by = 1;
+                } else {
+                    $obj->created_by = 1;
+                }
+
+                $obj->save();
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'Ad Placement ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
+            }
+        } catch (\Throwable $t) {
+
+            DB::rollBack();
+
+            Log::error("Error in AdPlacementController@add", [
+                'method' => $method,
+                'error'  => $t->getMessage()
+            ]);
+
+            return back()->with([
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
+            ])->withInput();
+        }
+
+        return view('admin.Ad.addAdPlacement', compact('data'));
+    }
+
+    public function edit($encId)
+    {
+        return $this->add($encId);
+    }
+
+    public function dataTableView()
+    {
+        $recordsTotal    = 0;
+        $recordsFiltered = 0;
+        $data            = [];
+
+        try {
+
+            $txtSearch = trim(htmlEncode(request('txtSearch')));
+            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int) request('selStatus') : '';
+
+            $dataQuery = DB::connection('mysql_dev')->table('ad_placements as a')
+                ->select(
+                    'a.id as ad_placement_id',
+                    'a.name',
+                    'a.slug',
+                    'a.description',
+                    'a.default_model',
+                    'a.active_status',
+                    'a.created_at',
+                    'a.updated_at',
+                    'a.created_by',
+                    'a.updated_by',
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = a.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = a.updated_by LIMIT 1) as updated_by_name')
+                );
+
+
+            if (!empty($txtSearch)) {
+                $dataQuery->where(function ($q) use ($txtSearch) {
+                    $q->where('a.name', 'like', "%{$txtSearch}%")
+                        ->orWhere('a.slug', 'like', "%{$txtSearch}%")
+                        ->orWhere('a.description', 'like', "%{$txtSearch}%")
+                        ->orWhere('a.default_model', 'like', "%{$txtSearch}%");
+                });
+            }
+
+            if ($selStatus !== '' && $selStatus !== null) {
+                $dataQuery->where('a.active_status', (int) $selStatus);
+            }
+
+
+            $recordsTotal = DB::connection('mysql_dev')->table('ad_placements')->count();
+            $recordsFiltered = (clone $dataQuery)->count();
+
+            $start  = (int) request()->input('start', 0);
+            $length = (int) request()->input('length', 10);
+
+
+            if (!empty(request('order'))) {
+
+
+                $columns = [
+                    2 => 'a.name',
+                    3 => 'a.slug',
+                    4 => 'a.description',
+                    5 => 'a.default_model',
+                    6 => 'a.created_at',
+                    7 => 'a.active_status'
+                ];
+
+                $order      = request('order');
+                $orderCol   = $columns[$order[0]['column']] ?? 'a.name';
+                $orderDir   = $order[0]['dir'] ?? 'asc';
+            } else {
+                $orderCol = 'a.name';
+                $orderDir = 'asc';
+            }
+
+            $dataQuery->orderBy($orderCol, $orderDir);
+
+
+            if ($length === -1) {
+                $arrRes = $dataQuery->get();
+            } else {
+                $arrRes = $dataQuery
+                    ->offset($start)
+                    ->limit($length)
+                    ->get();
+            }
+
+
+            foreach ($arrRes as $row) {
+                $row->created_date = date('d-M-Y H:i:s', strtotime($row->created_at));
+                $row->updated_date = $row->updated_at
+                    ? date('d-M-Y H:i:s', strtotime($row->updated_at))
+                    : null;
+
+                $row->is_active = ($row->active_status == 1) ? 'Active' : 'Inactive';
+                $row->enc_ad_placement_id = Crypt::encryptString($row->ad_placement_id);
+            }
+
+            $data = $arrRes;
+        } catch (\Throwable $t) {
+
+            Log::error("Exception in AdPlacementController@dataTableView", [
+                'error_message' => $t->getMessage(),
+                'trace'         => $t->getTraceAsString()
+            ]);
+
+            $recordsTotal    = 0;
+            $recordsFiltered = 0;
+            $data             = [];
+        }
+
+        return response()->json([
+            'recordsTotal'    => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data'            => $data,
+        ]);
+    }
+}

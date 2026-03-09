@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Admin\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Master\FaqController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\Ad\VendorController;
+use App\Http\Controllers\Admin\Ad\AdPlacementController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
 
@@ -45,7 +47,7 @@ Route::prefix('admin')->group(function () {
 
     // DEFAULT ADMIN PAGE
     Route::get('/', [ModuleController::class, 'index'])->name('admin.dashboard');
-    
+
     Route::post('/get-state-list', [CommonController::class, 'getStateList'])->name('get.state.list');
     Route::post('/get-district-list', [CommonController::class, 'getDistrictList'])->name('get.district.list');
     Route::post('/common-bulk-action', [CommonController::class, 'bulkAction'])->name('admin.bulkAction');
@@ -55,7 +57,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-apiapps-list', [CommonController::class, 'getApiAppsList'])->name('getapiapps.list');
     Route::post('get-parent-module-list', [CommonController::class, 'getParentModuleList'])->name('modules.parent.list');
     Route::post('/get-city-list', [CommonController::class, 'getCityList'])->name('get.city.list');
-    Route::post('get-faq-category-list',[CommonController::class, 'getFaqCategoryList']);
+    Route::post('get-faq-category-list', [CommonController::class, 'getFaqCategoryList']);
     Route::post('/get-role-list', [CommonController::class, 'getRoleList'])->name('get.role.list');
     Route::post('/get-blog-category-list', [CommonController::class, 'getBlogCategoryList'])->name('get.blogcategory.list');
     Route::post('/remove-image', [CommonController::class, 'removeImage'])->name('remove.image');
@@ -72,7 +74,7 @@ Route::prefix('admin')->group(function () {
 
 
     //Subhasis
-   //___________________________________________________________________________________________________________________________________________________
+    //___________________________________________________________________________________________________________________________________________________
 
     //cities
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
@@ -82,24 +84,24 @@ Route::prefix('admin')->group(function () {
 
     // Boarding & Dropping Points
     Route::get('/boardingDropping', [BoardingDroppingController::class, 'boardingDropping'])->name('boardingDropping.index');
-    Route::match(['get', 'post'], 'boardingDropping/add',[BoardingDroppingController::class, 'add'])->name('boardingDropping.add');
+    Route::match(['get', 'post'], 'boardingDropping/add', [BoardingDroppingController::class, 'add'])->name('boardingDropping.add');
     Route::post('boardingDropping/dataTableView', [BoardingDroppingController::class, 'dataTableView'])->name('boardingDropping.dataTableView');
-    Route::match(['get', 'post'], 'boardingDropping/edit/{encId}',[BoardingDroppingController::class, 'edit'])->name('boardingDropping.edit');
-    Route::post('admin/boardingDropping/check-exists',[BoardingDroppingController::class, 'checkExists'])->name('boardingDropping.checkExists');
+    Route::match(['get', 'post'], 'boardingDropping/edit/{encId}', [BoardingDroppingController::class, 'edit'])->name('boardingDropping.edit');
+    Route::post('admin/boardingDropping/check-exists', [BoardingDroppingController::class, 'checkExists'])->name('boardingDropping.checkExists');
 
     // Roles
     Route::get('/roles', [RolesController::class, 'roles'])->name('roles.index');
-    Route::match(['get', 'post'], 'roles/add',[RolesController::class, 'add'])->name('roles.add');
+    Route::match(['get', 'post'], 'roles/add', [RolesController::class, 'add'])->name('roles.add');
     Route::post('roles/dataTableView', [RolesController::class, 'dataTableView'])->name('roles.dataTableView');
-    Route::match(['get', 'post'], 'roles/edit/{encId}',[RolesController::class, 'edit'])->name('roles.edit');
-    Route::post('admin/roles/check-exists',[RolesController::class, 'checkExists'])->name('roles.checkExists');
+    Route::match(['get', 'post'], 'roles/edit/{encId}', [RolesController::class, 'edit'])->name('roles.edit');
+    Route::post('admin/roles/check-exists', [RolesController::class, 'checkExists'])->name('roles.checkExists');
 
     // Modules
     Route::get('/modules', [ModulesController::class, 'modules'])->name('modules.index');
-    Route::match(['get', 'post'], 'modules/add',[ModulesController::class, 'add'])->name('modules.add');
+    Route::match(['get', 'post'], 'modules/add', [ModulesController::class, 'add'])->name('modules.add');
     Route::post('modules/dataTableView', [ModulesController::class, 'dataTableView'])->name('modules.dataTableView');
-    Route::match(['get', 'post'], 'modules/edit/{encId}',[ModulesController::class, 'edit'])->name('modules.edit');
-    Route::post('admin/modules/check-exists',[ModulesController::class, 'checkExists'])->name('modules.checkExists');
+    Route::match(['get', 'post'], 'modules/edit/{encId}', [ModulesController::class, 'edit'])->name('modules.edit');
+    Route::post('admin/modules/check-exists', [ModulesController::class, 'checkExists'])->name('modules.checkExists');
 
     //FAQ Catagory
     Route::get('/faqcategory', [FaqCategoryController::class, 'faqCategory'])->name('faqcategory.index');
@@ -115,11 +117,18 @@ Route::prefix('admin')->group(function () {
 
     //Vendors
     Route::get('/vendor', [VendorController::class, 'index'])->name('vendor.index');
-    Route::match(['get', 'post'], 'vendor/add',[VendorController::class, 'add'])->name('vendor.add');
+    Route::match(['get', 'post'], 'vendor/add', [VendorController::class, 'add'])->name('vendor.add');
     Route::post('vendor/dataTableView', [VendorController::class, 'dataTableView'])->name('vendor.dataTableView');
-    Route::match(['get', 'post'], 'vendor/edit/{encId}',[VendorController::class, 'edit'])->name('vendor.edit');
-    Route::post('admin/Ad/vendor/check-exists',[VendorController::class, 'checkExists'])->name('vendor.checkExists');
+    Route::match(['get', 'post'], 'vendor/edit/{encId}', [VendorController::class, 'edit'])->name('vendor.edit');
+    Route::post('admin/Ad/vendor/check-exists', [VendorController::class, 'checkExists'])->name('vendor.checkExists');
 
+    //Ad Placements
+
+    Route::get('/ad-placement', [AdPlacementController::class, 'index'])->name('AdPlacement.index');
+    Route::match(['get', 'post'], 'ad-placement/add', [AdPlacementController::class, 'add'])->name('AdPlacement.add');
+    Route::post('ad-placement/dataTableView', [AdPlacementController::class, 'dataTableView'])->name('AdPlacement.dataTableView');
+    Route::match(['get', 'post'], 'ad-placement/edit/{encId}', [AdPlacementController::class, 'edit'])->name('AdPlacement.edit');
+    Route::post('ad-placement/check-exists', [AdPlacementController::class, 'checkExists'])->name('AdPlacement.checkExists');
 
 
 
@@ -220,6 +229,4 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-category/add', [BlogCategoryController::class, 'add'])->name('blog-category.add');
     Route::post('blog-category/dataTableView', [BlogCategoryController::class, 'dataTableView'])->name('blog-category.dataTableView');
     Route::match(['get', 'post'], 'blog-category/edit/{encId}', [BlogCategoryController::class, 'edit'])->name('blog-category.edit');
-   
-
 });

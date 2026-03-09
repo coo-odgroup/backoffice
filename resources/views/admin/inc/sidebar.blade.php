@@ -144,5 +144,25 @@
             </a>
 
         </div>
+        <!-- Parent Menu -->
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            data-bs-toggle="collapse"
+            href="#adManagement"
+            aria-expanded="{{ Request::is('admin/vendor*') ? 'true' : 'false' }}">
+            <span><i class="fa-solid fa-rectangle-ad me-2"></i> Ad Management</span>
+            <i class="fa-solid fa-chevron-down small"></i>
+        </a>
+
+        <!-- Sub Menu -->
+        <div class="collapse {{ Request::is('admin/vendor*') ? 'show' : '' }}" id="adManagement">
+
+            <a href="{{ url('admin/vendor') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/vendor*') ? 'active' : '' }}">
+                <i class="fa-solid fa-building me-2"></i> Vendor
+            </a>
+
+            
+
+        </div>
     </div>
 </div>
