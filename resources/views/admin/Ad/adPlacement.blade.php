@@ -58,7 +58,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
 
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selModel">Status</label>
+                                    <label for="selModel">Deafult Model</label>
                                     <select class="form-select" id="selModel" name="selModel">
                                         <option value="">Select Deafult Model</option>
                                         <option value="1">CPC</option>

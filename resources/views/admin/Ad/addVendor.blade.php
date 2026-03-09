@@ -149,10 +149,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             commonAjax.viewAlert('Person Name cannot be more than 100 characters');
             return false;
         }
-        if (!validator.isOnlyCharString(name)) {
-            commonAjax.viewAlert('Person Name must contain only letters');
-            return false;
-        }
 
         if (!validator.blankCheck('email', 'Email cannot be left blank'))
             return false;
