@@ -23,6 +23,8 @@ use App\Http\Controllers\Master\FaqController;
 use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\Ad\VendorController;
+use App\Http\Controllers\Admin\BlogImagesController;
+use App\Http\Controllers\Admin\BlogRoutesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +59,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-role-list', [CommonController::class, 'getRoleList'])->name('get.role.list');
     Route::post('/get-blog-category-list', [CommonController::class, 'getBlogCategoryList'])->name('get.blogcategory.list');
     Route::post('/remove-image', [CommonController::class, 'removeImage'])->name('remove.image');
+    Route::post('/get-blog-list', [CommonController::class, 'getBlogList'])->name('getbloglist');
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -176,6 +179,19 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blogs/add', [BlogController::class, 'add'])->name('blogs.add');
     Route::post('blogs/dataTableView', [BlogController::class, 'dataTableView'])->name('blogs.dataTableView');
     Route::match(['get', 'post'], 'blogs/edit/{encId}', [BlogController::class, 'edit'])->name('blogs.edit');
+
+    // Blog Images
+    Route::get('/blog-images', [BlogImagesController::class, 'index'])->name('blog-images.index');
+    Route::match(['get', 'post'], 'blog-images/add', [BlogImagesController::class, 'add'])->name('blog-images.add');
+    Route::post('blog-images/dataTableView', [BlogImagesController::class, 'dataTableView'])->name('blog-images.dataTableView');
+    Route::match(['get', 'post'], 'blog-images/edit/{encId}', [BlogImagesController::class, 'edit'])->name('blog-images.edit');
+    Route::post('/remove-blog-image', [BlogImagesController::class, 'removeBlogImage']);
+
+    // Blog Routes
+    Route::get('/blog-routes', [BlogRoutesController::class, 'index'])->name('blog-routes.index');
+    Route::match(['get', 'post'], 'blog-routes/add', [BlogRoutesController::class, 'add'])->name('blog-routes.add');
+    Route::post('blog-routes/dataTableView', [BlogRoutesController::class, 'dataTableView'])->name('blog-routes.dataTableView');
+    Route::match(['get', 'post'], 'blog-routes/edit/{encId}', [BlogRoutesController::class, 'edit'])->name('blog-routes.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 

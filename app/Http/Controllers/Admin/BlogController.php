@@ -285,10 +285,10 @@ class BlogController extends Controller
                             }
 
                             // upload new image
-                            $file2 = request()->file('og_image');
-                            $og_image = 'featured-' . time() . rand() . '.' . $file2->getClientOriginalExtension();
+                            $file3 = request()->file('og_image');
+                            $og_image = 'og-' . time() . rand() . '.' . $file3->getClientOriginalExtension();
 
-                            $file2->storeAs($path, $og_image, 'public');
+                            $file3->storeAs($path, $og_image, 'public');
 
                             $obj->og_image = $og_image;
                         }

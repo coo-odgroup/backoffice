@@ -601,6 +601,38 @@ export function loadCityList(selected_city_id = 0) {
     });
 }
 
+export function loadCityListSlugVal(selected_city_id = 0) {
+    $(".citySlugVal").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-city-list",
+        data: {
+            selected_city_id: selected_city_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">-- Select City --</option>';
+
+            if (response.status && response.data.length > 0) {
+                response.data.forEach(function (city) {
+                    let selected =
+                        city.id == selected_city_id ? "selected" : "";
+                    options += `<option value="${city.id}" data-alias="${city.alias}" ${selected}>
+                                    ${city.city_name}
+                                </option>`;
+                });
+            }
+
+            $(".citySlugVal").html(options);
+        },
+        error: function () {
+            $(".citySlugVal").html('<option value="">-- Select City --</option>');
+        },
+    });
+}
+
 $(document).on("change", ".order-input", function () {
     let value = $(this).val();
     let id = $(this).data("id");
@@ -904,3 +936,32 @@ $(document).on('click', '.remove-image', function () {
     });
 
 });
+
+export function loadBlogList(blog_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-blog-list",
+        data: {
+            blog_id: blog_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Blog</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        blog_id > 0 && app.id == blog_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                        ${app.title}
+                                    </option>`;
+                });
+            }
+
+            $("#blog").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Blog");
+        },
+    });
+}

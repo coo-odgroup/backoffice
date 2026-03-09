@@ -45,6 +45,8 @@ class RolesController extends Controller
                     'is_system_role'
                 )->where('id', $id)->first();
 
+                log::info($row);
+
                 if (!$row) {
                     return redirect('roles');
                 }
@@ -64,7 +66,7 @@ class RolesController extends Controller
                         'max:100',
                         'regex:/^[A-Z]+(_[A-Z]+)*$/'
                     ],
-                    'Type'        => 'required|in:0,1',
+                    'Type'        => 'required|in:1,2',
                     'description' => 'nullable|max:256'
                 ], [
                     'roleType.required' => 'Role Type cannot be left blank.',
@@ -158,6 +160,7 @@ class RolesController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '')? (int) request('selStatus'): '';
+            $selSystemRole = (request('selSystemRole') !== null && request('selSystemRole') !== '')? (int) request('selSystemRole'): '';
 
             $dataQuery = DB::table('mst_roles as r')
                 ->select(
@@ -188,6 +191,9 @@ class RolesController extends Controller
                 $dataQuery->where('r.active_status', (int) $selStatus);
             }
 
+            if ($selSystemRole !== '' && $selSystemRole !== null) {
+                $dataQuery->where('r.is_system_role', (int) $selSystemRole);
+            }
             
             $recordsTotal = $dataQuery->count('r.id');
             $recordsFiltered = $recordsTotal;
@@ -211,8 +217,8 @@ class RolesController extends Controller
                 $orderDir   = $order[0]['dir'] ?? 'asc';
 
             } else {
-                $orderCol = 'r.name';
-                $orderDir = 'asc';
+                $orderCol = 'r.id';
+                $orderDir = 'desc';
             }
 
             $dataQuery->orderBy($orderCol, $orderDir);

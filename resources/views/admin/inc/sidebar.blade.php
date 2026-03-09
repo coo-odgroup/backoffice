@@ -115,13 +115,13 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#blogManagement"
-            aria-expanded="{{ Request::is('admin/blog-category*','admin/blogs*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-blog me-2"></i> Blog Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/blog-category*','admin/blog*') ? 'show' : '' }}" id="blogManagement">
+        <div class="collapse {{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*') ? 'show' : '' }}" id="blogManagement">
 
             <a href="{{ url('admin/blog-category') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-category*') ? 'active' : '' }}">
@@ -131,6 +131,16 @@
             <a href="{{ url('admin/blogs') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blogs*') ? 'active' : '' }}">
                 <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Blogs
+            </a>
+
+            <a href="{{ url('admin/blog-images') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-images*') ? 'active' : '' }}">
+                <i class="fa-solid fa-image me-2"></i> Blog Images
+            </a>
+
+            <a href="{{ url('admin/blog-routes') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-routes*') ? 'active' : '' }}">
+                <i class="fa-solid fa-image me-2"></i> Blog Routes
             </a>
 
         </div>

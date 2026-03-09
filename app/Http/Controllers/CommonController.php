@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\blogs\Blog;
 use App\Models\blogs\BlogCategory;
 use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
@@ -125,7 +126,7 @@ class CommonController extends Controller
         try {
 
             $cities = DB::table('mst_cities')
-                ->select('id', 'city_name')
+                ->select('id', 'city_name', 'alias')
                 ->where('active_status', 1)
                 ->orderBy('city_name', 'ASC')
                 ->get();
@@ -323,6 +324,18 @@ class CommonController extends Controller
         return response()->json([
             'status' => false,
             'message' => 'Image not found'
+        ]);
+    }
+
+    public function getBlogList(Request $request)
+    {
+        $data = Blog::where('active_status', 1)
+            ->orderBy('title')
+            ->get(['id', 'title']);
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
         ]);
     }
 }

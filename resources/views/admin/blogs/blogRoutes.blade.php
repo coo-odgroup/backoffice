@@ -1,9 +1,9 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Roles ')
+@section('page_title', 'Blog Routes')
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -12,7 +12,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Master</li>
+        <li class="breadcrumb-item">Blog Management</li>
         <li class="breadcrumb-item active">@yield('page_title')</li>
     </ol>
 </nav>
@@ -26,8 +26,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('roles.add') }}" class="btn btn-success btn-sm">
-             + Add @yield('page_title')
+        <a href="{{ route('blog-routes.add') }}" class="btn btn-success btn-sm">
+            + Add @yield('page_title')
         </a>
     </div>
 </div>
@@ -43,32 +43,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- FILTER FIELDS -->
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By RoleType</label>
+                                <div class="col-12 col-sm-12 col-md-12  col-lg-12 mb-2">
+                                    <label for="txtSearch">Search By Blog Routes</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Role Type">
-                                </div>
-                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">System Role</label>
-                                    <select class="form-select" id="selSystemRole" name="selSystemRole">
-                                        <option value="">Select</option>
-                                        <option value="1">True</option>
-                                        <option value="2">False</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
+                                        placeholder="Blog Routes">
                                 </div>
                             </div>
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-12 d-flex justify-content-end flex-wrap action-btns">
+                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -94,11 +78,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white d-none" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm d-none" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -121,30 +105,33 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('roles.dataTableView') }}"
-                data-edit-url="{{ route('roles.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>System Role</th>
-                        <th>Last Modified</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('blog-routes.dataTableView') }}"
+                    data-edit-url="{{ route('blog-routes.edit', 'ID') }}">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                            </th>
+                            <th>Sl No</th>
+                            <th>Blog</th>
+                            <th>Form City</th>
+                            <th>To City</th>
+                            <th>Route Slug</th>
+                            <th>Last Modified</th>
+                            <!-- <th>Status</th> -->
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Roles">
+            <input type="hidden" id="hdn_model" value="BlogRoutes">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -169,7 +156,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
     });
-
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -199,31 +185,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let selSystemRole = '';
+        let faqCategory = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
-        }
-        if ($('#selStatus').val() != '') {
-            selStatus = $('#selStatus').val();
-        }
-        if ($('#selSystemRole').val() != '') {
-            selStatus = $('#selSystemRole').val();
         }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+            txtSearch: txtSearch
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.role_id +
-                        '" name="chkStd' + row.role_id + '" value="' + row.role_id +
-                        '" >';
+                    return `<input class="form-check-input chkItem" type="checkbox"
+                id="check${row.blog_routes_id}"
+                value="${row.blog_routes_id}">`;
                 },
                 className: "noPrint text-center"
             },
@@ -235,25 +214,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'code',
+                data: 'blog_title',
                 defaultContent: "--"
             },
             {
-                data: 'name',
+                data: 'from_city_name',
                 defaultContent: "--"
             },
             {
-                data: 'is_system_role',
-                render: function(data, type, row) {
-                    if (data === 1 || data === '1') {
-                        return 'True';
-                    }
-                    if (data === 2 || data === '2') {
-                        return 'False';
-                    }
-                    return '--';
-                },
-                className: "text-center"
+                data: 'to_city_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'route_slug',
+                defaultContent: "--"
             },
             {
                 data: null,
@@ -261,42 +235,36 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     let createdBy = row.created_by_name ?? '--';
                     let createdAt = row.created_date ?? '--';
+                    let updatedBy = row.updated_by_name ?? '--';
+                    let updatedAt = row.updated_date ?? '--';
 
-                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
-
-                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
+                    let displayDate = updatedAt !== '--' ? updatedAt : createdAt;
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            data-bs-html="true"
-                            title="
-                                <div class='audit-box'>
-                                    <div><strong>Created By:</strong> ${createdBy}</div>
-                                    <div><strong>Created At:</strong> ${createdAt}</div>
-                                    <hr class='my-1'>
-                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
-                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
-                                </div>
-                            ">
-                            ${displayDate}
-                        </small>
-                    `;
+                    <small class="text-primary fw-semibold"
+                        data-bs-toggle="tooltip"
+                        data-bs-html="true"
+                        title="
+                            <div><strong>Created By:</strong> ${createdBy}</div>
+                            <div><strong>Created At:</strong> ${createdAt}</div>
+                            <hr class='my-1'>
+                            <div><strong>Updated By:</strong> ${updatedBy}</div>
+                            <div><strong>Updated At:</strong> ${updatedAt}</div>
+                        ">
+                        ${displayDate}
+                    </small>`;
                 }
             },
+            // {
+            //     data: 'is_active',
+            //     render: function(data) {
+            //         let cls = data === 'Active' ? 'badge bg-success' : 'badge bg-danger';
+            //         return `<span class="${cls}">${data}</span>`;
+            //     },
+            //     className: "text-center"
+            // },
             {
-                data: 'is_active',
-                render: function(data, type, row) {
-                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-                    return '<span class="' + cls + '">' + row.is_active + '</span>';
-                },
-                className: "text-center"
-            },
-            {
-                data: '',
+                data: null,
                 render: function(data, type, row) {
 
                     let editUrl = $('#' + tableId).data('edit-url');
@@ -304,24 +272,32 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
-                        <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_role_id)}">
+                        <a class="btn btn-sm btn-info text-white"
+                        href="${editUrl.replace('ID', row.enc_blog_routes_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_roles"
-                            data-id="${row.enc_role_id}">
+                            data-table="faq_category"
+                            data-id="${row.enc_blog_routes_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
+
                     `;
                 },
                 className: "noPrint text-center"
             }
-        ]
+        ];
+
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
+
+    $(document).ready(function() {
+
+        commonAjax.initSelect2('#faqCategory', 'Select Category');
+        commonAjax.loadFaqCategory(0);
+    });
 </script>
 @endpush
