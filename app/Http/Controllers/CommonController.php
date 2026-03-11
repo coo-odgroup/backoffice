@@ -76,6 +76,7 @@ class CommonController extends Controller
             'Blog' => \App\Models\blogs\Blog::class,
             'Vendor' => \App\Models\Ad\Vendor::class,
             'AdPlacement' => \App\Models\Ad\AdPlacement::class,
+            'PricingPlan' => \App\Models\Ad\PricingPlan::class,
             'Reason' => \App\Models\Master\Reason::class,
         ];
 
@@ -339,5 +340,30 @@ class CommonController extends Controller
             'status' => true,
             'data' => $data
         ]);
+    }
+
+    public function getPlacementList(Request $request)
+    {
+        try {
+
+            $placements = DB::connection('mysql_dev')
+                ->table('ad_placements')
+                ->select('id', 'name')
+                ->where('active_status', 1)
+                ->orderBy('name', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $placements
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ], 500);
+        }
     }
 }

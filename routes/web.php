@@ -26,9 +26,9 @@ use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\Ad\VendorController;
 use App\Http\Controllers\Admin\Ad\AdPlacementController;
+use App\Http\Controllers\Admin\Ad\PricingPlanController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -63,6 +63,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/get-blog-category-list', [CommonController::class, 'getBlogCategoryList'])->name('get.blogcategory.list');
     Route::post('/remove-image', [CommonController::class, 'removeImage'])->name('remove.image');
     Route::post('/get-blog-list', [CommonController::class, 'getBlogList'])->name('getbloglist');
+    Route::post('get-placement-list', [CommonController::class, 'getPlacementList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -137,7 +138,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'reason/edit/{encId}', [ReasonController::class, 'edit'])->name('reason.edit');
     Route::post('admin/reason/check-exists', [ReasonController::class, 'checkExists'])->name('reason.checkExists');
 
-
+    // Pricing Plan
+    Route::get('/pricing-plan', [PricingPlanController::class, 'index'])->name('pricingPlan.index');
+    Route::match(['get', 'post'], 'pricing-plan/add', [PricingPlanController::class, 'add'])->name('pricingPlan.add');
+    Route::post('pricing-plan/dataTableView', [PricingPlanController::class, 'dataTableView'])->name('pricingPlan.dataTableView');
+    Route::match(['get', 'post'], 'pricing-plan/edit/{encId}', [PricingPlanController::class, 'edit'])->name('pricingPlan.edit');
+    Route::post('admin/pricing-plan/check-exists', [PricingPlanController::class, 'checkExists'])->name('pricingPlan.checkExists');
 
 
 
