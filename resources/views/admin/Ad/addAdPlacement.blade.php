@@ -63,73 +63,74 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-3">
 
-                                     <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="placement">Placement<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control"
-                                                               id="placement"
-                                                               name="placement"
-                                                               value="{{ $data['row']->name ?? '' }}"
-                                                               placeholder="Enter Placement"
-                                                               maxlength="100">
-                                            <small class="text-muted char-counter float-end"></small>
-                                        </div>
-
-                                        <div class="col-md-6 mb-3">
-                                            <label for="slug">Alias<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="slug"
-                                                   name="slug" value="{{ $data['row']->slug ?? '' }}"
-                                                   placeholder="Enter Alias"
-                                                   oninput="this.value = this.value.toLowerCase();"
-                                                   maxlength="100">
-                                            <small class="text-muted char-counter float-end"></small>
-                                        </div>
-
-                                        
-
-                                        <div class="col-md-4 mb-3">
-                                            <label for="defaultModel">Default Model<span class="text-danger important">*</span></label>
-
-                                            <select class="form-select" id="defaultModel" name="defaultModel">
-                                                <option value="">Select Model</option>
-
-                                                <option value="1" {{ (isset($data['row']) && $data['row']->default_model == 1) ? 'selected' : '' }}>
-                                                    CPM
-                                                </option>
-
-                                                <option value="2" {{ (isset($data['row']) && $data['row']->default_model == 2) ? 'selected' : '' }}>
-                                                    CPC
-                                                </option>
-
-                                                <option value="3" {{ (isset($data['row']) && $data['row']->default_model == 3) ? 'selected' : '' }}>
-                                                    FIXED
-                                                </option>
-                                            </select>
-                                        </div>
                                         <div class="row mb-3">
                                             <div class="col-md-6 mb-3">
-                                                <label for="description">Description</label>
-                                                <textarea class="form-control" id="description" name="description" placeholder="Description" maxlength="500" rows="3">{{ $data['row']->description ?? '' }}</textarea>
+                                                <label for="placement">Placement<span class="text-danger important">*</span></label>
+                                                <input type="text" class="form-control"
+                                                    id="placement"
+                                                    name="placement"
+                                                    value="{{ $data['row']->name ?? '' }}"
+                                                    placeholder="Enter Placement"
+                                                    maxlength="100">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
-                                        </div>
+
+                                            <div class="col-md-6 mb-3">
+                                                <label for="slug">Alias<span class="text-danger important">*</span></label>
+                                                <input type="text" class="form-control" id="slug"
+                                                    name="slug" value="{{ $data['row']->slug ?? '' }}"
+                                                    placeholder="Enter Alias"
+                                                    oninput="this.value = this.value.toLowerCase();"
+                                                    maxlength="100">
+                                                <small class="text-muted char-counter float-end"></small>
+                                            </div>
 
 
-                                        <!-- BUTTONS -->
-                                        <div class="row mt-4">
-                                            <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                                <button class="btn btn-primary btn-sm" type="submit">
-                                                    {{ $data['strSubmit'] }}
-                                                </button>
-                                                @if($data['strReset'] == 'Cancel')
-                                                <a href="{{ route('AdPlacement.index') }}" class="btn btn-secondary btn-sm">
-                                                    {{ $data['strReset'] }}
-                                                </a>
-                                                @else
-                                                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                                    {{ $data['strReset'] }}
-                                                </button>
-                                                @endif
+
+                                            <div class="col-md-4 mb-3">
+                                                <label for="defaultModel">Default Model<span class="text-danger important">*</span></label>
+
+                                                <select class="form-select" id="defaultModel" name="defaultModel">
+                                                    <option value="">Select Model</option>
+
+                                                    <option value="CPM" {{ (isset($data['row']) && $data['row']->default_model == 'CPM') ? 'selected' : '' }}>
+                                                        CPM
+                                                    </option>
+
+                                                    <option value="CPC" {{ (isset($data['row']) && $data['row']->default_model == 'CPC') ? 'selected' : '' }}>
+                                                        CPC
+                                                    </option>
+
+                                                    <option value="FIXED" {{ (isset($data['row']) && $data['row']->default_model == 'FIXED') ? 'selected' : '' }}>
+                                                        FIXED
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="description">Description</label>
+                                                    <textarea class="form-control" id="description" name="description" placeholder="Description" maxlength="500" rows="3">{{ $data['row']->description ?? '' }}</textarea>
+                                                    <small class="text-muted char-counter float-end"></small>
+                                                </div>
+                                            </div>
+
+
+                                            <!-- BUTTONS -->
+                                            <div class="row mt-4">
+                                                <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
+                                                    <button class="btn btn-primary btn-sm" type="submit">
+                                                        {{ $data['strSubmit'] }}
+                                                    </button>
+                                                    @if($data['strReset'] == 'Cancel')
+                                                    <a href="{{ route('AdPlacement.index') }}" class="btn btn-secondary btn-sm">
+                                                        {{ $data['strReset'] }}
+                                                    </a>
+                                                    @else
+                                                    <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                                        {{ $data['strReset'] }}
+                                                    </button>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -139,15 +140,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     </div>
                 </div>
             </div>
-        </div>
 </form>
 
 @endsection
 @push('scripts')
 
 <script type="module">
-
-      document.getElementById('placement').addEventListener('input', function() {
+    document.getElementById('placement').addEventListener('input', function() {
 
         this.value = this.value.replace(/\s+/g, ' ').trimStart();
 

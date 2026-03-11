@@ -146,7 +146,7 @@ class PricingPlanController extends Controller
         return $this->add($encId);
     }
 
-    public function dataTableView()
+   public function dataTableView()
     {
         $recordsTotal    = 0;
         $recordsFiltered = 0;
@@ -155,8 +155,8 @@ class PricingPlanController extends Controller
         try {
 
             $txtSearch = trim(htmlEncode(request('txtSearch')));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int) request('selStatus') : '';
-            $selModel  = (request('selModel') !== null && request('selModel') !== '') ? (int) request('selModel') : '';
+            $selStatus = request('selStatus');
+            $selModel  = trim(request('selModel'));
 
             $dataQuery = DB::connection('mysql_dev')->table('ad_pricing_plans as p')
                 ->select(
@@ -193,21 +193,20 @@ class PricingPlanController extends Controller
                     }
                 });
             }
+
             if ($selStatus !== '' && $selStatus !== null) {
                 $dataQuery->where('p.active_status', $selStatus);
             }
 
-            if ($selModel !== '' && $selModel !== null) {
+            if (!empty($selModel)) {
                 $dataQuery->where('p.model', $selModel);
             }
-
 
             $recordsTotal = DB::connection('mysql_dev')->table('ad_pricing_plans')->count();
             $recordsFiltered = (clone $dataQuery)->count();
 
             $start  = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
-
 
             if (!empty(request('order'))) {
 
@@ -224,6 +223,7 @@ class PricingPlanController extends Controller
                 $order      = request('order');
                 $orderCol   = $columns[$order[0]['column']] ?? 'p.created_at';
                 $orderDir   = $order[0]['dir'] ?? 'desc';
+
             } else {
 
                 $orderCol = 'p.created_at';
@@ -232,23 +232,15 @@ class PricingPlanController extends Controller
 
             $dataQuery->orderBy($orderCol, $orderDir);
 
-
             if ($length === -1) {
                 $arrRes = $dataQuery->get();
             } else {
-                $arrRes = $dataQuery
-                    ->offset($start)
-                    ->limit($length)
-                    ->get();
+                $arrRes = $dataQuery->offset($start)->limit($length)->get();
             }
-
-
-
 
             $placements = DB::connection('mysql_dev')
                 ->table('ad_placements')
                 ->pluck('name', 'id');
-
 
             foreach ($arrRes as $row) {
 
@@ -259,34 +251,24 @@ class PricingPlanController extends Controller
                     : null;
 
                 $row->is_active = ($row->active_status == 1) ? 'Active' : 'Inactive';
+
                 $row->placementId = $placements[$row->placement_id] ?? '--';
 
-                if ($row->model == 1) {
-                    $row->model = 'CPM';
-                } elseif ($row->model == 2) {
-                    $row->model = 'CPC';
-                } else {
-                    $row->model = 'FIXED';
-                }
-
-
                 $row->planName = $row->plan_name;
+
                 $row->timeDuration = $row->duration_days . ' Days';
 
                 $row->enc_pricing_plan_id = Crypt::encryptString($row->pricing_plan_id);
             }
 
             $data = $arrRes;
+
         } catch (\Throwable $t) {
 
             Log::error("Exception in PricingPlanController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace'         => $t->getTraceAsString()
             ]);
-
-            $recordsTotal    = 0;
-            $recordsFiltered = 0;
-            $data            = [];
         }
 
         return response()->json([
@@ -295,4 +277,5 @@ class PricingPlanController extends Controller
             'data'            => $data,
         ]);
     }
+    
 }

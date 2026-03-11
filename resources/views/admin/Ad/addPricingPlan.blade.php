@@ -71,6 +71,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <option value="">Select Placement</option>
                                             </select>
                                         </div>
+                                        <input type="hidden" id="selectedPlacement" value="{{ $data['row']->placement_id ?? '' }}">
 
                                         <div class="col-md-4">
                                             <label for="defaultModel">Default Model<span class="text-danger important">*</span></label>
@@ -78,17 +79,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <select class="form-select" id="defaultModel" name="defaultModel">
                                                 <option value="">Select Model</option>
 
-                                                <option value="1" {{ (isset($data['row']) && $data['row']->default_model == 1) ? 'selected' : '' }}>
+                                                <option value="CPM"
+                                                    {{ (isset($data['row']) && $data['row']->model == 'CPM') ? 'selected' : '' }}>
                                                     CPM
                                                 </option>
 
-                                                <option value="2" {{ (isset($data['row']) && $data['row']->default_model == 2) ? 'selected' : '' }}>
+                                                <option value="CPC"
+                                                    {{ (isset($data['row']) && $data['row']->model == 'CPC') ? 'selected' : '' }}>
                                                     CPC
                                                 </option>
 
-                                                <option value="3" {{ (isset($data['row']) && $data['row']->default_model == 3) ? 'selected' : '' }}>
+                                                <option value="FIXED"
+                                                    {{ (isset($data['row']) && $data['row']->model == 'FIXED') ? 'selected' : '' }}>
                                                     FIXED
                                                 </option>
+
                                             </select>
                                         </div>
 
@@ -251,10 +256,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
-        commonAjax.initCharCounter(['planName', 'Price', ]);
+
+        commonAjax.initCharCounter(['planName', 'Price']);
 
         commonAjax.initSelect2('#placement', 'Select Placement');
+
         commonAjax.loadPlacementList();
+
+        // set selected placement after dropdown loads
+        let selectedPlacement = $('#selectedPlacement').val();
+
+        if (selectedPlacement) {
+
+            setTimeout(function() {
+
+                $('#placement').val(selectedPlacement).trigger('change');
+
+            }, 500);
+
+        }
 
     });
 </script>

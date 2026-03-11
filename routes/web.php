@@ -144,10 +144,6 @@ Route::prefix('admin')->group(function () {
     Route::post('pricing-plan/dataTableView', [PricingPlanController::class, 'dataTableView'])->name('pricingPlan.dataTableView');
     Route::match(['get', 'post'], 'pricing-plan/edit/{encId}', [PricingPlanController::class, 'edit'])->name('pricingPlan.edit');
     Route::post('admin/pricing-plan/check-exists', [PricingPlanController::class, 'checkExists'])->name('pricingPlan.checkExists');
-
-
-
-
     // Jagan
     // ---------------------------------------------------------------------------------------------------------------
     // State

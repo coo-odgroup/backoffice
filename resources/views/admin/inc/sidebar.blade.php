@@ -153,13 +153,13 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#adManagement"
-            aria-expanded="{{ Request::is('admin/vendor*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/vendor*','admin/ad-placement*','admin/pricing-plan*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-rectangle-ad me-2"></i> Ad Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/vendor*','admin/ad-placement*') ? 'show' : '' }}" id="adManagement">
+        <div class="collapse {{ Request::is('admin/vendor*','admin/ad-placement*','admin/pricing-plan*') ? 'show' : '' }}" id="adManagement">
 
             <a href="{{ url('admin/vendor') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/vendor*') ? 'active' : '' }}">
@@ -168,7 +168,12 @@
 
             <a href="{{ url('admin/ad-placement') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/ad-placement*') ? 'active' : '' }}">
-                <i class="fa-solid fa-building me-2"></i> Ad Placement
+                <i class="fa fa-bullhorn me-2"></i> Ad Placement
+            </a>
+
+             <a href="{{ url('admin/pricing-plan') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/pricing-plan*') ? 'active' : '' }}">
+                <i class="fa-solid fa-money-check-dollar me-2"></i>Pricing Plan
             </a>
 
         </div>
