@@ -30,6 +30,8 @@ use App\Http\Controllers\Admin\Ad\AdCampaignController;
 use App\Http\Controllers\Admin\Ad\PricingPlanController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
+use App\Http\Controllers\Master\BusInfoController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -251,6 +253,11 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seatingtype/add', [SeatingTypeController::class, 'add'])->name('seatingtype.add');
     Route::post('seatingtype/dataTableView', [SeatingTypeController::class, 'dataTableView'])->name('seatingtype.dataTableView');
     Route::match(['get', 'post'], 'seatingtype/edit/{encId}', [SeatingTypeController::class, 'edit'])->name('seatingtype.edit');
+
+    // Bus info module
+    Route::get('/businfo', [BusInfoController::class, 'businfo'])->name('businfo.index');
+    Route::match(['get', 'post'], 'businfo/add', [BusInfoController::class, 'add'])->name('businfo.add');
+    Route::post('get-city-search',[BusInfoController::class, "getcity"]);
 
     //--------------------------------------------------------------------------------------------------------------------
 

@@ -1000,6 +1000,57 @@ export function loadPlacementList(selected_placement_id = 0) {
     });
 }
 
+
+export function searchCity() {
+
+    let city = $("#citySearch").val();
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-city-search",
+        data: {
+            city: city,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+
+            let html = "";
+
+            if (response.status && response.data.length > 0) {
+
+                $.each(response.data, function (index, city) {
+
+                    html += `<div class="form-check mb-2">
+                                <input class="form-check-input cityCheck"
+                                       type="checkbox"
+                                       value="${city.city_name}"
+                                       onchange="toggleCity(this)">
+                                <label class="form-check-label">
+                                    ${city.city_name}
+                                </label>
+                            </div>`;
+                });
+
+            } else {
+
+                html = `<p class="text-danger">No city found</p>`;
+
+            }
+
+            $("#cityList").html(html);
+
+        },
+
+        error: function () {
+            console.log("Error loading cities");
+        }
+
+    });
+
+}
+
 export function loadVendorList(selected_vendor_id = 0) {
 
     $("#vendor").html('<option value="">Loading...</option>');
@@ -1070,4 +1121,3 @@ export function loadPricingPlanList(selected_plan_id = 0) {
         }
     });
 }
-
