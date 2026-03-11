@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\BlogCategoryController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\Ad\VendorController;
 use App\Http\Controllers\Admin\Ad\AdPlacementController;
+use App\Http\Controllers\Admin\Ad\AdCampaignController;
 use App\Http\Controllers\Admin\Ad\PricingPlanController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
@@ -64,6 +65,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/remove-image', [CommonController::class, 'removeImage'])->name('remove.image');
     Route::post('/get-blog-list', [CommonController::class, 'getBlogList'])->name('getbloglist');
     Route::post('get-placement-list', [CommonController::class, 'getPlacementList']);
+    Route::post('get-vendor-list',[CommonController::class,'getVendorList']);
+    Route::post('get-pricing-plan-list',[CommonController::class,'getPricingPlanList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -144,6 +147,22 @@ Route::prefix('admin')->group(function () {
     Route::post('pricing-plan/dataTableView', [PricingPlanController::class, 'dataTableView'])->name('pricingPlan.dataTableView');
     Route::match(['get', 'post'], 'pricing-plan/edit/{encId}', [PricingPlanController::class, 'edit'])->name('pricingPlan.edit');
     Route::post('admin/pricing-plan/check-exists', [PricingPlanController::class, 'checkExists'])->name('pricingPlan.checkExists');
+    
+     //Ad Campaign
+    Route::get('/ad-campaign', [AdCampaignController::class, 'index'])->name('AdCampaign.index');
+    Route::match(['get', 'post'], 'ad-campaign/add', [AdCampaignController::class, 'add'])->name('AdCampaign.add');
+    Route::post('ad-campaign/dataTableView', [AdCampaignController::class, 'dataTableView'])->name('AdCampaign.dataTableView');
+    Route::match(['get', 'post'], 'ad-campaign/edit/{encId}', [AdCampaignController::class, 'edit'])->name('AdCampaign.edit');
+    Route::post('ad-campaign/check-exists', [AdCampaignController::class, 'checkExists'])->name('AdCampaign.checkExists');
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // Jagan
     // ---------------------------------------------------------------------------------------------------------------
     // State

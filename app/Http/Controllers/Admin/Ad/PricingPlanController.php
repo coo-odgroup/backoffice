@@ -146,7 +146,7 @@ class PricingPlanController extends Controller
         return $this->add($encId);
     }
 
-   public function dataTableView()
+    public function dataTableView()
     {
         $recordsTotal    = 0;
         $recordsFiltered = 0;
