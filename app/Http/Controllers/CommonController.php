@@ -78,6 +78,7 @@ class CommonController extends Controller
             'AdPlacement' => \App\Models\Ad\AdPlacement::class,
             'PricingPlan' => \App\Models\Ad\PricingPlan::class,
             'Reason' => \App\Models\Master\Reason::class,
+            'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
