@@ -77,6 +77,7 @@ class CommonController extends Controller
             'Vendor' => \App\Models\Ad\Vendor::class,
             'AdPlacement' => \App\Models\Ad\AdPlacement::class,
             'PricingPlan' => \App\Models\Ad\PricingPlan::class,
+            'AdCampaign' => \App\Models\Ad\AdCampaign::class,
             'Reason' => \App\Models\Master\Reason::class,
             'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
         ];
@@ -367,4 +368,54 @@ class CommonController extends Controller
             ], 500);
         }
     }
+
+    public function getVendorList(Request $request)
+    {
+        try {
+
+            $vendors = DB::connection('mysql_dev')
+                ->table('vendors')
+                ->select('id', 'company_name')
+                ->orderBy('company_name', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $vendors
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ], 500);
+        }
+    }
+
+    public function getPricingPlanList(Request $request)
+    {
+        try {
+
+            $plans = DB::connection('mysql_dev')
+                ->table('ad_pricing_plans')
+                ->select('id', 'plan_name')
+                ->where('active_status', 1)
+                ->orderBy('plan_name', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $plans
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ], 500);
+        }
+    }
+    
 }

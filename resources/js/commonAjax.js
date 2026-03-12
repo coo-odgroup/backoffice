@@ -1050,3 +1050,74 @@ export function searchCity() {
     });
 
 }
+
+export function loadVendorList(selected_vendor_id = 0) {
+
+    $("#vendor").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-vendor-list",
+        data: {
+            selected_vendor_id: selected_vendor_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="">-- Select Vendor --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (vendor) {
+
+                    let selected = vendor.id == selected_vendor_id ? "selected" : "";
+
+                    options += `<option value="${vendor.id}" ${selected}>${vendor.company_name}</option>`;
+                });
+            }
+
+            $("#vendor").html(options);
+        },
+        error: function () {
+            $("#vendor").html('<option value="">-- Select Vendor --</option>');
+        },
+    });
+}
+
+
+export function loadPricingPlanList(selected_plan_id = 0) {
+
+    $("#pricingPlan").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-pricing-plan-list",
+        data: {
+            selected_plan_id: selected_plan_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function(response) {
+
+            let options = '<option value="">-- Select Pricing Plan --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function(plan) {
+
+                    let selected = plan.id == selected_plan_id ? "selected" : "";
+
+                    options += `<option value="${plan.id}" ${selected}>${plan.plan_name}</option>`;
+                });
+
+            }
+
+            $("#pricingPlan").html(options);
+        },
+        error: function() {
+
+            $("#pricingPlan").html('<option value="">-- Select Pricing Plan --</option>');
+        }
+    });
+}
