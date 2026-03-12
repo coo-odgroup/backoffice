@@ -43,10 +43,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- FILTER FIELDS -->
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Placement / Plan Name</label>
+                                <div class="col-6 col-sm-6 col-md-6  col-lg-3 mb-2">
+                                    <label for="txtSearch">Search By Campaign / Vendor / Placement / Plan</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Placement / Plan Name">
+                                        placeholder="Campaign / Vendor / Placement / Plan">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>

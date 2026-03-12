@@ -190,7 +190,7 @@ class AdCampaignController extends Controller
 
                 $vendorIds = DB::connection('mysql_dev')
                     ->table('vendors')
-                    ->where('name', 'like', "%{$txtSearch}%")
+                    ->where('company_name', 'like', "%{$txtSearch}%")
                     ->pluck('id')
                     ->toArray();
 
@@ -210,15 +210,15 @@ class AdCampaignController extends Controller
 
                     $q->where('c.title', 'like', "%{$txtSearch}%");
 
-                    if (count($vendorIds) > 0) {
+                    if (!empty($vendorIds)) {
                         $q->orWhereIn('c.vendor_id', $vendorIds);
                     }
 
-                    if (count($placementIds) > 0) {
+                    if (!empty($placementIds)) {
                         $q->orWhereIn('c.placement_id', $placementIds);
                     }
 
-                    if (count($planIds) > 0) {
+                    if (!empty($planIds)) {
                         $q->orWhereIn('c.pricing_plan_id', $planIds);
                     }
                 });
