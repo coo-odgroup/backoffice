@@ -352,6 +352,7 @@ class CommonController extends Controller
             $placements = DB::connection('mysql_dev')
                 ->table('ad_placements')
                 ->select('id', 'name')
+                ->where('active_status', 1)
                 ->orderBy('name', 'ASC')
                 ->get();
 
@@ -376,6 +377,7 @@ class CommonController extends Controller
             $vendors = DB::connection('mysql_dev')
                 ->table('vendors')
                 ->select('id', 'company_name')
+                ->where('active_status', 1)
                 ->orderBy('company_name', 'ASC')
                 ->get();
 
@@ -400,6 +402,7 @@ class CommonController extends Controller
             $plans = DB::connection('mysql_dev')
                 ->table('ad_pricing_plans')
                 ->select('id', 'plan_name')
+                ->where('active_status', 1)
                 ->orderBy('plan_name', 'ASC')
                 ->get();
 
@@ -423,6 +426,7 @@ class CommonController extends Controller
 
         $campaigns = DB::table('odbusdev.ad_campaigns')
             ->select('id', 'title')
+            ->where('active_status', 1)
             ->orderBy('title', 'ASC')
             ->get();
 
