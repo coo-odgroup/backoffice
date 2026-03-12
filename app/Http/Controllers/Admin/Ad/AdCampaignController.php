@@ -164,6 +164,11 @@ class AdCampaignController extends Controller
 
             $txtSearch = trim(htmlEncode(request('txtSearch')));
             $selStatus = request('selStatus');
+            $txtSearch   = trim(htmlEncode(request('txtSearch')));
+            $selStatus   = request('selStatus');
+            $vendor      = request('vendor');
+            $placement   = request('placement');
+            $pricingPlan = request('pricingPlan');
 
             $dataQuery = DB::connection('mysql_dev')
                 ->table('ad_campaigns as c')
@@ -188,43 +193,21 @@ class AdCampaignController extends Controller
 
             if (!empty($txtSearch)) {
 
-                $vendorIds = DB::connection('mysql_dev')
-                    ->table('vendors')
-                    ->where('company_name', 'like', "%{$txtSearch}%")
-                    ->pluck('id')
-                    ->toArray();
-
-                $placementIds = DB::connection('mysql_dev')
-                    ->table('ad_placements')
-                    ->where('name', 'like', "%{$txtSearch}%")
-                    ->pluck('id')
-                    ->toArray();
-
-                $planIds = DB::connection('mysql_dev')
-                    ->table('ad_pricing_plans')
-                    ->where('plan_name', 'like', "%{$txtSearch}%")
-                    ->pluck('id')
-                    ->toArray();
-
-                $dataQuery->where(function ($q) use ($txtSearch, $vendorIds, $placementIds, $planIds) {
-
-                    $q->where('c.title', 'like', "%{$txtSearch}%");
-
-                    if (!empty($vendorIds)) {
-                        $q->orWhereIn('c.vendor_id', $vendorIds);
-                    }
-
-                    if (!empty($placementIds)) {
-                        $q->orWhereIn('c.placement_id', $placementIds);
-                    }
-
-                    if (!empty($planIds)) {
-                        $q->orWhereIn('c.pricing_plan_id', $planIds);
-                    }
-                });
+                $dataQuery->where('c.title', 'like', "%{$txtSearch}%");
             }
             if ($selStatus !== '' && $selStatus !== null) {
                 $dataQuery->where('c.active_status', $selStatus);
+            }
+            if (!empty($vendor)) {
+                $dataQuery->where('c.vendor_id', $vendor);
+            }
+
+            if (!empty($placement)) {
+                $dataQuery->where('c.placement_id', $placement);
+            }
+
+            if (!empty($pricingPlan)) {
+                $dataQuery->where('c.pricing_plan_id', $pricingPlan);
             }
 
 

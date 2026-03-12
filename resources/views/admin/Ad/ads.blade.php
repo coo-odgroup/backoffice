@@ -43,10 +43,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- FILTER FIELDS -->
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6 col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Campaign</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Campaign">
+                                <div class="col-md-2 mb-3">
+                                    <label for="campaign">
+                                        Campaign<span class="text-danger important">*</span>
+                                    </label>
+
+                                    <select class="form-select" id="campaign" name="campaign">
+                                        <option value="">Select Campaign</option>
+                                    </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -163,6 +167,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initSelect2('#campaign', 'Select Campaign');
+
+        commonAjax.loadCampaignList("{{ $data['row']->campaign_id ?? 0 }}");
         getDataTableView();
     });
 

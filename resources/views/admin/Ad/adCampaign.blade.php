@@ -43,10 +43,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- FILTER FIELDS -->
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-3 mb-2">
-                                    <label for="txtSearch">Search By Campaign / Vendor / Placement / Plan</label>
+                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
+                                    <label for="txtSearch">Search By Title</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Campaign / Vendor / Placement / Plan">
+                                        placeholder="Title">
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
+                                    <label for="vendor">Vendor<span class="text-danger important">*</span></label>
+                                    <select class="form-select" id="vendor" name="vendor">
+                                        <option value="">Select Vendor</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
+                                    <label for="placement">Placement<span class="text-danger important">*</span></label>
+                                    <select class="form-select" id="placement" name="placement">
+                                        <option value="">Select Placement</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
+                                    <label for="pricingPlan">Pricing Plan<span class="text-danger important">*</span></label>
+                                    <select class="form-select" id="pricingPlan" name="pricingPlan">
+                                        <option value="">Select Pricing Plan</option>
+                                    </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -163,6 +182,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initSelect2('#vendor', 'Select Vendor');
+        commonAjax.initSelect2('#placement', 'Select Placement');
+        commonAjax.initSelect2('#pricingPlan', 'Select Pricing Plan');
+
+        commonAjax.loadVendorList();
+        commonAjax.loadPlacementList();
+        commonAjax.loadPricingPlanList();
         getDataTableView();
     });
 
@@ -195,6 +221,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let vendor = '';
+        let placement = '';
+        let pricingPlan = '';
 
 
         if ($('#txtSearch').val() != '') {
@@ -203,6 +232,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
+        
+        if ($('#vendor').val() != '') {
+            vendor = $('#vendor').val();
+        }
+
+        if ($('#placement').val() != '') {
+            placement = $('#placement').val();
+        }
+
+        if ($('#pricingPlan').val() != '') {
+            pricingPlan = $('#pricingPlan').val();
+        }
 
 
         let tableId = 'datatable';
@@ -210,6 +251,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let searchParams = {
             txtSearch: txtSearch,
             selStatus: selStatus,
+            vendor: vendor,
+            placement: placement,
+            pricingPlan: pricingPlan
         };
         let displayColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         let dataTableColumns = [{

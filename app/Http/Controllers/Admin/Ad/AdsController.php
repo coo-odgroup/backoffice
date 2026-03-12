@@ -69,11 +69,6 @@ class AdsController extends Controller
                 });
             }
 
-            /*
-        |-----------------------------------
-        | Status Filter
-        |-----------------------------------
-        */
 
             if ($selStatus !== '') {
                 $dataQuery->where('a.active_status', $selStatus);
@@ -81,23 +76,12 @@ class AdsController extends Controller
 
             $count = $dataQuery->count('a.id');
 
-            /*
-        |-----------------------------------
-        | Pagination
-        |-----------------------------------
-        */
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
 
             $start = is_numeric($start) ? (int)$start : 0;
             $length = is_numeric($length) ? (int)$length : 10;
-
-            /*
-        |-----------------------------------
-        | Ordering
-        |-----------------------------------
-        */
 
             if (!empty(request('order'))) {
 
@@ -122,11 +106,6 @@ class AdsController extends Controller
 
             $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
 
-            /*
-        |-----------------------------------
-        | Fetch Data
-        |-----------------------------------
-        */
 
             if ($length == -1) {
 
@@ -138,12 +117,6 @@ class AdsController extends Controller
                     ->offset($start)
                     ->get();
             }
-
-            /*
-        |-----------------------------------
-        | Format Data
-        |-----------------------------------
-        */
 
             if ($arrRes->count() > 0) {
 

@@ -966,39 +966,7 @@ export function loadBlogList(blog_id = 0) {
     });
 }
 
-export function loadPlacementList(selected_placement_id = 0) {
 
-    $("#placement").html('<option value="">Loading...</option>');
-
-    $.ajax({
-        type: "POST",
-        url: ajaxUrl + "get-placement-list",
-        data: {
-            selected_placement_id: selected_placement_id,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
-        dataType: "json",
-        success: function (response) {
-
-            let options = '<option value="">-- Select Placement --</option>';
-
-            if (response.status && response.data.length > 0) {
-
-                response.data.forEach(function (placement) {
-
-                    let selected = placement.id == selected_placement_id ? "selected" : "";
-
-                    options += `<option value="${placement.id}" ${selected}>${placement.name}</option>`;
-                });
-            }
-
-            $("#placement").html(options);
-        },
-        error: function () {
-            $("#placement").html('<option value="">-- Select Placement --</option>');
-        },
-    });
-}
 
 
 export function searchCity() {
@@ -1050,6 +1018,42 @@ export function searchCity() {
     });
 
 }
+
+
+export function loadPlacementList(selected_placement_id = 0) {
+
+    $("#placement").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-placement-list",
+        data: {
+            selected_placement_id: selected_placement_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="">-- Select Placement --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (placement) {
+
+                    let selected = placement.id == selected_placement_id ? "selected" : "";
+
+                    options += `<option value="${placement.id}" ${selected}>${placement.name}</option>`;
+                });
+            }
+
+            $("#placement").html(options);
+        },
+        error: function () {
+            $("#placement").html('<option value="">-- Select Placement --</option>');
+        },
+    });
+}
+
 
 export function loadVendorList(selected_vendor_id = 0) {
 
