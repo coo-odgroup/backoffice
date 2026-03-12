@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\Ad\AdsController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
 use App\Http\Controllers\Master\BusInfoController;
+use App\Http\Controllers\Master\ReviewCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -268,6 +269,12 @@ Route::prefix('admin')->group(function () {
     Route::get('/businfo', [BusInfoController::class, 'businfo'])->name('businfo.index');
     Route::match(['get', 'post'], 'businfo/add', [BusInfoController::class, 'add'])->name('businfo.add');
     Route::post('get-city-search',[BusInfoController::class, "getcity"]);
+
+    //Review Catagory
+    Route::get('/reviewcategory', [ReviewCategoryController::class, 'reviewCategory'])->name('reviewcategory.index');
+    Route::match(['get', 'post'], 'reviewcategory/add', [ReviewCategoryController::class, 'add'])->name('reviewcategory.add');
+    Route::post('reviewcategory/dataTableView', [ReviewCategoryController::class, 'dataTableView'])->name('reviewcategory.dataTableView');
+    Route::match(['get', 'post'], 'reviewcategory/edit/{encId}', [ReviewCategoryController::class, 'edit'])->name('reviewcategory.edit');
 
     //--------------------------------------------------------------------------------------------------------------------
 

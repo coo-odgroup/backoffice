@@ -80,6 +80,7 @@ class CommonController extends Controller
             'AdCampaign' => \App\Models\Ad\AdCampaign::class,
             'Ads' => \App\Models\Ad\Ads::class,
             'Reason' => \App\Models\Master\Reason::class,
+            'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {

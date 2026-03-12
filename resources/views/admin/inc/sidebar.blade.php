@@ -114,6 +114,11 @@
                 <i class="fa-solid fa-users me-2"></i> Users
             </a>
 
+            <a href="{{ url('admin/reviewcategory') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/reviewcategory*') ? 'active' : '' }}">
+                <i class="fa-solid fa-users me-2"></i> Review Category
+            </a>
+
         </div>
 
         <!-- Parent Menu -->
