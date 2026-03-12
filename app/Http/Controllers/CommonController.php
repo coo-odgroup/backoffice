@@ -78,6 +78,7 @@ class CommonController extends Controller
             'AdPlacement' => \App\Models\Ad\AdPlacement::class,
             'PricingPlan' => \App\Models\Ad\PricingPlan::class,
             'AdCampaign' => \App\Models\Ad\AdCampaign::class,
+            'Ads' => \App\Models\Ad\Ads::class,
             'Reason' => \App\Models\Master\Reason::class,
         ];
 
@@ -416,5 +417,33 @@ class CommonController extends Controller
             ], 500);
         }
     }
+
+    public function getCampaignList(Request $request)
+{
+    try {
+
+        $campaigns = DB::table('odbusdev.ad_campaigns')
+            ->select('id', 'title')
+            ->where('active_status', 1)
+            ->orderBy('title', 'ASC')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $campaigns
+        ]);
+
+    } catch (\Throwable $t) {
+
+        Log::error("Error in getCampaignList", [
+            'error' => $t->getMessage()
+        ]);
+
+        return response()->json([
+            'status' => false,
+            'data' => []
+        ]);
+    }
+}
     
 }

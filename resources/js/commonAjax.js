@@ -1121,3 +1121,37 @@ export function loadPricingPlanList(selected_plan_id = 0) {
         }
     });
 }
+
+export function loadCampaignList(selected_campaign_id = 0) {
+
+    $("#campaign").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-campaign-list",
+        data: {
+            selected_campaign_id: selected_campaign_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="">-- Select Campaign --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (campaign) {
+
+                    let selected = campaign.id == selected_campaign_id ? "selected" : "";
+
+                    options += `<option value="${campaign.id}" ${selected}>${campaign.title}</option>`;
+                });
+            }
+
+            $("#campaign").html(options);
+        },
+        error: function () {
+            $("#campaign").html('<option value="">-- Select Campaign --</option>');
+        },
+    });
+}

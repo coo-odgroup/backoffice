@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\Ad\VendorController;
 use App\Http\Controllers\Admin\Ad\AdPlacementController;
 use App\Http\Controllers\Admin\Ad\AdCampaignController;
 use App\Http\Controllers\Admin\Ad\PricingPlanController;
+use App\Http\Controllers\Admin\Ad\AdsController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
 use App\Http\Controllers\Master\BusInfoController;
@@ -69,6 +70,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-placement-list', [CommonController::class, 'getPlacementList']);
     Route::post('get-vendor-list',[CommonController::class,'getVendorList']);
     Route::post('get-pricing-plan-list',[CommonController::class,'getPricingPlanList']);
+    Route::post('get-campaign-list', [CommonController::class, 'getCampaignList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -150,12 +152,20 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'pricing-plan/edit/{encId}', [PricingPlanController::class, 'edit'])->name('pricingPlan.edit');
     Route::post('admin/pricing-plan/check-exists', [PricingPlanController::class, 'checkExists'])->name('pricingPlan.checkExists');
     
-     //Ad Campaign
+    //Ad Campaign
     Route::get('/ad-campaign', [AdCampaignController::class, 'index'])->name('AdCampaign.index');
     Route::match(['get', 'post'], 'ad-campaign/add', [AdCampaignController::class, 'add'])->name('AdCampaign.add');
     Route::post('ad-campaign/dataTableView', [AdCampaignController::class, 'dataTableView'])->name('AdCampaign.dataTableView');
     Route::match(['get', 'post'], 'ad-campaign/edit/{encId}', [AdCampaignController::class, 'edit'])->name('AdCampaign.edit');
     Route::post('ad-campaign/check-exists', [AdCampaignController::class, 'checkExists'])->name('AdCampaign.checkExists');
+
+    //Ads
+    Route::get('/ads', [AdsController::class, 'index'])->name('Ads.index');
+    Route::match(['get', 'post'], 'ads/add', [AdsController::class, 'add'])->name('Ads.add');
+    Route::post('ads/dataTableView', [AdsController::class, 'dataTableView'])->name('Ads.dataTableView');
+    Route::match(['get', 'post'], 'ads/edit/{encId}', [AdsController::class, 'edit'])->name('Ads.edit');
+    Route::post('ads/check-exists', [AdsController::class, 'checkExists'])->name('Ads.checkExists');
+    
     
     
     
