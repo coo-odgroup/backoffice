@@ -452,6 +452,9 @@ and (max-width: 370px) {
     border-radius: 8px;
 }
 
+
+/* Seat Layout Structure Start */
+
 /* Seat layout */
 
 table.seatGrid { border-collapse: collapse; margin-bottom:20px; }
@@ -608,6 +611,8 @@ td:focus { outline:2px dashed #000; }
     min-height: 400px;
 }
 
+/* Seat Layout Structure End */
+
 /* =========================
    view more for - FAQ controller
    ========================= */
@@ -719,5 +724,193 @@ td:focus { outline:2px dashed #000; }
     color:#333;
 }
 
+/* end of Dashboard Panel Boxes */
 
 
+
+/* Main Dashboard */
+
+.audit-top-card{
+background:#fff;
+border-radius:12px;
+padding:20px;
+/* box-shadow:0 3px 10px rgba(0,0,0,0.08); */
+border: 1px solid rgb(210, 210, 210) !important;
+}
+
+.audit-left{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.audit-left img{
+width:60px;
+height:60px;
+border-radius:50%;
+}
+
+.audit-title{
+font-size:22px;
+font-weight:600;
+}
+
+.audit-sub{
+font-size:13px;
+color:#777;
+}
+
+.audit-stats{
+display:flex;
+justify-content:space-between;
+gap:25px;
+}
+
+.stat-box{
+text-align:center;
+}
+
+.stat-number{
+font-size:22px;
+font-weight:600;
+}
+
+.stat-label{
+font-size:12px;
+color:#777;
+}
+
+.audit-info{
+margin-top:12px;
+display:flex;
+justify-content:flex-end;
+gap:10px;
+}
+
+.info-box{
+display:flex;
+align-items:center;
+gap:6px;
+background:#f5f7fb;
+padding:6px 12px;
+border-radius:6px;
+font-size:13px;
+border: 1px solid rgb(210, 210, 210);
+}
+
+.audit-tabs{
+margin-top:20px;
+border-bottom:2px solid #eee;
+}
+
+.audit-tabs ul{
+display:flex;
+gap:30px;
+list-style:none;
+padding:0;
+}
+
+.audit-tabs li{
+padding-bottom:10px;
+cursor:pointer;
+}
+
+.audit-tabs li.active{
+border-bottom:3px solid #0d6efd;
+color:#0d6efd;
+}
+
+.audit-card{
+background:#fff;
+border-radius:10px;
+padding:20px;
+/* box-shadow:0 3px 10px rgba(0,0,0,0.08); */
+border: 1px solid rgb(210, 210, 210);
+}
+
+.card-title{
+font-weight:600;
+margin-bottom:15px;
+border-bottom:1px solid #eee;
+padding-bottom:8px;
+}
+
+.graph-box{
+height:220px;
+background:#f5f7fb;
+border-radius:6px;
+overflow:hidden;
+}
+
+.graph-box img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.item-row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:10px 0;
+gap:12px;
+}
+
+.item-left{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.item-left img{
+width:34px;
+height:34px;
+border-radius:50%;
+}
+
+.item-title{
+font-weight:500;
+}
+
+.item-sub{
+font-size:12px;
+color:#777;
+}
+
+.item-right{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.item-row i{
+font-size:14px;
+}
+
+.user-count{
+font-size:13px;
+color:#666;
+margin-right:10px;
+}
+
+.alert-time{
+font-size:12px;
+color:#888;
+}
+
+.item-right .badge{
+    cursor: pointer;
+}
+
+
+@media (max-width: 425px) {
+    .audit-info {
+        justify-content: center;
+    }
+
+    .info-box{
+        font-size: 9px;
+    }
+}
+
+/* End of Dashboard Styles */
