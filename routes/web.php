@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\Ad\VendorController;
 use App\Http\Controllers\Admin\Ad\AdPlacementController;
 use App\Http\Controllers\Admin\Ad\AdCampaignController;
 use App\Http\Controllers\Admin\Ad\PricingPlanController;
+use App\Http\Controllers\Master\BrandController;
 use App\Http\Controllers\Admin\Ad\AdsController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
@@ -166,6 +167,13 @@ Route::prefix('admin')->group(function () {
     Route::post('ads/dataTableView', [AdsController::class, 'dataTableView'])->name('Ads.dataTableView');
     Route::match(['get', 'post'], 'ads/edit/{encId}', [AdsController::class, 'edit'])->name('Ads.edit');
     Route::post('ads/check-exists', [AdsController::class, 'checkExists'])->name('Ads.checkExists');
+
+    //Brand
+    Route::get('/brand', [BrandController::class, 'brand'])->name('brand.index');
+    Route::match(['get', 'post'], 'brand/add', [BrandController::class, 'add'])->name('brand.add');
+    Route::post('brand/dataTableView', [BrandController::class, 'dataTableView'])->name('brand.dataTableView');
+    Route::match(['get', 'post'], 'brand/edit/{encId}', [BrandController::class, 'edit'])->name('brand.edit');
+
     
     
     
