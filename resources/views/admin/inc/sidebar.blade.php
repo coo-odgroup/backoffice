@@ -21,17 +21,26 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#busManagement"
-            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-bus me-2"></i> Bus Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*') ? 'show' : '' }}" id="busManagement">
+        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*') ? 'show' : '' }}" id="busManagement">
 
             <a href="{{ url('admin/states') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location me-2"></i> State
+            </a>
+            <a href="{{ url('admin/brand') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/brand*') ? 'active' : '' }}">
+                <i class="fa-solid fa-location me-2"></i> Bus Brand
+            </a>
+
+            <a href="{{ url('admin/bus-model') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/bus-model*') ? 'active' : '' }}">
+                <i class="fa-solid fa-location me-2"></i> Bus Model
             </a>
 
             <a href="{{ url('admin/district') }}"

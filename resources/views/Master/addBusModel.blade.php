@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Bus Brands')
+@section('page_title', 'Bus Models')
 @section('content')
 
 <?php
@@ -63,13 +63,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
-                                            <label for="country">Country<span class="text-danger important">*</span></label>
-                                            <select class="form-select selCountry" id="country" name="country">
+                                            <label for="brand">Bus Brand</label>
+                                            <select class="form-select" id="brand" name="brand"></select>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
-                                            <label for="brand">Bus Brand Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="brand" name="brand" value="{{ $data['row']->brand_name ?? '' }}">
+                                            <label for="model">Bus Model Name<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 mb-3">
+                                            <label for="description">Description</label>
+                                            <textarea class="form-control" id="description" name="description" value="{{ $data['row']->description ?? '' }}"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -115,11 +121,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('country', 'Select Class Type'))
+        if (!validator.selectDropdown('brand', 'Select Class Type'))
             return false;
-        if (!validator.blankCheck('brand', 'Bus Brand Name cannot be left blank'))
+        if (!validator.blankCheck('model', 'Bus Model Name cannot be left blank'))
             return false;
-        if (!validator.maxLength('brand', 100, 'Bus Brand Name'))
+        if (!validator.maxLength('model', 100, 'Bus Model Name'))
             return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');
@@ -136,11 +142,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#country', 'Select Country');
+        commonAjax.initSelect2('#brand', 'Select Brand');
 
-        let selectedCountry = "{{ $data['row']->country ?? '' }}";
+        let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
 
-        commonAjax.loadCountryList(selectedCountry);
+        commonAjax.loadBrandList(selectedBrand);
 
     });
 </script>

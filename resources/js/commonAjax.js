@@ -1159,3 +1159,77 @@ export function loadCampaignList(selected_campaign_id = 0) {
         },
     });
 }
+
+export function loadCountryList(selected_country_id = 0) {
+
+    $("#country").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-country-list",
+        data: {
+            selected_country_id: selected_country_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="">-- Select Country --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (country) {
+
+                    let selected =
+                        country.id == selected_country_id ? "selected" : "";
+
+                    options += `<option value="${country.id}" ${selected}>${country.name}</option>`;
+                });
+            }
+
+            $("#country").html(options);
+        },
+        error: function () {
+            $("#country").html('<option value="">-- Select Country --</option>');
+        },
+    });
+}
+
+
+export function loadBrandList(selected_brand_id = 0) {
+
+    $("#brandSearch, #brand").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-brand-list",
+        data: {
+            selected_brand_id: selected_brand_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+
+            let options = '<option value="">-- Select Brand --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (brand) {
+
+                    let selected =
+                        brand.id == selected_brand_id ? "selected" : "";
+
+                    options += `<option value="${brand.id}" ${selected}>${brand.brand_name}</option>`;
+                });
+
+            }
+
+            $("#brandSearch, #brand").html(options);
+        },
+
+        error: function () {
+            $("#brandSearch, #brand").html('<option value="">-- Select Brand --</option>');
+        }
+    });
+}

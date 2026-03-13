@@ -4,12 +4,13 @@ namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Brand extends Model
+class BusModel extends Model
 {
-    protected $table = 'mst_bus_brand';
+    protected $table = 'mst_bus_models';
     protected $fillable = [
-        'brand_name',
-        'country',
+        'brand_id',
+        'model-name',
+        'description',
         'active_status'
     ];
 }

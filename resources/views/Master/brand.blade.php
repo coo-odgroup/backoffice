@@ -88,7 +88,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');" >
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
@@ -241,7 +241,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'country',
-                defaultContent: "--",
+                render: function(data) {
+                    if (!data || data === null) {
+                        return "--";
+                    }
+                    return data;
+                }
             },
             {
                 data: null,
@@ -300,7 +305,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_brand"
+                            data-table="mst_bus_brand"
                             data-id="${row.enc_brand_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
