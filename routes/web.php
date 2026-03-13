@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\BlogRoutesController;
 use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\MasterLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
+    Route::get('/master-logs', [MasterLogController::class, 'index'])->name('audit-log.index');
 
 
 
