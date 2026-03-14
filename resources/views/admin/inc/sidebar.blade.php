@@ -21,17 +21,26 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#busManagement"
-            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/reviewcategory*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-bus me-2"></i> Bus Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/reviewcategory*') ? 'show' : '' }}" id="busManagement">
+        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*') ? 'show' : '' }}" id="busManagement">
 
             <a href="{{ url('admin/states') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location me-2"></i> State
+            </a>
+            <a href="{{ url('admin/brand') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/brand*') ? 'active' : '' }}">
+                <i class="fa-solid fa-location me-2"></i> Bus Brand
+            </a>
+
+            <a href="{{ url('admin/bus-model') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/bus-model*') ? 'active' : '' }}">
+                <i class="fa-solid fa-location me-2"></i> Bus Model
             </a>
 
             <a href="{{ url('admin/district') }}"
@@ -125,13 +134,13 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#blogManagement"
-            aria-expanded="{{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*','admin/blog-tag-map*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-blog me-2"></i> Blog Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*') ? 'show' : '' }}" id="blogManagement">
+        <div class="collapse {{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*','admin/blog-tag-map*') ? 'show' : '' }}" id="blogManagement">
 
             <a href="{{ url('admin/blog-category') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-category*') ? 'active' : '' }}">
@@ -156,6 +165,11 @@
             <a href="{{ url('admin/blog-tags') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-tags*') ? 'active' : '' }}">
                 <i class="fa-solid fa-tag me-2"></i> Blog Tags
+            </a>
+
+            <a href="{{ url('admin/blog-tag-map') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-tag-map*') ? 'active' : '' }}">
+                <i class="fa-solid fa-tag me-2"></i> Blog Tag Map
             </a>
 
         </div>

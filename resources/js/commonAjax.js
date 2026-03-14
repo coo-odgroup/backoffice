@@ -967,7 +967,34 @@ export function loadBlogList(blog_id = 0) {
 }
 
 
+export function loadBlogTagsList(tag_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-blogtags-list",
+        data: {
+            tag_id: tag_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Blog Tags</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        tag_id > 0 && app.id == tag_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.tag_name}
+                                </option>`;
+                });
+            }
 
+            $("#blogTags").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Blog Tags");
+        },
+    });
+}
 
 export function searchCity() {
 
@@ -1160,31 +1187,76 @@ export function loadCampaignList(selected_campaign_id = 0) {
     });
 }
 
-export function loadBlogTagsList(blog_tag_id = 0) {
+export function loadCountryList(selected_country_id = 0) {
+
+    $("#country").html('<option value="">Loading...</option>');
+
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-blogtags-list",
+        url: ajaxUrl + "get-country-list",
         data: {
-            blog_tag_id: blog_tag_id,
+            selected_country_id: selected_country_id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
         success: function (response) {
-            let options = '<option value="">Select Blog Tags</option>';
+
+            let options = '<option value="">-- Select Country --</option>';
+
             if (response.status && response.data.length > 0) {
-                $.each(response.data, function (index, app) {
+
+                response.data.forEach(function (country) {
+
                     let selected =
-                        blog_tag_id > 0 && app.id == blog_tag_id ? "selected" : "";
-                    options += `<option value="${app.id}" ${selected}>
-                                    ${app.tag_name}
-                                </option>`;
+                        country.id == selected_country_id ? "selected" : "";
+
+                    options += `<option value="${country.id}" ${selected}>${country.name}</option>`;
                 });
             }
 
-            $("#blogTags").html(options);
+            $("#country").html(options);
         },
-        error: function (xhr) {
-            console.log("Error loading Blog Tags");
+        error: function () {
+            $("#country").html('<option value="">-- Select Country --</option>');
         },
+    });
+}
+
+
+export function loadBrandList(selected_brand_id = 0) {
+
+    $("#brandSearch, #brand").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-brand-list",
+        data: {
+            selected_brand_id: selected_brand_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+
+            let options = '<option value="">-- Select Brand --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (brand) {
+
+                    let selected =
+                        brand.id == selected_brand_id ? "selected" : "";
+
+                    options += `<option value="${brand.id}" ${selected}>${brand.brand_name}</option>`;
+                });
+
+            }
+
+            $("#brandSearch, #brand").html(options);
+        },
+
+        error: function () {
+            $("#brandSearch, #brand").html('<option value="">-- Select Brand --</option>');
+        }
     });
 }

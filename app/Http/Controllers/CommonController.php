@@ -81,6 +81,8 @@ class CommonController extends Controller
             'AdCampaign' => \App\Models\Ad\AdCampaign::class,
             'Ads' => \App\Models\Ad\Ads::class,
             'Reason' => \App\Models\Master\Reason::class,
+            'Brand' => \App\Models\Master\Brand::class,
+            'BusModel' => \App\Models\Master\BusModel::class,
             'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
             'BlogTags' => \App\Models\blogs\BlogTags::class,
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
@@ -455,5 +457,56 @@ class CommonController extends Controller
             'status' => true,
             'data' => $data
         ]);
+    }
+
+    public function getCountryList()
+    {
+        try {
+
+            $countries = DB::table('mst_countries')
+                ->select('id', 'name')
+                ->where('active_status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $countries
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+
+    public function getBrandList()
+    {
+        try {
+
+            $brands = DB::table('mst_bus_brand')
+                ->select('id', 'brand_name')
+                ->where('active_status', 1)
+                ->orderBy('brand_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $brands
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error("Error in CommonController@getBrandList", [
+                'error' => $t->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
     }
 }
