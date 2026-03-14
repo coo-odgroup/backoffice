@@ -28,9 +28,13 @@ use App\Http\Controllers\Admin\Ad\VendorController;
 use App\Http\Controllers\Admin\Ad\AdPlacementController;
 use App\Http\Controllers\Admin\Ad\AdCampaignController;
 use App\Http\Controllers\Admin\Ad\PricingPlanController;
+use App\Http\Controllers\Master\BrandController;
+use App\Http\Controllers\Master\BusModelController;
 use App\Http\Controllers\Admin\Ad\AdsController;
 use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
+use App\Http\Controllers\Admin\BlogTagMapController;
+use App\Http\Controllers\Admin\BlogTagsController;
 use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
@@ -74,6 +78,9 @@ Route::prefix('admin')->group(function () {
     Route::post('get-vendor-list',[CommonController::class,'getVendorList']);
     Route::post('get-pricing-plan-list',[CommonController::class,'getPricingPlanList']);
     Route::post('get-campaign-list', [CommonController::class, 'getCampaignList']);
+    Route::post('get-country-list', [CommonController::class, 'getCountryList']);
+    Route::post('get-brand-list', [CommonController::class, 'getBrandList'])->name('common.getBrandList');
+    Route::post('get-blogtags-list', [CommonController::class, 'getBlogTagsList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -171,8 +178,18 @@ Route::prefix('admin')->group(function () {
     Route::post('ads/dataTableView', [AdsController::class, 'dataTableView'])->name('Ads.dataTableView');
     Route::match(['get', 'post'], 'ads/edit/{encId}', [AdsController::class, 'edit'])->name('Ads.edit');
     Route::post('ads/check-exists', [AdsController::class, 'checkExists'])->name('Ads.checkExists');
-    
-    
+
+    //Bus Brand
+    Route::get('/brand', [BrandController::class, 'brand'])->name('brand.index');
+    Route::match(['get', 'post'], 'brand/add', [BrandController::class, 'add'])->name('brand.add');
+    Route::post('brand/dataTableView', [BrandController::class, 'dataTableView'])->name('brand.dataTableView');
+    Route::match(['get', 'post'], 'brand/edit/{encId}', [BrandController::class, 'edit'])->name('brand.edit');
+
+    //Bus Brand
+    Route::get('/bus-model', [BusModelController::class, 'busModel'])->name('busModel.index');
+    Route::match(['get', 'post'], 'bus-model/add', [BusModelController::class, 'add'])->name('busModel.add');
+    Route::post('bus-model/dataTableView', [BusModelController::class, 'dataTableView'])->name('busModel.dataTableView');
+    Route::match(['get', 'post'], 'bus-model/edit/{encId}', [BusModelController::class, 'edit'])->name('busModel.edit');
     
     
     
@@ -250,6 +267,18 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-routes/add', [BlogRoutesController::class, 'add'])->name('blog-routes.add');
     Route::post('blog-routes/dataTableView', [BlogRoutesController::class, 'dataTableView'])->name('blog-routes.dataTableView');
     Route::match(['get', 'post'], 'blog-routes/edit/{encId}', [BlogRoutesController::class, 'edit'])->name('blog-routes.edit');
+
+    // Blog Tags
+    Route::get('/blog-tags', [BlogTagsController::class, 'index'])->name('blog-tags.index');
+    Route::match(['get', 'post'], 'blog-tags/add', [BlogTagsController::class, 'add'])->name('blog-tags.add');
+    Route::post('blog-tags/dataTableView', [BlogTagsController::class, 'dataTableView'])->name('blog-tags.dataTableView');
+    Route::match(['get', 'post'], 'blog-tags/edit/{encId}', [BlogTagsController::class, 'edit'])->name('blog-tags.edit');
+
+    // Blog Tag Map
+    Route::get('/blog-tag-map', [BlogTagMapController::class, 'index'])->name('blog-tag-map.index');
+    Route::match(['get', 'post'], 'blog-tag-map/add', [BlogTagMapController::class, 'add'])->name('blog-tag-map.add');
+    Route::post('blog-tag-map/dataTableView', [BlogTagMapController::class, 'dataTableView'])->name('blog-tag-map.dataTableView');
+    Route::match(['get', 'post'], 'blog-tag-map/edit/{encId}', [BlogTagMapController::class, 'edit'])->name('blog-tag-map.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 

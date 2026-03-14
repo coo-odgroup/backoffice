@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\blogs\Blog;
 use App\Models\blogs\BlogCategory;
+use App\Models\blogs\BlogTags;
 use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
 use App\Models\Master\Districts;
@@ -80,7 +81,11 @@ class CommonController extends Controller
             'AdCampaign' => \App\Models\Ad\AdCampaign::class,
             'Ads' => \App\Models\Ad\Ads::class,
             'Reason' => \App\Models\Master\Reason::class,
+            'Brand' => \App\Models\Master\Brand::class,
+            'BusModel' => \App\Models\Master\BusModel::class,
             'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
+            'BlogTags' => \App\Models\blogs\BlogTags::class,
+            'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -360,7 +365,6 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $placements
             ]);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -385,7 +389,6 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $vendors
             ]);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -410,7 +413,6 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $plans
             ]);
-
         } catch (\Exception $e) {
 
             return response()->json([
@@ -421,31 +423,90 @@ class CommonController extends Controller
     }
 
     public function getCampaignList(Request $request)
-{
-    try {
+    {
+        try {
 
-        $campaigns = DB::table('odbusdev.ad_campaigns')
-            ->select('id', 'title')
-            ->where('active_status', 1)
-            ->orderBy('title', 'ASC')
-            ->get();
+            $campaigns = DB::table('odbusdev.ad_campaigns')
+                ->select('id', 'title')
+                ->where('active_status', 1)
+                ->orderBy('title', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $campaigns
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error("Error in getCampaignList", [
+                'error' => $t->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'data' => []
+            ]);
+        }
+    }
+
+    public function getBlogTagsList(Request $request)
+    {
+        $data = BlogTags::orderBy('tag_name')->get(['id', 'tag_name']);
 
         return response()->json([
             'status' => true,
-            'data' => $campaigns
-        ]);
-
-    } catch (\Throwable $t) {
-
-        Log::error("Error in getCampaignList", [
-            'error' => $t->getMessage()
-        ]);
-
-        return response()->json([
-            'status' => false,
-            'data' => []
+            'data' => $data
         ]);
     }
-}
-    
+
+    public function getCountryList()
+    {
+        try {
+
+            $countries = DB::table('mst_countries')
+                ->select('id', 'name')
+                ->where('active_status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $countries
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+
+    public function getBrandList()
+    {
+        try {
+
+            $brands = DB::table('mst_bus_brand')
+                ->select('id', 'brand_name')
+                ->where('active_status', 1)
+                ->orderBy('brand_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $brands
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error("Error in CommonController@getBrandList", [
+                'error' => $t->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
 }
