@@ -69,13 +69,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="model">Bus Model Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
+                                            <input type="text" class="form-control" id="model" name="model" maxlength="100" value="{{ $data['row']->model_name ?? '' }}">
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-md-12 mb-3">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control" id="description" name="description" value="{{ $data['row']->description ?? '' }}"></textarea>
+                                            <textarea class="form-control" id="description" name="description" maxlength="264" value="{{ $data['row']->description ?? '' }}"></textarea>
+                                            <small class="text-muted char-counter float-end"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -141,6 +143,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initCharCounter(['model','description']);
 
         commonAjax.initSelect2('#brand', 'Select Brand');
 
