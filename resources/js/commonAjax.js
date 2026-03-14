@@ -967,7 +967,34 @@ export function loadBlogList(blog_id = 0) {
 }
 
 
+export function loadBlogTagsList(tag_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-blogtags-list",
+        data: {
+            tag_id: tag_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Blog Tags</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        tag_id > 0 && app.id == tag_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.tag_name}
+                                </option>`;
+                });
+            }
 
+            $("#blogTags").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Blog Tags");
+        },
+    });
+}
 
 export function searchCity() {
 
