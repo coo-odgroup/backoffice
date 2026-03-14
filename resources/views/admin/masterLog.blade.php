@@ -15,341 +15,159 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </ol>
 </nav>
 
-<div class="audit-wrapper">
+<div class="log-wrapper">
 
-    <!-- HEADER -->
-    <div class="audit-top-card">
+    <!-- PAGE HEADER -->
+    <div class="log-header">
 
-        <div class="row align-items-center">
+        <div class="log-header-left">
+            <div class="log-avatar">A</div>
 
-            <div class="col-md-8">
-
-                <div class="audit-left">
-
-                    <img src="https://i.pravatar.cc/100">
-
-                    <div>
-                        <div class="audit-title">Central Audit Log Monitor</div>
-                        <div class="audit-sub">Track all master table changes by team members</div>
-                    </div>
-
-                </div>
-
+            <div>
+                <div class="log-title">Audit Log</div>
+                <div class="log-sub">Minimumorder</div>
             </div>
+        </div>
+
+        <button class="log-track-btn d-flex align-items-center gap-2">
+    <i class="fa-regular fa-clipboard"></i>
+    Tracking 19 events
+</button>
+
+    </div>
 
 
-            <div class="col-md-4">
+    <!-- STAT CARDS -->
+    <div class="log-stats">
 
-                <div class="audit-stats">
+        <div class="log-stat-card">
+            <div class="log-stat-title">TOTAL CHANGES</div>
+            <div class="log-stat-number">19</div>
+        </div>
 
-                    <div class="stat-box">
-                        <div class="stat-number text-success">284</div>
-                        <div class="stat-label">CHANGES TODAY</div>
-                    </div>
+        <div class="log-stat-card green">
+            <div class="log-stat-title">CREATES</div>
+            <div class="log-stat-number">0</div>
+        </div>
 
-                    <div class="stat-box">
-                        <div class="stat-number text-info">803</div>
-                        <div class="stat-label">UPDATES</div>
-                    </div>
+        <div class="log-stat-card blue">
+            <div class="log-stat-title">UPDATES</div>
+            <div class="log-stat-number">19</div>
+        </div>
 
-                    <div class="stat-box">
-                        <div class="stat-number text-danger">1207</div>
-                        <div class="stat-label">INSERTS</div>
-                    </div>
-
-                    <div class="stat-box">
-                        <div class="stat-number text-danger">32</div>
-                        <div class="stat-label">DELETES</div>
-                    </div>
-
-                </div>
-
-                <div class="audit-info">
-
-                    <div class="info-box"><i class="fas fa-map-marker-alt"></i> Boston</div>
-                    <div class="info-box">Rate: $250</div>
-                    <div class="info-box"><i class="fas fa-credit-card"></i> Payment Logs</div>
-                    <div class="info-box"><i class="fas fa-cogs"></i> System Logs</div>
-
-                </div>
-
-            </div>
-
+        <div class="log-stat-card red">
+            <div class="log-stat-title">DELETES</div>
+            <div class="log-stat-number">0</div>
         </div>
 
     </div>
 
 
-    <!-- TABS -->
-    <div class="audit-tabs">
-        <ul>
-            <li class="active">Overview</li>
-            <li>Master Data Logs</li>
-            <li>Booking Logs</li>
-            <li>Payment Logs</li>
-            <li>System Logs</li>
-        </ul>
+    <!-- SEARCH -->
+    <div class="log-search-box">
+
+        <input type="text" placeholder="Search by product ID, user, app, or field name...">
+
+        <button class="log-search-btn">
+            Search
+        </button>
+
+        <div class="log-quick-filter">
+            <span>Last 24h</span>
+            <span>7 days</span>
+            <span>30 days</span>
+        </div>
+
     </div>
 
 
-    <!-- MAIN DASHBOARD -->
-    <div class="row mt-4">
+    <!-- FILTERS -->
+    <div class="log-filters">
 
-        <!-- LEFT -->
-        <div class="col-lg-8">
+        <select>
+            <option>All types</option>
+        </select>
 
-            <div class="row g-4">
+        <select>
+            <option>All events</option>
+        </select>
 
-                <div class="col-12">
-                    <div class="audit-card">
+        <select>
+            <option>All users</option>
+        </select>
 
-                        <div class="card-title">Audit Log Activity (Last 7 Days)</div>
+        <input type="date">
+        <input type="date">
 
-                        <div class="graph-box">
-                            <img src="/assets/img/presentation_chart.jpg" alt="chart">
-                        </div>
+        <button class="log-clear-btn">
+            Clear All
+        </button>
 
-                    </div>
-                </div>
-
-
-                <div class="col-md-6">
-
-                    <div class="audit-card">
-
-                        <div class="card-title">Recently Modified Tables</div>
-
-                        <div class="item-row">
-
-                            <div class="item-left">
-                                <i class="fas fa-folder text-warning"></i>
-                                <div>
-                                    <div class="item-title">mst_cities</div>
-                                    <div class="item-sub">Updated 15 times today</div>
-                                </div>
-                            </div>
-
-                            <div class="item-right">
-                                <span>Updated 9 times</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-
-                        </div>
+    </div>
 
 
-                        <div class="item-row">
+    <!-- TABLE -->
+    <div class="log-table-card">
 
-                            <div class="item-left">
-                                <i class="fas fa-folder text-warning"></i>
-                                <div>
-                                    <div class="item-title">mst_districts</div>
-                                    <div class="item-sub">Updated 9 times today</div>
-                                </div>
-                            </div>
+        <div class="log-table-header">
 
-                            <div class="item-right">
-                                <span>Updated 9 times</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+            <div>
+                <strong>Audit Entries</strong>
+                <span>19 total</span>
+            </div>
 
-                        </div>
-
-
-                        <div class="item-row">
-
-                            <div class="item-left">
-                                <i class="fas fa-folder text-warning"></i>
-                                <div>
-                                    <div class="item-title">mst_routes</div>
-                                    <div class="item-sub">Updated 7 times today</div>
-                                </div>
-                            </div>
-
-                            <div class="item-right">
-                                <span>Updated 7 times</span>
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <div class="col-md-6">
-
-                    <div class="audit-card">
-
-                        <div class="card-title">Active Admin Users</div>
-
-
-                        <div class="item-row">
-
-                            <div class="item-left">
-                                <img src="https://i.pravatar.cc/40">
-                                <div>
-                                    <div class="item-title">Admin</div>
-                                    <div class="item-sub">15 changes</div>
-                                </div>
-                            </div>
-
-                            <div class="item-right">
-                                <span class="user-count">15 Changes</span>
-                                <span class="badge bg-success fa fa-plus"></span>
-                            </div>
-
-                        </div>
-
-
-                        <div class="item-row">
-
-                            <div class="item-left">
-                                <img src="https://i.pravatar.cc/41">
-                                <div>
-                                    <div class="item-title">Manager</div>
-                                    <div class="item-sub">9 changes</div>
-                                </div>
-                            </div>
-
-                            <div class="item-right">
-                                <span class="user-count">9 Changes</span>
-                                <span class="badge bg-danger fa fa-minus"></span>
-                            </div>
-
-                        </div>
-
-
-                        <div class="item-row">
-
-                            <div class="item-left">
-                                <img src="https://i.pravatar.cc/42">
-                                <div>
-                                    <div class="item-title">Operator</div>
-                                    <div class="item-sub">4 changes</div>
-                                </div>
-                            </div>
-
-                            <div class="item-right">
-                                <span class="user-count">4 Changes</span>
-                                <span class="badge bg-success fa fa-plus"></span>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div>
+                <button class="log-refresh-btn"><i class="fa fa-sync"></i>Refresh</button>
+                <button class="log-export-btn"><i class="fa fa-file-export"></i>Export CSV</button>
             </div>
 
         </div>
 
 
+        <table class="log-table">
 
-        <!-- RIGHT -->
-        <div class="col-lg-4">
+            <thead>
+                <tr>
+                    <th>TYPE</th>
+                    <th>ENTITY</th>
+                    <th>EVENT</th>
+                    <th>CHANGED BY</th>
+                    <th>TIMESTAMP</th>
+                    <th>ACTIONS</th>
+                </tr>
+            </thead>
 
-            <div class="audit-card mb-4">
+            <tbody>
 
-                <div class="card-title">Recent Activity</div>
+                <tr>
+                    <td>Product</td>
+                    <td>10078814404740</td>
+                    <td><span class="log-badge blue">update</span></td>
+                    <td>Staff Member</td>
+                    <td>3 weeks ago</td>
+                    <td>
+                        <button class="fa fa-chevron-down view_btn"></button>
+                        <button class="fa fa-eye view_btn"></button>
+                    </td>
+                </tr>
 
-                <div class="item-row">
+                <tr>
+                    <td>Inventory</td>
+                    <td>53011545096324</td>
+                    <td><span class="log-badge blue">update</span></td>
+                    <td>Unknown</td>
+                    <td>3 weeks ago</td>
+                    <td>
+                        <button class="fa fa-chevron-down view_btn"></button>
+                        <button class="fa fa-eye view_btn"></button>
+                    </td>
+                </tr>
 
-                    <div class="item-left">
-                        <img src="https://i.pravatar.cc/40">
-                        <div>
-                            <div class="item-title">Admin updated mst_cities</div>
-                            <div class="item-sub">2 minutes ago</div>
-                        </div>
-                    </div>
+            </tbody>
 
-                    <i class="fas fa-pen text-success"></i>
-
-                </div>
-
-
-                <div class="item-row">
-
-                    <div class="item-left">
-                        <img src="https://i.pravatar.cc/41">
-                        <div>
-                            <div class="item-title">Manager deleted mst_routes</div>
-                            <div class="item-sub">1 hour ago</div>
-                        </div>
-                    </div>
-
-                    <i class="fas fa-trash text-danger"></i>
-
-                </div>
-
-
-                <div class="item-row">
-
-                    <div class="item-left">
-                        <img src="https://i.pravatar.cc/42">
-                        <div>
-                            <div class="item-title">Operator updated mst_boarding_points</div>
-                            <div class="item-sub">2 hours ago</div>
-                        </div>
-                    </div>
-
-                    <i class="fas fa-pen text-success"></i>
-
-                </div>
-
-            </div>
-
-
-
-            <div class="audit-card">
-
-                <div class="card-title">System Alerts</div>
-
-                <div class="item-row">
-
-                    <div class="item-left">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
-                        <span>50 records deleted today</span>
-                    </div>
-
-                    <div class="item-right">
-                        <span class="alert-time">1 hour ago</span>
-                    </div>
-
-                </div>
-
-                <div class="item-row">
-
-                    <div class="item-left">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
-                        <span>Over 100 updates from IP</span>
-                    </div>
-
-                    <div class="item-right">
-                        <span class="alert-time">3 hours ago</span>
-                    </div>
-
-                </div>
-
-                <div class="item-row">
-                    <div class="item-left">
-                        <i class="fas fa-exclamation-triangle text-warning"></i>
-                        <span>High deletion detected</span>
-                    </div>
-
-                    <div class="item-right">
-                        <span class="alert-time">5 hours ago</span>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
+        </table>
 
     </div>
 
 </div>
-
 @endsection
