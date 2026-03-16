@@ -131,8 +131,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Sl No</th>
                             <th>Amenity Name</th>
                             <th>Category Name</th>
-                            <th>Amenity Icon</th>
-                            <th>Description</th>
+                            <th class="no-sort">Amenity Icon</th>
                             <th style="width: 50px;">Sequence</th>
                             <th>Last Modified</th>
                             <th>Status</th>
@@ -242,11 +241,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'icon',
-                defaultContent: "--"
-            },
-            {
-                data: 'description',
-                defaultContent: "--"
+                defaultContent: "--",
+                render: function (data, type, row) {
+                    if (data) {
+                        return data + ' <i class="fa ' + data + '"></i>';
+                    }
+                    return "--";
+                }
             },
             {
                 data: 'sequence_no',
@@ -256,7 +257,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             minlength="1"
                             maxlength="3"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="form-control form-control-sm order-input"
+                            class="form-control form-control-sm order-input text-center"
                             data-id="${row.enc_amenity_id}"
                             data-table="mst_amenities"
                             data-column="sequence_no">`;

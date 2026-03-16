@@ -44,9 +44,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By State Name</label>
+                                    <label for="txtSearch">Search By Category Name</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="State Name">
+                                        placeholder="Category Name">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -124,7 +124,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </th>
                             <th>Sl No</th>
                             <th>Category Name</th>
-                            <th>Description</th>
+                            <th class="no-sort">Description</th>
                             <th style="width: 100px;">Display Order</th>
                             <th>Last Modified</th>
                             <th>Status</th>
@@ -240,7 +240,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             minlength="1"
                             maxlength="3"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="form-control form-control-sm order-input"
+                            class="form-control form-control-sm order-input text-center"
                             data-id="${row.enc_amenity_cat_id}"
                             data-table="mst_amenity_categories"
                             data-column="display_order">`;
