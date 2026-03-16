@@ -76,7 +76,7 @@ class AmenitiesController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'a.amenity_name', 3 => 'ac.category_name', 4 => 'a.description', 5 => 'a.icon', 6 => 'a.is_paid', 7 => 'a.is_seat_specific', 8 => 'a.created_by', 9 => 'a.active_status'];
+                $columns = [2 => 'a.amenity_name', 3 => 'category_name', 4 => 'a.description', 8 => 'a.created_at', 9 => 'a.active_status'];
 
                 $orderBy       = request('order');
                 $orderColumn   = $columns[$orderBy[0]['column']] ?? 'a.amenity_name';
