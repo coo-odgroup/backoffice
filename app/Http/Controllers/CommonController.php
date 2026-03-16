@@ -86,6 +86,7 @@ class CommonController extends Controller
             'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
             'BlogTags' => \App\Models\blogs\BlogTags::class,
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
+            'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {

@@ -35,9 +35,11 @@ use App\Http\Controllers\Admin\BlogImagesController;
 use App\Http\Controllers\Admin\BlogRoutesController;
 use App\Http\Controllers\Admin\BlogTagMapController;
 use App\Http\Controllers\Admin\BlogTagsController;
+use App\Http\Controllers\Admin\Bus\BusAmenitiesController;
 use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\Master\CancellationslabController;
 use App\Http\Controllers\MasterLogController;
 
 /*
@@ -279,6 +281,18 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-tag-map/add', [BlogTagMapController::class, 'add'])->name('blog-tag-map.add');
     Route::post('blog-tag-map/dataTableView', [BlogTagMapController::class, 'dataTableView'])->name('blog-tag-map.dataTableView');
     Route::match(['get', 'post'], 'blog-tag-map/edit/{encId}', [BlogTagMapController::class, 'edit'])->name('blog-tag-map.edit');
+
+    // Bus Amenities
+    Route::get('/bus-amenities', [BusAmenitiesController::class, 'index'])->name('bus-amenities.index');
+    Route::match(['get', 'post'], 'bus-amenities/add', [BusAmenitiesController::class, 'add'])->name('bus-amenities.add');
+    Route::post('bus-amenities/dataTableView', [BusAmenitiesController::class, 'dataTableView'])->name('bus-amenities.dataTableView');
+    Route::match(['get', 'post'], 'bus-amenities/edit/{encId}', [BusAmenitiesController::class, 'edit'])->name('bus-amenities.edit');
+
+    // Cancellation Slab
+    Route::get('/cancellationslab', [CancellationslabController::class, 'index'])->name('cancellationslab.index');
+    Route::match(['get', 'post'], 'cancellationslab/add', [CancellationslabController::class, 'add'])->name('cancellationslab.add');
+    Route::post('cancellationslab/dataTableView', [CancellationslabController::class, 'dataTableView'])->name('cancellationslab.dataTableView');
+    Route::match(['get', 'post'], 'cancellationslab/edit/{encId}', [CancellationslabController::class, 'edit'])->name('cancellationslab.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 
