@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class AxleTypeController extends Controller
+class BusServiceController extends Controller
 {
-    public function axleType()
+    public function busService()
     {
-        return view('master.axleType');
+        return view('master.busService');
     }
 
     public function dataTableView()
@@ -26,15 +26,16 @@ class AxleTypeController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') 
+            $selStatus = (request('selStatus') !== null && request('selStatus') !== '')
                 ? (int)request('selStatus') : '';
 
-            $dataQuery = DB::table('mst_axle_type as m')
+            $dataQuery = DB::table('mst_bus_service as m')
                 ->leftJoin('users as u1', 'u1.id', '=', 'm.created_by')
                 ->leftJoin('users as u2', 'u2.id', '=', 'm.updated_by')
                 ->select(
-                    'm.id as axleTypeId',
-                    'm.axle_type',
+                    'm.id as busService_id',
+                    'm.bus_service_name',
+                    'm.description',
                     'm.created_at',
                     'm.updated_at',
                     'm.active_status',
@@ -44,14 +45,13 @@ class AxleTypeController extends Controller
 
             // Search filter
             if (!empty($txtSearch)) {
-                $dataQuery->where('m.axle_type', 'like', "%{$txtSearch}%");
+                $dataQuery->where('m.bus_service_name', 'like', "%{$txtSearch}%");
             }
 
             // Status filter
-            if (!empty($selStatus)) {
+            if ($selStatus !== '') {
                 $dataQuery->where('m.active_status', $selStatus);
             }
-
             $count = $dataQuery->count('m.id');
 
             $start = request()->input('start', 0);
@@ -61,17 +61,17 @@ class AxleTypeController extends Controller
             if (!empty(request('order'))) {
 
                 $columns = [
-                    2 => 'm.axle_type',
-                    3 => 'm.created_at',
-                    4 => 'm.active_status'
+                    2 => 'm.bus_service_name',
+                    3 => 'm.description',
+                    4 => 'm.created_at',
+                    5 => 'm.active_status'
                 ];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'm.axle_type';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'm.bus_service_name';
                 $orderType = $orderBy[0]['dir'];
-
             } else {
-                $orderColumn = 'm.axle_type';
+                $orderColumn = 'm.bus_service_name';
                 $orderType = 'asc';
             }
 
@@ -87,22 +87,21 @@ class AxleTypeController extends Controller
 
             foreach ($arrRes as $val) {
                 $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
-                $val->updated_date = $val->updated_at 
-                    ? date('d-M-Y H:i:s', strtotime($val->updated_at)) 
+                $val->updated_date = $val->updated_at
+                    ? date('d-M-Y H:i:s', strtotime($val->updated_at))
                     : null;
 
                 $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
 
-                $val->enc_axleTypeId = Crypt::encryptString($val->axleTypeId);
+                $val->enc_busService_id = Crypt::encryptString($val->busService_id);
             }
 
             $recordsTotal = $count;
             $recordsFiltered = $count;
             $data = $arrRes;
-
         } catch (\Throwable $t) {
 
-            Log::error("AxleTypeController@dataTableView Error", [
+            Log::error("BusServiceController@dataTableView Error", [
                 'message' => $t->getMessage()
             ]);
         }
@@ -127,34 +126,35 @@ class AxleTypeController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/axleType/edit/" . $encId;
+                $redirectPage = route('busService.edit', $encId);
 
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $dataResQry = DB::table('mst_axle_type')
-                    ->select('id', 'axle_type')
+                $dataResQry = DB::table('mst_bus_service')
+                    ->select('id','bus_service_name','description')
                     ->where('id', $id)
                     ->first();
 
-                if (empty($dataResQry)) {
-                    return redirect()->route('axleType.index');
+                if (!$dataResQry) {
+                    return redirect()->route('busService.index');
                 }
 
                 $data['row'] = $dataResQry;
+
             } else {
 
                 $id = 0;
-                $redirectPage = route('axleType.index');
+                $redirectPage = route('busService.index');
             }
 
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'axleType' => 'required',
+                    'busService' => 'required|max:100'
                 ], [
-                    'axleType.required' => 'Axle Type cannot be blank.',
+                    'busService.required' => 'Bus Service Name cannot be blank.'
                 ]);
 
                 if ($validator->fails()) {
@@ -162,55 +162,61 @@ class AxleTypeController extends Controller
                 }
 
                 DB::beginTransaction();
-                $axleType = htmlEncode(request('axleType'));
 
-                $duplicate = DB::table('mst_axle_type')
-                    ->where('axle_type', $axleType);
+                $busService  = htmlEncode(request('busService'));
+                $description = htmlEncode(request('description'));
+
+                $duplicate = DB::table('mst_bus_service')
+                    ->where('bus_service_name', $busService);
 
                 if ($id != 0) {
-                    $duplicate->where('id', '!=', $id);
+                    $duplicate->where('id','!=',$id);
                 }
 
                 if ($duplicate->exists()) {
 
                     return back()->with([
                         'level'   => 'danger',
-                        'message' => 'Axel Type  already exists'
+                        'message' => 'Bus Service already exists'
                     ])->withInput();
                 }
 
                 if ($id != 0) {
 
-                    DB::table('mst_axle_type')
-                        ->where('id', $id)
+                    DB::table('mst_bus_service')
+                        ->where('id',$id)
                         ->update([
-                            'axle_type' => $axleType,
-                            'updated_by' => auth()->id(),
-                            'updated_at' => now()
+                            'bus_service_name' => $busService,
+                            'description'      => $description,
+                            'updated_by'       => auth()->id(),
+                            'updated_at'       => now()
                         ]);
+
                 } else {
 
-                    DB::table('mst_axle_type')->insert([
-                        'axle_type'    => $axleType,
-                        'created_by'    => auth()->id(),
-                        'active_status' => 1,
-                        'created_at'    => now()
+                    DB::table('mst_bus_service')->insert([
+                        'bus_service_name' => $busService,
+                        'description'      => $description,
+                        'created_by'       => auth()->id(),
+                        'active_status'    => 1,
+                        'created_at'       => now()
                     ]);
                 }
 
                 DB::commit();
 
-                session()->flash('level', 'success');
-                session()->flash('message', 'Axle Type ' . ($id ? 'updated' : 'created') . ' successfully.');
+                session()->flash('level','success');
+                session()->flash('message','Bus Service '.($id ? 'updated' : 'created').' successfully.');
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("Error", [
-                'Controller' => 'AxleTypeController',
+            Log::error("Error",[
+                'Controller' => 'BusServiceController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
@@ -221,7 +227,7 @@ class AxleTypeController extends Controller
             ])->withInput();
         }
 
-        return view('Master.addAxleType', compact('data'));
+        return view('Master.addBusService', compact('data'));
     }
 
     public function edit($encId)

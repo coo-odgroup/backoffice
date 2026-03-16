@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Master\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class AxleTypeController extends Controller
+class MstSeatLayoutController extends Controller
 {
-    public function axleType()
+    public function mstSeatLayout()
     {
-        return view('master.axleType');
+        return view('master.mstSeatLayout');
     }
 
     public function dataTableView()
@@ -26,83 +25,83 @@ class AxleTypeController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') 
+            $selStatus = (request('selStatus') !== null && request('selStatus') !== '')
                 ? (int)request('selStatus') : '';
 
-            $dataQuery = DB::table('mst_axle_type as m')
-                ->leftJoin('users as u1', 'u1.id', '=', 'm.created_by')
-                ->leftJoin('users as u2', 'u2.id', '=', 'm.updated_by')
+            $query = DB::table('mst_seat_layout as m')
                 ->select(
-                    'm.id as axleTypeId',
-                    'm.axle_type',
+                    'm.id as seat_layoutId',
+                    'm.seat_layout',
                     'm.created_at',
                     'm.updated_at',
                     'm.active_status',
-                    'u1.name as created_by_name',
-                    'u2.name as updated_by_name'
+                    DB::raw('(SELECT name FROM users WHERE id = m.created_by) as created_by_name'),
+                    DB::raw('(SELECT name FROM users WHERE id = m.updated_by) as updated_by_name')
                 );
 
-            // Search filter
+            // Search
             if (!empty($txtSearch)) {
-                $dataQuery->where('m.axle_type', 'like', "%{$txtSearch}%");
+                $query->where('m.seat_layout', 'like', "%{$txtSearch}%");
             }
 
-            // Status filter
-            if (!empty($selStatus)) {
-                $dataQuery->where('m.active_status', $selStatus);
+            // Status
+            if ($selStatus !== '') {
+                $query->where('m.active_status', $selStatus);
             }
 
-            $count = $dataQuery->count('m.id');
+            // Clone query for count
+            $countQuery = clone $query;
+            $recordsTotal = $countQuery->count();
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
 
-            // Ordering
+            // Sorting
             if (!empty(request('order'))) {
 
                 $columns = [
-                    2 => 'm.axle_type',
+                    2 => 'm.seat_layout',
                     3 => 'm.created_at',
                     4 => 'm.active_status'
                 ];
 
-                $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'm.axle_type';
-                $orderType = $orderBy[0]['dir'];
+                $order = request('order')[0];
+                $orderColumn = $columns[$order['column']] ?? 'm.seat_layout';
+                $orderDir = $order['dir'];
+
+                $query->orderBy($orderColumn, $orderDir);
 
             } else {
-                $orderColumn = 'm.axle_type';
-                $orderType = 'asc';
+                $query->orderBy('m.seat_layout', 'asc');
             }
 
-            $dataQuery->orderBy($orderColumn, $orderType);
-
-            if ($length == -1) {
-                $arrRes = $dataQuery->get();
-            } else {
-                $arrRes = $dataQuery->limit($length)
-                    ->offset($start)
-                    ->get();
+            if ($length != -1) {
+                $query->offset($start)->limit($length);
             }
+
+            $arrRes = $query->get();
 
             foreach ($arrRes as $val) {
-                $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
-                $val->updated_date = $val->updated_at 
-                    ? date('d-M-Y H:i:s', strtotime($val->updated_at)) 
-                    : null;
+
+                $val->created_date = $val->created_at
+                    ? date('d-M-Y H:i:s', strtotime($val->created_at))
+                    : '--';
+
+                $val->updated_date = $val->updated_at
+                    ? date('d-M-Y H:i:s', strtotime($val->updated_at))
+                    : '--';
 
                 $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
 
-                $val->enc_axleTypeId = Crypt::encryptString($val->axleTypeId);
+                $val->enc_seat_layoutId = Crypt::encryptString($val->seat_layoutId);
             }
 
-            $recordsTotal = $count;
-            $recordsFiltered = $count;
+            $recordsFiltered = $recordsTotal;
             $data = $arrRes;
 
         } catch (\Throwable $t) {
 
-            Log::error("AxleTypeController@dataTableView Error", [
+            Log::error("MstSeatLayoutController@dataTableView Error", [
                 'message' => $t->getMessage()
             ]);
         }
@@ -127,34 +126,34 @@ class AxleTypeController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/axleType/edit/" . $encId;
+                $redirectPage = route('mstSeatLayout.edit', $encId);
 
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $dataResQry = DB::table('mst_axle_type')
-                    ->select('id', 'axle_type')
+                $dataResQry = DB::table('mst_seat_layout')
+                    ->select('id', 'seat_layout')
                     ->where('id', $id)
                     ->first();
 
                 if (empty($dataResQry)) {
-                    return redirect()->route('axleType.index');
+                    return redirect()->route('mstSeatLayout.index');
                 }
 
                 $data['row'] = $dataResQry;
             } else {
 
                 $id = 0;
-                $redirectPage = route('axleType.index');
+                $redirectPage = route('mstSeatLayout.index');
             }
 
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'axleType' => 'required',
+                    'mstSeatLayout' => 'required',
                 ], [
-                    'axleType.required' => 'Axle Type cannot be blank.',
+                    'mstSeatLayout.required' => 'Seat Layout cannot be blank.',
                 ]);
 
                 if ($validator->fails()) {
@@ -162,10 +161,10 @@ class AxleTypeController extends Controller
                 }
 
                 DB::beginTransaction();
-                $axleType = htmlEncode(request('axleType'));
+                $mstSeatLayout = htmlEncode(request('mstSeatLayout'));
 
-                $duplicate = DB::table('mst_axle_type')
-                    ->where('axle_type', $axleType);
+                $duplicate = DB::table('mst_seat_layout')
+                    ->where('seat_layout', $mstSeatLayout);
 
                 if ($id != 0) {
                     $duplicate->where('id', '!=', $id);
@@ -181,17 +180,17 @@ class AxleTypeController extends Controller
 
                 if ($id != 0) {
 
-                    DB::table('mst_axle_type')
+                    DB::table('mst_seat_layout')
                         ->where('id', $id)
                         ->update([
-                            'axle_type' => $axleType,
+                            'seat_layout' => $mstSeatLayout,
                             'updated_by' => auth()->id(),
                             'updated_at' => now()
                         ]);
                 } else {
 
-                    DB::table('mst_axle_type')->insert([
-                        'axle_type'    => $axleType,
+                    DB::table('mst_seat_layout')->insert([
+                        'seat_layout' => $mstSeatLayout,
                         'created_by'    => auth()->id(),
                         'active_status' => 1,
                         'created_at'    => now()
@@ -221,7 +220,7 @@ class AxleTypeController extends Controller
             ])->withInput();
         }
 
-        return view('Master.addAxleType', compact('data'));
+        return view('Master.addMstSeatLayout', compact('data'));
     }
 
     public function edit($encId)
