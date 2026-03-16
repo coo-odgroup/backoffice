@@ -28,17 +28,11 @@
 
         <!-- Sub Menu -->
         <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*') ? 'show' : '' }}" id="busManagement">
-            
-        <a href="{{ url('admin/states') }}"
-                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
-                <i class="fa-solid fa-location me-2"></i> State
-            </a>
 
             <a href="{{ url('admin/states') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
                 <i class="fa-solid fa-location me-2"></i> State
             </a>
-
             <a href="{{ url('admin/brand') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/brand*') ? 'active' : '' }}">
                 <i class="fa-solid fa-tag me-2"></i> Bus Brand
@@ -232,5 +226,11 @@
                 <i class="fa-solid fa-rectangle-ad me-2"></i> Ads
             </a>
         </div>
+
+
+
+
+       
+
     </div>
 </div>
