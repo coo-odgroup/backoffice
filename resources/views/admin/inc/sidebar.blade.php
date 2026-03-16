@@ -21,18 +21,14 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#busManagement"
-            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-type  *') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-bus me-2"></i> Bus Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*') ? 'show' : '' }}" id="busManagement">
+        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-typet*') ? 'show' : '' }}" id="busManagement">
 
-            <a href="{{ url('admin/states') }}"
-                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
-                <i class="fa-solid fa-location me-2"></i> State
-            </a>
             <a href="{{ url('admin/brand') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/brand*') ? 'active' : '' }}">
                 <i class="fa-solid fa-tag me-2"></i> Bus Brand
@@ -58,14 +54,24 @@
                 <i class="fa-solid fa-chair me-2"></i> Bus Seat Layout
             </a>
 
+            <a href="{{ url('admin/annexture-type') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/annexture-type*') ? 'active' : '' }}">
+                <i class="fa-solid fa-paperclip me-2"></i> Annexture Type
+            </a>
+
+            <a href="{{ url('admin/states') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/states*') ? 'active' : '' }}">
+                <i class="fa-solid fa-map me-2"></i> State
+            </a>
+
             <a href="{{ url('admin/district') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/district*') ? 'active' : '' }}">
-                <i class="fa-solid fa-location me-2"></i> District
+                <i class="fa-solid fa-map-location-dot me-2"></i> District
             </a>
 
             <a href="{{ url('admin/cities') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/cities*') ? 'active' : '' }}">
-                <i class="fa-solid fa-location me-2"></i> City
+                <i class="fa-solid fa-city me-2"></i> City
             </a>
 
             <a href="{{ url('admin/bustype') }}"
@@ -80,22 +86,22 @@
 
             <a href="{{ url('admin/amenitycategory') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/amenitycategory*') ? 'active' : '' }}">
-                <i class="fa-solid fa-heart me-2"></i> Amenity Category
+                <i class="fa-solid fa-layer-group me-2"></i> Amenity Category
             </a>
 
             <a href="{{ url('admin/amenities') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/amenities*') ? 'active' : '' }}">
-                <i class="fa-solid fa-heart me-2"></i> Amenity
+                <i class="fa-solid fa-star me-2"></i> Amenity
             </a>
 
             <a href="{{ url('admin/roles') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/roles*') ? 'active' : '' }}">
-                <i class="fa-solid fa-user me-2"></i> Roles
+                <i class="fa-solid fa-user-shield me-2"></i> Roles
             </a>
 
             <a href="{{ url('admin/reason') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/reason*') ? 'active' : '' }}">
-                <i class="fa-solid fa-user me-2"></i> Reason
+                <i class="fa-solid fa-circle-question me-2"></i> Reason
             </a>
 
             <a href="{{ url('admin/boardingDropping') }}"
@@ -105,17 +111,17 @@
 
             <a href="{{ url('admin/modules') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/modules*') ? 'active' : '' }}">
-                <i class="fa-solid fa-address-book me-2"></i> Modules
+                <i class="fa-solid fa-layer-group me-2"></i> Modules
             </a>
 
             <a href="{{ url('admin/faq') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/faq*') ? 'active' : '' }}">
-                <i class="fa-solid fa-address-book me-2"></i> FAQ
+                <i class="fa-solid fa-headset me-2"></i> FAQ
             </a>
 
             <a href="{{ url('admin/faqcategory') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/faqcategory*') ? 'active' : '' }}">
-                <i class="fa-solid fa-address-book me-2"></i> FAQ Category
+                <i class="fa-solid fa-folder-open me-2"></i> FAQ Category
             </a>
 
             <a href="{{ url('admin/apiapps') }}"
@@ -135,12 +141,12 @@
 
             <a href="{{ url('admin/users') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/users*') ? 'active' : '' }}">
-                <i class="fa-solid fa-users me-2"></i> Users
+                <i class="fa-solid fa-user-group me-2"></i> Users
             </a>
 
             <a href="{{ url('admin/reviewcategory') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/reviewcategory*') ? 'active' : '' }}">
-                <i class="fa-solid fa-users me-2"></i> Review Category
+                <i class="fa-solid fa-star me-2"></i> Review Category
             </a>
 
         </div>
@@ -159,12 +165,12 @@
 
             <a href="{{ url('admin/blog-category') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-category*') ? 'active' : '' }}">
-                <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Blog Category
+                <i class="fa-solid fa-folder-open me-2"></i> Blog Category
             </a>
 
             <a href="{{ url('admin/blogs') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blogs*') ? 'active' : '' }}">
-                <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Blogs
+                <i class="fa-solid fa-pen-to-square me-2"></i> Blogs
             </a>
 
             <a href="{{ url('admin/blog-images') }}"
@@ -174,17 +180,17 @@
 
             <a href="{{ url('admin/blog-routes') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-routes*') ? 'active' : '' }}">
-                <i class="fa-solid fa-road me-2"></i> Blog Routes
+                <i class="fa-solid fa-route me-2"></i> Blog Routes
             </a>
 
             <a href="{{ url('admin/blog-tags') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-tags*') ? 'active' : '' }}">
-                <i class="fa-solid fa-tag me-2"></i> Blog Tags
+                <i class="fa-solid fa-tags me-2"></i> Blog Tags
             </a>
 
             <a href="{{ url('admin/blog-tag-map') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-tag-map*') ? 'active' : '' }}">
-                <i class="fa-solid fa-tag me-2"></i> Blog Tag Map
+                <i class="fa-solid fa-link me-2"></i> Blog Tag Map
             </a>
 
         </div>
@@ -230,7 +236,7 @@
 
 
 
-       
+
 
     </div>
 </div>

@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\Admin\UsersController;
@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Master\CitiesController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\Master\BoardingDroppingController;
-use App\Models\Master\States;
 use App\Http\Controllers\Master\StateController;
 use App\Http\Controllers\Master\DistrictController;
 use App\Http\Controllers\Master\SeatingTypeController;
@@ -44,6 +43,7 @@ use App\Http\Controllers\MasterLogController;
 use App\Http\Controllers\Master\AxleTypeController;
 use App\Http\Controllers\Master\MstSeatLayoutController;
 use App\Http\Controllers\Master\BusServiceController;
+use App\Http\Controllers\Master\AnnextureTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -213,6 +213,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'mst-seatlayout/add', [MstSeatLayoutController::class, 'add'])->name('mstSeatLayout.add');
     Route::post('mst-seatlayout/dataTableView', [MstSeatLayoutController::class, 'dataTableView'])->name('mstSeatLayout.dataTableView');
     Route::match(['get', 'post'], 'mst-seatlayout/edit/{encId}', [MstSeatLayoutController::class, 'edit'])->name('mstSeatLayout.edit');
+
+    //Annexture Type
+    Route::get('/annexture-type', [AnnextureTypeController::class, 'annextureType'])->name('annextureType.index');
+    Route::match(['get', 'post'], 'annexture-type/add', [AnnextureTypeController::class, 'add'])->name('annextureType.add');
+    Route::post('annexture-type/dataTableView', [AnnextureTypeController::class, 'dataTableView'])->name('annextureType.dataTableView');
+    Route::match(['get', 'post'], 'annexture-type/edit/{encId}', [AnnextureTypeController::class, 'edit'])->name('annextureType.edit');
     
     
     

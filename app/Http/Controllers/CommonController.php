@@ -90,6 +90,7 @@ class CommonController extends Controller
             'BlogTags' => \App\Models\blogs\BlogTags::class,
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
             'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
+            'AnnextureType' => \App\Models\Master\AnnextureType::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
