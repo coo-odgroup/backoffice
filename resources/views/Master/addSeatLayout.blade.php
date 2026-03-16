@@ -29,6 +29,7 @@ $page_name = 'Add Seat Layout';
 <!-- TABLE -->
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
     {{csrf_field()}}
+    <input type="hidden" name="seat_layout_json" id="seat_layout_json">
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -138,6 +139,14 @@ $page_name = 'Add Seat Layout';
 
                                     </div>
 
+                                    <div class="row mt-4">
+                                        <div class="col-12 d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary" id="saveLayout">
+                                                Save Seat Layout
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     <!-- BUTTONS -->
                                     <!-- <div class="row mt-4">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
@@ -221,6 +230,16 @@ $page_name = 'Add Seat Layout';
             document.getElementById('seat_layout').style.display = 'block';
         });
     }
+
+});
+
+document.getElementById("backoffice-form").addEventListener("submit", function(e) {
+
+    const layout = seatAjax.generateSeatJSON();
+
+    console.log(layout);
+
+    document.getElementById("seat_layout_json").value = JSON.stringify(layout);
 
 });
 </script>
