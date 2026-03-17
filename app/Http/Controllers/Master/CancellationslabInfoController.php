@@ -4,17 +4,18 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\Cancellationslab;
+use App\Models\Master\CancellationslabInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class CancellationslabController extends Controller
+class CancellationslabInfoController extends Controller
 {
- public function index()
+    public function index()
     {
-        return view('Master.cancellationslab');
+        return view('Master.cancellationslabInfo');
     }
 
     public function dataTableView()
@@ -27,29 +28,32 @@ class CancellationslabController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
 
-            $dataQuery = DB::table('mst_cancellationslab as cs')
+            $dataQuery = CancellationSlab::with('slabInfo')
                 ->select(
-                    'cs.id as slab_id',
-                    'cs.slab_name',
-                    'cs.description',
-                    'cs.created_at',
-                    'cs.created_by',
-                    'cs.updated_at',
-                    'cs.updated_by',
-                    'cs.active_status',
-                    DB::raw('(SELECT name FROM users WHERE id = cs.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = cs.updated_by LIMIT 1) as updated_by_name')
-                );
+                    'id',
+                    'id as slab_id',
+                    'slab_name',
+                    'description',
+                    'created_at',
+                    'created_by',
+                    'updated_at',
+                    'updated_by',
+                    'active_status'
+                )
+                ->selectRaw('(SELECT name FROM users WHERE id = mst_cancellationslab.created_by LIMIT 1) as created_by_name')
+                ->selectRaw('(SELECT name FROM users WHERE id = mst_cancellationslab.updated_by LIMIT 1) as updated_by_name');
+
+            // return $dataQuery->get();
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('cs.slab_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('cs.description', 'like', "%{$txtSearch}%");
+                    $q->where('slab_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('description', 'like', "%{$txtSearch}%");
                 });
             }
 
-            $count = $dataQuery->count('cs.id');
+            $count = $dataQuery->count('id');
 
             $start  = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -60,13 +64,13 @@ class CancellationslabController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'cs.slab_name', 3 => 'cs.description', 4 => 'cs.created_by', 5 => 'cs.active_status'];
+                $columns = [2 => 'slab_name', 3 => 'description', 4 => 'created_by', 5 => 'active_status'];
 
                 $orderBy       = request('order');
-                $orderColumn   = $columns[$orderBy[0]['column']] ?? 'cs.slab_name';
+                $orderColumn   = $columns[$orderBy[0]['column']] ?? 'slab_name';
                 $orderType     = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'cs.slab_name';
+                $orderColumn = 'slab_name';
                 $orderType   = 'asc';
             }
 
@@ -96,7 +100,7 @@ class CancellationslabController extends Controller
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in CancellationslabController@dataTableView", [
+            Log::info("Exception occurred in CancellationslabInfoController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -104,7 +108,7 @@ class CancellationslabController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'CancellationslabController',
+                'Controller' => 'CancellationslabInfoController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -115,9 +119,9 @@ class CancellationslabController extends Controller
         }
 
         return response()->json([
-            'recordsTotal'    => $recordsTotal,
+            'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data'            => $data,
+            'data' => $data,
         ]);
     }
 
@@ -135,77 +139,77 @@ class CancellationslabController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/cancellationslab/edit/" . $encId;
+                $redirectPage = "admin/cancellationslab-info/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Cancellationslab::select('id', 'slab_name', 'description');
+                $dataResQry = CancellationSlab::with('slabInfo')->select('*', 'id as slab_id');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
                 if (empty($dataResQry)) {
-                    return redirect("cancellationslab");
+                    return redirect("cancellationslab-info");
                 }
                 $data['row'] = $dataResQry;
+
+                // return $data['row'];
             } else {
                 $id = 0;
-                $redirectPage = "admin/cancellationslab";
+                $redirectPage = "admin/cancellationslab-info";
             }
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
+                DB::beginTransaction();
 
-                $validator = Validator::make(request()->all(), [
-                    'slab_name' => 'bail|required'
-                ], [
-                    'slab_name.required' => 'Slab Name cannot be left blank.'
-                ]);
+                try {
 
-                if ($validator->fails()) {
-                    return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
+                    $slab_id   = request('slab_id');
+                    $durations = request('duration');
+                    $deductions = request('deduction');
 
-                    $slab_name = htmlEncode(request('slab_name'));
-                    $description = htmlEncode(request('description'));
-
-                    $duplicate = Cancellationslab::select('id')->where(['slab_name' => $slab_name]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
+                    if ($id > 0) {
+                        DB::table('mst_cancellationslab_info')
+                            ->where('slab_id', $slab_id)
+                            ->delete();
                     }
 
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'Slab already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? Cancellationslab::find($id) : new Cancellationslab();
-                        $obj->slab_name = $slab_name;
-                        $obj->description = $description;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
+                    $insertData = [];
 
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
+                    foreach ($durations as $key => $duration) {
 
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Cancellation Slab ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                        $insertData[] = [
+                            'slab_id' => $slab_id,
+                            'duration' => $duration,
+                            'deduction' => $deductions[$key] ?? 0,
+                            'active_status' => 1,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
                     }
+
+                    DB::table('mst_cancellationslab_info')->insert($insertData);
 
                     DB::commit();
+
+                    session()->flash('level', 'success');
+                    session()->flash('message', 'Cancellation Slab Info ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+
                     return redirect($redirectPage);
+                } catch (\Exception $e) {
+
+                    DB::rollBack();
+
+                    return response()->json([
+                        'status' => false,
+                        'message' => $e->getMessage()
+                    ]);
                 }
             }
         } catch (\Throwable $t) {
             Log::error("Error", [
-                'Controller' => 'CancellationslabController',
+                'Controller' => 'CancellationslabInfoController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
@@ -219,7 +223,7 @@ class CancellationslabController extends Controller
                 'message'   => $errorMsg
             ])->withInput();
         }
-        return view('Master.addCancellationslab', compact('data'));
+        return view('Master.addCancellationslabInfo', compact('data'));
     }
 
     public function edit($encId)

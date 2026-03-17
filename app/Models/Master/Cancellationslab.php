@@ -12,4 +12,9 @@ class Cancellationslab extends Model
         'description',
         'active_status'
     ];
+
+    public function slabInfo()
+    {
+        return $this->hasMany(CancellationSlabInfo::class, 'slab_id', 'id');
+    }
 }

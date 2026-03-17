@@ -87,6 +87,7 @@ class CommonController extends Controller
             'BlogTags' => \App\Models\blogs\BlogTags::class,
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
             'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
+            'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -503,6 +504,29 @@ class CommonController extends Controller
             Log::error("Error in CommonController@getBrandList", [
                 'error' => $t->getMessage()
             ]);
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+    public function getCancellationslabList()
+    {
+        try {
+
+            $data = DB::table('mst_cancellationslab')
+                ->select('id', 'slab_name')
+                ->where('active_status', 1)
+                ->orderBy('slab_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
 
             return response()->json([
                 'status' => false,

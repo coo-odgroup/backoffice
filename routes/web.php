@@ -40,6 +40,7 @@ use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Master\CancellationslabController;
+use App\Http\Controllers\Master\CancellationslabInfoController;
 use App\Http\Controllers\MasterLogController;
 
 /*
@@ -83,6 +84,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-country-list', [CommonController::class, 'getCountryList']);
     Route::post('get-brand-list', [CommonController::class, 'getBrandList'])->name('common.getBrandList');
     Route::post('get-blogtags-list', [CommonController::class, 'getBlogTagsList']);
+    Route::post('get-cancellationslab-list', [CommonController::class, 'getCancellationslabList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -293,6 +295,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'cancellationslab/add', [CancellationslabController::class, 'add'])->name('cancellationslab.add');
     Route::post('cancellationslab/dataTableView', [CancellationslabController::class, 'dataTableView'])->name('cancellationslab.dataTableView');
     Route::match(['get', 'post'], 'cancellationslab/edit/{encId}', [CancellationslabController::class, 'edit'])->name('cancellationslab.edit');
+
+    // Cancellation Slab
+    Route::get('/cancellationslab-info', [CancellationslabInfoController::class, 'index'])->name('cancellationslab-info.index');
+    Route::match(['get', 'post'], 'cancellationslab-info/add', [CancellationslabInfoController::class, 'add'])->name('cancellationslab-info.add');
+    Route::post('cancellationslab-info/dataTableView', [CancellationslabInfoController::class, 'dataTableView'])->name('cancellationslab-info.dataTableView');
+    Route::match(['get', 'post'], 'cancellationslab-info/edit/{encId}', [CancellationslabInfoController::class, 'edit'])->name('cancellationslab-info.edit');
 
     // ---------------------------------------------------------------------------------------------------------------
 
