@@ -566,20 +566,26 @@ class CommonController extends Controller
         }
     }
     
-    public function getBusModelsList()
+    public function getBusModelsList(Request $request)
     {
         try {
 
-            $data = DB::table('mst_bus_models')
+            $query = DB::table('mst_bus_models')
                 ->select('id', 'model_name')
-                ->where('active_status', 1)
-                ->orderBy('model_name', 'asc')
-                ->get();
+                ->where('active_status', 1);
+
+            // ✅ Filter by brand_id (MAIN CHANGE)
+            if (!empty($request->brand_id)) {
+                $query->where('brand_id', $request->brand_id);
+            }
+
+            $data = $query->orderBy('model_name', 'asc')->get();
 
             return response()->json([
                 'status' => true,
                 'data'   => $data
             ]);
+
         } catch (\Throwable $t) {
 
             return response()->json([

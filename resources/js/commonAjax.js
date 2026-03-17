@@ -1324,12 +1324,13 @@ export function loadAnnexureTypeList(selected_id = 0) {
             });
 }
 
-export function loadBusModelsList(model_id = 0) {
+export function loadBusModelsList(model_id = '', brand_id = '') {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-busmodels-list",
         data: {
             model_id: model_id,
+            brand_id: brand_id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
