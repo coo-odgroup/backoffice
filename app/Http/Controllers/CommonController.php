@@ -83,10 +83,14 @@ class CommonController extends Controller
             'Reason' => \App\Models\Master\Reason::class,
             'Brand' => \App\Models\Master\Brand::class,
             'BusModel' => \App\Models\Master\BusModel::class,
+            'AxleType' => \App\Models\Master\AxleType::class,
+            'MstSeatLayout' => \App\Models\Master\MstSeatLayout::class,
+            'BusService' => \App\Models\Master\BusService::class,
             'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
             'BlogTags' => \App\Models\blogs\BlogTags::class,
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
             'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
+            'AnnextureType' => \App\Models\Master\AnnextureType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
         ];
 

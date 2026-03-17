@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Master\CitiesController;
 use App\Http\Controllers\CommonController;
 use App\Http\Controllers\Master\BoardingDroppingController;
-use App\Models\Master\States;
 use App\Http\Controllers\Master\StateController;
 use App\Http\Controllers\Master\DistrictController;
 use App\Http\Controllers\Master\SeatingTypeController;
@@ -42,6 +41,10 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Master\CancellationslabController;
 use App\Http\Controllers\Master\CancellationslabInfoController;
 use App\Http\Controllers\MasterLogController;
+use App\Http\Controllers\Master\AxleTypeController;
+use App\Http\Controllers\Master\MstSeatLayoutController;
+use App\Http\Controllers\Master\BusServiceController;
+use App\Http\Controllers\Master\AnnextureTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -189,14 +192,35 @@ Route::prefix('admin')->group(function () {
     Route::post('brand/dataTableView', [BrandController::class, 'dataTableView'])->name('brand.dataTableView');
     Route::match(['get', 'post'], 'brand/edit/{encId}', [BrandController::class, 'edit'])->name('brand.edit');
 
-    //Bus Brand
+    //Bus Model
     Route::get('/bus-model', [BusModelController::class, 'busModel'])->name('busModel.index');
     Route::match(['get', 'post'], 'bus-model/add', [BusModelController::class, 'add'])->name('busModel.add');
     Route::post('bus-model/dataTableView', [BusModelController::class, 'dataTableView'])->name('busModel.dataTableView');
     Route::match(['get', 'post'], 'bus-model/edit/{encId}', [BusModelController::class, 'edit'])->name('busModel.edit');
+
+    //Axle Type
+    Route::get('/axle-type', [AxleTypeController::class, 'axleType'])->name('axleType.index');
+    Route::match(['get', 'post'], 'axle-type/add', [AxleTypeController::class, 'add'])->name('axleType.add');
+    Route::post('axle-type/dataTableView', [AxleTypeController::class, 'dataTableView'])->name('axleType.dataTableView');
+    Route::match(['get', 'post'], 'axle-type/edit/{encId}', [AxleTypeController::class, 'edit'])->name('axleType.edit');
     
+    //Bus Service
+    Route::get('/bus-service', [BusServiceController::class, 'busService'])->name('busService.index');
+    Route::match(['get', 'post'], 'bus-service/add', [BusServiceController::class, 'add'])->name('busService.add');
+    Route::post('bus-service/dataTableView', [BusServiceController::class, 'dataTableView'])->name('busService.dataTableView');
+    Route::match(['get', 'post'], 'bus-service/edit/{encId}', [BusServiceController::class, 'edit'])->name('busService.edit');
     
-    
+    //Seat Layout
+    Route::get('/mst-seatlayout', [MstSeatLayoutController::class, 'mstSeatLayout'])->name('mstSeatLayout.index');
+    Route::match(['get', 'post'], 'mst-seatlayout/add', [MstSeatLayoutController::class, 'add'])->name('mstSeatLayout.add');
+    Route::post('mst-seatlayout/dataTableView', [MstSeatLayoutController::class, 'dataTableView'])->name('mstSeatLayout.dataTableView');
+    Route::match(['get', 'post'], 'mst-seatlayout/edit/{encId}', [MstSeatLayoutController::class, 'edit'])->name('mstSeatLayout.edit');
+
+    //Annexture Type
+    Route::get('/annexture-type', [AnnextureTypeController::class, 'annextureType'])->name('annextureType.index');
+    Route::match(['get', 'post'], 'annexture-type/add', [AnnextureTypeController::class, 'add'])->name('annextureType.add');
+    Route::post('annexture-type/dataTableView', [AnnextureTypeController::class, 'dataTableView'])->name('annextureType.dataTableView');
+    Route::match(['get', 'post'], 'annexture-type/edit/{encId}', [AnnextureTypeController::class, 'edit'])->name('annextureType.edit');
     
     
     
@@ -278,12 +302,6 @@ Route::prefix('admin')->group(function () {
     Route::post('blog-tags/dataTableView', [BlogTagsController::class, 'dataTableView'])->name('blog-tags.dataTableView');
     Route::match(['get', 'post'], 'blog-tags/edit/{encId}', [BlogTagsController::class, 'edit'])->name('blog-tags.edit');
 
-    // Blog Tag Map
-    Route::get('/blog-tag-map', [BlogTagMapController::class, 'index'])->name('blog-tag-map.index');
-    Route::match(['get', 'post'], 'blog-tag-map/add', [BlogTagMapController::class, 'add'])->name('blog-tag-map.add');
-    Route::post('blog-tag-map/dataTableView', [BlogTagMapController::class, 'dataTableView'])->name('blog-tag-map.dataTableView');
-    Route::match(['get', 'post'], 'blog-tag-map/edit/{encId}', [BlogTagMapController::class, 'edit'])->name('blog-tag-map.edit');
-
     // Bus Amenities
     Route::get('/bus-amenities', [BusAmenitiesController::class, 'index'])->name('bus-amenities.index');
     Route::match(['get', 'post'], 'bus-amenities/add', [BusAmenitiesController::class, 'add'])->name('bus-amenities.add');
@@ -296,11 +314,18 @@ Route::prefix('admin')->group(function () {
     Route::post('cancellationslab/dataTableView', [CancellationslabController::class, 'dataTableView'])->name('cancellationslab.dataTableView');
     Route::match(['get', 'post'], 'cancellationslab/edit/{encId}', [CancellationslabController::class, 'edit'])->name('cancellationslab.edit');
 
-    // Cancellation Slab
+    // Cancellation Slab Info
     Route::get('/cancellationslab-info', [CancellationslabInfoController::class, 'index'])->name('cancellationslab-info.index');
     Route::match(['get', 'post'], 'cancellationslab-info/add', [CancellationslabInfoController::class, 'add'])->name('cancellationslab-info.add');
     Route::post('cancellationslab-info/dataTableView', [CancellationslabInfoController::class, 'dataTableView'])->name('cancellationslab-info.dataTableView');
     Route::match(['get', 'post'], 'cancellationslab-info/edit/{encId}', [CancellationslabInfoController::class, 'edit'])->name('cancellationslab-info.edit');
+
+    // Blog Tag Map
+    Route::get('/blog-tag-map', [BlogTagMapController::class, 'index'])->name('blog-tag-map.index');
+    Route::match(['get', 'post'], 'blog-tag-map/add', [BlogTagMapController::class, 'add'])->name('blog-tag-map.add');
+    Route::post('blog-tag-map/dataTableView', [BlogTagMapController::class, 'dataTableView'])->name('blog-tag-map.dataTableView');
+    Route::match(['get', 'post'], 'blog-tag-map/edit/{encId}', [BlogTagMapController::class, 'edit'])->name('blog-tag-map.edit');
+
 
     // ---------------------------------------------------------------------------------------------------------------
 

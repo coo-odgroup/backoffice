@@ -14,33 +14,6 @@ class StateController extends Controller
 {
     public function states()
     {
-        $cities = [
-            'Baripada',
-            'Balasore',
-            'SORO',
-            'Bhadrak',
-            'Cuttack',
-            'Bhubaneswar',
-            'Khordha',
-            'Balugoan',
-            'Chatrapur',
-            'Berhampur'
-        ];
-
-        $combinations = [];
-
-        for ($i = 0; $i < count($cities); $i++) {
-            for ($j = $i + 1; $j < count($cities); $j++) {
-
-                // Avoid same city (auto avoided because $j = $i + 1)
-                $from = $cities[$i];
-                $to   = $cities[$j];
-
-                $combinations[] = $from.'->'.$to ;
-            }
-        }
-      
-        log::info($combinations);
         return view('master.states');
     }
 
