@@ -258,6 +258,25 @@ class AnnextureController extends Controller
         ]);
     }
 
+
+    public function getByType(Request $request)
+    {
+        $typeId = (int) $request->annexture_type_id;
+
+           $data = DB::table('mst_annexture')
+            ->select('annexture_name', 'annexture_value')
+            ->where('annexture_type_id', $typeId)
+            ->where('active_status', 1)
+            ->orderBy('annexture_value', 'asc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
+        ]);
+    }
+
+
     public function checkExists(Request $request)
     {
         $exists = DB::table('mst_annexture')

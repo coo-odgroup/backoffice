@@ -224,12 +224,13 @@ Route::prefix('admin')->group(function () {
     Route::post('annexture-type/dataTableView', [AnnextureTypeController::class, 'dataTableView'])->name('annextureType.dataTableView');
     Route::match(['get', 'post'], 'annexture-type/edit/{encId}', [AnnextureTypeController::class, 'edit'])->name('annextureType.edit');
 
-    // Boarding & Dropping Points
+    //Annexture
     Route::get('/annexture', [AnnextureController::class, 'annexture'])->name('annexture.index');
     Route::match(['get', 'post'], 'annexture/add', [AnnextureController::class, 'add'])->name('annexture.add');
     Route::post('annexture/dataTableView', [AnnextureController::class, 'dataTableView'])->name('annexture.dataTableView');
     Route::match(['get', 'post'], 'annexture/edit/{encId}', [AnnextureController::class, 'edit'])->name('annexture.edit');
     Route::post('admin/annexture/check-exists', [AnnextureController::class, 'checkExists'])->name('annexture.checkExists');
+    Route::get('annexture/get-by-type', [AnnextureController::class, 'getByType'])->name('annexture.getByType');
 
     
     

@@ -94,6 +94,43 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 </div>
 
+
+
+
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <div class="row mb-3">
+                                            <div class="col-md-8"> <!-- 👈 makes it smaller horizontally -->
+                                                <div class="card shadow-sm border-0 d-none" id="annexturePreviewCard">
+
+                                                    <div class="card-header bg-primary text-white py-2 px-3">
+                                                        <strong>Existing Annexture Data</strong>
+                                                    </div>
+
+                                                    <div class="card-body p-2">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm table-striped table-hover align-middle mb-0">
+                                                                <thead class="table-light">
+                                                                    <tr>
+                                                                        <th style="width: 50px;">#</th>
+                                                                        <th>Annexture Name</th>
+                                                                        <th style="width: 120px;">Value</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="annexturePreviewBody">
+                                                                    <!-- Dynamic -->
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                                 <!-- BUTTONS -->
                                 <div class="row mt-4">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
@@ -272,9 +309,79 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             success: function(res) {
 
-                if (res.exists) {
-                    commonAjax.confirmAlert('Annexture Type already exists');
-                    $input.val('').focus();
+                let html = '';
+
+                if (res.data.length > 0) {
+
+                    res.data.forEach((item, index) => {
+                        html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.annexture_name}</td>
+                    <td>${item.annexture_value}</td>
+                </tr>
+            `;
+                    });
+
+
+                    $('#annexturePreviewBody').html(html);
+                    $('#annexturePreviewCard').removeClass('d-none');
+
+                } else {
+
+                    $('#annexturePreviewCard').addClass('d-none');
+                    $('#annexturePreviewBody').html('');
+                }
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+    $(document).on('change', '#selAnnexureType', function() {
+
+        let typeId = $(this).val();
+
+        if (!typeId || typeId == 0) {
+            $('#annexturePreviewCard').addClass('d-none');
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('annexture.getByType') }}",
+            type: "GET",
+            data: {
+                annexture_type_id: typeId
+            },
+            success: function(res) {
+
+                let html = '';
+
+                if (res.data.length > 0) {
+
+                    res.data.forEach((item, index) => {
+                        html += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${item.annexture_name}</td>
+                    <td>${item.annexture_value}</td>
+                </tr>
+            `;
+                    });
+
+                    $('#annexturePreviewBody').html(html);
+                    $('#annexturePreviewCard').removeClass('d-none');
+
+                } else {
+
+                    // ❌ HIDE completely when no data
+                    $('#annexturePreviewCard').addClass('d-none');
+                    $('#annexturePreviewBody').html('');
                 }
             }
         });
