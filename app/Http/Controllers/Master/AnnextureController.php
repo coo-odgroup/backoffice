@@ -261,9 +261,9 @@ class AnnextureController extends Controller
     public function checkExists(Request $request)
     {
         $exists = DB::table('mst_annexture')
-            ->where('cities_id', $request->city_id)
-            ->where('type', $request->type)
-            ->whereRaw('LOWER(brd_drp_point) = ?', [strtolower(trim($request->point))])
+            ->where('annexture_type_id', $request->annexture_type_id)
+            ->where('LOWER(annexture_name) = ?', $request->annexture_name)
+            ->whereRaw('LOWER(annexture_value) = ?', [strtolower(trim($request->annexture_value))])
             ->where('active_status', 1)
             ->exists();
 
