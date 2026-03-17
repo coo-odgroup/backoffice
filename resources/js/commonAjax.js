@@ -1289,3 +1289,184 @@ export function loadCancellationslabList(slab_id = 0) {
         },
     });
 }
+
+export function loadBusModelsList(model_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-busmodels-list",
+        data: {
+            model_id: model_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Bus Model</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        model_id > 0 && app.id == model_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.model_name}
+                                </option>`;
+                });
+            }
+
+            $("#busModel").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Bus Model");
+        },
+    });
+}
+
+export function loadAxleTypeList(model_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-axletype-list",
+        data: {
+            model_id: model_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Axle Type</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        model_id > 0 && app.id == model_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.model_name}
+                                </option>`;
+                });
+            }
+
+            $("#axleType").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Axle Type");
+        },
+    });
+}
+
+export function loadBusServicesList(bus_service_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-busservices-list",
+        data: {
+            bus_service_id: bus_service_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Bus Service</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        bus_service_id > 0 && app.id == bus_service_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.bus_service_name}
+                                </option>`;
+                });
+            }
+
+            $("#busService").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Bus Service");
+        },
+    });
+}
+
+export function loadSeatTypeList(seat_type_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-seattype-list",
+        data: {
+            seat_type_id: seat_type_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Seat Type</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        seat_type_id > 0 && app.id == seat_type_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.seat_type}
+                                </option>`;
+                });
+            }
+
+            $("#seatType").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Seat Type");
+        },
+    });
+}
+
+export function loadSeatLayoutList(seat_layout_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-seatlayout-list",
+        data: {
+            seat_layout_id: seat_layout_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Seat Layout</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        seat_layout_id > 0 && app.id == seat_layout_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.seat_layout}
+                                </option>`;
+                });
+            }
+
+            $("#seatLayout").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Seat Layout");
+        },
+    });
+}
+
+export function loadAnnextureList(annexture_type = '', selected_id = 0) {
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-annexture-list",
+        data: {
+            annexture_type: annexture_type,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+
+            let options = '<option value="">Select Option</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                $.each(response.data, function (index, item) {
+
+                    let selected = (selected_id == item.id) ? "selected" : "";
+
+                    options += `<option value="${item.id}" ${selected}>
+                                    ${item.annexture_name}
+                                </option>`;
+                });
+            }
+
+            $(".annexture").html(options);
+        },
+
+        error: function () {
+            console.log("Error loading annexture list");
+        },
+    });
+}

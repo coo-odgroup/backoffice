@@ -88,6 +88,14 @@ Route::prefix('admin')->group(function () {
     Route::post('get-brand-list', [CommonController::class, 'getBrandList'])->name('common.getBrandList');
     Route::post('get-blogtags-list', [CommonController::class, 'getBlogTagsList']);
     Route::post('get-cancellationslab-list', [CommonController::class, 'getCancellationslabList']);
+    Route::post('get-annexture-list', [CommonController::class, 'getAnnextureList']);
+
+    // Common Bus Info
+    Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
+    Route::post('get-axletype-list', [CommonController::class, 'getAxleTypeList']);
+    Route::post('get-busservices-list', [CommonController::class, 'getBusServicesList']);
+    Route::post('get-seattype-list', [CommonController::class, 'getSeatTypeList']);
+    Route::post('get-seatlayout-list', [CommonController::class, 'getSeatLayoutList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');

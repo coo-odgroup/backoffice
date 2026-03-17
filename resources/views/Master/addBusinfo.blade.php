@@ -13,7 +13,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
-
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -127,8 +126,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             </div>
 
                                                             <div class="col-md-3 mb-1">
-                                                                <label for="model">Model</label>
-                                                                <select class="form-select" id="model" name="model">
+                                                                <label for="busModel">Model</label>
+                                                                <select class="form-select" id="busModel" name="model">
                                                                     <option>Select Model</option>
                                                                 </select>
                                                             </div>
@@ -149,7 +148,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                             <div class="col-md-2 mb-1">
                                                                 <label for="acType">AC Type<span class="text-danger">*</span></label>
-                                                                <select class="form-select" id="acType" name="acType">
+                                                                <select class="form-select annexture" id="acType" name="acType">
                                                                     <option>Select AC Type</option>
                                                                 </select>
                                                             </div>
@@ -1010,22 +1009,40 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
 
         commonAjax.initSelect2('#brand', 'Select Brand');
-        commonAjax.initSelect2('#model', 'Select Model');
+        commonAjax.initSelect2('#busModel', 'Select Model');
         commonAjax.initSelect2('#axleType', 'Select Axxle Type');
         commonAjax.initSelect2('#busService', 'Select Bus Service');
-        commonAjax.initSelect2('#acType', 'Select AC Type');
+        commonAjax.initSelect2('.annexture', 'Select AC Type');
         commonAjax.initSelect2('#seatType', 'Select Seat Type');
         commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
 
-        commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
+        // commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
 
-        let category_id = <?= $data['row']->category_id ?? '0' ?>
+        // let category_id = <?= $data['row']->category_id ?? '0' ?>
 
-        commonAjax.loadAmenityCategory(category_id);
+        // commonAjax.loadAmenityCategory(category_id);
 
-         let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
+        let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
  
         commonAjax.loadBrandList(selectedBrand);
+
+        let model_id = "{{ $data['row']->model_id ?? '' }}";
+        commonAjax.loadBusModelsList(model_id);
+
+        let axle_id = "{{ $data['row']->axle_id ?? '' }}";
+        commonAjax.loadAxleTypeList(axle_id);
+
+        let bus_service_id = "{{ $data['row']->bus_service_id ?? '' }}";
+        commonAjax.loadBusServicesList(bus_service_id);
+
+        let seat_type_id = "{{ $data['row']->seat_type_id ?? '' }}";
+        commonAjax.loadSeatTypeList(seat_type_id);
+
+        let seat_layout_id = "{{ $data['row']->seat_layout_id ?? '' }}";
+        commonAjax.loadSeatLayoutList(seat_layout_id);
+
+        let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
+        commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
     });
 
     $('#backoffice-form').on('submit', function(e) {
