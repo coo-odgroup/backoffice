@@ -28,12 +28,18 @@ export function createGrid(deck, rows, cols) {
     for (let r = 1; r <= rows; r++) {
         html += `<tr>`;
         for (let c = 1; c <= cols; c++) {
+
+            let id = `${deck}_${r}_${c}`;
+
             html += `
                 <td class="seat"
                     contenteditable="true"
                     data-row="${r}"
                     data-col="${c}"
                     data-deck="${deck}">
+                    <input type="hidden" 
+                        name="seat[${deck}][${r}][${c}]" 
+                        id="seat_${id}">
                 </td>`;
         }
         html += `</tr>`;
@@ -130,6 +136,12 @@ export function validateSeat(td) {
     const col = +td.dataset.col;
 
     /* ================= EMPTY CASE ================= */
+
+    const hidden = td.querySelector('input[type="hidden"]');
+
+    if (hidden) {
+        hidden.value = name;
+    }
 
     if (!name) {
 
@@ -292,4 +304,84 @@ function removePreview(deck, row, col) {
             el.remove();
         }
     });
+}
+
+export function generateSeatJSON() {
+
+    const seat_layout_name_id = 1;
+    const created_by = 1;
+
+    let seats = [];
+
+    document.querySelectorAll(".seat").forEach(td => {
+
+        const seat = td.innerText.trim();
+        const deck = td.dataset.deck;
+        const row = parseInt(td.dataset.row);
+        const col = parseInt(td.dataset.col);
+
+        const berth_type = deck === "UPPER" ? 1 : 2;
+
+        const next = document.querySelector(
+            `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col+1}"]`
+        );
+
+        let seat_class = 0; // default blank
+
+        // BLANK CELL
+        if (!seat) {
+
+            seats.push({
+                seat_layout_name_id,
+                seat_class: 0,
+                berth_type,
+                seat_text: null,
+                row_number: row,
+                col_number: col,
+                is_window: 0,
+                is_aisle: 0,
+                created_by
+            });
+
+            return;
+        }
+
+        // SLEEPER CHECK
+        if (next && next.innerText.trim() === seat) {
+
+            seats.push({
+                seat_layout_name_id,
+                seat_class: 2,
+                berth_type,
+                seat_text: seat,
+                row_number: row,
+                col_number: col,
+                is_window: 1,
+                is_aisle: 0,
+                created_by
+            });
+
+            next.dataset.skip = "true";
+            return;
+        }
+
+        // SKIP second sleeper cell
+        if (td.dataset.skip === "true") return;
+
+        // SEATER
+        seats.push({
+            seat_layout_name_id,
+            seat_class: 1,
+            berth_type,
+            seat_text: seat,
+            row_number: row,
+            col_number: col,
+            is_window: 1,
+            is_aisle: 0,
+            created_by
+        });
+
+    });
+
+    return seats;
 }

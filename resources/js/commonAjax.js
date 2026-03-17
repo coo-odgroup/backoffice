@@ -1261,6 +1261,35 @@ export function loadBrandList(selected_brand_id = 0) {
     });
 }
 
+export function loadCancellationslabList(slab_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-cancellationslab-list",
+        data: {
+            slab_id: slab_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Cancellation Slab</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        slab_id > 0 && app.id == slab_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.slab_name}
+                                </option>`;
+                });
+            }
+
+            $("#slab").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Cancellation Slab");
+        },
+    });
+}
+
 export function loadAnnexureTypeList(selected_id = 0) {
 
     $(".selAnnexureType").html('<option value="">Loading...</option>');
@@ -1283,15 +1312,14 @@ export function loadAnnexureTypeList(selected_id = 0) {
 
                     options += `<option value="${item.id}" ${selected}>
                                     ${item.annexture_type}
-                                </option>`;
+                                                  </option>`;
                 });
             }
-
-            $(".selAnnexureType").html(options);
+      $(".selAnnexureType").html(options);
         },
 
         error: function () {
             $(".selAnnexureType").html('<option value="">-- Select Annexure Type --</option>');
         }
-    });
+            });
 }

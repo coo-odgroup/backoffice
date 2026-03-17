@@ -69,80 +69,145 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
 
                                     <!-- ================= STEP 1 ================= -->
-                                    <div id="step1">
+                                   <div id="step1">
 
-                                        <div class="row mb-3">
+                                        <!-- ROW 1 (8 + 4) -->
+                                        <div class="row mb-1">
 
-                                            <div class="col-md-4 mb-3">
-                                                <label>Operator<span class="text-danger">*</span></label>
-                                                <select class="form-select">
-                                                    <option value="0">Select Operator</option>
-                                                </select>
+                                           
+                                                <!-- LEFT SIDE (8 columns) -->
+                                                <div class="col-md-9">
+                                                     <div class="p-3 border rounded bg-white">
+                                                        <div class="row">
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="selOpeator">Operator<span class="text-danger">*</span></label>
+                                                                <select class="form-select" name="selOpeator" id="selOpeator">
+                                                                    <option value="0">Select Operator</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="busName">Bus Name<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" placeholder="Bus Name" name="busName" id="busName">
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="busNumber">Bus Number<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" placeholder="Bus Number" name="busNumber" id="busNumber">
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="via">Via<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" placeholder="Via" name="via" id="via">
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="selAmenity">Amenities<span class="text-danger">*</span></label>
+                                                                <select class="form-select" name="selAmenity" id="selAmenity">
+                                                                    <option>Select Amenities</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="maxSeat">Max Seat Booked<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" placeholder="Max Seat" name="maxSeat" id="maxSeat">
+                                                            </div>
+
+                                                        </div>
+                                                        <hr class="wide">
+                                                        <!-- SECOND SECTION -->
+                                                        <div class="row">
+
+                                                            <div class="col-md-3 mb-1">
+                                                                <label for="brand">Brand</label>
+                                                                <select class="form-select" id="brand" name="brand">
+                                                                    <option>Select Brand</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-3 mb-1">
+                                                                <label for="model">Model</label>
+                                                                <select class="form-select" id="model" name="model">
+                                                                    <option>Select Model</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-3 mb-1">
+                                                                <label for="axleType">Axle Type</label>
+                                                                <select class="form-select" id="axleType" name="axleType">
+                                                                    <option>Select Axle Type</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-3 mb-1">
+                                                                <label for="busService">Bus Service</label>
+                                                                <select class="form-select" id="busService" name="busService">
+                                                                    <option>Select Bus Service</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-2 mb-1">
+                                                                <label for="acType">AC Type<span class="text-danger">*</span></label>
+                                                                <select class="form-select" id="acType" name="acType">
+                                                                    <option>Select AC Type</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-2 mb-1">
+                                                                <label for="seatType">Seat Type<span class="text-danger">*</span></label>
+                                                                <select class="form-select" id="seatType" name="seatType">
+                                                                    <option>Select Seat Type</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-2 mb-1">
+                                                                <label for="seatLayout">Seat Layout<span class="text-danger">*</span></label>
+                                                                <select class="form-select" id="seatLayout" name="seatLayout">
+                                                                    <option>Select Seat Layout</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="col-md-2 mb-1">
+                                                                <label for="busType">Bus Type<span class="text-danger">*</span></label>
+                                                                <span id="busType"></span>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <hr class="wide">
+                                                     </div>
+                                                </div>
+                                           
+                                            <!-- RIGHT SIDE (4 columns) -->
+                                            <div class="col-md-3">
+                                              <div class="p-3 border rounded bg-white">
+                                                    <div class="mb-3">
+                                                        <label>Cancellation Slab<span class="text-danger">*</span></label>
+                                                        <select class="form-select">
+                                                            <option>Select Slab</option>
+                                                        </select>
+                                                    </div>
+                                              </div>
                                             </div>
+                                        </div>
 
-                                            <div class="col-md-4 mb-3">
-                                                <label>Bus Name<span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" placeholder="Bus Name">
-                                            </div>
-
-                                            <div class="col-md-4 mb-3">
-                                                <label>Bus Number<span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" placeholder="Bus Number">
-                                            </div>
-
-                                            <div class="col-md-4 mb-3">
-                                                <label>Via<span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" placeholder="Via">
-                                            </div>
-
-                                            <div class="col-md-4 mb-3">
-                                                <label>Amenities<span class="text-danger">*</span></label>
-                                                <select class="form-select">
-                                                    <option>Select Amenities</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-4 mb-3">
-                                                <label>Seat Type<span class="text-danger">*</span></label>
-                                                <select class="form-select">
-                                                    <option>Select Seat Type</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-4 mb-3">
-                                                <label>Bus Type<span class="text-danger">*</span></label>
-                                                <select class="form-select">
-                                                    <option>Select Bus Type</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-4 mb-3">
-                                                <label>Max Seat Booked<span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" placeholder="Max Seat">
-                                            </div>
+                                        <!-- THIRD SECTION -->
+                                        <div class="row">
 
                                             <div class="col-md-4 mb-3 d-flex align-items-center">
                                                 <input type="checkbox" class="me-2">
                                                 <label class="mb-0">Has IRCTC Module</label>
                                             </div>
 
-                                            <div class="col-md-4 mb-3">
-                                                <label>Cancellation Slab<span class="text-danger">*</span></label>
-                                                <select class="form-select">
-                                                    <option>Select Slab</option>
-                                                </select>
-                                            </div>
-
                                         </div>
 
-                                        <!-- STEP 1 BUTTON -->
+                                        <!-- BUTTON -->
                                         <div class="text-center mt-4">
                                             <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
                                         </div>
 
                                     </div>
-
-
 
                                     <!-- ================= STEP 2 ================= -->
 
@@ -944,11 +1009,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initSelect2('#brand', 'Select Brand');
+        commonAjax.initSelect2('#model', 'Select Model');
+        commonAjax.initSelect2('#axleType', 'Select Axxle Type');
+        commonAjax.initSelect2('#busService', 'Select Bus Service');
+        commonAjax.initSelect2('#acType', 'Select AC Type');
+        commonAjax.initSelect2('#seatType', 'Select Seat Type');
+        commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
+
         commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
 
         let category_id = <?= $data['row']->category_id ?? '0' ?>
 
         commonAjax.loadAmenityCategory(category_id);
+
+         let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
+ 
+        commonAjax.loadBrandList(selectedBrand);
     });
 
     $('#backoffice-form').on('submit', function(e) {

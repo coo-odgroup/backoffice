@@ -39,6 +39,7 @@ use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Master\CancellationslabController;
+use App\Http\Controllers\Master\CancellationslabInfoController;
 use App\Http\Controllers\MasterLogController;
 use App\Http\Controllers\Master\AxleTypeController;
 use App\Http\Controllers\Master\MstSeatLayoutController;
@@ -87,6 +88,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-country-list', [CommonController::class, 'getCountryList']);
     Route::post('get-brand-list', [CommonController::class, 'getBrandList'])->name('common.getBrandList');
     Route::post('get-blogtags-list', [CommonController::class, 'getBlogTagsList']);
+    Route::post('get-cancellationslab-list', [CommonController::class, 'getCancellationslabList']);
     Route::post('get-annexure-type-list', [CommonController::class, 'getAnnexureTypeList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
@@ -322,6 +324,11 @@ Route::prefix('admin')->group(function () {
     Route::post('cancellationslab/dataTableView', [CancellationslabController::class, 'dataTableView'])->name('cancellationslab.dataTableView');
     Route::match(['get', 'post'], 'cancellationslab/edit/{encId}', [CancellationslabController::class, 'edit'])->name('cancellationslab.edit');
 
+    // Cancellation Slab Info
+    Route::get('/cancellationslab-info', [CancellationslabInfoController::class, 'index'])->name('cancellationslab-info.index');
+    Route::match(['get', 'post'], 'cancellationslab-info/add', [CancellationslabInfoController::class, 'add'])->name('cancellationslab-info.add');
+    Route::post('cancellationslab-info/dataTableView', [CancellationslabInfoController::class, 'dataTableView'])->name('cancellationslab-info.dataTableView');
+    Route::match(['get', 'post'], 'cancellationslab-info/edit/{encId}', [CancellationslabInfoController::class, 'edit'])->name('cancellationslab-info.edit');
 
     // Blog Tag Map
     Route::get('/blog-tag-map', [BlogTagMapController::class, 'index'])->name('blog-tag-map.index');

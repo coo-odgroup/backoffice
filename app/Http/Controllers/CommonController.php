@@ -91,6 +91,7 @@ class CommonController extends Controller
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
             'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
+            'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
         ];
 
@@ -524,11 +525,11 @@ class CommonController extends Controller
                 ->select('id', 'annexture_type')
                 ->where('active_status', 1)
                 ->orderBy('annexture_type', 'ASC')
-                ->get();
+                 ->get();
 
             return response()->json([
                 'status' => true,
-                'data'   => $types
+                 'data'   => $types
             ]);
 
         } catch (\Exception $e) {
@@ -538,6 +539,30 @@ class CommonController extends Controller
                  'error'  => $e->getMessage(),
                 'data'   => []
             ], 500);
+                    }
+    }
+
+
+    public function getCancellationslabList()
+    {
+        try {
+
+            $data = DB::table('mst_cancellationslab')
+                ->select('id', 'slab_name')
+                ->where('active_status', 1)
+                ->orderBy('slab_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
         }
     }
 }
