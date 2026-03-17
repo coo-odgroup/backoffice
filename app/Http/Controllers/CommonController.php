@@ -91,6 +91,7 @@ class CommonController extends Controller
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
             'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
+            'Annexture' => \App\Models\Master\Annexture::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -514,4 +515,30 @@ class CommonController extends Controller
             ]);
         }
     }
+
+    public function getAnnexureTypeList(Request $request)
+    {
+        try {
+
+            $types = DB::table('mst_annexture_type')
+                ->select('id', 'annexture_type')
+                ->where('active_status', 1)
+                ->orderBy('annexture_type', 'ASC')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $types
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                 'error'  => $e->getMessage(),
+                'data'   => []
+            ], 500);
+        }
+    }
 }
+  

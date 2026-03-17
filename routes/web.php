@@ -44,6 +44,7 @@ use App\Http\Controllers\Master\AxleTypeController;
 use App\Http\Controllers\Master\MstSeatLayoutController;
 use App\Http\Controllers\Master\BusServiceController;
 use App\Http\Controllers\Master\AnnextureTypeController;
+use App\Http\Controllers\Master\AnnextureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +87,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-country-list', [CommonController::class, 'getCountryList']);
     Route::post('get-brand-list', [CommonController::class, 'getBrandList'])->name('common.getBrandList');
     Route::post('get-blogtags-list', [CommonController::class, 'getBlogTagsList']);
+    Route::post('get-annexure-type-list', [CommonController::class, 'getAnnexureTypeList']);
 
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
     Route::match(['get', 'post'], 'cities/add', [CitiesController::class, 'add'])->name('cities.add');
@@ -219,6 +221,14 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'annexture-type/add', [AnnextureTypeController::class, 'add'])->name('annextureType.add');
     Route::post('annexture-type/dataTableView', [AnnextureTypeController::class, 'dataTableView'])->name('annextureType.dataTableView');
     Route::match(['get', 'post'], 'annexture-type/edit/{encId}', [AnnextureTypeController::class, 'edit'])->name('annextureType.edit');
+
+    // Boarding & Dropping Points
+    Route::get('/annexture', [AnnextureController::class, 'annexture'])->name('annexture.index');
+    Route::match(['get', 'post'], 'annexture/add', [AnnextureController::class, 'add'])->name('annexture.add');
+    Route::post('annexture/dataTableView', [AnnextureController::class, 'dataTableView'])->name('annexture.dataTableView');
+    Route::match(['get', 'post'], 'annexture/edit/{encId}', [AnnextureController::class, 'edit'])->name('annexture.edit');
+    Route::post('admin/annexture/check-exists', [AnnextureController::class, 'checkExists'])->name('annexture.checkExists');
+
     
     
     

@@ -223,7 +223,7 @@
                     className: "text-center"
                 },
                 {
-                    data: 'anexture_type',
+                    data: 'annexture_type',
                     defaultContent: "--"
                 },
                 {

@@ -27,7 +27,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </a>
     </div>
 </div>
-
 <!-- TABLE -->
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
     {{csrf_field()}}
@@ -69,7 +68,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 id="annextureType"
                                                 name="annextureType"
                                                 maxlength="100"
-                                                value="{{ $data['row']->anexture_type ?? '' }}">
+                                                value="{{ $data['row']->annexture_type ?? '' }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                 </div>

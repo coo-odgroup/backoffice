@@ -1260,3 +1260,38 @@ export function loadBrandList(selected_brand_id = 0) {
         }
     });
 }
+
+export function loadAnnexureTypeList(selected_id = 0) {
+
+    $(".selAnnexureType").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-annexure-type-list",
+        data: {
+            selected_id: selected_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+            let options = '<option value="">-- Select Annexure Type --</option>';
+
+            if (response.status && response.data.length > 0) {
+                response.data.forEach(function (item) {
+                    let selected = item.id == selected_id ? "selected" : "";
+
+                    options += `<option value="${item.id}" ${selected}>
+                                    ${item.annexture_type}
+                                </option>`;
+                });
+            }
+
+            $(".selAnnexureType").html(options);
+        },
+
+        error: function () {
+            $(".selAnnexureType").html('<option value="">-- Select Annexure Type --</option>');
+        }
+    });
+}
