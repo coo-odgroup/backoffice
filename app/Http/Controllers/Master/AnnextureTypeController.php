@@ -30,7 +30,7 @@ class AnnextureTypeController extends Controller
             $dataQuery = DB::table('mst_annexture_type as m')
                 ->select(
                     'm.id as annextureType_id',
-                    'm.anexture_type',
+                    'm.annexture_type',
                     'm.created_at',
                     'm.updated_at',
                     'm.active_status',
@@ -38,7 +38,7 @@ class AnnextureTypeController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = m.updated_by) as updated_by_name')
                 );
             if (!empty($txtSearch)) {
-                $dataQuery->where('m.anexture_type', 'like', "%{$txtSearch}%");
+                $dataQuery->where('m.annexture_type', 'like', "%{$txtSearch}%");
             }
 
             // Status filter
@@ -54,16 +54,16 @@ class AnnextureTypeController extends Controller
             if (!empty(request('order'))) {
 
                 $columns = [
-                    2 => 'm.anexture_type',
+                    2 => 'm.annexture_type',
                     3 => 'm.created_at',
                     4 => 'm.active_status'
                 ];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'm.anexture_type';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'm.annexture_type';
                 $orderType = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'm.anexture_type';
+                $orderColumn = 'm.annexture_type';
                 $orderType = 'asc';
             }
 
@@ -125,7 +125,7 @@ class AnnextureTypeController extends Controller
                 $data['strReset']  = 'Cancel';
 
                 $dataResQry = DB::table('mst_annexture_type')
-                    ->select('id', 'anexture_type')
+                    ->select('id', 'annexture_type')
                     ->where('id', $id)
                     ->first();
 
@@ -157,7 +157,7 @@ class AnnextureTypeController extends Controller
                 $annextureType  = htmlEncode(request('annextureType'));
 
                 $duplicate = DB::table('mst_annexture_type')
-                    ->where('anexture_type', $annextureType);
+                    ->where('annexture_type', $annextureType);
 
                 if ($id != 0) {
                     $duplicate->where('id', '!=', $id);
@@ -176,14 +176,14 @@ class AnnextureTypeController extends Controller
                     DB::table('mst_annexture_type')
                         ->where('id', $id)
                         ->update([
-                            'anexture_type' => $annextureType,
+                            'annexture_type' => $annextureType,
                             'updated_by'       => auth()->id(),
                             'updated_at'       => now()
                         ]);
                 } else {
 
                     DB::table('mst_annexture_type')->insert([
-                        'anexture_type' => $annextureType,
+                        'annexture_type' => $annextureType,
                         'created_by'       => auth()->id(),
                         'active_status'    => 1,
                         'created_at'       => now()

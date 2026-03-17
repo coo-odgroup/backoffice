@@ -8,7 +8,7 @@ class AnnextureType extends Model
 {
     protected $table = 'mst_annexture_type';
     protected $fillable = [
-        'anexture_type',
+        'annexture_type',
         'active_status'
     ];
 }
