@@ -64,7 +64,7 @@ class CitiesController extends Controller
 
                 $validator = Validator::make(request()->all(), [
                     'txtCity' => 'bail|required|string|max:100',
-                    'txtCityAlias' => 'bail|required|string|regex:/^[a-z0-9-]+$/|max:100|unique:mst_cities,alias,'.$id,
+                    'txtCityAlias' => 'bail|required|string|regex:/^[a-z0-9-]+$/|max:100|unique:mst_cities,alias,' . $id,
                     'selState' => 'required|integer',
                 ], [
                     'txtCity.required' => 'City Name cannot be left blank.',
@@ -78,7 +78,7 @@ class CitiesController extends Controller
                     'txtCityAlias.unique' => 'Duplicate City Alias found',
 
                     'selState.required' => 'State cannot be left blank.',
-                   
+
                 ]);
 
                 if ($validator->fails()) {
@@ -112,8 +112,82 @@ class CitiesController extends Controller
                             'level'     => 'danger',
                             'message'   => 'City already exist'
                         ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? Cities::find($id) : new Cities();
+                    
+                        } else {
+
+                        $common = new \App\Http\Controllers\CommonController();
+
+                        if ($id != 0) {
+
+                            $oldData = Cities::find($id);
+
+                            $newData = [
+                                'state_id'    => $selState,
+                                'district_id' => $selDistrict ?? null,
+                                'city_name'   => $txtCity,
+                                'alias'       => $txtCityAlias,
+                            ];
+
+                            $oldChanged = [];
+                            $newChanged = [];
+
+                            $ignoreFields = ['created_at', 'created_by', 'updated_at', 'updated_by'];
+
+                            foreach ($newData as $key => $value) {
+
+                                if (in_array($key, $ignoreFields)) {
+                                    continue;
+                                }
+
+                                $oldValue = $oldData->$key ?? null;
+
+                                if (trim((string)$oldValue) !== trim((string)$value)) {
+                                    $oldChanged[$key] = $oldValue;
+                                    $newChanged[$key] = $value;
+                                }
+                            }
+
+                            if (!empty($newChanged)) {
+                                $common->auditLog(
+                                    'mst_cities',
+                                    $id,
+                                    'UPDATE',
+                                    $oldChanged,
+                                    $newChanged
+                                );
+                            }
+
+                            $oldData->state_id    = $selState;
+                            $oldData->district_id = $selDistrict ?? null;
+                            $oldData->city_name   = $txtCity;
+                            $oldData->alias       = $txtCityAlias;
+                            $oldData->updated_by  = 1;
+
+                            $oldData->save();
+                        } else {
+
+                            $row = [
+                                'state_id'      => $selState,
+                                'district_id'   => $selDistrict ?? null,
+                                'city_name'     => $txtCity,
+                                'alias'         => $txtCityAlias,
+                                'created_by'    => 1,
+                                'active_status' => 1,
+                                'created_at'    => now()
+                            ];
+
+                            $common->auditLog(
+                                'mst_cities',
+                                null,
+                                'INSERT',
+                                [],
+                                $row
+                            );
+
+                            $obj = new Cities();
+                            $obj->fill($row);
+                            $obj->save();
+                        }
 
                         $obj->state_id          = $selState;
                         $obj->district_id       = $selDistrict ?? null;
@@ -208,26 +282,26 @@ class CitiesController extends Controller
             $selState = (int) request('selState');
             $selDistrict = (int) request('selDistrict');
 
-           $dataQuery = DB::table('mst_cities as c')
-                            ->select(
-                                'c.id as city_id',
-                                'c.city_name',
-                                'c.alias',
-                                DB::raw('(SELECT state_name FROM mst_states as s WHERE s.id = c.state_id LIMIT 1) as state_name'),
-                                'c.created_at',
-                                'c.created_by',
-                                'c.updated_at',
-                                'c.updated_by',
-                                DB::raw('(SELECT name FROM users as u WHERE u.id = c.created_by LIMIT 1) as created_by_name'),
-                                DB::raw('(SELECT name FROM users as u WHERE u.id = c.updated_by LIMIT 1) as updated_by_name'),
-                                'c.active_status',
-                                DB::raw('(
+            $dataQuery = DB::table('mst_cities as c')
+                ->select(
+                    'c.id as city_id',
+                    'c.city_name',
+                    'c.alias',
+                    DB::raw('(SELECT state_name FROM mst_states as s WHERE s.id = c.state_id LIMIT 1) as state_name'),
+                    'c.created_at',
+                    'c.created_by',
+                    'c.updated_at',
+                    'c.updated_by',
+                    DB::raw('(SELECT name FROM users as u WHERE u.id = c.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM users as u WHERE u.id = c.updated_by LIMIT 1) as updated_by_name'),
+                    'c.active_status',
+                    DB::raw('(
                                     SELECT GROUP_CONCAT(synonym SEPARATOR "||")
                                     FROM cities_synonyms
                                     WHERE cities_synonyms.cities_id = c.id
                                     AND cities_synonyms.active_status = 1
                                 ) as synonyms')
-                            );
+                );
 
             // Filters
             if (!empty($txtSearch)) {
@@ -235,7 +309,7 @@ class CitiesController extends Controller
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
                         ->orWhere('c.alias', 'like', "%{$txtSearch}%");
 
-                        // Synonym search using EXISTS (no join)
+                    // Synonym search using EXISTS (no join)
                     //    ->orWhereExists(function ($sub) use ($txtSearch) {
                     //         $sub->select(DB::raw(1))
                     //             ->from('cities_synonyms as cs')
@@ -261,7 +335,7 @@ class CitiesController extends Controller
 
 
             $count = $dataQuery->count('c.id');
-          
+
             $start  = request()->input('start', 0);
             $length = request()->input('length', 10);
 

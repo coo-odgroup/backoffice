@@ -100,7 +100,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="row mb-3">
                                     <div class="col-12">
                                         <div class="row mb-3">
-                                            <div class="col-md-8"> <!-- 👈 makes it smaller horizontally -->
+                                            <div class="col-md-8">
                                                 <div class="card shadow-sm border-0 d-none" id="annexturePreviewCard">
 
                                                     <div class="card-header bg-primary text-white py-2 px-3">
@@ -118,7 +118,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="annexturePreviewBody">
-                                                                    <!-- Dynamic -->
+
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -379,7 +379,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 } else {
 
-                    // ❌ HIDE completely when no data
+                
                     $('#annexturePreviewCard').addClass('d-none');
                     $('#annexturePreviewBody').html('');
                 }
