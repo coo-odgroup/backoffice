@@ -93,6 +93,7 @@ class CommonController extends Controller
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
+            'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
