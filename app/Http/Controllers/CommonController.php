@@ -150,6 +150,7 @@ class CommonController extends Controller
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
+            'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -670,6 +671,169 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $data
             ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+    
+    public function getBusModelsList(Request $request)
+    {
+        try {
+
+            $query = DB::table('mst_bus_models')
+                ->select('id', 'model_name')
+                ->where('active_status', 1);
+
+            // ✅ Filter by brand_id (MAIN CHANGE)
+            if (!empty($request->brand_id)) {
+                $query->where('brand_id', $request->brand_id);
+            }
+
+            $data = $query->orderBy('model_name', 'asc')->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+    public function getAxleTypeList()
+    {
+        try {
+
+            $data = DB::table('mst_bus_models')
+                ->select('id', 'model_name')
+                ->where('active_status', 1)
+                ->orderBy('model_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+    public function getBusServicesList()
+    {
+        try {
+
+            $data = DB::table('mst_bus_service')
+                ->select('id', 'bus_service_name')
+                ->where('active_status', 1)
+                ->orderBy('bus_service_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+    public function getSeatTypeList()
+    {
+        try {
+
+            $data = DB::table('mst_seat_type')
+                ->select('id', 'seat_type')
+                ->where('active_status', 1)
+                ->orderBy('seat_type', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+    public function getSeatLayoutList()
+    {
+        try {
+
+            $data = DB::table('mst_seat_layout')
+                ->select('id', 'seat_layout')
+                ->where('active_status', 1)
+                ->orderBy('seat_layout', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+    public function getAnnextureList(Request $request)
+    {
+        try {
+
+            $annexture_type = $request->annexture_type;
+
+            // Step 1: Get annexture_type_id
+            $type = DB::table('mst_annexture_type')
+                ->select('id')
+                ->where('annexture_type', $annexture_type)
+                ->where('active_status', 1)
+                ->first();
+
+            if (!$type) {
+                return response()->json([
+                    'status' => false,
+                    'data'   => []
+                ]);
+            }
+
+            // Step 2: Get annexture list using type_id
+            $data = DB::table('mst_annexture')
+                ->select('id', 'annexture_name')
+                ->where('annexture_type_id', $type->id)
+                ->where('active_status', 1)
+                ->orderBy('annexture_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+
         } catch (\Throwable $t) {
 
             return response()->json([
