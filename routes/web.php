@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\BlogRoutesController;
 use App\Http\Controllers\Admin\BlogTagMapController;
 use App\Http\Controllers\Admin\BlogTagsController;
 use App\Http\Controllers\Admin\Bus\BusAmenitiesController;
+use App\Http\Controllers\Admin\Campaign\CampaignMasterController;
 use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
@@ -345,6 +346,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-tag-map/add', [BlogTagMapController::class, 'add'])->name('blog-tag-map.add');
     Route::post('blog-tag-map/dataTableView', [BlogTagMapController::class, 'dataTableView'])->name('blog-tag-map.dataTableView');
     Route::match(['get', 'post'], 'blog-tag-map/edit/{encId}', [BlogTagMapController::class, 'edit'])->name('blog-tag-map.edit');
+
+    // Campaign Master
+    Route::get('/campaign-master', [CampaignMasterController::class, 'index'])->name('campaign-master.index');
+    Route::match(['get', 'post'], 'campaign-master/add', [CampaignMasterController::class, 'add'])->name('campaign-master.add');
+    Route::post('campaign-master/dataTableView', [CampaignMasterController::class, 'dataTableView'])->name('campaign-master.dataTableView');
+    Route::match(['get', 'post'], 'campaign-master/edit/{encId}', [CampaignMasterController::class, 'edit'])->name('campaign-master.edit');
 
 
     // ---------------------------------------------------------------------------------------------------------------
