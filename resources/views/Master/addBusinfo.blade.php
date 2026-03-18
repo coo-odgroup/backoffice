@@ -339,7 +339,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 ← Back
                                             </button>
 
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep3()">
+                                            <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">
                                                 Next →
                                             </button>
 
@@ -843,37 +843,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("step1").style.display = "block";
         document.getElementById("step2").style.display = "none";
     }
-
-    function nextStep2() {
-        document.getElementById("step2").style.display = "none";
-        document.getElementById("step3").style.display = "block";
-    }
-
-    function backStep2() {
-        document.getElementById("step3").style.display = "none";
-        document.getElementById("step2").style.display = "block";
-    }
-
-    function nextStep3() {
-        document.getElementById("step3").style.display = "none";
-        document.getElementById("step4").style.display = "block";
-    }
-
-    function backStep3() {
-        document.getElementById("step4").style.display = "none";
-        document.getElementById("step3").style.display = "block";
-    }
-
-    function nextStep4() {
-        document.getElementById("step4").style.display = "none";
-        document.getElementById("step5").style.display = "block";
-    }
-
-    function backStep4() {
-        document.getElementById("step5").style.display = "none";
-        document.getElementById("step4").style.display = "block";
-    }
-
 
     // ADD / REMOVE CITY
     function toggleCity(checkbox) {

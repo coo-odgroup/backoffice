@@ -47,6 +47,7 @@ use App\Http\Controllers\Master\MstSeatLayoutController;
 use App\Http\Controllers\Master\BusServiceController;
 use App\Http\Controllers\Master\AnnextureTypeController;
 use App\Http\Controllers\Master\AnnextureController;
+use App\Http\Controllers\Admin\Bus\BusWizardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,29 @@ use App\Http\Controllers\Master\AnnextureController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::prefix('admin/bus/create')->group(function () {
+
+    Route::get('/step1', [BusWizardController::class, 'step1'])->name('bus.step1');
+    Route::post('/step1', [BusWizardController::class, 'postStep1']);
+
+    Route::get('/step2', [BusWizardController::class, 'step2'])->name('bus.step2');
+    Route::post('/step2', [BusWizardController::class, 'postStep2']);
+
+    Route::get('/step3', [BusWizardController::class, 'step3'])->name('bus.step3');
+    Route::post('/step3', [BusWizardController::class, 'postStep3']);
+
+    Route::get('/step4', [BusWizardController::class, 'step4'])->name('bus.step4');
+    Route::post('/step4', [BusWizardController::class, 'postStep4']);
+
+    Route::get('/step5', [BusWizardController::class, 'step5'])->name('bus.step5');
+    Route::post('/step5', [BusWizardController::class, 'postStep5']);
+
+    Route::get('/step6', [BusWizardController::class, 'step6'])->name('bus.step6');
+    Route::post('/finish', [BusWizardController::class, 'finish'])->name('bus.finish');
+
+});
+
 
 Route::prefix('admin')->group(function () {
 

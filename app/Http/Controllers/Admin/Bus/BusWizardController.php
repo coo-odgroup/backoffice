@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Master;
+namespace App\Http\Controllers\Admin\Bus;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\Amenity;
@@ -10,8 +10,97 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class BusInfoController extends Controller
+class BusWizardController extends Controller
 {
+    public function step1()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step1',compact('data'));
+    }
+
+    public function postStep1(Request $request)
+    {
+        $request->validate([
+            'busName' => 'required',
+            'busNumber' => 'required'
+        ]);
+
+        session(['bus.step1' => $request->all()]);
+        return redirect()->route('bus.step2');
+    }
+
+    public function step2()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step2',compact('data'));
+    }
+
+    public function postStep2(Request $request)
+    {
+        session(['bus.step2' => $request->cities]);
+        return redirect()->route('bus.step3');
+    }
+
+    public function step3()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step3',compact('data'));
+    }
+
+    public function postStep3(Request $request)
+    {
+        session(['bus.step3' => $request->all()]);
+        return redirect()->route('bus.step4');
+    }
+
+    public function step4()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step4',compact('data'));
+    }
+
+    public function postStep4(Request $request)
+    {
+        session(['bus.step4' => $request->stations]);
+        return redirect()->route('bus.step5');
+    }
+
+    public function step5()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step5',compact('data'));
+    }
+
+    public function postStep5(Request $request)
+    {
+        session(['bus.step5' => $request->schedule]);
+        return redirect()->route('bus.step6');
+    }
+
+    public function step6()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step6',compact('data'));
+    }
+
     public function businfo()
     {
         return view('master.amenities');
