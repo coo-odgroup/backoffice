@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Mews\Purifier\Facades\Purifier;
+use App\Http\Controllers\CommonController;
 
 class CitiesController extends Controller
 {
@@ -21,246 +22,202 @@ class CitiesController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
-        $data['strPage']    = $method = 'Add';
-        $data['strSubmit']  = 'Submit';
-        $data['strReset']  = 'Reset';
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
 
         try {
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
-
             if ($id > 0) {
 
                 $redirectPage = "admin/cities/edit/" . $encId;
-                $data['strPage']    = $method = 'Edit';
-                $data['strSubmit']  = 'Update';
-                $data['strReset']   = 'Cancel';
+                $data['strPage'] = $method = 'Edit';
+                $data['strSubmit'] = 'Update';
+                $data['strReset'] = 'Cancel';
 
-                $dataResQry = Cities::select('id', 'state_id', 'district_id', 'city_name', 'alias');
+                $dataResQry = Cities::select('id', 'state_id', 'district_id', 'city_name', 'alias')
+                    ->where('id', $id)
+                    ->first();
 
-                $dataResQry = $dataResQry->where('id', $id)->first();
-
-                if (empty($dataResQry)) {
+                if (!$dataResQry) {
                     return redirect("cities");
                 }
+
                 $data['row'] = $dataResQry;
-                // Fetch synonyms for edit
+
                 $data['synonyms'] = DB::table('cities_synonyms')
                     ->where('cities_id', $id)
                     ->where('active_status', 1)
                     ->pluck('synonym')
                     ->toArray();
+
             } else {
-                $id = 0;
                 $redirectPage = "admin/cities";
             }
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
                 $validator = Validator::make(request()->all(), [
-                    'txtCity' => 'bail|required|string|max:100',
-                    'txtCityAlias' => 'bail|required|string|regex:/^[a-z0-9-]+$/|max:100|unique:mst_cities,alias,' . $id,
+                    'txtCity' => 'required|string|max:100',
+                    'txtCityAlias' => 'required|string|regex:/^[a-z0-9-]+$/|max:100|unique:mst_cities,alias,' . $id,
                     'selState' => 'required|integer',
-                ], [
-                    'txtCity.required' => 'City Name cannot be left blank.',
-                    'txtCity.max' => 'City Name cannot exceed :max characters.',
-                    'txtCity.string' => 'City Name must be valid text.',
-
-                    'txtCityAlias.required' => 'City Alias cannot be left blank.',
-                    'txtCityAlias.string' => 'City Alias must be valid text.',
-                    'txtCityAlias.max' => 'City Alias cannot exceed :max characters.',
-                    'txtCityAlias.regex' => 'City Alias is invalid',
-                    'txtCityAlias.unique' => 'Duplicate City Alias found',
-
-                    'selState.required' => 'State cannot be left blank.',
-
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-
-                    DB::beginTransaction();
-
-                    $txtCity = Purifier::clean(request('txtCity'));
-                    $txtCityAlias = Purifier::clean(request('txtCityAlias'));
-                    $selState = Purifier::clean(request('selState'));
-                    $selDistrict = Purifier::clean(request('selDistrict'));
-
-                    $txtCity  = htmlEncode(ucwords(strtolower($txtCity)));
-                    $txtCityAlias = htmlEncode($txtCityAlias);
-                    $selState  = (int)$selState;
-                    $selDistrict  = (int)$selDistrict;
-
-                    $duplicate = Cities::select('id')
-                        ->where([
-                            'city_name' => $txtCity,
-                            'alias'     => $txtCityAlias
-                        ]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'City already exist'
-                        ])->withInput();
-                    
-                        } else {
-
-                        $common = new \App\Http\Controllers\CommonController();
-
-                        if ($id != 0) {
-
-                            $oldData = Cities::find($id);
-
-                            $newData = [
-                                'state_id'    => $selState,
-                                'district_id' => $selDistrict ?? null,
-                                'city_name'   => $txtCity,
-                                'alias'       => $txtCityAlias,
-                            ];
-
-                            $oldChanged = [];
-                            $newChanged = [];
-
-                            $ignoreFields = ['created_at', 'created_by', 'updated_at', 'updated_by'];
-
-                            foreach ($newData as $key => $value) {
-
-                                if (in_array($key, $ignoreFields)) {
-                                    continue;
-                                }
-
-                                $oldValue = $oldData->$key ?? null;
-
-                                if (trim((string)$oldValue) !== trim((string)$value)) {
-                                    $oldChanged[$key] = $oldValue;
-                                    $newChanged[$key] = $value;
-                                }
-                            }
-
-                            if (!empty($newChanged)) {
-                                $common->auditLog(
-                                    'mst_cities',
-                                    $id,
-                                    'UPDATE',
-                                    $oldChanged,
-                                    $newChanged
-                                );
-                            }
-
-                            $oldData->state_id    = $selState;
-                            $oldData->district_id = $selDistrict ?? null;
-                            $oldData->city_name   = $txtCity;
-                            $oldData->alias       = $txtCityAlias;
-                            $oldData->updated_by  = 1;
-
-                            $oldData->save();
-                        } else {
-
-                            $row = [
-                                'state_id'      => $selState,
-                                'district_id'   => $selDistrict ?? null,
-                                'city_name'     => $txtCity,
-                                'alias'         => $txtCityAlias,
-                                'created_by'    => 1,
-                                'active_status' => 1,
-                                'created_at'    => now()
-                            ];
-
-                            $common->auditLog(
-                                'mst_cities',
-                                null,
-                                'INSERT',
-                                [],
-                                $row
-                            );
-
-                            $obj = new Cities();
-                            $obj->fill($row);
-                            $obj->save();
-                        }
-
-                        $obj->state_id          = $selState;
-                        $obj->district_id       = $selDistrict ?? null;
-                        $obj->city_name         = $txtCity;
-                        $obj->alias             = $txtCityAlias;
-                        $obj->created_by        = 1;
-                        $obj->active_status     = 1;
-                        if ($id != 0) {
-                            $obj->updated_by    = 1;
-                        }
-
-                        $obj->save();
-                        //Save City Synonym
-                        $cityId = $obj->id;
-
-                        $synonyms = request('txtSynonym', []);
-
-                        if (!empty($synonyms)) {
-
-                            if ($id != 0) {
-                                DB::table('cities_synonyms')
-                                    ->where('cities_id', $cityId)
-                                    ->delete();
-                            }
-
-                            $insertData = [];
-
-                            foreach ($synonyms as $synonym) {
-
-                                $synonym = trim(htmlEncode($synonym));
-
-                                if ($synonym !== '') {
-                                    $insertData[] = [
-                                        'cities_id'     => $cityId,
-                                        'synonym'       => ucwords(strtolower($synonym)),
-                                        'active_status' => 1,
-                                        'created_at'    => now(),
-                                        'created_by'    => 1
-                                    ];
-                                }
-                            }
-
-                            if (!empty($insertData)) {
-                                DB::table('cities_synonyms')->insert($insertData);
-                            }
-                        }
-
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'City ' . (($id != 0) ?
-                            'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $txtCity       = htmlEncode(ucwords(strtolower(Purifier::clean(request('txtCity')))));
+                $txtCityAlias  = htmlEncode(Purifier::clean(request('txtCityAlias')));
+                $selState      = (int) Purifier::clean(request('selState'));
+                $selDistrict   = (int) Purifier::clean(request('selDistrict'));
+
+                $duplicate = Cities::where([
+                    'city_name' => $txtCity,
+                    'alias'     => $txtCityAlias
+                ]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level' => 'danger',
+                        'message' => 'City already exist'
+                    ])->withInput();
+                }
+
+                // ================= UPDATE =================
+                if ($id != 0) {
+
+                    $oldData = Cities::find($id);
+
+                    $newData = [
+                        'state_id'    => $selState,
+                        'district_id' => $selDistrict ?: null,
+                        'city_name'   => $txtCity,
+                        'alias'       => $txtCityAlias,
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    // ✅ AUDIT LOG
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_cities',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    // ✅ SAVE
+                    $oldData->fill($newData);
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                    $cityId = $id;
+                }
+
+                // ================= INSERT =================
+                else {
+
+                    $row = [
+                        'state_id'      => $selState,
+                        'district_id'   => $selDistrict ?: null,
+                        'city_name'     => $txtCity,
+                        'alias'         => $txtCityAlias,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+
+                    // ✅ AUDIT LOG
+                    app(CommonController::class)->auditLog(
+                        'mst_cities',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new Cities();
+                    $obj->fill($row);
+                    $obj->save();
+
+                    $cityId = $obj->id;
+                }
+
+                // ================= SYNONYMS =================
+                $synonyms = request('txtSynonym', []);
+
+                if ($id != 0) {
+                    DB::table('cities_synonyms')
+                        ->where('cities_id', $cityId)
+                        ->delete();
+                }
+
+                $insertData = [];
+
+                foreach ($synonyms as $synonym) {
+                    $synonym = trim(htmlEncode($synonym));
+
+                    if ($synonym !== '') {
+                        $insertData[] = [
+                            'cities_id'     => $cityId,
+                            'synonym'       => ucwords(strtolower($synonym)),
+                            'active_status' => 1,
+                            'created_at'    => now(),
+                            'created_by'    => 1
+                        ];
+                    }
+                }
+
+                if (!empty($insertData)) {
+                    DB::table('cities_synonyms')->insert($insertData);
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'City ' . ($id ? 'updated' : 'created') . ' successfully.');
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
-            Log::error("Error", [
-                'Controller' => 'CitiesController',
-                'Method'     => $method,
-                'Error'      => $t->getMessage()
-            ]);
 
             DB::rollBack();
 
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
+            Log::error("Error", [
+                'Controller' => 'CitiesController',
+                'Method' => $method,
+                'Error' => $t->getMessage()
+            ]);
 
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level' => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addCities', compact('data'));
     }
 
