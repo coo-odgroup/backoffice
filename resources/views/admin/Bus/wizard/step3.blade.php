@@ -87,13 +87,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-4 text-center">
                                                 <div class="form-check d-flex justify-content-center">
-                                                    <input class="form-check-input red-switch" type="checkbox">
+                                                   <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4 text-center">
                                                 <div class="form-check d-flex justify-content-center">
-                                                    <input class="form-check-input red-switch" type="checkbox">
+                                                     <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -103,13 +111,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-4 text-center">
                                                 <div class="form-check d-flex justify-content-center">
-                                                    <input class="form-check-input red-switch" type="checkbox">
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4 text-center">
                                                 <div class="form-check d-flex justify-content-center">
-                                                    <input class="form-check-input red-switch" type="checkbox">
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -118,11 +134,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="col-md-4 fw-bold">3. Soro</div>
 
                                             <div class="col-md-4 text-center">
-                                                <input class="form-check-input red-switch" type="checkbox">
+                                                <div class="form-check d-flex justify-content-center">
+                                                <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="col-md-4 text-center">
-                                                <input class="form-check-input red-switch" type="checkbox">
+                                                <div class="form-check d-flex justify-content-center">
+                                                 <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -130,11 +158,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="col-md-4 fw-bold">4. Bhadrak</div>
 
                                             <div class="col-md-4 text-center">
-                                                <input class="form-check-input red-switch" type="checkbox">
+                                                <div class="form-check d-flex justify-content-center">
+                                                <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="col-md-4 text-center">
-                                                <input class="form-check-input red-switch" type="checkbox">
+                                                <div class="form-check d-flex justify-content-center">
+                                                <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -142,11 +182,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="col-md-4 fw-bold">5. Cuttack</div>
 
                                             <div class="col-md-4 text-center">
-                                                <input class="form-check-input red-switch" type="checkbox">
+                                                <div class="form-check d-flex justify-content-center">
+                                               <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
+                                                </div>    
                                             </div>
 
                                             <div class="col-md-4 text-center">
-                                                <input class="form-check-input red-switch" type="checkbox">
+                                                <div class="form-check d-flex justify-content-center">
+                                                <div class="checkbox">
+                                                        <label>
+                                                            <input type="checkbox" checked="checked">
+                                                        </label>
+                                                    </div>
+                                                </div>    
                                             </div>
                                         </div>
 

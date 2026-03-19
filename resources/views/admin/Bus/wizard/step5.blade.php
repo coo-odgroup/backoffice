@@ -9,7 +9,7 @@
 </style>
 
 <?php
-    $page_name = 'All ' . trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 ?>
 
 <!-- Breadcrumb -->
@@ -261,6 +261,7 @@
 </form>
 
 <script>
+
     function backStep() {
         document.getElementById("step1").style.display = "block";
         document.getElementById("step2").style.display = "none";
@@ -289,8 +290,7 @@
             <input type="text" class="form-control me-2" value="${city}" readonly>
             <button class="btn btn-danger" onclick="removeCity('${city}')">
                 <i class="fa fa-trash"></i>
-            </button>
-        `;
+            </button>`;
 
             addDragEvents(div);
 
@@ -395,6 +395,7 @@
 @push('scripts')
 
 <script type="module">
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -464,8 +465,5 @@
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
-
-
-   
 </script>
 @endpush

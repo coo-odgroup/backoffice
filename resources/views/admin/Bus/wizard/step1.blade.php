@@ -34,7 +34,7 @@
             <div class="card">
                 <div class="card-body">
                     <!-- FILTER -->
-                    <div class="mb-3">
+                    <div class="mb-2">
                         <div class="card-body">
                             <div class="row">
                                 @if (session('message'))
@@ -71,38 +71,38 @@
                                                 <div class="p-3 border rounded bg-white">
                                                     <div class="row">
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="selOpeator">Operator<span class="text-danger">*</span></label>
+                                                        <div class="col-md-6 mb-2">
+                                                            <label for="selOpeator">Operator <span class="text-danger">*</span></label>
                                                             <select class="form-select" name="selOpeator" id="selOpeator">
                                                                 <option value="0">Select Operator</option>
                                                             </select>
                                                         </div>
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="busName">Bus Name<span class="text-danger">*</span></label>
+                                                        <div class="col-md-6 mb-2">
+                                                            <label for="busName">Bus Name <span class="text-danger">*</span></label>
                                                             <input type="text" class="form-control" placeholder="Bus Name" name="busName" id="busName">
                                                         </div>
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="busNumber">Bus Number<span class="text-danger">*</span></label>
+                                                        <div class="col-md-6 mb-2">
+                                                            <label for="busNumber">Bus Number <span class="text-danger">*</span></label>
                                                             <input type="text" class="form-control" placeholder="Bus Number" name="busNumber" id="busNumber">
                                                         </div>
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="via">Via<span class="text-danger">*</span></label>
+                                                        <div class="col-md-6 mb-2">
+                                                            <label for="via">Via</label>
                                                             <input type="text" class="form-control" placeholder="Via" name="via" id="via">
                                                         </div>
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="selAmenity">Amenities<span class="text-danger">*</span></label>
+                                                        <div class="col-md-6 mb-2">
+                                                            <label for="selAmenity">Amenities <span class="text-danger">*</span></label>
                                                             <select class="form-select" name="selAmenity" id="selAmenity">
                                                                 <option>Select Amenities</option>
                                                             </select>
                                                         </div>
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="maxSeat">Max Seat Booked<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Max Seat" name="maxSeat" id="maxSeat">
+                                                        <div class="col-md-6 mb-2">
+                                                            <label for="maxSeat">Max Seat Booked <span class="text-danger">*</span></label>
+                                                            <input type="text" class="form-control" placeholder="Max Seat" name="maxSeat" id="maxSeat" value="6">
                                                         </div>
 
                                                     </div>
@@ -110,60 +110,59 @@
                                                     <!-- SECOND SECTION -->
                                                     <div class="row">
 
-                                                        <div class="col-md-3 mb-1">
+                                                        <div class="col-md-3 mb-2">
                                                             <label for="brand">Brand</label>
                                                             <select class="form-select onSelect" id="brand" name="brand">
-                                                                <option>Select Brand</option>
+                                                                <option value="0">Select Brand</option>
                                                             </select>
                                                         </div>
 
-                                                        <div class="col-md-3 mb-1">
+                                                        <div class="col-md-3 mb-2">
                                                             <label for="busModel">Model</label>
                                                             <select class="form-select onSelect" id="busModel" name="model">
-                                                                <option>Select Model</option>
+                                                                <option  value="0">Select Model</option>
                                                             </select>
                                                         </div>
 
-                                                        <div class="col-md-3 mb-1">
+                                                        <div class="col-md-3 mb-2">
                                                             <label for="axleType">Axle Type</label>
                                                             <select class="form-select onSelect" id="axleType" name="axleType">
-                                                                <option>Select Axle Type</option>
+                                                                <option value="0">Select Axle Type</option>
                                                             </select>
                                                         </div>
 
-                                                        <div class="col-md-3 mb-1">
+                                                        <div class="col-md-3 mb-2">
                                                             <label for="busService">Bus Service</label>
                                                             <select class="form-select onSelect" id="busService" name="busService">
-                                                                <option>Select Bus Service</option>
+                                                                <option value="0">Select Bus Service</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-2 mb-1">
-                                                            <label for="acType">AC Type<span class="text-danger">*</span></label>
+                                                            <label for="acType">AC Type <span class="text-danger">*</span></label>
                                                             <select class="form-select onSelect annexture" id="acType" name="acType">
-                                                                <option>Select AC Type</option>
+                                                                <option value="0">Select AC Type</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-2 mb-1">
-                                                            <label for="seatType">Seat Type<span class="text-danger">*</span></label>
+                                                            <label for="seatType">Seat Type <span class="text-danger">*</span></label>
                                                             <select class="form-select onSelect" id="seatType" name="seatType">
-                                                                <option>Select Seat Type</option>
+                                                                <option value="0">Select Seat Type</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-2 mb-1">
-                                                            <label for="seatLayout">Seat Layout<span class="text-danger">*</span></label>
+                                                            <label for="seatLayout">Seat Layout <span class="text-danger">*</span></label>
                                                             <select class="form-select onSelect" id="seatLayout" name="seatLayout">
-                                                                <option>Select Seat Layout</option>
+                                                                <option value="0">Select Seat Layout</option>
                                                             </select>
                                                         </div>
 
-                                                        <div class="col-md-2 mb-1">
+                                                        <div class="col-md-6 mb-1">
                                                             <label for="busType">Bus Type<span class="text-danger">*</span></label>
                                                             <span id="busType"></span>
                                                         </div>
-
                                                     </div>
 
                                                     <hr class="wide">
@@ -173,7 +172,7 @@
                                             <!-- RIGHT SIDE (4 columns) -->
                                             <div class="col-md-3">
                                                 <div class="p-3 border rounded bg-white">
-                                                    <div class="mb-3">
+                                                    <div class="mb-2">
                                                         <label>Cancellation Slab<span class="text-danger">*</span></label>
                                                         <select class="form-select">
                                                             <option>Select Slab</option>
@@ -186,7 +185,7 @@
                                         <!-- THIRD SECTION -->
                                         <div class="row">
 
-                                            <div class="col-md-4 mb-3 d-flex align-items-center">
+                                            <div class="col-md-4 mb-2 d-flex align-items-center">
                                                 <input type="checkbox" class="me-2">
                                                 <label class="mb-0">Has IRCTC Module</label>
                                             </div>
@@ -279,35 +278,40 @@
 
     function generateBusName() {
 
-        const brandVal    = $('#brand').val();
-        const modelVal    = $('#busModel').val();
-        const axleVal     = $('#axleType').val();
-        const serviceVal  = $('#busService').val();
-        const acVal       = $('.annexture').val();
-        const seatVal     = $('#seatType').val();
-        // const layoutVal   = $('#seatLayout').val();
+         let parts = [];
 
-        // Check ALL selected
-        // if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal && layoutVal) {
-        if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal) {
-
-            const brand    = $('#brand option:selected').text();
-            const model    = $('#busModel option:selected').text();
-            const axle     = $('#axleType option:selected').text();
-            const service  = $('#busService option:selected').text();
-            const ac       = $('.annexture option:selected').text();
-            const seatType = $('#seatType option:selected').text();
-            const layout   = $('#seatLayout option:selected').text();
-
-            // const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType} ${layout}`;
-            const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType}`;
-
-            $('#busType').html(fullName);
-
-        } else {
-            // Clear if not all selected
-            $('#busType').html('');
+        if ($('#brand').val() != 0) {
+            parts.push($('#brand option:selected').text());
         }
+
+        if ($('#busModel').val() != 0) {
+            parts.push($('#busModel option:selected').text());
+        }
+
+        if ($('#axleType').val() != 0) {
+            parts.push($('#axleType option:selected').text());
+        }
+
+        if ($('#busService').val() != 0) {
+            parts.push($('#busService option:selected').text());
+        }
+
+        if ($('.annexture').val() != 0) {
+            parts.push($('.annexture option:selected').text());
+        }
+
+        if ($('#seatType').val() != 0) {
+            parts.push($('#seatType option:selected').text());
+        }
+
+        if ($('#seatLayout').val() != 0) {
+            parts.push($('#seatLayout option:selected').text());
+        }
+
+        // Join with space
+        const fullName = parts.join(' ');
+
+        $('#busType').html(fullName);
     }
 
     $(document).ready(function() {
