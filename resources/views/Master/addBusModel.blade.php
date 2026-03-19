@@ -64,12 +64,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="brand">Bus Brand</label>
-                                            <select class="form-select" id="brand" name="brand"></select>
+                                            <select class="form-select form-select-sm" id="brand" name="brand"></select>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="model">Bus Model Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-3">

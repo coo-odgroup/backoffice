@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'City Timings')
+@section('page_title', 'Add Stations')
 @section('content')
 
 <style>
@@ -68,7 +68,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                     <!-- ================= STEP 2 ================= -->
                                     <div id="step4">
 
-                                        <h3 class="fw-bold mb-4 border-bottom pb-2">Add Station</h3>
+                                        <!-- <h3 class="fw-bold mb-4 border-bottom pb-2">Add Station</h3> -->
 
                                         <div class="accordion" id="stationAccordion">
 
@@ -85,14 +85,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                     <div class="accordion-body">
 
-                                                        <h5 class="mb-3 border-bottom pb-2">Add Station</h5>
-
                                                         <div class="stationRows">
 
-                                                            <div class="row align-items-center mb-3 stationRow">
+                                                            <div class="row stationRow align-items-center">
 
                                                                 <div class="col-md-1">
-                                                                    <input type="checkbox" class="form-check-input">
+                                                                    <div class="checkbox">
+                                                                        <input type="checkbox">
+                                                                    </div>
                                                                 </div>
 
                                                                 <div class="col-md-4">
@@ -104,7 +104,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                     </select>
                                                                 </div>
 
-                                                                <div class="col-md-3">
+                                                                <div class="col-md-1">
                                                                     <input type="time" class="form-control" value="00:00">
                                                                 </div>
 
@@ -135,14 +135,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                     <div class="accordion-body">
 
-                                                        <h5 class="mb-3 border-bottom pb-2">Add Station</h5>
-
                                                         <div class="stationRows">
 
-                                                            <div class="row align-items-center mb-3 stationRow">
+                                                            <div class="row align-items-center stationRow">
 
                                                                 <div class="col-md-1">
-                                                                    <input type="checkbox" class="form-check-input">
+                                                                    <div class="checkbox">
+                                                                        <input type="checkbox">
+                                                                    </div>
                                                                 </div>
 
                                                                 <div class="col-md-4">
@@ -154,7 +154,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                     </select>
                                                                 </div>
 
-                                                                <div class="col-md-3">
+                                                                <div class="col-md-1">
                                                                     <input type="time" class="form-control" value="00:00">
                                                                 </div>
 
@@ -185,14 +185,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                     <div class="accordion-body">
 
-                                                        <h5 class="mb-3 border-bottom pb-2">Add Station</h5>
-
                                                         <div class="stationRows">
 
-                                                            <div class="row align-items-center mb-3 stationRow">
+                                                            <div class="row align-items-center stationRow">
 
                                                                 <div class="col-md-1">
-                                                                    <input type="checkbox" class="form-check-input">
+                                                                    <div class="checkbox">
+                                                                        <input type="checkbox">
+                                                                    </div>
                                                                 </div>
 
                                                                 <div class="col-md-4">
@@ -204,7 +204,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                     </select>
                                                                 </div>
 
-                                                                <div class="col-md-3">
+                                                                <div class="col-md-1">
                                                                     <input type="time" class="form-control" value="00:00">
                                                                 </div>
 

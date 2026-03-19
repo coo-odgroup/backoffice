@@ -37,36 +37,37 @@
         <div class="card">
             <div class="card-body">
                 <!-- FILTER -->
-                <div class="mb-3 border-bottom d-none" id="filterBox">
+                <div class="mb-1 border-bottom d-none" id="filterBox">
                     <div class="card-body">
-                        <div class="row">
-                            <!-- FILTER FIELDS -->
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                        <label for="txtSearch">Search By Brand</label>
-                                        <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                            placeholder="Brand">
-                                    </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                        <label for="brandSearch">Brand</label>
-                                        <select class="form-select" id="brandSearch" name="brandSearch">
-                                            <option value="">Select Brand</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                        <label for="selStatus">Status</label>
-                                        <select class="form-select" id="selStatus" name="selStatus">
-                                            <option value="">Select Status</option>
-                                            <option value="1">Active</option>
-                                            <option value="0">Inactive</option>
-                                        </select>
-                                    </div>
-                                </div>
+                        <div class="row align-items-end g-2">
+
+                            <!-- Search -->
+                            <div class="col-lg-3 col-md-6">
+                                <label for="txtSearch">Search By Brand</label>
+                                <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                    placeholder="Brand">
                             </div>
 
-                            <!-- BUTTONS -->
-                            <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                            <!-- Brand Dropdown -->
+                            <div class="col-lg-2 col-md-6">
+                                <label for="brandSearch">Brand</label>
+                                <select class="form-select form-select-sm" id="brandSearch" name="brandSearch">
+                                    <option value="">Select Brand</option>
+                                </select>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-lg-2 col-md-6">
+                                <label for="selStatus">Status</label>
+                                <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                    <option value="">Select Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="col-lg-5 d-flex justify-content-end flex-wrap action-btns gap-1">
                                 <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                     <i class="fa-solid fa-search me-1"></i>Search
                                 </button>
@@ -74,6 +75,7 @@
                                     <i class="fa-solid fa-rotate-left me-1"></i>Reset
                                 </button>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -118,38 +120,38 @@
                     </div>
                     <div id="customPaginationTop"></div>
                 </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                        data-url="{{ route('busModel.dataTableView') }}"
+                        data-edit-url="{{ route('busModel.edit', 'ID') }}">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th class="noPrint no-sort">
+                                    <div class="checkbox">
+                                        <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                    </div>
+                                </th>
+                                <th>Sl No</th>
+                                <th>Model Name</th>
+                                <th>Brand Name</th>
+                                <th>Last Modified</th>
+                                <th>Status</th>
 
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                    data-url="{{ route('busModel.dataTableView') }}"
-                    data-edit-url="{{ route('busModel.edit', 'ID') }}">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th class="noPrint no-sort">
-                                <div class="checkbox">
-                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
-                                </div>
-                            </th>
-                            <th>Sl No</th>
-                            <th>Model Name</th>
-                            <th>Brand Name</th>
-                            <th>description</th>
-                            <th>Last Modified</th>
-                            <th>Status</th>
-                            
-                            <th class="no-sort">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-                {{csrf_field()}}
-                <input name="hdn_ids" id="hdn_ids" type="hidden">
-                <input name="hdn_qs" id="hdn_qs" type="hidden">
-                <input type="hidden" id="hdn_model" value="BusModel">
+                                <th class="no-sort">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                    {{csrf_field()}}
+                    <input name="hdn_ids" id="hdn_ids" type="hidden">
+                    <input name="hdn_qs" id="hdn_qs" type="hidden">
+                    <input type="hidden" id="hdn_model" value="BusModel">
 
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                    <div id="customTableInfo"></div>
-                    <div id="customPagination"></div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div id="customTableInfo"></div>
+                        <div id="customPagination"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -256,10 +258,10 @@
                         return data;
                     }
                 },
-                {
-                    data: 'description',
-                    defaultContent: "--"
-                },
+                // {
+                //     data: 'description',
+                //     defaultContent: "--"
+                // },
                 {
                     data: null,
                     render: function(data, type, row) {
@@ -275,7 +277,7 @@
 
                         return `
                             <span
-                                class="text-primary fw-semibold"
+                                class="fw-semibold text-decoration-underline cursor-pointer"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="top"
                                 data-bs-html="true"

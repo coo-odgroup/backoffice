@@ -35,7 +35,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="card">
                 <div class="card-body">
                     <!-- FILTER -->
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <div class="card-body">
                             <div class="row">
                                 @if (session('message'))
@@ -60,10 +60,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- FILTER FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                    <div class="row mb-1">
+                                        <div class="col-md-6 mb-1">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-sm"
                                                                id="txtCity"
                                                                name="txtCity"
                                                                value="{{ $data['row']->city_name ?? '' }}"
@@ -72,9 +72,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
 
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-6 mb-1">
                                             <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtCityAlias"
+                                            <input type="text" class="form-control form-control-sm" id="txtCityAlias"
                                                    name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}"
                                                    placeholder="Enter Alias"
                                                    oninput="this.value = this.value.toLowerCase();"
@@ -82,16 +82,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                    <div class="row mb-1">
+                                        <div class="col-md-6 mb-1">
                                             <label for="selState">State<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="selState" name="selState">
+                                            <select class="form-select form-select-sm" id="selState" name="selState">
                                                 <option value="0">Select State</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-6 mb-1">
                                             <label for="selDistrict">District</label>
-                                            <select class="form-select" id="selDistrict" name="selDistrict">
+                                            <select class="form-select form-select-sm" id="selDistrict" name="selDistrict">
                                                 <option value="0">Select District</option>
                                             </select>
                                         </div>
@@ -100,7 +100,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         @if($data['strPage']=="Edit")
                                             @if(!empty($data['synonyms']))
                                                 @foreach($data['synonyms'] ?? [] as $index => $synonym)
-                                                <div class="row mb-3 align-items-center synonym-row">
+                                                <div class="row mb-1 align-items-center synonym-row">
                                                     <div class="col-md-1">
                                                         <label for="txtSynonym" class="mb-0">
                                                             @if ($index==0)
@@ -112,7 +112,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     </div>
 
                                                     <div class="col-md-5">
-                                                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
+                                                        <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
                                                         <small class="text-muted char-counter float-end"></small>
                                                     </div>
 
@@ -130,34 +130,34 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 </div>
                                                 @endforeach
                                             @else
-                                            <div class="row mb-3 align-items-center synonym-row">
+                                            <div class="row mb-1 align-items-center synonym-row">
                                                 <div class="col-md-1">
                                                     <label for="txtSynonym" class="mb-0">Synonyms</label>
                                                 </div>
 
                                                 <div class="col-md-5">
-                                                    <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
+                                                    <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
                                                 </div>
 
                                                 <div class="col-md-1">
-                                                    <button type="button" class="btn btn-outline-primary btn-add">
+                                                    <button type="button" class="btn btn-outline-primary btn-add btn-sm">
                                                         <i class="fa fa-plus"></i>
                                                     </button>
                                                 </div>
                                             </div>
                                             @endif
                                         @else
-                                        <div class="row mb-3 align-items-center synonym-row">
+                                        <div class="row mb-1 align-items-center synonym-row">
                                             <div class="col-md-1">
                                                 <label for="txtSynonym" class="mb-0">Synonyms</label>
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                                                <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
                                             </div>
 
                                             <div class="col-md-1">
-                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
@@ -302,17 +302,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // Add synonym Field
             if (e.target.closest('.btn-add')) {
                 const newRow = document.createElement('div');
-                newRow.className = 'row mb-3 align-items-center synonym-row';
+                newRow.className = 'row mb-1 align-items-center synonym-row';
 
                 newRow.innerHTML = `
                     <div class="col-md-1">
                      &nbsp;
                     </div>
                     <div class="col-md-5">
-                        <input type="text" class="form-control synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
+                        <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
                     </div>
                     <div class="col-md-1">
-                        <button type="button" class="btn btn-outline-danger btn-remove">
+                        <button type="button" class="btn btn-outline-danger btn-sm btn-remove">
                             <i class="fa fa-minus"></i>
                         </button>
                     </div>

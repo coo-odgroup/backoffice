@@ -37,36 +37,37 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
+            <div class="mb-1 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Brand</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Brand">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="countrySearch">Country</label>
-                                    <select class="form-select" id="countrySearch" name="countrySearch">
-                                        <option value="">Select Country</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <div class="row align-items-end">
+
+                        <!-- Search -->
+                        <div class="col-lg-4 col-md-6">
+                            <label for="txtSearch">Search By Brand</label>
+                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                placeholder="Brand">
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <!-- Country -->
+                        <div class="col-lg-2 col-md-6">
+                            <label for="countrySearch">Country</label>
+                            <select class="form-select form-select-sm" id="countrySearch" name="countrySearch">
+                                <option value="">Select Country</option>
+                            </select>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-lg-2 col-md-6 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -74,6 +75,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -88,7 +90,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');" >
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
@@ -118,27 +120,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
                 <div id="customPaginationTop"></div>
             </div>
-
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('brand.dataTableView') }}"
-                data-edit-url="{{ route('brand.edit', 'ID') }}">
-                <thead class="table-secondary">
-                    <tr>
-                        <th class="noPrint no-sort">
-                             <div class="checkbox">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
+                    data-url="{{ route('brand.dataTableView') }}"
+                    data-edit-url="{{ route('brand.edit', 'ID') }}">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <div class="checkbox">
                                     <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
-                             </div>
-                        </th>
-                        <th>Sl No</th>
-                        <th>Brand</th>
-                        <th>Country</th>
-                        <th>Last Modified</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+                                </div>
+                            </th>
+                            <th>Sl No</th>
+                            <th>Brand</th>
+                            <th>Country</th>
+                            <th>Last Modified</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
@@ -224,7 +227,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return ' <div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
                         '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
                         '" ></div>';
                 },
@@ -265,7 +268,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <span
-                            class="text-primary fw-semibold"
+                            class="fw-semibold text-decoration-underline cursor-pointer"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"

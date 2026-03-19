@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -22,7 +22,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
+        <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
@@ -38,43 +38,46 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
+            <div class="mb-1 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By City Name/Alias</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="City Name/Alias">
-                                </div>
+                    <div class="row align-items-end">
 
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selState">State</label>
-                                    <select class="form-select" id="selState" name="selState">
-                                        <option value="0">Select State</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 col-sm-12 col-md-4 col-lg-2 mb-2">
-                                    <label for="selDistrict">District</label>
-                                    <select class="form-select" id="selDistrict" name="selDistrict">
-                                        <option value="0">Select District</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <!-- Search -->
+                        <div class="col-lg-3 col-md-6 mb-2">
+                            <label for="txtSearch">Search By City Name/Alias</label>
+                            <input type="text" class="form-control form-control-sm"
+                                id="txtSearch" name="txtSearch"
+                                placeholder="City Name/Alias">
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <!-- State -->
+                        <div class="col-lg-2 col-md-6 mb-2">
+                            <label for="selState">State</label>
+                            <select class="form-select form-select-sm" id="selState" name="selState">
+                                <option value="0">Select State</option>
+                            </select>
+                        </div>
+
+                        <!-- District -->
+                        <div class="col-lg-2 col-md-6 mb-2">
+                            <label for="selDistrict">District</label>
+                            <select class="form-select form-select-sm" id="selDistrict" name="selDistrict">
+                                <option value="0">Select District</option>
+                            </select>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-lg-2 col-md-6 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-lg-3 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-check me-1"></i>Submit
                             </button>
@@ -129,35 +132,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
                 <div id="customPaginationTop"></div>
             </div>
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('cities.dataTableView') }}"
-                data-edit-url="{{ route('cities.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>State/District Name</th>
-                        <th>City Name</th>
-                        <th>Alias</th>
-                        <th>Synonymn</th>
-                        <th>Last Modified</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Cities">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('cities.dataTableView') }}"
+                    data-edit-url="{{ route('cities.edit', 'ID') }}">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
+                            </th>
+                            <th>Sl No</th>
+                            <th>State/District Name</th>
+                            <th>City Name</th>
+                            <th>Alias</th>
+                            <th>Synonymn</th>
+                            <th>Last Modified</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="Cities">
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -174,8 +181,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $('#backoffice-form').on('submit', function(e) {
         e.preventDefault();
     });
-    
-    $(document).ready(function () {
+
+    $(document).ready(function() {
         // init selects
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
@@ -185,10 +192,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         getDataTableView();
     });
 
- 
+
     let filterOpen = false;
 
-    window.toggleFilter = function () {
+    window.toggleFilter = function() {
         const filterBox = $('#filterBox');
         const btn = $('#filterToggleBtn');
         const btnText = btn.find('.btn-text');
@@ -221,7 +228,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         }
     };
 
-    $('#btnReset').on('click', function () {
+    $('#btnReset').on('click', function() {
         $(':input', '#backoffice-form')
             .not(':button, :submit, :reset, :hidden')
             .val('');
@@ -231,12 +238,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
 
-    $(document).on('change', '#selState', function () {
+    $(document).on('change', '#selState', function() {
         commonAjax.getDistrictList($(this).val());
     });
 
     window.getDataTableView = function(reset = true) {
-      
+
         //  If table already initialized
         if (window.dataTableInstance && reset) {
 
@@ -265,28 +272,36 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
 
-        let dataTableColumns = [
-            {
+        let dataTableColumns = [{
                 data: '',
                 className: "noPrint text-center",
                 render: (d, t, r) =>
-                    `<input class="form-check-input chkItem" type="checkbox" value="${r.city_id}">`
+                    `<div class="checkbox"><input class="chkItem" type="checkbox" value="${r.city_id}"></div>`
             },
             {
                 data: null,
                 className: "text-center",
                 render: (d, t, r, m) => m.row + m.settings._iDisplayStart + 1
             },
-            { data: 'state_name', defaultContent: "--" },
-            { data: 'city_name', defaultContent: "--" },
-            { data: 'city_alias', defaultContent: "--" },
+            {
+                data: 'state_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'city_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'city_alias',
+                defaultContent: "--"
+            },
             {
                 data: 'synonyms',
                 orderable: false,
                 searchable: false,
                 render: data => {
                     if (!data) return '--';
-                 
+
                     let items = data.split('||');
                     let html = '';
 
@@ -297,20 +312,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return html;
                 }
             },
-           {
+            {
                 data: null,
-                render: function (data, type, row) {
+                render: function(data, type, row) {
 
-                    let createdBy  = row.created_by_name ?? '--';
-                    let createdAt  = row.created_date ?? '--';
+                    let createdBy = row.created_by_name ?? '--';
+                    let createdAt = row.created_date ?? '--';
 
-                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
-                 
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
+
                     // Show updated date if exists, else created date
-                    let shortDate = row.updated_date
-                        ? row.updated_date.split(' ')[0]
-                        : (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
+                    let shortDate = row.updated_date ?
+                        row.updated_date.split(' ')[0] :
+                        (createdAt !== '--' ? createdAt.split(' ')[0] : '--');
 
                     return `
                         <span
@@ -364,7 +379,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         ];
 
-        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, [1,2,3,4,5,6]);
+        loadDataTable(tableId, dataTableColumns, orderBy, searchParams, [1, 2, 3, 4, 5, 6]);
     };
 </script>
 

@@ -10,7 +10,6 @@
 
 <?php
 $page_name = 'All ' . trim($__env->yieldContent('page_title'));
-$listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
 <!-- Breadcrumb -->
@@ -67,138 +66,115 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
 
-                                    <!-- ================= STEP 2 ================= -->
-
-
 
                                     <div id="step3">
 
-                                        <h3 class="fw-bold mb-4 border-bottom pb-2">Time Configuration</h3>
-
-                                        <div class="row fw-bold border-bottom pb-2 mb-3">
-                                            <div class="col-md-4">City Name</div>
-                                            <div class="col-md-4 text-center">Source</div>
-                                            <div class="col-md-4 text-center">Destination</div>
+                                        <div class="row fw-bold border-bottom pb-1">
+                                            <div class="col-md-3">City Name</div>
+                                            <div class="col-md-3 text-center">Is Source</div>
+                                            <div class="col-md-3 text-center">Is Destination</div>
+                                            <div class="col-md-3">Listing Timings</div>
                                         </div>
 
                                         <!-- City Row -->
-                                        <div class="row align-items-center mb-3">
-                                            <div class="col-md-4 fw-bold">1. Baripada</div>
+                                        <div class="row align-items-center border-bottom">
+                                            <div class="col-md-3 fw-bold">1. Baripada</div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
-                                                   <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                            <div class="col-md-3 text-center align-middle">
+                                                <div class="checkbox">
+                                                    <input type="checkbox">
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
-                                                     <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                            <div class="col-md-3 text-center align-middle">
+                                                <div class="checkbox">
+                                                    <input type="checkbox">
+                                                    </label>
                                                 </div>
+                                            </div>
+
+                                            <div class="col-md-1 text-center">
+                                                <input type="time" class="form-control form-control-sm" value="00:00">
                                             </div>
                                         </div>
 
-                                        <div class="row align-items-center mb-3">
-                                            <div class="col-md-4 fw-bold">2. Balasore</div>
+                                        <div class="row align-items-center border-bottom">
+                                            <div class="col-md-3 fw-bold">2. Balasore</div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
-                                                    <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                            <div class="col-md-3 text-center align-middle">
+                                                <div class="checkbox">
+                                                    <input type="checkbox">
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
-                                                    <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                            <div class="col-md-3 text-center align-middle">
+                                                <div class="checkbox">
+                                                    <input type="checkbox">
+                                                    </label>
                                                 </div>
+                                            </div>
+                                            <div class="col-md-1 text-center">
+                                                <input type="time" class="form-control form-control-sm" value="00:00">
                                             </div>
                                         </div>
 
-                                        <div class="row align-items-center mb-3">
-                                            <div class="col-md-4 fw-bold">3. Soro</div>
+                                        <div class="row align-items-center border-bottom">
+                                            <div class="col-md-3 fw-bold">3. Soro</div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
+                                            <div class="col-md-3 text-center align-middle">
                                                 <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                                    <input type="checkbox">
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
-                                                 <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                            <div class="col-md-3 text-center align-middle">
+                                                <div class="checkbox">
+                                                    <input type="checkbox">
+                                                    </label>
                                                 </div>
+                                            </div>
+                                            <div class="col-md-1 text-center">
+                                                <input type="time" class="form-control form-control-sm" value="00:00">
                                             </div>
                                         </div>
 
-                                        <div class="row align-items-center mb-3">
-                                            <div class="col-md-4 fw-bold">4. Bhadrak</div>
+                                        <div class="row align-items-center border-bottom">
+                                            <div class="col-md-3 fw-bold">4. Bhadrak</div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
+                                            <div class="col-md-3 text-center align-middle">
                                                 <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                                    <input type="checkbox">
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
+                                            <div class="col-md-3 text-center align-middle">
                                                 <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
+                                                    <input type="checkbox">
+                                                    </label>
                                                 </div>
+                                            </div>
+                                            <div class="col-md-1 text-center">
+                                                <input type="time" class="form-control form-control-sm" value="00:00">
                                             </div>
                                         </div>
 
-                                        <div class="row align-items-center mb-3">
-                                            <div class="col-md-4 fw-bold">5. Cuttack</div>
+                                        <div class="row align-items-center border-bottom">
+                                            <div class="col-md-3 fw-bold">5. Cuttack</div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
-                                               <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
-                                                </div>    
+                                            <div class="col-md-3 text-center align-middle">
+                                                <div class="checkbox">
+                                                    <input type="checkbox">
+                                                </div>
                                             </div>
 
-                                            <div class="col-md-4 text-center">
-                                                <div class="form-check d-flex justify-content-center">
+                                            <div class="col-md-3 text-center align-middle">
                                                 <div class="checkbox">
-                                                        <label>
-                                                            <input type="checkbox" checked="checked">
-                                                        </label>
-                                                    </div>
-                                                </div>    
+                                                    <input type="checkbox">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1 text-center">
+                                                <input type="time" class="form-control form-control-sm" value="00:00">
                                             </div>
                                         </div>
 
@@ -291,94 +267,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('.form-select').val('').trigger('change');
     });
 
-    $('.onSelect').on('change', function() {
-        generateBusName();
-    });
-
-    function generateBusName() {
-
-        const brandVal = $('#brand').val();
-        const modelVal = $('#busModel').val();
-        const axleVal = $('#axleType').val();
-        const serviceVal = $('#busService').val();
-        const acVal = $('.annexture').val();
-        const seatVal = $('#seatType').val();
-        // const layoutVal   = $('#seatLayout').val();
-
-        // Check ALL selected
-        // if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal && layoutVal) {
-        if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal) {
-
-            const brand = $('#brand option:selected').text();
-            const model = $('#busModel option:selected').text();
-            const axle = $('#axleType option:selected').text();
-            const service = $('#busService option:selected').text();
-            const ac = $('.annexture option:selected').text();
-            const seatType = $('#seatType option:selected').text();
-            const layout = $('#seatLayout option:selected').text();
-
-            // const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType} ${layout}`;
-            const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType}`;
-
-            $('#busType').html(fullName);
-
-        } else {
-            // Clear if not all selected
-            $('#busType').html('');
-        }
-    }
-
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#brand', 'Select Brand');
-        commonAjax.initSelect2('#busModel', 'Select Model');
-        commonAjax.initSelect2('#axleType', 'Select Axxle Type');
-        commonAjax.initSelect2('#busService', 'Select Bus Service');
-        commonAjax.initSelect2('.annexture', 'Select AC Type');
-        commonAjax.initSelect2('#seatType', 'Select Seat Type');
-        commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
-
-        // commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
-
-        // let category_id = <?= $data['row']->category_id ?? '0' ?>
-
-        // commonAjax.loadAmenityCategory(category_id);
-
-        let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
-        commonAjax.loadBrandList(selectedBrand);
-
-        let model_id = "{{ $data['row']->model_id ?? '' }}";
-        commonAjax.loadBusModelsList(model_id);
-
-        $('#brand').on('change', function() {
-
-            let brandId = $(this).val();
-
-            // Reset model dropdown
-            $('#model').html('<option value="">Select Model</option>');
-
-            if (brandId) {
-                // Load models based on selected brand
-                commonAjax.loadBusModelsList('', brandId);
-            }
-        });
-
-        let axle_id = "{{ $data['row']->axle_id ?? '' }}";
-        commonAjax.loadAxleTypeList(axle_id);
-
-        let bus_service_id = "{{ $data['row']->bus_service_id ?? '' }}";
-        commonAjax.loadBusServicesList(bus_service_id);
-
-        let seat_type_id = "{{ $data['row']->seat_type_id ?? '' }}";
-        commonAjax.loadSeatTypeList(seat_type_id);
-
-        let seat_layout_id = "{{ $data['row']->seat_layout_id ?? '' }}";
-        commonAjax.loadSeatLayoutList(seat_layout_id);
-
-        let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
-        commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
-    });
-
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
@@ -407,49 +295,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
 
-    function searchCity() {
-
-        let city = document.getElementById("citySearch").value;
-
-        $.ajax({
-            type: "POST",
-            url: ajaxUrl + "get-city-search",
-            data: {
-                city: city,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            dataType: "json",
-
-            success: function(response) {
-
-                let html = "";
-
-                if (response.status && response.data.length > 0) {
-
-                    $.each(response.data, function(index, c) {
-
-                        html += `
-                    <div class="form-check mb-2">
-                        <input class="form-check-input cityCheck"
-                               type="checkbox"
-                               value="${c.city_name}"
-                               onchange="toggleCity(this)">
-                        <label class="form-check-label">${c.city_name}</label>
-                    </div>`;
-                    });
-
-                } else {
-
-                    html = `<p class="text-danger">No city found</p>`;
-
-                }
-
-                $("#cityList").html(html);
-
-            }
-
-        });
-
-    }
+  
 </script>
 @endpush
