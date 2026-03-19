@@ -122,11 +122,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
                 data-url="{{ route('brand.dataTableView') }}"
                 data-edit-url="{{ route('brand.edit', 'ID') }}">
-                <thead class="thead-light">
+                <thead class="table-secondary">
                     <tr>
                         <th class="noPrint no-sort">
                              <div class="checkbox">
-                                    <input id="checkboxall" name="btSelectItem" class="inverted chkAll" type="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
                              </div>
                         </th>
                         <th>Sl No</th>
@@ -264,7 +264,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <small
+                        <span
                             class="text-primary fw-semibold"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
@@ -279,7 +279,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${displayDate}
-                        </small>
+                        </span>
                     `;
                 }
             },

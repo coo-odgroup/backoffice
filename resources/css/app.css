@@ -24,6 +24,7 @@ label {
 }
 
 .btn-sm {
+    font-size: 0.675rem !important ;
     padding: 4px 10px;
 }
 
@@ -261,7 +262,7 @@ label {
 
 .breadcrumb li {
     padding-left: 10px;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .breadcrumb i {
@@ -373,7 +374,7 @@ label {
 
 #customTableInfo {
     font-size: 14px;
-    color: #6c757d;
+    color: #39393a;
 }
 
 @media print {
