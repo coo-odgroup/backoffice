@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
+use App\Models\Master\SeatLayoutName;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -28,11 +29,10 @@ class SeatLayoutController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
             $classSearch = (request('classSearch') !== null && request('classSearch') !== '') ? (int)request('classSearch') : '';
 
-            $dataQuery = DB::table('mst_bus_type as bt')
+            $dataQuery = DB::table('mst_seat_layout_name as bt')
                 ->select(
                     'bt.id as bustype_id',
-                    'bt.class_id',
-                    'bt.bus_type',
+                    'bt.layout_name',
                     'bt.created_at',
                     'bt.created_by',
                     'bt.updated_at',
@@ -66,19 +66,19 @@ class SeatLayoutController extends Controller
             $length = is_numeric($length) ? (int)$length : 10;
 
             // Ordering
-            if (!empty(request('order'))) {
+            // if (!empty(request('order'))) {
 
-                $columns = [2 => 'bt.bus_type', 3 => 'bt.created_at', 4 => 'bt.created_by', 5 => 'bt.active_status'];
+            //     $columns = [2 => 'bt.bus_type', 3 => 'bt.created_at', 4 => 'bt.created_by', 5 => 'bt.active_status'];
 
-                $orderBy       = request('order');
-                $orderColumn   = $columns[$orderBy[0]['column']] ?? 'bt.bus_type';
-                $orderType     = $orderBy[0]['dir'];
-            } else {
-                $orderColumn = 'bt.bus_type';
-                $orderType   = 'asc';
-            }
+            //     $orderBy       = request('order');
+            //     $orderColumn   = $columns[$orderBy[0]['column']] ?? 'bt.bus_type';
+            //     $orderType     = $orderBy[0]['dir'];
+            // } else {
+            //     $orderColumn = 'bt.bus_type';
+            //     $orderType   = 'asc';
+            // }
 
-            $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
+            // $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
 
             // Pagination
             if ($length == -1) {
@@ -129,107 +129,248 @@ class SeatLayoutController extends Controller
         ]);
     }
 
+    // public function add($encId = null)
+    // {
+
+    //     $data = [];
+    //     $data['strPage'] = $method = 'Add';
+    //     $data['strSubmit'] = 'Submit';
+    //     $data['strReset'] = 'Reset';
+
+
+    //     if (request()->isMethod('post')) {
+
+    //         $windowSeatInput = json_decode(request()->window_seat, true);
+
+    //         $duplicate = SeatLayoutName::where(['layout_name' => request()->layout_name])->get();
+
+
+    //         if ($duplicate->count() > 0) {
+    //             return back()->with([
+    //                 'level'     => 'danger',
+    //                 'message'   => 'Layout Name Type already exist'
+    //             ])->withInput();
+    //         } else {
+    //             $data = [
+    //                 "layout_name" => request()->layout_name,
+    //                 "active_status" => 1,
+    //                 "created_by" => 1,
+    //                 "updated_by" => 1,
+    //             ];
+
+    //             // SeatLayoutName::create($data);
+    //         }
+
+    //         $seat_layout_name = SeatLayoutName::where('layout_name', request()->layout_name)->firstOrFail();
+    //         $seats = json_decode(request()->seat_layout_json, true);
+
+    //         $windowSeatInput = json_decode(request()->window_seat, true);
+
+    //         $windowSeats = [];
+
+    //         if (!empty($windowSeatInput)) {
+    //             $windowSeats = array_column($windowSeatInput, 'value');
+    //         }
+
+    //         $seats = array_map(function ($seat) use ($seat_layout_name, $windowSeats) {
+
+    //             $seatText = (string)$seat['seat_text'];
+
+    //             $seat['seat_layout_name_id'] = $seat_layout_name->id;
+
+    //             $seat['is_window'] = in_array($seatText, $windowSeats) ? 1 : 0;
+
+    //             $seat['is_aisle'] = is_null($seat['seat_text']) ? 1 : 0;
+
+    //             return $seat;
+    //         }, $seats);
+
+    //         try {
+    //             DB::table('mst_seats')->insert($seats);
+    //             DB::commit();
+    //         } catch (\Exception $e) {
+    //             DB::rollBack();
+    //             return $e->getMessage();
+    //         }
+    //     }
+
+    //     // try {
+
+    //     //     $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+
+    //     //     if ($id > 0) {
+
+    //     //         $redirectPage = "admin/bustype/edit/" . $encId;
+    //     //         $data['strPage'] = $method = 'Edit';
+    //     //         $data['strSubmit'] = 'Update';
+    //     //         $data['strReset'] = 'Cancel';
+
+    //     //         $dataResQry = BusType::select('id', 'class_id', 'bus_type');
+
+    //     //         $dataResQry = $dataResQry->where('id', $id)->first();
+
+    //     //         if (empty($dataResQry)) {
+    //     //             return redirect("bustype");
+    //     //         }
+    //     //         $data['row'] = $dataResQry;
+    //     //     } else {
+    //     //         $id = 0;
+    //     //         $redirectPage = "admin/bustype";
+    //     //     }
+
+    //     //     if (request()->isMethod('post')) {
+
+    //     //         request()->replace(request()->all());
+
+    //     //         $validator = Validator::make(request()->all(), [
+    //     //             'classType' => 'required',
+    //     //             'busType' => 'bail|required'
+    //     //         ], [
+    //     //             'classType.required' => 'Class Name cannot be left blank.',
+    //     //             'busType.required' => 'Bus Type Name cannot be left blank.'
+    //     //         ]);
+
+    //     //         if ($validator->fails()) {
+    //     //             return back()->withErrors($validator)->withInput();
+    //     //         } else {
+    //     //             DB::beginTransaction();
+
+    //     //             $classType = (int)request('classType');
+    //     //             $busType = htmlEncode(request('busType'));
+
+    //     //             $duplicate = BusType::select('id')->where(['bus_type' => $busType]);
+
+    //     //             if ($id != 0) {
+    //     //                 $duplicate->where('id', '!=', $id);
+    //     //             }
+
+    //     //             if ($duplicate->exists()) {
+    //     //                 return back()->with([
+    //     //                     'level'     => 'danger',
+    //     //                     'message'   => 'Bus Type already exist'
+    //     //                 ])->withInput();
+    //     //             } else {
+    //     //                 $obj = ($id != 0) ? BusType::find($id) : new BusType();
+    //     //                 $obj->class_id = $classType;
+    //     //                 $obj->bus_type = $busType;
+    //     //                 $obj->created_by = 1;
+    //     //                 $obj->active_status = 1;
+
+    //     //                 if ($id != 0) {
+    //     //                     $obj->updated_by = 1;
+    //     //                 }
+
+    //     //                 $obj->save();
+
+    //     //                 session()->flash('level', 'success');
+    //     //                 session()->flash('message', 'Bus Type ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+    //     //             }
+
+    //     //             DB::commit();
+    //     //             return redirect($redirectPage);
+    //     //         }
+    //     //     }
+    //     // } catch (\Throwable $t) {
+    //     //     Log::error("Error", [
+    //     //         'Controller' => 'BusTypeController',
+    //     //         'Method'     => $method,
+    //     //         'Error'      => $t->getMessage()
+    //     //     ]);
+
+    //     //     DB::rollBack();
+
+    //     //     $errorMsg = config('constantbt.SERVER_ERROR_MESSAGE');
+
+    //     //     return back()->with([
+    //     //         'level'     => 'danger',
+    //     //         'message'   => $errorMsg
+    //     //     ])->withInput();
+    //     // }
+    //     return view('Master.addSeatLayout', compact('data'));
+    // }
+
     public function add($encId = null)
     {
-
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
 
-        // try {
+        if (request()->isMethod('post')) {
 
-        //     $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+            $exists = SeatLayoutName::where('layout_name', request()->layout_name)->exists();
 
-        //     if ($id > 0) {
+            if ($exists) {
+                return back()->with([
+                    'level'   => 'danger',
+                    'message' => 'Layout Name already exists'
+                ])->withInput();
+            }
 
-        //         $redirectPage = "admin/bustype/edit/" . $encId;
-        //         $data['strPage'] = $method = 'Edit';
-        //         $data['strSubmit'] = 'Update';
-        //         $data['strReset'] = 'Cancel';
+            DB::beginTransaction();
 
-        //         $dataResQry = BusType::select('id', 'class_id', 'bus_type');
+            try {
 
-        //         $dataResQry = $dataResQry->where('id', $id)->first();
+                $seat_layout_name = SeatLayoutName::create([
+                    "layout_name"  => request()->layout_name,
+                    "active_status" => 1,
+                    "created_by"   => 1,
+                    "updated_by"   => 1,
+                ]);
 
-        //         if (empty($dataResQry)) {
-        //             return redirect("bustype");
-        //         }
-        //         $data['row'] = $dataResQry;
-        //     } else {
-        //         $id = 0;
-        //         $redirectPage = "admin/bustype";
-        //     }
+                $seats = json_decode(request()->seat_layout_json, true);
 
-        //     if (request()->isMethod('post')) {
+                $windowSeatInput = json_decode(request()->window_seat, true) ?? [];
+                $windowSeats = array_column($windowSeatInput, 'value');
 
-        //         request()->replace(request()->all());
+                $seats = array_map(function ($seat) use ($seat_layout_name, $windowSeats) {
 
-        //         $validator = Validator::make(request()->all(), [
-        //             'classType' => 'required',
-        //             'busType' => 'bail|required'
-        //         ], [
-        //             'classType.required' => 'Class Name cannot be left blank.',
-        //             'busType.required' => 'Bus Type Name cannot be left blank.'
-        //         ]);
+                    $seatText = (string)$seat['seat_text'];
 
-        //         if ($validator->fails()) {
-        //             return back()->withErrors($validator)->withInput();
-        //         } else {
-        //             DB::beginTransaction();
+                    return [
+                        "seat_layout_name_id" => $seat_layout_name->id,
+                        "seat_class" => $seat['seat_class'],
+                        "berth_type" => $seat['berth_type'],
+                        "seat_text" => $seat['seat_text'],
+                        "row_number" => $seat['row_number'],
+                        "col_number" => $seat['col_number'],
+                        "is_window" => in_array($seatText, $windowSeats) ? 1 : 0,
+                        "is_aisle" => is_null($seat['seat_text']) ? 1 : 0,
+                        "created_by" => 1,
+                        "created_at" => now(),
+                        "updated_at" => now(),
+                    ];
+                }, $seats);
 
-        //             $classType = (int)request('classType');
-        //             $busType = htmlEncode(request('busType'));
+                DB::table('mst_seats')->insert($seats);
 
-        //             $duplicate = BusType::select('id')->where(['bus_type' => $busType]);
+                DB::commit();
 
-        //             if ($id != 0) {
-        //                 $duplicate->where('id', '!=', $id);
-        //             }
+                return back()->with([
+                    'level' => 'success',
+                    'message' => 'Seat Layout Saved Successfully'
+                ]);
+            } catch (\Exception $e) {
 
-        //             if ($duplicate->exists()) {
-        //                 return back()->with([
-        //                     'level'     => 'danger',
-        //                     'message'   => 'Bus Type already exist'
-        //                 ])->withInput();
-        //             } else {
-        //                 $obj = ($id != 0) ? BusType::find($id) : new BusType();
-        //                 $obj->class_id = $classType;
-        //                 $obj->bus_type = $busType;
-        //                 $obj->created_by = 1;
-        //                 $obj->active_status = 1;
+                DB::rollBack();
 
-        //                 if ($id != 0) {
-        //                     $obj->updated_by = 1;
-        //                 }
+                return back()->with([
+                    'level' => 'danger',
+                    'message' => $e->getMessage()
+                ]);
+            }
+        }
 
-        //                 $obj->save();
-
-        //                 session()->flash('level', 'success');
-        //                 session()->flash('message', 'Bus Type ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-        //             }
-
-        //             DB::commit();
-        //             return redirect($redirectPage);
-        //         }
-        //     }
-        // } catch (\Throwable $t) {
-        //     Log::error("Error", [
-        //         'Controller' => 'BusTypeController',
-        //         'Method'     => $method,
-        //         'Error'      => $t->getMessage()
-        //     ]);
-
-        //     DB::rollBack();
-
-        //     $errorMsg = config('constantbt.SERVER_ERROR_MESSAGE');
-
-        //     return back()->with([
-        //         'level'     => 'danger',
-        //         'message'   => $errorMsg
-        //     ])->withInput();
-        // }
         return view('Master.addSeatLayout', compact('data'));
+    }
+
+    public function checkLayoutName(Request $request)
+    {
+        $exists = SeatLayoutName::where('layout_name', $request->layout_name)->exists();
+
+        return response()->json([
+            'exists' => $exists
+        ]);
     }
 
     public function edit($encId)

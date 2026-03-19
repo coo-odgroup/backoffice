@@ -306,10 +306,165 @@ function removePreview(deck, row, col) {
     });
 }
 
+// export function generateSeatJSON() {
+
+//     // const seat_layout_name_id = 1;
+//     const created_by = 1;
+
+//     let seats = [];
+
+//     document.querySelectorAll(".seat").forEach(td => {
+
+//         const seat = td.innerText.trim();
+//         const deck = td.dataset.deck;
+//         const row = parseInt(td.dataset.row);
+//         const col = parseInt(td.dataset.col);
+
+//         const berth_type = deck === "UPPER" ? 1 : 2;
+
+//         const next = document.querySelector(
+//             `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col+1}"]`
+//         );
+
+//         let seat_class = 0; // default blank
+
+//         // BLANK CELL
+//         if (!seat) {
+
+//             seats.push({
+//                 // seat_layout_name_id,
+//                 seat_class: 0,
+//                 berth_type,
+//                 seat_text: null,
+//                 row_number: row,
+//                 col_number: col,
+//                 is_window: 0,
+//                 is_aisle: 0,
+//                 created_by
+//             });
+
+//             return;
+//         }
+
+//         // SLEEPER CHECK
+//         if (next && next.innerText.trim() === seat) {
+
+//             seats.push({
+//                 // seat_layout_name_id,
+//                 seat_class: 2,
+//                 berth_type,
+//                 seat_text: seat,
+//                 row_number: row,
+//                 col_number: col,
+//                 is_window: 1,
+//                 is_aisle: 0,
+//                 created_by
+//             });
+
+//             next.dataset.skip = "true";
+//             return;
+//         }
+
+//         // SKIP second sleeper cell
+//         if (td.dataset.skip === "true") return;
+
+//         // SEATER
+//         seats.push({
+//             // seat_layout_name_id,
+//             seat_class: 1,
+//             berth_type,
+//             seat_text: seat,
+//             row_number: row,
+//             col_number: col,
+//             is_window: 1,
+//             is_aisle: 0,
+//             created_by
+//         });
+
+//     });
+
+//     return seats;
+// }
+
+// export function generateSeatJSON() {
+
+//     const created_by = 1;
+//     const tier = document.getElementById('busTier').value; // ✅ added
+
+//     let seats = [];
+
+//     document.querySelectorAll(".seat").forEach(td => {
+
+//         const seat = td.innerText.trim();
+//         const deck = td.dataset.deck;
+
+//         // ✅ ONLY THIS CONDITION
+//         if (tier == "1" && deck === "UPPER") return;
+
+//         const row = parseInt(td.dataset.row);
+//         const col = parseInt(td.dataset.col);
+
+//         const berth_type = deck === "UPPER" ? 1 : 2;
+
+//         const next = document.querySelector(
+//             `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col + 1}"]`
+//         );
+
+//         let seat_class = 0;
+
+//         if (!seat) {
+//             seats.push({
+//                 seat_class: 0,
+//                 berth_type,
+//                 seat_text: null,
+//                 row_number: row,
+//                 col_number: col,
+//                 is_window: 0,
+//                 is_aisle: 0,
+//                 created_by
+//             });
+//             return;
+//         }
+
+//         if (next && next.innerText.trim() === seat) {
+//             seats.push({
+//                 seat_class: 2,
+//                 berth_type,
+//                 seat_text: seat,
+//                 row_number: row,
+//                 col_number: col,
+//                 is_window: 1,
+//                 is_aisle: 0,
+//                 created_by
+//             });
+
+//             next.dataset.skip = "true";
+//             return;
+//         }
+
+//         if (td.dataset.skip === "true") return;
+
+//         seats.push({
+//             seat_class: 1,
+//             berth_type,
+//             seat_text: seat,
+//             row_number: row,
+//             col_number: col,
+//             is_window: 1,
+//             is_aisle: 0,
+//             created_by
+//         });
+
+//     });
+
+//     return seats;
+// }
+
+
 export function generateSeatJSON() {
 
-    const seat_layout_name_id = 1;
     const created_by = 1;
+    const tier = document.getElementById('busTier').value;
 
     let seats = [];
 
@@ -317,22 +472,24 @@ export function generateSeatJSON() {
 
         const seat = td.innerText.trim();
         const deck = td.dataset.deck;
+
+        // ✅ Tier condition
+        if (tier == "1" && deck === "UPPER") return;
+
         const row = parseInt(td.dataset.row);
         const col = parseInt(td.dataset.col);
 
-        const berth_type = deck === "UPPER" ? 1 : 2;
+        // ✅ FIXED mapping
+        const berth_type = deck === "UPPER" ? 2 : 1;
 
         const next = document.querySelector(
-            `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col+1}"]`
+            `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col + 1}"]`
         );
 
-        let seat_class = 0; // default blank
+        let seat_class = 0;
 
-        // BLANK CELL
         if (!seat) {
-
             seats.push({
-                seat_layout_name_id,
                 seat_class: 0,
                 berth_type,
                 seat_text: null,
@@ -342,15 +499,11 @@ export function generateSeatJSON() {
                 is_aisle: 0,
                 created_by
             });
-
             return;
         }
 
-        // SLEEPER CHECK
         if (next && next.innerText.trim() === seat) {
-
             seats.push({
-                seat_layout_name_id,
                 seat_class: 2,
                 berth_type,
                 seat_text: seat,
@@ -365,12 +518,9 @@ export function generateSeatJSON() {
             return;
         }
 
-        // SKIP second sleeper cell
         if (td.dataset.skip === "true") return;
 
-        // SEATER
         seats.push({
-            seat_layout_name_id,
             seat_class: 1,
             berth_type,
             seat_text: seat,

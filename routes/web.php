@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\BlogRoutesController;
 use App\Http\Controllers\Admin\BlogTagMapController;
 use App\Http\Controllers\Admin\BlogTagsController;
 use App\Http\Controllers\Admin\Bus\BusAmenitiesController;
+use App\Http\Controllers\Admin\Bus\BusSeatLayoutController;
 use App\Http\Controllers\Admin\Campaign\CampaignMasterController;
 use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
@@ -134,7 +135,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
-    Route::get('/master-logs', [MasterLogController::class, 'index'])->name('audit-log.index');
+    Route::get('/master-logs', [MasterLogController::class, 'index'])->name('master-log.index');
 
 
 
@@ -407,6 +408,16 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'reviewcategory/add', [ReviewCategoryController::class, 'add'])->name('reviewcategory.add');
     Route::post('reviewcategory/dataTableView', [ReviewCategoryController::class, 'dataTableView'])->name('reviewcategory.dataTableView');
     Route::match(['get', 'post'], 'reviewcategory/edit/{encId}', [ReviewCategoryController::class, 'edit'])->name('reviewcategory.edit');
+
+    // Seat Layout
+    Route::get('/seat-layout', [SeatLayoutController::class, 'index'])->name('seatlayout.index');
+    Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
+    Route::post('seat-layout/dataTableView', [SeatLayoutController::class, 'dataTableView'])->name('seat-layout.dataTableView');
+    Route::post('/check-layout-name', [SeatLayoutController::class, 'checkLayoutName']);
+    Route::match(['get', 'post'], 'seat-layout/edit/{encId}', [SeatLayoutController::class, 'edit'])->name('seat-layout.edit');
+
+    //View Bus Seat Layout
+    Route::get('/bus-seat-layout/{id}',[BusSeatLayoutController::class,"index"])->name('buslayout.index');
 
     //--------------------------------------------------------------------------------------------------------------------
 
