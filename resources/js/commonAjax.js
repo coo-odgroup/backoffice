@@ -1505,3 +1505,32 @@ export function loadAnnextureList(annexture_type = '', selected_id = 0) {
         },
     });
 }
+
+export function loadCampaignMasterList(campaign_master_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-campaign-master-list",
+        data: {
+            campaign_master_id: campaign_master_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Campaign Master</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        campaign_master_id > 0 && app.id == campaign_master_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.campaign_name}
+                                </option>`;
+                });
+            }
+
+            $("#campaignMaster").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Campaign Master");
+        },
+    });
+}

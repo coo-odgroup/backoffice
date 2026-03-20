@@ -729,5 +729,28 @@ class CommonController extends Controller
             ]);
         }
     }
+
+    public function getCampaignMasterList()
+    {
+        try {
+
+            $data = DB::table('campaign_master')
+                ->select('id', 'campaign_name')
+                ->where('active_status', 1)
+                ->orderBy('campaign_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
 }
   

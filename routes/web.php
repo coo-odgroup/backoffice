@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\BlogTagMapController;
 use App\Http\Controllers\Admin\BlogTagsController;
 use App\Http\Controllers\Admin\Bus\BusAmenitiesController;
 use App\Http\Controllers\Admin\Campaign\CampaignMasterController;
+use App\Http\Controllers\Admin\Campaign\CampaignController;
 use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
@@ -91,6 +92,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-blogtags-list', [CommonController::class, 'getBlogTagsList']);
     Route::post('get-cancellationslab-list', [CommonController::class, 'getCancellationslabList']);
     Route::post('get-annexure-type-list', [CommonController::class, 'getAnnexureTypeList']);
+    Route::post('get-campaign-master-list', [CommonController::class, 'getCampaignMasterList']);
 
     Route::post('get-annexture-list', [CommonController::class, 'getAnnextureList']);
 
@@ -352,6 +354,12 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'campaign-master/add', [CampaignMasterController::class, 'add'])->name('campaign-master.add');
     Route::post('campaign-master/dataTableView', [CampaignMasterController::class, 'dataTableView'])->name('campaign-master.dataTableView');
     Route::match(['get', 'post'], 'campaign-master/edit/{encId}', [CampaignMasterController::class, 'edit'])->name('campaign-master.edit');
+
+    // Campaign
+    Route::get('/campaign', [CampaignController::class, 'index'])->name('campaign.index');
+    Route::match(['get', 'post'], 'campaign/add', [CampaignController::class, 'add'])->name('campaign.add');
+    Route::post('campaign/dataTableView', [CampaignController::class, 'dataTableView'])->name('campaign.dataTableView');
+    Route::match(['get', 'post'], 'campaign/edit/{encId}', [CampaignController::class, 'edit'])->name('campaign.edit');
 
 
     // ---------------------------------------------------------------------------------------------------------------
