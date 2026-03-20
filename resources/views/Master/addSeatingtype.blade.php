@@ -61,16 +61,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- FILTER FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-12 mb-3">
+                                        <div class="col-md-12">
                                             <label for="txtSeatType">Seat Type<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="txtSeatType" name="txtSeatType" value="{{ $data['row']->seat_type ?? '' }}" placeholder="Enter Seat Type">
+                                            <input type="text" class="form-control form-control-sm" id="txtSeatType" name="txtSeatType" value="{{ $data['row']->seat_type ?? '' }}" placeholder="Enter Seat Type">
                                         </div>
                                     </div>
 
                                 </div>
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}

@@ -61,18 +61,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-6">
                                             <label for="selCity">City<span class="text-danger important">*</span></label>
-                                            <select class="form-select selCity" id="selCity" name="selCity">
+                                            <select class="form-select form-select-sm selCity" id="selCity" name="selCity">
                                                 <option value="0">Select City</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div id="boardingDroppingWrapper">
                                         <div class="row mb-3">
-                                            <div class="col-md-4 mb-3">
+                                            <div class="col-md-4 mb-1">
                                                 <label for="type">Type<span class="text-danger important">*</span></label>
-                                                <select class="form-select type" id="type" name="type[]">
+                                                <select class="form-select form-select-sm type" id="type" name="type[]">
                                                     <option selected>Select Type</option>
                                                     <option value="1"
                                                         {{ (isset($data['row']) && $data['row']->type == 1) ? 'selected' : '' }}>
@@ -85,35 +85,35 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     </option>
                                                 </select>
                                             </div>
-                                            <div class="col-md-4 mb-3">
+                                            <div class="col-md-4 mb-1">
                                                 <label for="brd_drp_point">Boarding / Dropping Point<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control brd_drp_point" data-check-url="{{ route('boardingDropping.checkExists') }}"
+                                                <input type="text" class="form-control form-control-sm brd_drp_point" data-check-url="{{ route('boardingDropping.checkExists') }}"
                                                     placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" maxlength="100" value="{{ $data['row']->brd_drp_point ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
-                                            <div class="col-md-4 mb-3">
+                                            <div class="col-md-4 mb-1">
                                                 <label for="landmark">Landmark</label>
-                                                <input type="text" class="form-control" placeholder="Enter Landmark" id="landmark" name="landmark[]" maxlength="100" value="{{ $data['row']->landmark ?? '' }}">
+                                                <input type="text" class="form-control form-control" placeholder="Enter Landmark" id="landmark" name="landmark[]" maxlength="100" value="{{ $data['row']->landmark ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
-                                            <div class="col-md-4 mb-3">
+                                            <div class="col-md-4 mb-1">
                                                 <label for="latitude">Latitude</label>
-                                                <input type="text" class="form-control latitude" placeholder="Enter Latitude" id="latitude" name="latitude[]" maxlength="7" value="{{ $data['row']->latitude ?? '' }}">
+                                                <input type="text" class="form-control form-control-sm latitude" placeholder="Enter Latitude" id="latitude" name="latitude[]" maxlength="7" value="{{ $data['row']->latitude ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
-                                            <div class="col-md-4 mb-3">
+                                            <div class="col-md-4 mb-1">
                                                 <label for="longitude">Longitude</label>
-                                                <input type="text" class="form-control longitude" placeholder="Enter Longitude" id="longitude" name="longitude[]" maxlength="7" value="{{ $data['row']->longitude ?? '' }}">
+                                                <input type="text" class="form-control form-control-sm longitude" placeholder="Enter Longitude" id="longitude" name="longitude[]" maxlength="7" value="{{ $data['row']->longitude ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-3 mb-3">
                                                 <label for="sequence_no">Sequence No</label>
-                                                <input type="text" class="form-control" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" maxlength="3" value="{{ $data['row']->sequence_no ?? '1' }}">
+                                                <input type="text" class="form-control form-control-sm" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" maxlength="3" value="{{ $data['row']->sequence_no ?? '1' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
                                             <div class="col-md-1 d-flex align-items-center mb-3 <?= $isEdit ?>">
-                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
@@ -244,62 +244,62 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 "<div class='row mb-3'>" +
 
-                    "<div class='col-md-4 mb-3'>" +
+                    "<div class='col-md-4 mb-1'>" +
                         "<label>Type<span class='text-danger important'>*</span></label>" +
-                        "<select class='form-select type' name='type[]'>" +
+                        "<select class='form-select form-select-sm type' name='type[]'>" +
                             "<option selected>Select Type</option>" +
                             "<option value='1'>Boarding</option>" +
                             "<option value='2'>Dropping</option>" +
                         "</select>" +
                     "</div>" +
 
-                    "<div class='col-md-4 mb-3'>" +
+                    "<div class='col-md-4 mb-1'>" +
                         "<label>Boarding / Dropping Point<span class='text-danger important'>*</span></label>" +
                         "<input type='text' maxlength='100' " +
                         "placeholder='Enter Boarding/Dropping Point' " +
-                        "class='form-control brd_drp_point' " +
+                        "class='form-control form-control-sm brd_drp_point' " +
                         "data-check-url='{{ route('boardingDropping.checkExists') }}' " +
                         "name='brd_drp_point[]'>" +
                         "<small class='text-muted char-counter float-end'></small>" +
                     "</div>" +
 
-                    "<div class='col-md-4 mb-3'>" +
+                    "<div class='col-md-4 mb-1'>" +
                         "<label>Landmark</label>" +
                         "<input type='text' maxlength='100' " +
-                        "class='form-control landmark' " +
+                        "class='form-control form-control-sm landmark' " +
                         "placeholder='Enter Landmark' " +
                         "name='landmark[]'>" +
                         "<small class='text-muted char-counter float-end'></small>" +
                     "</div>" +
 
-                    "<div class='col-md-4 mb-3'>" +
+                    "<div class='col-md-4 mb-1'>" +
                         "<label>Latitude</label>" +
                         "<input type='text' maxlength='7' " +
-                        "class='form-control latitude' " +
+                        "class='form-control form-control-sm latitude' " +
                         "placeholder='Enter Latitude' " +
                         "name='latitude[]'>" +
                         "<small class='text-muted char-counter float-end'></small>" +
                     "</div>" +
 
-                    "<div class='col-md-4 mb-3'>" +
+                    "<div class='col-md-4 mb-1'>" +
                         "<label>Longitude</label>" +
                         "<input type='text' maxlength='7' " +
-                        "class='form-control longitude' " +
+                        "class='form-control form-control-sm longitude' " +
                         "placeholder='Enter Longitude' " +
                         "name='longitude[]'>" +
                         "<small class='text-muted char-counter float-end'></small>" +
                     "</div>" +
 
-                    "<div class='col-md-3 mb-3'>" +
+                    "<div class='col-md-3 mb-1'>" +
                         "<label>Sequence No</label>" +
                         "<input type='text' maxlength='3' " +
-                        "class='form-control sequence_no' " +
+                        "class='form-control form-control-sm sequence_no' " +
                         "name='sequence_no[]' value='" + rowCount + "'>" +
                         "<small class='text-muted char-counter float-end'></small>" +
                     "</div>" +
 
-                    "<div class='col-md-1 d-flex align-items-center mb-3'>" +
-                        "<button type='button' class='btn btn-outline-danger btn-remove' data-id='bd_row" + rowCount + "'>" +
+                    "<div class='col-md-1 d-flex align-items-center mb-1'>" +
+                        "<button type='button' class='btn btn-outline-danger btn-sm btn-remove' data-id='bd_row" + rowCount + "'>" +
                             "<i class='fa fa-trash'></i>" +
                         "</button>" +
                     "</div>" +

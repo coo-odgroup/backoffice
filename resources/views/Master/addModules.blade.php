@@ -61,7 +61,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-6">
                                             <label for="selParent">Parent Module</label>
                                             <select class="form-select form-select-sm selParent" id="selParent" name="selParent">
                                                 <option value="0">Select Parent Module</option>
@@ -70,34 +70,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     </div>
                                     <div id="ModulesWrapper">
                                         <div class="row mb-3">
-                                            <div class="col-md-4 mb-3">
+                                            <div class="col-md-4 mb-1">
                                                 <label for="moduleCode">Module Code<span class="text-danger important">*</span></label>
                                                 <input type="text" class="form-control form-control-sm moduleCode" placeholder="Enter Module Code" id="moduleCode" name="moduleCode[]" value="{{ $data['row']->code ?? '' }}">
                                             </div>
-                                            <div class="col-md-4 mb-3">
+                                            <div class="col-md-4 mb-1">
                                                 <label for="moduleName">Module Name<span class="text-danger important">*</span></label>
                                                 <input type="text" class="form-control form-control-sm moduleName" placeholder="Enter Module Name" id="moduleName" name="moduleName[]" value="{{ $data['row']->name ?? '' }}">
                                             </div>
-                                            <div class="col-md-3 mb-3">
+                                            <div class="col-md-3 mb-1">
                                                 <label for="sequence_no">Sequence No</label>
                                                 <input type="text" class="form-control form-control-sm" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" value="{{ $data['row']->sequence_no ?? '1' }}">
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
-                                            <div class="col-md-1 d-flex align-items-end mb-3 <?= $isEdit ?>">
+                                            <div class="col-md-1 d-flex align-items-end mb-1 <?= $isEdit ?>">
                                                 <button type="button" class="btn btn-sm btn-outline-primary btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
-
                                         </div>
                                     </div>
-
                                 </div>
 
 
-
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}
@@ -163,7 +160,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 );
                 moduleCode.focus();
                 isValid = false;
-                return false; 
+                return false;
             }
 
             if (moduleCode.val().length > 100) {
@@ -260,26 +257,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 "<div class='row mb-3'>" +
 
-                "<div class='col-md-4 mb-3'>" +
+                "<div class='col-md-4 mb-1'>" +
                 "<label>Module Code<span class='text-danger important'>*</span></label>" +
-                "<input type='text' class='form-control moduleCode' " +
+                "<input type='text' class='form-control form-control-sm moduleCode' " +
                 "placeholder='Enter Module Code' id='moduleCode" + moduleRowCount + "' name='moduleCode[]'>" +
                 "</div>" +
 
-                "<div class='col-md-4 mb-3'>" +
+                "<div class='col-md-4 mb-1'>" +
                 "<label>Module Name<span class='text-danger important'>*</span></label>" +
-                "<input type='text' class='form-control moduleName' " +
+                "<input type='text' class='form-control form-control-sm moduleName' " +
                 "placeholder='Enter Module Name' name='moduleName[]'>" +
                 "</div>" +
 
-                "<div class='col-md-3 mb-3'>" +
+                "<div class='col-md-3 mb-1'>" +
                 "<label>Sequence No</label>" +
-                "<input type='text' class='form-control' " +
+                "<input type='text' class='form-control form-control-sm' " +
                 "name='sequence_no[]' value='" + moduleRowCount + "'>" +
                 "</div>" +
 
-                "<div class='col-md-1 d-flex align-items-end mb-3'>" +
-                "<button type='button' class='btn btn-outline-danger btn-remove' " +
+                "<div class='col-md-1 d-flex align-items-end mb-1'>" +
+                "<button type='button' class='btn btn-outline-danger btn-remove btn-sm' " +
                 "data-id='module_row" + moduleRowCount + "'>" +
                 "<i class='fa fa-trash'></i>" +
                 "</button>" +

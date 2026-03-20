@@ -62,23 +62,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-3 mb-3">
+                                        <div class="col-md-3 mb-1">
                                             <label for="amenityCategory">Amenity Category<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="amenityCategory" name="amenityCategory">
+                                            <select class="form-select form-select-sm" id="amenityCategory" name="amenityCategory">
                                                 <option value="0">Select Amenity Category</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3 mb-3">
+                                        <div class="col-md-3 mb-2">
                                             <label for="amenity_name">Amenity Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="amenity_name" name="amenity_name" value="{{ $data['row']->amenity_name ?? '' }}" placeholder="Enter Amenity Name">
+                                            <input type="text" class="form-control form-control-sm" id="amenity_name" name="amenity_name" value="{{ $data['row']->amenity_name ?? '' }}" placeholder="Enter Amenity Name">
                                         </div>
-                                        <div class="col-md-2 mb-3">
+                                        <div class="col-md-2 mb-2">
                                             <label for="icon">Icon<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="icon" name="icon" value="{{ $data['row']->icon ?? '' }}" placeholder="Icon Class Name Only">
+                                            <input type="text" class="form-control form-control-sm" id="icon" name="icon" value="{{ $data['row']->icon ?? '' }}" placeholder="Icon Class Name Only">
                                         </div>
-                                        <div class="col-md-2 mb-3">
+                                        <div class="col-md-2 mb-2">
                                             <label for="is_paid">Is Paid</label>
-                                            <select class="form-select" id="is_paid" name="is_paid">
+                                            <select class="form-select form-select-sm" id="is_paid" name="is_paid">
                                                 <option disabled selected>Select Is Paid</option>
                                                 <option value="1"
                                                     {{ (isset($data['row']) && $data['row']->is_paid == 1) ? 'selected' : '' }}>
@@ -90,9 +90,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 </option>
                                             </select>
                                         </div>
-                                        <div class="col-md-2 mb-3">
+                                        <div class="col-md-2 mb-2">
                                             <label for="is_seat_specific">Is Seat Specific</label>
-                                            <select class="form-select" id="is_seat_specific" name="is_seat_specific">
+                                            <select class="form-select form-select-sm" id="is_seat_specific" name="is_seat_specific">
                                                 <option disabled selected>Select Is Seat Specific</option>
                                                 <option value="1"
                                                     {{ (isset($data['row']) && $data['row']->is_seat_specific == 1) ? 'selected' : '' }}>
@@ -104,15 +104,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 </option>
                                             </select>
                                         </div>
-                                        <div class="col-md-12 mb-3">
+                                        <div class="col-md-12">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control" id="description" name="description">{{ $data['row']->description ?? '' }}</textarea>
+                                            <textarea class="form-control form-control-sm" id="description" name="description">{{ $data['row']->description ?? '' }}</textarea>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}

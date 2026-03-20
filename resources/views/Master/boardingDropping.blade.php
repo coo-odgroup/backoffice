@@ -39,48 +39,45 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Boarding/Dropping Name</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Boarding/Dropping Name">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selCity">City<span class="text-danger important">*</span></label>
-                                    <select class="form-select selCity" id="selCity" name="selCity">
-                                        <option value="0">Select City</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <label for="type">Type<span class="text-danger important">*</span></label>
-                                    <select class="form-select type" id="type" name="type">
-                                        <option  selected>Select Type</option>
-                                        <option value="1">
-                                            Boarding
-                                        </option>
+                    <div class="row align-items-end">
 
-                                        <option value="2">
-                                            Dropping
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <!-- Search -->
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-2">
+                            <label for="txtSearch">Search By Boarding/Dropping Name</label>
+                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                placeholder="Boarding/Dropping Name">
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <!-- City -->
+                        <div class="col-6 col-sm-6 col-md-3 col-lg-2 mb-2">
+                            <label for="selCity">City <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm selCity" id="selCity" name="selCity">
+                                <option value="0">Select City</option>
+                            </select>
+                        </div>
+
+                        <!-- Type -->
+                        <div class="col-6 col-sm-6 col-md-3 col-lg-2 mb-2">
+                            <label for="type">Type <span class="text-danger">*</span></label>
+                            <select class="form-select  form-select-sm  type" id="type" name="type">
+                                <option selected>Select Type</option>
+                                <option value="1">Boarding</option>
+                                <option value="2">Dropping</option>
+                            </select>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-6 col-sm-6 col-md-3 col-lg-2 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-3 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-check me-1"></i>Submit
                             </button>
@@ -88,6 +85,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -132,36 +130,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
                 <div id="customPaginationTop"></div>
             </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('boardingDropping.dataTableView') }}"
+                    data-edit-url="{{ route('boardingDropping.edit', 'ID') }}">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <div class="checkbox">
+                                   <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
+                            </th>
+                            <th>Sl No</th>
+                            <th>City Name</th>
+                            <th>Type</th>
+                            <th>Boarding/Dropping Point</th>
+                            <th width="100">Sequence No</th>
+                            <th>Last Modefied</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="BoardingDropping">
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('boardingDropping.dataTableView') }}"
-                data-edit-url="{{ route('boardingDropping.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>City Name</th>
-                        <th>Type</th>
-                        <th>Boarding/Dropping Point</th>
-                        <th width="100">Sequence No</th>
-                        <th>Last Modefied</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BoardingDropping">
-
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -241,9 +242,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.bd_id +
+                    return '<div class="checkbox"><input class="chkItem" type="checkbox" id="check' + row.bd_id +
                         '" name="chkStd' + row.bd_id + '" value="' + row.bd_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },
@@ -282,7 +283,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             minlength="1"
                             maxlength="3"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="form-control form-control-sm order-input"
+                            class="form-control form-control-sm order-input text-center"
                             data-id="${row.enc_bd_id}"
                             data-table="mst_boarding_droping"
                             data-column="sequence_no">`;
@@ -332,7 +333,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-             {
+            {
                 data: '',
                 render: function(data, type, row) {
 

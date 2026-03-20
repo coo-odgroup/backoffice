@@ -62,19 +62,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-4 mb-2">
                                             <label for="roleType">Role Type<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="roleType" placeholder="Role Type" name="roleType" maxlength="100" value="{{ $data['row']->name ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm" id="roleType" placeholder="Role Type" name="roleType" maxlength="100" value="{{ $data['row']->name ?? '' }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-4 mb-2">
                                             <label for="roleCode">Role Code<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="roleCode" placeholder="Role Code" name="roleCode" maxlength="100" value="{{ $data['row']->code ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm" id="roleCode" placeholder="Role Code" name="roleCode" maxlength="100" value="{{ $data['row']->code ?? '' }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-4 mb-2">
                                             <label for="systemRolesType">Is System Role<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="systemRolesType" name="Type">
+                                            <select class="form-select form-select-sm" id="systemRolesType" name="Type">
                                                  <option value="">Select System Role</option>
                                                 <option value="1"
                                                     {{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 'selected' : '' }}>
@@ -90,15 +90,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                     </div>
                                     <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-6">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control" id="description" name="description" placeholder="Description" maxlength="250" rows="3">{{ $data['row']->description ?? '' }}</textarea>
+                                            <textarea class="form-control form-control-sm" id="description" name="description" placeholder="Description" maxlength="250" rows="3">{{ $data['row']->description ?? '' }}</textarea>
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                     </div>
 
                                     <!-- BUTTONS -->
-                                    <div class="row mt-4">
+                                    <div class="row">
                                         <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                             <button class="btn btn-primary btn-sm" type="submit">
                                                 {{ $data['strSubmit'] }}
