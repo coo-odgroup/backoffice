@@ -61,11 +61,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
+                                    <div class="row mb-2">
                                         <div class="col-md-6 mb-3">
                                             <label for="axleType">Axle Type<span class="text-danger important">*</span></label>
                                             <input type="text"
-                                                class="form-control"
+                                                class="form-control form-control-sm"
                                                 id="axleType"
                                                 name="axleType"
                                                 maxlength="100"
@@ -76,7 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}

@@ -63,7 +63,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="selParent">Parent Module</label>
-                                            <select class="form-select selParent" id="selParent" name="selParent">
+                                            <select class="form-select form-select-sm selParent" id="selParent" name="selParent">
                                                 <option value="0">Select Parent Module</option>
                                             </select>
                                         </div>
@@ -72,19 +72,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="row mb-3">
                                             <div class="col-md-4 mb-3">
                                                 <label for="moduleCode">Module Code<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control moduleCode" placeholder="Enter Module Code" id="moduleCode" name="moduleCode[]" value="{{ $data['row']->code ?? '' }}">
+                                                <input type="text" class="form-control form-control-sm moduleCode" placeholder="Enter Module Code" id="moduleCode" name="moduleCode[]" value="{{ $data['row']->code ?? '' }}">
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="moduleName">Module Name<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control moduleName" placeholder="Enter Module Name" id="moduleName" name="moduleName[]" value="{{ $data['row']->name ?? '' }}">
+                                                <input type="text" class="form-control form-control-sm moduleName" placeholder="Enter Module Name" id="moduleName" name="moduleName[]" value="{{ $data['row']->name ?? '' }}">
                                             </div>
                                             <div class="col-md-3 mb-3">
                                                 <label for="sequence_no">Sequence No</label>
-                                                <input type="text" class="form-control" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" value="{{ $data['row']->sequence_no ?? '1' }}">
+                                                <input type="text" class="form-control form-control-sm" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" value="{{ $data['row']->sequence_no ?? '1' }}">
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
                                             <div class="col-md-1 d-flex align-items-end mb-3 <?= $isEdit ?>">
-                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                <button type="button" class="btn btn-sm btn-outline-primary btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>

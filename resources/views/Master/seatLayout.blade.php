@@ -19,7 +19,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <!-- Booking Report Card -->
 <!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h5 id="page_title">Bus Types</h5>
+    <h5 id="page_title">Seat Layout</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-magnifying-glass me-1"></i>
@@ -43,17 +43,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Bus Type</label>
+                                    <label for="txtSearch">Search By Layout Name</label>
                                     <input type="text" class="form-control" id="txtSearch" name="txtSearch"
                                         placeholder="Bus Type">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="classSearch">Class</label>
-                                    <select class="form-select" id="classSearch" name="classSearch">
-                                        <option value="">Select Class</option>
-                                        <option value="1">AC</option>
-                                        <option value="2">NON AC</option>
-                                    </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
@@ -121,19 +113,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('bustype.dataTableView') }}"
-                data-edit-url="{{ route('bustype.edit', 'ID') }}">
+                data-url="{{ route('seat-layout.dataTableView') }}"
+                data-edit-url="{{ route('seat-layout.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
                             <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
                         </th>
                         <th>Sl No</th>
-                        <th>Bus Type</th>
-                        <th>Class</th>
-                        <th>Last Modified</th>
+                        <th>Layout Name</th>
+                        <th>Created By</th>
                         <th>Status</th>
                         <th class="no-sort">Action</th>
+                        <th class="no-sort">View</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -229,21 +221,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'bus_type',
+                data: 'layout_name',
                 defaultContent: "--"
-            },
-            {
-                data: 'class_id',
-                defaultContent: "--",
-                render: function (data, type, row) {
-                    if (data == 1) {
-                        return 'AC';
-                    } else if (data == 2) {
-                        return 'NON AC';
-                    } else {
-                        return '--';
-                    }
-                }
             },
             {
                 data: null,
@@ -305,6 +284,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             data-table="mst_bus_type"
                             data-id="${row.enc_bustype_id}">
                                 <i class="fa fa-history"></i> View Log
+                        </a>
+                    `;
+                },
+                className: "noPrint text-center"
+            },
+            {
+                data: '',
+                render: function(data, type, row) {
+
+                    let editUrl = $('#' + tableId).data('edit-url');
+
+                    if (!editUrl) return '';
+
+                    return `
+                        <a href="{{ "bus-seat-layout/"}}${row.bustype_id}"
+                            class="btn btn-sm btn-success"
+                            data-table="mst_bus_type"
+                            data-id="${row.enc_bustype_id}">View
                         </a>
                     `;
                 },

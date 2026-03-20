@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
+
 
 class AmenityCategoryController extends Controller
 {
@@ -127,9 +129,10 @@ class AmenityCategoryController extends Controller
         ]);
     }
 
+
+
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -146,22 +149,21 @@ class AmenityCategoryController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = AmenityCategory::select('id', 'category_name', 'description', 'display_order');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = AmenityCategory::select('id', 'category_name', 'description', 'display_order')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("amenitycategory");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
-                $id = 0;
                 $redirectPage = "admin/amenitycategory";
             }
 
             if (request()->isMethod('post')) {
-
-                request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
                     'category_name' => 'bail|required'
@@ -171,65 +173,127 @@ class AmenityCategoryController extends Controller
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $category_name = htmlEncode(request('category_name'));
-                    $description = htmlEncode(request('description'));
-
-                    $duplicate = AmenityCategory::select('id')->where(['category_name' => $category_name]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'Amenity Category already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? AmenityCategory::find($id) : new AmenityCategory();
-                        $obj->category_name = $category_name;
-                        $obj->description = $description;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Amenity Category ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $category_name = htmlEncode(request('category_name'));
+                $description   = htmlEncode(request('description'));
+
+                $duplicate = AmenityCategory::where('category_name', $category_name);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Amenity Category already exist'
+                    ])->withInput();
+                }
+
+                // ================= UPDATE =================
+                if ($id != 0) {
+
+                    $oldData = AmenityCategory::find($id);
+
+                    $newData = [
+                        'category_name' => $category_name,
+                        'description'   => $description,
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    // ✅ LOG BEFORE UPDATE
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_amenity_category',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    // ✅ SAVE
+                    $oldData->category_name = $category_name;
+                    $oldData->description   = $description;
+                    $oldData->updated_by    = 1;
+                    $oldData->save();
+                }
+
+                // ================= INSERT =================
+                else {
+
+                    $row = [
+                        'category_name' => $category_name,
+                        'description'   => $description,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+
+                    // ✅ LOG BEFORE INSERT
+                    app(CommonController::class)->auditLog(
+                        'mst_amenity_category',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new AmenityCategory();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'Amenity Category ' . ($id ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'AmenityCategoryController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addAmenityCategory', compact('data'));
     }
+
 
     public function edit($encId)
     {
         return $this->add($encId);
     }
 }
+
+

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Master;
+namespace App\Http\Controllers\Admin\Bus;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master\Amenity;
@@ -9,11 +9,99 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\CommonController;
 
-class AmenitiesController extends Controller
+class BusWizardController extends Controller
 {
- public function amenities()
+    public function step1()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step1',compact('data'));
+    }
+
+    public function postStep1(Request $request)
+    {
+        $request->validate([
+            'busName' => 'required',
+            'busNumber' => 'required'
+        ]);
+
+        session(['bus.step1' => $request->all()]);
+        return redirect()->route('bus.step2');
+    }
+
+    public function step2()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step2',compact('data'));
+    }
+
+    public function postStep2(Request $request)
+    {
+        session(['bus.step2' => $request->cities]);
+        return redirect()->route('bus.step3');
+    }
+
+    public function step3()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step3',compact('data'));
+    }
+
+    public function postStep3(Request $request)
+    {
+        session(['bus.step3' => $request->all()]);
+        return redirect()->route('bus.step4');
+    }
+
+    public function step4()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step4',compact('data'));
+    }
+
+    public function postStep4(Request $request)
+    {
+        session(['bus.step4' => $request->stations]);
+        return redirect()->route('bus.step5');
+    }
+
+    public function step5()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step5',compact('data'));
+    }
+
+    public function postStep5(Request $request)
+    {
+        session(['bus.step5' => $request->schedule]);
+        return redirect()->route('bus.step6');
+    }
+
+    public function step6()
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+        return view('admin.bus.wizard.step6',compact('data'));
+    }
+
+    public function businfo()
     {
         return view('master.amenities');
     }
@@ -77,7 +165,7 @@ class AmenitiesController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'a.amenity_name', 3 => 'category_name', 4 => 'a.description', 8 => 'a.created_at', 9 => 'a.active_status'];
+                $columns = [2 => 'a.amenity_name', 3 => 'ac.category_name', 4 => 'a.description', 5 => 'a.icon', 6 => 'a.is_paid', 7 => 'a.is_seat_specific', 8 => 'a.created_by', 9 => 'a.active_status'];
 
                 $orderBy       = request('order');
                 $orderColumn   = $columns[$orderBy[0]['column']] ?? 'a.amenity_name';
@@ -140,6 +228,7 @@ class AmenitiesController extends Controller
 
     public function add($encId = null)
     {
+
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -156,158 +245,119 @@ class AmenitiesController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Amenity::select(
-                    'id',
-                    'category_id',
-                    'amenity_name',
-                    'description',
-                    'icon',
-                    'is_paid',
-                    'is_seat_specific'
-                )->where('id', $id)->first();
+                $dataResQry = Amenity::select('id', 'category_id', 'amenity_name', 'description', 'icon', 'is_paid', 'is_seat_specific');
 
-                if (!$dataResQry) {
+                $dataResQry = $dataResQry->where('id', $id)->first();
+
+                if (empty($dataResQry)) {
                     return redirect("amenities");
                 }
-
                 $data['row'] = $dataResQry;
-
             } else {
+                $id = 0;
                 $redirectPage = "admin/amenities";
             }
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'amenityCategory' => 'required',
-                    'amenity_name'    => 'required',
-                    'icon'            => 'required'
+                    'amenityCategory' => 'bail|required',
+                    'amenity_name' => 'bail|required',
+                    'icon' => 'bail|required'
+                ], [
+                    'amenityCategory.required' => 'Amenity Category cannot be left blank.',
+                    'amenity_name.required' => 'Amenity Name cannot be left blank.',
+                    'icon.required' => 'Amenity Icon cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                }
+                } else {
+                    DB::beginTransaction();
 
-                DB::beginTransaction();
+                    $category_id = (int)request('amenityCategory');
+                    $amenity_name = htmlEncode(request('amenity_name'));
+                    $icon = htmlEncode(request('icon'));
+                    $is_paid = (int)request('is_paid');
+                    $is_seat_specific = (int)request('is_seat_specific');
+                    $description = htmlEncode(request('description'));
 
-                $category_id      = (int) request('amenityCategory');
-                $amenity_name     = htmlEncode(request('amenity_name'));
-                $icon             = htmlEncode(request('icon'));
-                $is_paid          = (int) request('is_paid');
-                $is_seat_specific = (int) request('is_seat_specific');
-                $description      = htmlEncode(request('description'));
+                    $duplicate = Amenity::select('id')->where(['amenity_name' => $amenity_name]);
 
-                $duplicate = Amenity::where('amenity_name', $amenity_name);
+                    if ($id != 0) {
+                        $duplicate->where('id', '!=', $id);
+                    }
 
-                if ($id != 0) {
-                    $duplicate->where('id', '!=', $id);
-                }
+                    if ($duplicate->exists()) {
+                        return back()->with([
+                            'level'     => 'danger',
+                            'message'   => 'Amenity already exist'
+                        ])->withInput();
+                    } else {
+                        $obj = ($id != 0) ? Amenity::find($id) : new Amenity();
+                        $obj->category_id = $category_id;
+                        $obj->amenity_name = $amenity_name;
+                        $obj->icon = $icon;
+                        $obj->is_paid = $is_paid;
+                        $obj->is_seat_specific = $is_seat_specific;
+                        $obj->description = $description;
+                        $obj->created_by = 1;
+                        $obj->active_status = 1;
 
-                if ($duplicate->exists()) {
-                    DB::rollBack();
-
-                    return back()->with([
-                        'level'   => 'danger',
-                        'message' => 'Amenity already exist'
-                    ])->withInput();
-                }
-
-                if ($id != 0) {
-
-                    $oldData = Amenity::find($id);
-
-                    $newData = [
-                        'category_id'      => $category_id,
-                        'amenity_name'     => $amenity_name,
-                        'icon'             => $icon,
-                        'is_paid'          => $is_paid,
-                        'is_seat_specific' => $is_seat_specific,
-                        'description'      => $description,
-                    ];
-
-                    $oldChanged = [];
-                    $newChanged = [];
-
-                    foreach ($newData as $key => $value) {
-
-                        $oldValue = $oldData->$key ?? null;
-
-                        if (trim((string)$oldValue) !== trim((string)$value)) {
-                            $oldChanged[$key] = $oldValue;
-                            $newChanged[$key] = $value;
+                        if ($id != 0) {
+                            $obj->updated_by = 1;
                         }
+
+                        $obj->save();
+
+                        session()->flash('level', 'success');
+                        session()->flash('message', 'Amenity ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     }
 
-                    if (!empty($newChanged)) {
-                        app(CommonController::class)->auditLog(
-                            'mst_amenities',
-                            $id,
-                            'UPDATE',
-                            $oldChanged,
-                            $newChanged
-                        );
-                    }
-
-                    // Save
-                    $oldData->fill($newData);
-                    $oldData->updated_by = 1;
-                    $oldData->save();
+                    DB::commit();
+                    return redirect($redirectPage);
                 }
-
-                else {
-
-                    $row = [
-                        'category_id'      => $category_id,
-                        'amenity_name'     => $amenity_name,
-                        'icon'             => $icon,
-                        'is_paid'          => $is_paid,
-                        'is_seat_specific' => $is_seat_specific,
-                        'description'      => $description,
-                        'created_by'       => 1,
-                        'active_status'    => 1,
-                        'created_at'       => now()
-                    ];
-
-                    app(CommonController::class)->auditLog(
-                        'mst_amenities',
-                        null,
-                        'INSERT',
-                        [],
-                        $row
-                    );
-
-                    Amenity::create($row);
-                }
-
-                DB::commit();
-
-                session()->flash('level', 'success');
-                session()->flash('message', 'Amenity ' . ($id ? 'updated' : 'created') . ' successfully.');
-
-                return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
-
-            DB::rollBack();
-
             Log::error("Error", [
                 'Controller' => 'AmenitiesController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
 
+            DB::rollBack();
+
+            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
+
             return back()->with([
-                'level'   => 'danger',
-                'message' => config('constants.SERVER_ERROR_MESSAGE')
+                'level'     => 'danger',
+                'message'   => $errorMsg
             ])->withInput();
         }
-
-        return view('Master.addAmenities', compact('data'));
+        return view('Master.addBusinfo', compact('data'));
     }
 
     public function edit($encId)
     {
         return $this->add($encId);
+    }
+
+
+    public function getcity(Request $request)
+    {
+        $city = $request->city;
+
+        $cities = DB::table('mst_cities')
+            ->when($city, function ($query, $city) {
+                return $query->where('city_name', 'LIKE', '%' . $city . '%');
+            })
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $cities
+        ]);
     }
 }

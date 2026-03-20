@@ -257,18 +257,18 @@ class BusInfoController extends Controller
 
 
     public function getcity(Request $request)
-{
-    $city = $request->city;
+    {
+        $city = $request->city;
 
-    $cities = DB::table('mst_cities')
-        ->when($city, function ($query, $city) {
-            return $query->where('city_name', 'LIKE', '%' . $city . '%');
-        })
-        ->get();
+        $cities = DB::table('mst_cities')
+            ->when($city, function ($query, $city) {
+                return $query->where('city_name', 'LIKE', '%' . $city . '%');
+            })
+            ->get();
 
-    return response()->json([
-        'status' => true,
-        'data' => $cities
-    ]);
-}
+        return response()->json([
+            'status' => true,
+            'data' => $cities
+        ]);
+    }
 }

@@ -36,71 +36,72 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="card">
                 <div class="card-body">
                     <!-- FILTER -->
-                    <div class="mb-3">
-                        <div class="card-body">
-                            <div class="row">
-                                @if (session('message'))
 
-                                <div class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show" role="alert">
-                                    {{ session('message') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @if (session('message'))
 
-                                @endif
-                                @if ($errors->any())
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <ul class="mb-0">
-                                        @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
+                            <div class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show" role="alert">
+                                {{ session('message') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
 
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                                @endif
+                            @endif
+                            @if ($errors->any())
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
 
-                                <!-- POST FIELDS -->
-                                <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="busService">Bus Service <span class="text-danger important">*</span></label>
-                                            <input type="text"
-                                                class="form-control"
-                                                id="busService"
-                                                name="busService"
-                                                maxlength="100"
-                                                value="{{ $data['row']->bus_service_name ?? '' }}">
-                                            <small class="text-muted char-counter float-end"></small>
-                                        </div>
-                                    </div> <div class="row mb-3">
-                                        <div class="col-md-12 mb-3">
-                                            <label for="description">Description</label>
-                                            <textarea class="form-control" id="description" name="description" maxlength="264">{{ $data['row']->description ?? '' }}</textarea>
-                                            <small class="text-muted char-counter float-end"></small>
-                                        </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            @endif
+
+                            <!-- POST FIELDS -->
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="busService">Bus Service <span class="text-danger important">*</span></label>
+                                        <input type="text"
+                                            class="form-control form-control-sm"
+                                            id="busService"
+                                            name="busService"
+                                            maxlength="100"
+                                            value="{{ $data['row']->bus_service_name ?? '' }}">
+                                        <small class="text-muted char-counter float-end"></small>
                                     </div>
                                 </div>
-
-                                <!-- BUTTONS -->
-                                <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('states.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="description">Description</label>
+                                        <textarea class="form-control form-control-sm" id="description" name="description" maxlength="264">{{ $data['row']->description ?? '' }}</textarea>
+                                        <small class="text-muted char-counter float-end"></small>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- BUTTONS -->
+                            <div class="row mt-1">
+                                <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
+                                    <button class="btn btn-primary btn-sm" type="submit">
+                                        {{ $data['strSubmit'] }}
+                                    </button>
+                                    @if($data['strReset'] == 'Cancel')
+                                    <a href="{{ route('busService.index') }}" class="btn btn-secondary btn-sm">
+                                        {{ $data['strReset'] }}
+                                    </a>
+                                    @else
+                                    <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                        {{ $data['strReset'] }}
+                                    </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

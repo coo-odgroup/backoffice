@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Master;
 use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Master\Cities;
-use App\Models\Master\BoardingDropping;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +27,7 @@ class AnnextureController extends Controller
         $data['strReset']  = 'Reset';
 
         try {
-
+        
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
             if ($id > 0) {
@@ -55,15 +54,11 @@ class AnnextureController extends Controller
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-
                     'selAnnexureType'   => 'required|integer|exists:mst_annexture_type,id',
-
                     'annexture_name'    => 'required|array',
                     'annexture_name.*'  => 'required|string|max:100',
-
                     'annexture_value'   => 'required|array',
                     'annexture_value.*' => 'required|integer',
-
                 ]);
 
                 if ($validator->fails()) {
@@ -100,7 +95,6 @@ class AnnextureController extends Controller
                 $insertData = [];
 
                 foreach ($names as $i => $name) {
-
                     $insertData[] = [
                         'annexture_type_id' => $annexureTypeId,
                         'annexture_name'    => htmlEncode(trim($name ?? '')),
@@ -111,12 +105,60 @@ class AnnextureController extends Controller
                     ];
                 }
 
+                $common = new \App\Http\Controllers\CommonController();
+
                 if ($id > 0) {
-                    DB::table('mst_annexture')
-                        ->where('id', $id)
-                        ->update($insertData[0]);
-                } else {
-                    DB::table('mst_annexture')->insert($insertData);
+
+                    $oldData = DB::table('mst_annexture')->where('id', $id)->first();
+                    $newData = $insertData[0];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+
+                    $ignoreFields = ['created_at', 'created_by', 'updated_at', 'updated_by'];
+
+                   foreach ($newData as $key => $value) {
+
+                            if (in_array($key, $ignoreFields)) {
+                                continue;
+                            }
+
+                            $oldValue = $oldData->$key ?? null;
+
+                            if (trim((string)$oldValue) !== trim((string)$value)) {
+                                $oldChanged[$key] = $oldValue;
+                                $newChanged[$key] = $value;
+                            }
+                        }
+                    
+                    if (!empty($newChanged)) {
+                        $common->auditLog(
+                            'mst_annexture',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    DB::table('mst_annexture')->where('id', $id)->update($newData);
+                }
+
+                else {
+
+                    foreach ($insertData as $row) {
+
+                        $common->auditLog(
+                            'mst_annexture',
+                            null,
+                            'INSERT',
+                            [],
+                            $row
+                        );
+
+                        DB::table('mst_annexture')->insert($row);
+                    }
                 }
 
                 DB::commit();
@@ -263,7 +305,7 @@ class AnnextureController extends Controller
     {
         $typeId = (int) $request->annexture_type_id;
 
-           $data = DB::table('mst_annexture')
+        $data = DB::table('mst_annexture')
             ->select('annexture_name', 'annexture_value')
             ->where('annexture_type_id', $typeId)
             ->where('active_status', 1)
@@ -281,7 +323,7 @@ class AnnextureController extends Controller
     {
         $exists = DB::table('mst_annexture')
             ->where('annexture_type_id', $request->annexture_type_id)
-            ->where('LOWER(annexture_name) = ?', $request->annexture_name)
+            ->whereRaw('LOWER(annexture_name) = ?', [strtolower(trim($request->annexture_name))])
             ->whereRaw('LOWER(annexture_value) = ?', [strtolower(trim($request->annexture_value))])
             ->where('active_status', 1)
             ->exists();

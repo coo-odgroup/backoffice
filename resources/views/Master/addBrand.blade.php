@@ -61,21 +61,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                    <div class="row mb-2">
+                                        <div class="col-md-6 mb-2">
                                             <label for="country">Country<span class="text-danger important">*</span></label>
-                                            <select class="form-select selCountry" id="country" name="country">
+                                            <select class="form-select form-select-sm selCountry" id="country" name="country">
                                             </select>
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-6">
                                             <label for="brand">Bus Brand Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="brand" name="brand" value="{{ $data['row']->brand_name ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm" id="brand" name="brand" value="{{ $data['row']->brand_name ?? '' }}">
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}

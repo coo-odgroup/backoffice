@@ -39,34 +39,35 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Annexture Name</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Annexture Name">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selAnnexureType">Annexture Type</label>
-                                    <select class="form-select selAnnexureType" id="selAnnexureType" name="selAnnexureType">
-                                        <option value="0">Select Annexture Type</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <div class="row align-items-end">
+
+                        <!-- Search -->
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                            <label for="txtSearch">Search By Annexture Name</label>
+                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                placeholder="Annexture Name">
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <!-- Annexure Type -->
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                            <label for="selAnnexureType">Annexture Type</label>
+                            <select class="form-select form-select-sm selAnnexureType" id="selAnnexureType" name="selAnnexureType">
+                                <option value="0">Select Annexture Type</option>
+                            </select>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-check me-1"></i>Submit
                             </button>
@@ -74,6 +75,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -118,35 +120,38 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
                 <div id="customPaginationTop"></div>
             </div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('annexture.dataTableView') }}"
+                    data-edit-url="{{ route('annexture.edit', 'ID') }}">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <div class="checkbox">
+                                     <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
+                            </th>
+                            <th>Sl No</th>
+                            <th>Annexture Type</th>
+                            <th>Annexture Name</th>
+                            <th>Annexture Value</th>
+                            <th>Last Modefied</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="Annexture">
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('annexture.dataTableView') }}"
-                data-edit-url="{{ route('annexture.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>Annexture Type</th>
-                        <th>Annexture Name</th>
-                        <th>Annexture Value</th>
-                        <th>Last Modefied</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Annexture">
-
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -222,9 +227,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.ann_id +
+                    return '<div class="checkbox"><input class="chkItem" type="checkbox" id="check' + row.ann_id +
                         '" name="chkStd' + row.ann_id + '" value="' + row.ann_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },

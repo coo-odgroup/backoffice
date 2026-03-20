@@ -24,6 +24,17 @@ select2($);
 
 import '@fortawesome/fontawesome-free/js/all';
 
+import Tagify from '@yaireo/tagify';
+import '@yaireo/tagify/dist/tagify.css';
+
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.querySelector('#tags');
+
+    if (input) {
+        new Tagify(input);
+    }
+});
+
 $(document).ajaxStart(function () {    
     $('#pageLoader').removeClass('d-none').addClass('d-flex');
 });

@@ -22,6 +22,63 @@ use Illuminate\Support\Facades\Storage;
 
 class CommonController extends Controller
 {
+
+    public function auditLog($table, $recordId, $action, $oldData = [], $newData = [], $deviceType = null)
+    {
+        try {
+
+            //  ENUM validation
+            $allowedActions = ['INSERT', 'UPDATE', 'SOFT_DELETE', 'STATUS_CHANGE'];
+
+            if (!in_array($action, $allowedActions)) {
+                throw new \Exception("Invalid audit action: " . $action);
+            }
+
+            $userId = auth()->id() ?? 1;
+
+            //  IP + User Agent
+            $userIp = $_SERVER['HTTP_X_FORWARDED_FOR']
+                ?? $_SERVER['REMOTE_ADDR']
+                ?? 'Unknown';
+
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+
+            //  Auto detect device
+            if (!$deviceType) {
+                $deviceType = 'Desktop';
+                if (preg_match('/mobile/i', $userAgent)) {
+                    $deviceType = 'Mobile';
+                } elseif (preg_match('/tablet|ipad/i', $userAgent)) {
+                    $deviceType = 'Tablet';
+                }
+            }
+
+            //  Ensure array
+            $oldData = is_object($oldData) ? (array)$oldData : $oldData;
+            $newData = is_object($newData) ? (array)$newData : $newData;
+
+            DB::connection('mysql_log')->table('audit_logs_master')->insert([
+                'table_name'  => $table,
+                'record_id'   => $recordId,
+                'action'      => $action,
+                'old_data'    => !empty($oldData) ? json_encode($oldData) : null,
+                'new_data'    => !empty($newData) ? json_encode($newData) : null,
+                'created_by'  => $userId,
+                'created_at'  => now(),
+                'user_ip'     => $userIp,
+                'user_agent'  => $userAgent,
+                'device_type' => $deviceType,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Audit Log Failed', [
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+
+
+
     public function getStateList(Request $request)
     {
         $states = States::where('active_status', 1)
@@ -97,48 +154,105 @@ class CommonController extends Controller
         ];
 
         if (!isset($allowedModels[$modelName])) {
-            return response()->json([
-                'message' => 'Invalid model'
-            ], 400);
+            return response()->json(['message' => 'Invalid model'], 400);
         }
 
         $model = $allowedModels[$modelName];
+        $common = new \App\Http\Controllers\CommonController();
+        $userId = auth()->id() ?? 1;
 
-        switch ($action) {
+        try {
 
-            case 'D':
-                $model::whereIn('id', $ids)->update([
-                    'deleted_at' => now(),
-                    'deleted_by' => 1, // Need to udpate with auth user id
-                ]);
-                break;
+            DB::beginTransaction();
 
-            case 'A':
+            $table = (new $model)->getTable();
+
+            if ($action == 'A') {
+
+                foreach ($ids as $id) {
+
+                    $common->auditLog(
+                        $table,
+                        $id,
+                        'STATUS_CHANGE',
+                        ['active_status' => 0],
+                        ['active_status' => 1]
+                    );
+                }
+
                 $model::whereIn('id', $ids)->update([
                     'active_status' => 1,
-                    'updated_at' => now(),
-                    'updated_by' => 1
-                ]); // Need to udpate with auth user id]);
-                break;
+                    'updated_at'    => now(),
+                    'updated_by'    => $userId
+                ]);
+            }
 
-            case 'UN':
+            // ================= DEACTIVATE =================
+            elseif ($action == 'UN') {
+
+                foreach ($ids as $id) {
+
+                    $common->auditLog(
+                        $table,
+                        $id,
+                        'STATUS_CHANGE',
+                        ['active_status' => 1], // assumed old
+                        ['active_status' => 0]  // new
+                    );
+                }
+
                 $model::whereIn('id', $ids)->update([
                     'active_status' => 0,
-                    'updated_at' => now(),
-                    'updated_by' => 1, // Need to udpate with auth user id]);
+                    'updated_at'    => now(),
+                    'updated_by'    => $userId
                 ]);
-                break;
+            }
 
-            default:
-                return response()->json([
-                    'message' => 'Invalid action'
-                ], 400);
+            // ================= DELETE =================
+            elseif ($action == 'D') {
+
+                foreach ($ids as $id) {
+
+                    $common->auditLog(
+                        $table,
+                        $id,
+                        'SOFT_DELETE',
+                        ['deleted_at' => null], // assumed old
+                        ['deleted_at' => now()]
+                    );
+                }
+
+                $model::whereIn('id', $ids)->update([
+                    'deleted_at' => now(),
+                    'deleted_by' => $userId
+                ]);
+            }
+
+            else {
+                DB::rollBack();
+                return response()->json(['message' => 'Invalid action'], 400);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Action completed successfully'
+            ]);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            Log::error('Bulk Action Error', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'message' => 'Something went wrong'
+            ], 500);
         }
-
-        return response()->json([
-            'message' => 'Action completed successfully'
-        ]);
     }
+
 
     public function getCityList(Request $request)
     {
@@ -526,21 +640,20 @@ class CommonController extends Controller
                 ->select('id', 'annexture_type')
                 ->where('active_status', 1)
                 ->orderBy('annexture_type', 'ASC')
-                 ->get();
+                ->get();
 
             return response()->json([
                 'status' => true,
-                 'data'   => $types
+                'data'   => $types
             ]);
-
         } catch (\Exception $e) {
 
             return response()->json([
                 'status' => false,
-                 'error'  => $e->getMessage(),
+                'error'  => $e->getMessage(),
                 'data'   => []
             ], 500);
-                    }
+        }
     }
 
 
@@ -753,4 +866,3 @@ class CommonController extends Controller
         }
     }
 }
-  
