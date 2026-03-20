@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Admin\Campaign;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign\Campaign;
+use App\Models\Campaign\CampaignActiveDays;
+use App\Models\Campaign\CampaignExcludedDates;
+use App\Models\Campaign\CampaignRoutes;
+use App\Models\Campaign\CampaignServices;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -155,7 +159,7 @@ class CampaignController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Campaign::select('id', 'campaign_name', 'short_desc', 'full_desc', 'start', 'stop');
+                $dataResQry = Campaign::select('id', 'operator_id', 'campaign_master_id', 'offer_type', 'offer_value', 'min_ticket_value', 'services', 'auto_renewal', 'validity_type', 'start_date', 'end_date', 'duration_value', 'duration_unit');
 
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
@@ -243,30 +247,87 @@ class CampaignController extends Controller
                     //         'message'   => 'Campaign Master already exist'
                     //     ])->withInput();
                     // } else {
-                        $obj = ($id != 0) ? Campaign::find($id) : new Campaign();
-                        $obj->operator_id = 1;
-                        $obj->campaign_master_id = $campaign_master_id;
-                        $obj->offer_type = $offer_type;
-                        $obj->offer_value = $offer_value;
-                        $obj->min_ticket_value = $min_ticket_value;
-                        $obj->services = $services;
-                        $obj->auto_renewal = $auto_renewal;
-                        $obj->validity_type = $validity_type;
-                        $obj->start_date = $start_date;
-                        $obj->end_date = $end_date;
-                        $obj->duration_value = $duration_value;
-                        $obj->duration_unit = $duration_unit;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
+                    $obj = ($id != 0) ? Campaign::find($id) : new Campaign();
+                    $obj->operator_id = 1;
+                    $obj->campaign_master_id = $campaign_master_id;
+                    $obj->offer_type = $offer_type;
+                    $obj->offer_value = $offer_value;
+                    $obj->min_ticket_value = $min_ticket_value;
+                    $obj->services = $services;
+                    $obj->auto_renewal = $auto_renewal;
+                    $obj->validity_type = $validity_type;
+                    $obj->start_date = $start_date;
+                    $obj->end_date = $end_date;
+                    $obj->duration_value = $duration_value;
+                    $obj->duration_unit = $duration_unit;
+                    $obj->created_by = 1;
+                    $obj->active_status = 1;
 
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
+                    if ($id != 0) {
+                        $obj->updated_by = 1;
+                    }
 
-                        $obj->save();
+                    $obj->save();
 
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Campaign ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                    $campaign_id = $obj->id;
+
+                    $src_id  = request('src_id');
+                    $dest_id = request('dest_id');
+
+                    if (!empty($src_id) && !empty($dest_id)) {
+
+                        $routes = ($id != 0) ? CampaignRoutes::find($id) : new CampaignRoutes();
+
+                        $routes->campaign_id = $campaign_id;
+                        $routes->src_id = $src_id;
+                        $routes->dest_id = $dest_id;
+                        $routes->active_status = 1;
+
+                        $routes->save();
+
+                        $campaign_routes_id = $routes->id;
+                    }
+
+                    $bus_id = request('bus_id');
+
+                    if (!empty($bus_id) && !empty($campaign_routes_id)) {
+
+                        $services = ($id != 0) ? CampaignServices::find($id) : new CampaignServices();
+
+                        $services->campaign_id = $campaign_id;
+                        $services->campaign_routes_id = $campaign_routes_id;
+                        $services->bus_id = $bus_id;
+                        $services->active_status = 1;
+
+                        $services->save();
+                    }
+
+                    $excluded_date = request('excluded_date');
+
+                    if (!empty($excluded_date)) {
+
+                        $excluded_dates = ($id != 0) ? CampaignExcludedDates::find($id) : new CampaignExcludedDates();
+
+                        $excluded_dates->campaign_id = $campaign_id;
+                        $excluded_dates->excluded_date = $excluded_date;
+
+                        $excluded_dates->save();
+                    }
+
+                    $day_of_week = request('day_of_week');
+
+                    if (!empty($day_of_week)) {
+
+                        $active_days = ($id != 0) ? CampaignActiveDays::find($id) : new CampaignActiveDays();
+
+                        $active_days->campaign_id = $campaign_id;
+                        $active_days->day_of_week = $day_of_week;
+
+                        $active_days->save();
+                    }
+
+                    session()->flash('level', 'success');
+                    session()->flash('message', 'Campaign ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
                     // }
 
                     DB::commit();

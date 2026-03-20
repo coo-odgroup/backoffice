@@ -124,7 +124,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </th>
                             <th>Sl No</th>
                             <th>Campaign Name</th>
-                            <th>Short Description</th>
+                            <th>Durection / Date Range</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -137,7 +137,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="CampaignMaster">
+            <input type="hidden" id="hdn_model" value="Campaig">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -210,8 +210,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.campaign_master_id +
-                        '" name="chkStd' + row.campaign_master_id + '" value="' + row.campaign_master_id +
+                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.campaign_id +
+                        '" name="chkStd' + row.campaign_id + '" value="' + row.campaign_id +
                         '" >';
                 },
                 className: "noPrint text-center"
@@ -228,8 +228,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-                data: 'short_desc',
-                defaultContent: "--"
+                data: null,
+                render: function(data, type, row) {
+
+                    if (row.validity_type === 'DATE_RANGE') {
+                        let start = new Date(row.start_date).toLocaleDateString('en-GB');
+                        let end = new Date(row.end_date).toLocaleDateString('en-GB');
+                        return start + ' - ' + end;
+                    }
+
+                    if (row.validity_type === 'DURATION') {
+                        return row.duration_value + ' ' + row.duration_unit;
+                    }
+
+                    return "--";
+                }
             },
             {
                 data: null,
@@ -282,14 +295,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_campaign_master_id)}">
+                        href="${editUrl.replace('ID', row.enc_campaign_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="campaign_master"
-                            data-id="${row.enc_campaign_master_id}">
+                            data-id="${row.enc_campaign_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
 

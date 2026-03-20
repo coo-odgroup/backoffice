@@ -22,7 +22,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a href="{{ route('campaign-master.index') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('campaign.index') }}" class="btn btn-success btn-sm">
             View @yield('page_title')
         </a>
     </div>
@@ -72,8 +72,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="offer_type">Offer Type</label>
                                             <select class="form-select" id="offer_type" name="offer_type">
                                                 <option disabled selected>Select Offer Type</option>
-                                                <option value="1">Percentage</option>
-                                                <option value="0">Flat</option>
+                                                <option value="1"
+                                                    {{ (isset($data['row']) && $data['row']->offer_type == 1) ? 'selected' : '' }}>
+                                                    Percentage
+                                                </option>
+                                                <option value="0"
+                                                    {{ (isset($data['row']) && $data['row']->offer_type == 0) ? 'selected' : '' }}>
+                                                    Flat
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="col-md-2 mb-3">
@@ -88,24 +94,42 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="services">Services</label>
                                             <select class="form-select" id="services" name="services">
                                                 <option disabled selected>Select Services</option>
-                                                <option value="1">Yes</option>
-                                                <option value="0">No</option>
+                                                <option value="1"
+                                                    {{ (isset($data['row']) && $data['row']->services == 1) ? 'selected' : '' }}>
+                                                    Yes
+                                                </option>
+                                                <option value="0"
+                                                    {{ (isset($data['row']) && $data['row']->services == 0) ? 'selected' : '' }}>
+                                                    No
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="auto_renewal">Auto Renewal</label>
                                             <select class="form-select" id="auto_renewal" name="auto_renewal">
                                                 <option disabled selected>Select Auto Renewal</option>
-                                                <option value="1">Yes</option>
-                                                <option value="0">No</option>
+                                                <option value="1"
+                                                    {{ (isset($data['row']) && $data['row']->auto_renewal == 1) ? 'selected' : '' }}>
+                                                    Yes
+                                                </option>
+                                                <option value="0"
+                                                    {{ (isset($data['row']) && $data['row']->auto_renewal == 0) ? 'selected' : '' }}>
+                                                    No
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="validity_type">Validity Type</label>
                                             <select class="form-select" id="validity_type" name="validity_type">
                                                 <option disabled selected>Select Validity Type</option>
-                                                <option value="DATE_RANGE">DATE RANGE</option>
-                                                <option value="DURATION">DURATION</option>
+                                                <option value="DATE_RANGE"
+                                                    {{ (isset($data['row']) && $data['row']->validity_type == 'DATE_RANGE') ? 'selected' : '' }}>
+                                                    DATE RANGE
+                                                </option>
+                                                <option value="DURATION"
+                                                    {{ (isset($data['row']) && $data['row']->validity_type == 'DURATION') ? 'selected' : '' }}>
+                                                    DURATION
+                                                </option>
                                             </select>
                                         </div>
                                         <div class="col-md-2 mb-3 dateSec">
@@ -124,9 +148,45 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="duration_unit">Duration Unit</label>
                                             <select class="form-select" id="duration_unit" name="duration_unit">
                                                 <option disabled selected>Select Duration Unit</option>
-                                                <option value="DAY">DAY</option>
-                                                <option value="WEEk">WEEk</option>
+                                                <option value="DAY"
+                                                    {{ (isset($data['row']) && $data['row']->duration_unit == 'DAY') ? 'selected' : '' }}>
+                                                    DAY
+                                                </option>
+                                                <option value="WEEk"
+                                                    {{ (isset($data['row']) && $data['row']->duration_unit == 'WEEk') ? 'selected' : '' }}>
+                                                    WEEk
+                                                </option>
                                             </select>
+                                        </div>
+
+                                        <div class="col-md-2 mb-3">
+                                            <label for="source">Source</label>
+                                            <select class="form-select selCity" id="source" name="src_id">
+                                                <option disabled selected>Select Source</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label for="destination">Destination</label>
+                                            <select class="form-select selCity" id="destination" name="dest_id">
+                                                <option disabled selected>Select Destination</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="bus">Bus</label>
+                                            <select class="form-select" id="bus" name="bus_id">
+                                                <option disabled selected>Select Bus</option>
+                                                <option value="1">Static Test Bus</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2 mb-3">
+                                            <label for="excluded_date">Excluded Date</label>
+                                            <input type="date" class="form-control" id="excluded_date" name="excluded_date" value="{{ $data['row']->excluded_date ?? old('excluded_date') }}" placeholder="Enter Excluded Date">
+                                        </div>
+
+                                        <div class="col-md-2 mb-3">
+                                            <label for="day_of_week">Active Days</label>
+                                            <input type="text" class="form-control" id="day_of_week" name="day_of_week" value="{{ $data['row']->day_of_week ?? old('day_of_week') }}" placeholder="Enter Active Days">
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +198,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('campaign-master.index') }}" class="btn btn-secondary btn-sm">
+                                        <a href="{{ route('campaign.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
                                         </a>
                                         @else
@@ -171,10 +231,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
 
         commonAjax.initSelect2('#campaignMaster', 'Select Campaign Master');
+        commonAjax.initSelect2('.selCity', 'Select Location');
 
-        let campaign_master_id = <?= $data['row']->campaign_master_id ?? '0' ?>
+        let campaign_master_id = <?= $data['row']->campaign_master_id ?? '0' ?>;
+        let src_id = <?= $data['row']->src_id ?? '0' ?>;
+        let dest_id = <?= $data['row']->dest_id ?? '0' ?>;
 
         commonAjax.loadCampaignMasterList(campaign_master_id);
+        commonAjax.loadCityList(src_id);
+        commonAjax.loadCityList(dest_id);
     });
 
     $('#backoffice-form').on('submit', function(e) {
@@ -264,12 +329,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        // Default state → show date, hide duration
-        $('.dateSec').show();
-        $('.durationSec').hide();
-
-        $('#validity_type').on('change', function() {
-            const type = $(this).val();
+        function toggleValiditySection() {
+            const type = $('#validity_type').val();
 
             if (type === 'DATE_RANGE') {
                 $('.dateSec').show();
@@ -277,7 +338,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             } else if (type === 'DURATION') {
                 $('.dateSec').hide();
                 $('.durationSec').show();
+            } else {
+                // ADD CASE (no selection yet)
+                $('.dateSec').show();
+                $('.durationSec').hide();
             }
+        }
+
+        // Run on load (handles edit + add)
+        toggleValiditySection();
+
+        // Run on change
+        $('#validity_type').on('change', function() {
+            toggleValiditySection();
         });
 
     });
