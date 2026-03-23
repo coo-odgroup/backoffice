@@ -61,22 +61,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
+                                    <div class="row mb-1">
                                         <div class="col-md-4 mb-3">
                                             <label for="selCity">City<span class="text-danger important">*</span></label>
-                                            <select class="form-select selCity" id="selCity" name="city_id">
+                                            <select class="form-select form-select-sm selCity" id="selCity" name="city_id">
                                                 <option value="0">Select City</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="apiApp">Api App<span class="text-danger important">*</span></label>
-                                            <select class="form-select apiApp" id="apiApp" name="api_app_id">
+                                            <select class="form-select form-select-sm apiApp" id="apiApp" name="api_app_id">
                                                 <option value="0">Select Api App</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="api_city_ids">App City Id<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="api_city_ids" name="api_city_ids" value="{{ $data['row']->api_city_ids ?? '' }}" placeholder="Enter App City Id">
+                                            <input type="text" class="form-control form-select-sm" id="api_city_ids" name="api_city_ids" value="{{ $data['row']->api_city_ids ?? '' }}" placeholder="Enter App City Id">
                                         </div>
                                     </div>
                                 </div>

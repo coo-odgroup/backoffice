@@ -83,29 +83,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="row mb-2">
                                                         <div class="col-md-4 mb-2">
                                                             <label for="userRole">User Role<span class="text-danger important">*</span></label>
-                                                            <select class="form-select user_role" id="userRole" name="user_role">
+                                                            <select class="form-select form-select-sm user_role" id="userRole" name="user_role">
                                                                 <option value="0">Select User Role</option>
                                                             </select>
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="name">Name<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="name" name="name" value="{{ $data['row']->name ?? old('name') }}" placeholder="Enter Name">
+                                                            <input type="text" class="form-control form-select-sm" id="name" name="name" value="{{ $data['row']->name ?? old('name') }}" placeholder="Enter Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="organization_name">Organization Name<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="organization_name" name="organization_name" value="{{ $data['row']->organization_name ?? old('organization_name') }}" placeholder="Enter Organization Name">
+                                                            <input type="text" class="form-control form-select-sm" id="organization_name" name="organization_name" value="{{ $data['row']->organization_name ?? old('organization_name') }}" placeholder="Enter Organization Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="primary_email">Primary Email<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="primary_email" name="primary_email" value="{{ $data['row']->primary_email ?? old('primary_email') }}" placeholder="Enter Primary Email">
+                                                            <input type="text" class="form-control form-select-sm" id="primary_email" name="primary_email" value="{{ $data['row']->primary_email ?? old('primary_email') }}" placeholder="Enter Primary Email">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="primary_contact">Primary Contact<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="primary_contact" name="primary_contact" value="{{ $data['row']->primary_contact ?? old('primary_contact') }}" placeholder="Enter Primary Contact">
+                                                            <input type="text" class="form-control form-select-sm" id="primary_contact" name="primary_contact" value="{{ $data['row']->primary_contact ?? old('primary_contact') }}" placeholder="Enter Primary Contact">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="location">Location<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="location" name="location" value="{{ $data['row']->location ?? old('location') }}" placeholder="Enter Location">
+                                                            <input type="text" class="form-control form-select-sm" id="location" name="location" value="{{ $data['row']->location ?? old('location') }}" placeholder="Enter Location">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -137,23 +137,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="name">Name<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="name" name="name" value="{{ $data['row']->name ?? old('name') }}" placeholder="Enter Name">
+                                                            <input type="text" class="form-control form-select-sm" id="name" name="name" value="{{ $data['row']->name ?? old('name') }}" placeholder="Enter Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="organization_name">Organization Name<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="organization_name" name="organization_name" value="{{ $data['row']->organization_name ?? old('organization_name') }}" placeholder="Enter Organization Name">
+                                                            <input type="text" class="form-control form-select-sm" id="organization_name" name="organization_name" value="{{ $data['row']->organization_name ?? old('organization_name') }}" placeholder="Enter Organization Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="primary_email">Primary Email<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="primary_email" name="primary_email" value="{{ $data['row']->primary_email ?? old('primary_email') }}" placeholder="Enter Primary Email">
+                                                            <input type="text" class="form-control form-select-sm" id="primary_email" name="primary_email" value="{{ $data['row']->primary_email ?? old('primary_email') }}" placeholder="Enter Primary Email">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="primary_contact">Primary Contact<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="primary_contact" name="primary_contact" value="{{ $data['row']->primary_contact ?? old('primary_contact') }}" placeholder="Enter Primary Contact">
+                                                            <input type="text" class="form-control form-select-sm" id="primary_contact" name="primary_contact" value="{{ $data['row']->primary_contact ?? old('primary_contact') }}" placeholder="Enter Primary Contact">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="location">Location<span class="text-danger important">*</span></label>
-                                                            <input type="text" class="form-control" id="location" name="location" value="{{ $data['row']->location ?? old('location') }}" placeholder="Enter Location">
+                                                            <input type="text" class="form-control form-select-sm" id="location" name="location" value="{{ $data['row']->location ?? old('location') }}" placeholder="Enter Location">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -182,35 +182,35 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="row mb-2">
                                                         <div class="col-md-3 mb-2">
                                                             <label for="secondary_email">Secondary Email</label>
-                                                            <input type="text" class="form-control" id="secondary_email" name="secondary_email" value="{{ $data['row']->info->secondary_email ?? old('secondary_email') }}" placeholder="Enter Secondary Email">
+                                                            <input type="text" class="form-control form-select-sm" id="secondary_email" name="secondary_email" value="{{ $data['row']->info->secondary_email ?? old('secondary_email') }}" placeholder="Enter Secondary Email">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="secondary_contact">Secondary Contact</label>
-                                                            <input type="text" class="form-control" id="secondary_contact" name="secondary_contact" value="{{ $data['row']->info->secondary_contact ?? old('secondary_contact') }}" placeholder="Enter Secondary Contact">
+                                                            <input type="text" class="form-control form-select-sm" id="secondary_contact" name="secondary_contact" value="{{ $data['row']->info->secondary_contact ?? old('secondary_contact') }}" placeholder="Enter Secondary Contact">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="aadhaar_no">Aadhaar No</label>
-                                                            <input type="text" class="form-control" id="aadhaar_no" name="aadhaar_no" value="{{ $data['row']->info->aadhaar_no ?? old('aadhaar_no') }}" placeholder="Enter Aadhaar No">
+                                                            <input type="text" class="form-control form-select-sm" id="aadhaar_no" name="aadhaar_no" value="{{ $data['row']->info->aadhaar_no ?? old('aadhaar_no') }}" placeholder="Enter Aadhaar No">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="pancard_no">Pancard No</label>
-                                                            <input type="text" class="form-control" id="pancard_no" name="pancard_no" value="{{ $data['row']->info->pancard_no ?? old('pancard_no') }}" placeholder="Enter Pancard No">
+                                                            <input type="text" class="form-control form-select-sm" id="pancard_no" name="pancard_no" value="{{ $data['row']->info->pancard_no ?? old('pancard_no') }}" placeholder="Enter Pancard No">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="president_name">President Name</label>
-                                                            <input type="text" class="form-control" id="president_name" name="president_name" value="{{ $data['row']->info->president_name ?? old('president_name') }}" placeholder="Enter President Name">
+                                                            <input type="text" class="form-control form-select-sm" id="president_name" name="president_name" value="{{ $data['row']->info->president_name ?? old('president_name') }}" placeholder="Enter President Name">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="president_phone">President Phone</label>
-                                                            <input type="text" class="form-control" id="president_phone" name="president_phone" value="{{ $data['row']->info->president_phone ?? old('president_phone') }}" placeholder="Enter President Phone">
+                                                            <input type="text" class="form-control form-select-sm" id="president_phone" name="president_phone" value="{{ $data['row']->info->president_phone ?? old('president_phone') }}" placeholder="Enter President Phone">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="general_secretary_name">General Secretary Name</label>
-                                                            <input type="text" class="form-control" id="general_secretary_name" name="general_secretary_name" value="{{ $data['row']->info->general_secretary_name ?? old('general_secretary_name') }}" placeholder="Enter General Secretary Name">
+                                                            <input type="text" class="form-control form-select-sm" id="general_secretary_name" name="general_secretary_name" value="{{ $data['row']->info->general_secretary_name ?? old('general_secretary_name') }}" placeholder="Enter General Secretary Name">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="general_secretary_phone">General Secretary Phone</label>
-                                                            <input type="text" class="form-control" id="general_secretary_phone" name="general_secretary_phone" value="{{ $data['row']->info->general_secretary_phone ?? old('general_secretary_phone') }}" placeholder="Enter General Secretary Phone">
+                                                            <input type="text" class="form-control form-select-sm" id="general_secretary_phone" name="general_secretary_phone" value="{{ $data['row']->info->general_secretary_phone ?? old('general_secretary_phone') }}" placeholder="Enter General Secretary Phone">
                                                         </div>
                                                         <div class="col-md-1 mb-2">
                                                             <div class="form-check mt-4">
@@ -223,7 +223,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         </div>
                                                         <div class="col-md-2 mb-2">
                                                             <label for="gst_no" class="form-label">GST No</label>
-                                                            <input type="text" class="form-control" id="gst_no" name="gst_no"
+                                                            <input type="text" class="form-control form-select-sm" id="gst_no" name="gst_no"
                                                                 value="{{ $data['row']->info->gst_no ?? old('gst_no') }}"
                                                                 placeholder="Enter GST Number"
                                                                 {{ isset($data['row']->info) && $data['row']->info->has_gst == 1 ? '' : 'disabled' }}>
@@ -253,35 +253,35 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="row mb-2">
                                                         <div class="col-md-3 mb-2">
                                                             <label for="secondary_email">Secondary Email</label>
-                                                            <input type="text" class="form-control" id="secondary_email" name="secondary_email" value="{{ $data['row']->info->secondary_email ?? old('secondary_email') }}" placeholder="Enter Secondary Email">
+                                                            <input type="text" class="form-control form-select-sm" id="secondary_email" name="secondary_email" value="{{ $data['row']->info->secondary_email ?? old('secondary_email') }}" placeholder="Enter Secondary Email">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="secondary_contact">Secondary Contact</label>
-                                                            <input type="text" class="form-control" id="secondary_contact" name="secondary_contact" value="{{ $data['row']->info->secondary_contact ?? old('secondary_contact') }}" placeholder="Enter Secondary Contact">
+                                                            <input type="text" class="form-control form-select-sm" id="secondary_contact" name="secondary_contact" value="{{ $data['row']->info->secondary_contact ?? old('secondary_contact') }}" placeholder="Enter Secondary Contact">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="aadhaar_no">Aadhaar No</label>
-                                                            <input type="text" class="form-control" id="aadhaar_no" name="aadhaar_no" value="{{ $data['row']->info->aadhaar_no ?? old('aadhaar_no') }}" placeholder="Enter Aadhaar No">
+                                                            <input type="text" class="form-control form-select-sm" id="aadhaar_no" name="aadhaar_no" value="{{ $data['row']->info->aadhaar_no ?? old('aadhaar_no') }}" placeholder="Enter Aadhaar No">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="pancard_no">Pancard No</label>
-                                                            <input type="text" class="form-control" id="pancard_no" name="pancard_no" value="{{ $data['row']->info->pancard_no ?? old('pancard_no') }}" placeholder="Enter Pancard No">
+                                                            <input type="text" class="form-control form-select-sm" id="pancard_no" name="pancard_no" value="{{ $data['row']->info->pancard_no ?? old('pancard_no') }}" placeholder="Enter Pancard No">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="president_name">President Name</label>
-                                                            <input type="text" class="form-control" id="president_name" name="president_name" value="{{ $data['row']->info->president_name ?? old('president_name') }}" placeholder="Enter President Name">
+                                                            <input type="text" class="form-control form-select-sm" id="president_name" name="president_name" value="{{ $data['row']->info->president_name ?? old('president_name') }}" placeholder="Enter President Name">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="president_phone">President Phone</label>
-                                                            <input type="text" class="form-control" id="president_phone" name="president_phone" value="{{ $data['row']->info->president_phone ?? old('president_phone') }}" placeholder="Enter President Phone">
+                                                            <input type="text" class="form-control form-select-sm" id="president_phone" name="president_phone" value="{{ $data['row']->info->president_phone ?? old('president_phone') }}" placeholder="Enter President Phone">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="general_secretary_name">General Secretary Name</label>
-                                                            <input type="text" class="form-control" id="general_secretary_name" name="general_secretary_name" value="{{ $data['row']->info->general_secretary_name ?? old('general_secretary_name') }}" placeholder="Enter General Secretary Name">
+                                                            <input type="text" class="form-control form-select-sm" id="general_secretary_name" name="general_secretary_name" value="{{ $data['row']->info->general_secretary_name ?? old('general_secretary_name') }}" placeholder="Enter General Secretary Name">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="general_secretary_phone">General Secretary Phone</label>
-                                                            <input type="text" class="form-control" id="general_secretary_phone" name="general_secretary_phone" value="{{ $data['row']->info->general_secretary_phone ?? old('general_secretary_phone') }}" placeholder="Enter General Secretary Phone">
+                                                            <input type="text" class="form-control form-select-sm" id="general_secretary_phone" name="general_secretary_phone" value="{{ $data['row']->info->general_secretary_phone ?? old('general_secretary_phone') }}" placeholder="Enter General Secretary Phone">
                                                         </div>
                                                         <div class="col-md-1 mb-2">
                                                             <div class="form-check mt-4">
@@ -294,7 +294,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         </div>
                                                         <div class="col-md-2 mb-2">
                                                             <label for="gst_no" class="form-label">GST No</label>
-                                                            <input type="text" class="form-control" id="gst_no" name="gst_no"
+                                                            <input type="text" class="form-control form-select-sm" id="gst_no" name="gst_no"
                                                                 value="{{ $data['row']->info->gst_no ?? old('gst_no') }}"
                                                                 placeholder="Enter GST Number"
                                                                 {{ isset($data['row']->info) && $data['row']->info->has_gst == 1 ? '' : 'disabled' }}>
@@ -326,23 +326,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="row mb-2">
                                                         <div class="col-md-12 mb-2">
                                                             <label for="address">Address</label>
-                                                            <textarea class="form-control" name="address" id="address" placeholder="Enter Address">{{ $data['row']->address->address ?? old('address') }}</textarea>
+                                                            <textarea class="form-control form-select-sm" name="address" id="address" placeholder="Enter Address">{{ $data['row']->address->address ?? old('address') }}</textarea>
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="street">Street</label>
-                                                            <input type="text" class="form-control" id="street" name="street" value="{{ $data['row']->address->street ?? old('street') }}" placeholder="Enter Street">
+                                                            <input type="text" class="form-control form-select-sm" id="street" name="street" value="{{ $data['row']->address->street ?? old('street') }}" placeholder="Enter Street">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="landmark">Landmark</label>
-                                                            <input type="text" class="form-control" id="landmark" name="landmark" value="{{ $data['row']->address->landmark ?? old('landmark') }}" placeholder="Enter Landmark">
+                                                            <input type="text" class="form-control form-select-sm" id="landmark" name="landmark" value="{{ $data['row']->address->landmark ?? old('landmark') }}" placeholder="Enter Landmark">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="city">City Name</label>
-                                                            <input type="text" class="form-control" id="city" name="city" value="{{ $data['row']->address->city ?? old('city') }}" placeholder="Enter City Name">
+                                                            <input type="text" class="form-control form-select-sm" id="city" name="city" value="{{ $data['row']->address->city ?? old('city') }}" placeholder="Enter City Name">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="pincode">Pincode</label>
-                                                            <input type="text" class="form-control" id="pincode" name="pincode" value="{{ $data['row']->address->pincode ?? old('pincode') }}" placeholder="Enter Pincode">
+                                                            <input type="text" class="form-control form-select-sm" id="pincode" name="pincode" value="{{ $data['row']->address->pincode ?? old('pincode') }}" placeholder="Enter Pincode">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -369,23 +369,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="row mb-2">
                                                         <div class="col-md-12 mb-2">
                                                             <label for="address">Address</label>
-                                                            <textarea class="form-control" name="address" id="address" placeholder="Enter Address">{{ $data['row']->address->address ?? old('address') }}</textarea>
+                                                            <textarea class="form-control form-select-sm" name="address" id="address" placeholder="Enter Address">{{ $data['row']->address->address ?? old('address') }}</textarea>
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="street">Street</label>
-                                                            <input type="text" class="form-control" id="street" name="street" value="{{ $data['row']->address->street ?? old('street') }}" placeholder="Enter Street">
+                                                            <input type="text" class="form-control form-select-sm" id="street" name="street" value="{{ $data['row']->address->street ?? old('street') }}" placeholder="Enter Street">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="landmark">Landmark</label>
-                                                            <input type="text" class="form-control" id="landmark" name="landmark" value="{{ $data['row']->address->landmark ?? old('landmark') }}" placeholder="Enter Landmark">
+                                                            <input type="text" class="form-control form-select-sm" id="landmark" name="landmark" value="{{ $data['row']->address->landmark ?? old('landmark') }}" placeholder="Enter Landmark">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="city">City Name</label>
-                                                            <input type="text" class="form-control" id="city" name="city" value="{{ $data['row']->address->city ?? old('city') }}" placeholder="Enter City Name">
+                                                            <input type="text" class="form-control form-select-sm" id="city" name="city" value="{{ $data['row']->address->city ?? old('city') }}" placeholder="Enter City Name">
                                                         </div>
                                                         <div class="col-md-3 mb-2">
                                                             <label for="pincode">Pincode</label>
-                                                            <input type="text" class="form-control" id="pincode" name="pincode" value="{{ $data['row']->address->pincode ?? old('pincode') }}" placeholder="Enter Pincode">
+                                                            <input type="text" class="form-control form-select-sm" id="pincode" name="pincode" value="{{ $data['row']->address->pincode ?? old('pincode') }}" placeholder="Enter Pincode">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -414,27 +414,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="row mb-2">
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_account_name">Bank Aaccount Name</label>
-                                                            <input type="text" class="form-control" id="bank_account_name" name="bank_account_name" value="{{ $data['row']->bankdetails->bank_account_name ?? old('bank_account_name') }}" placeholder="Enter Bank Aaccount Name">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_account_name" name="bank_account_name" value="{{ $data['row']->bankdetails->bank_account_name ?? old('bank_account_name') }}" placeholder="Enter Bank Aaccount Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_name">Bank Name</label>
-                                                            <input type="text" class="form-control" id="bank_name" name="bank_name" value="{{ $data['row']->bankdetails->bank_name ?? old('bank_name') }}" placeholder="Enter Bank Name">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_name" name="bank_name" value="{{ $data['row']->bankdetails->bank_name ?? old('bank_name') }}" placeholder="Enter Bank Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_ifsc">Bank IFSC Code</label>
-                                                            <input type="text" class="form-control" id="bank_ifsc" name="bank_ifsc" value="{{ $data['row']->bankdetails->bank_ifsc ?? old('bank_ifsc') }}" placeholder="Enter Bank IFSC Code">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_ifsc" name="bank_ifsc" value="{{ $data['row']->bankdetails->bank_ifsc ?? old('bank_ifsc') }}" placeholder="Enter Bank IFSC Code">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_account_number">Bank Account Number</label>
-                                                            <input type="text" class="form-control" id="bank_account_number" name="bank_account_number" value="{{ $data['row']->bankdetails->bank_account_number ?? old('bank_account_number') }}" placeholder="Enter Bank Account Number">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_account_number" name="bank_account_number" value="{{ $data['row']->bankdetails->bank_account_number ?? old('bank_account_number') }}" placeholder="Enter Bank Account Number">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_address">Bank Address</label>
-                                                            <input type="text" class="form-control" id="bank_address" name="bank_address" value="{{ $data['row']->bankdetails->bank_address ?? old('bank_address') }}" placeholder="Enter Bank Address">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_address" name="bank_address" value="{{ $data['row']->bankdetails->bank_address ?? old('bank_address') }}" placeholder="Enter Bank Address">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="upi_id">UPI Id</label>
-                                                            <input type="text" class="form-control" id="upi_id" name="upi_id" value="{{ $data['row']->bankdetails->upi_id ?? old('upi_id') }}" placeholder="Enter UPI Id">
+                                                            <input type="text" class="form-control form-select-sm" id="upi_id" name="upi_id" value="{{ $data['row']->bankdetails->upi_id ?? old('upi_id') }}" placeholder="Enter UPI Id">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -461,27 +461,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="row mb-2">
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_account_name">Bank Aaccount Name</label>
-                                                            <input type="text" class="form-control" id="bank_account_name" name="bank_account_name" value="{{ $data['row']->bankdetails->bank_account_name ?? old('bank_account_name') }}" placeholder="Enter Bank Aaccount Name">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_account_name" name="bank_account_name" value="{{ $data['row']->bankdetails->bank_account_name ?? old('bank_account_name') }}" placeholder="Enter Bank Aaccount Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_name">Bank Name</label>
-                                                            <input type="text" class="form-control" id="bank_name" name="bank_name" value="{{ $data['row']->bankdetails->bank_name ?? old('bank_name') }}" placeholder="Enter Bank Name">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_name" name="bank_name" value="{{ $data['row']->bankdetails->bank_name ?? old('bank_name') }}" placeholder="Enter Bank Name">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_ifsc">Bank IFSC Code</label>
-                                                            <input type="text" class="form-control" id="bank_ifsc" name="bank_ifsc" value="{{ $data['row']->bankdetails->bank_ifsc ?? old('bank_ifsc') }}" placeholder="Enter Bank IFSC Code">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_ifsc" name="bank_ifsc" value="{{ $data['row']->bankdetails->bank_ifsc ?? old('bank_ifsc') }}" placeholder="Enter Bank IFSC Code">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_account_number">Bank Account Number</label>
-                                                            <input type="text" class="form-control" id="bank_account_number" name="bank_account_number" value="{{ $data['row']->bankdetails->bank_account_number ?? old('bank_account_number') }}" placeholder="Enter Bank Account Number">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_account_number" name="bank_account_number" value="{{ $data['row']->bankdetails->bank_account_number ?? old('bank_account_number') }}" placeholder="Enter Bank Account Number">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="bank_address">Bank Address</label>
-                                                            <input type="text" class="form-control" id="bank_address" name="bank_address" value="{{ $data['row']->bankdetails->bank_address ?? old('bank_address') }}" placeholder="Enter Bank Address">
+                                                            <input type="text" class="form-control form-select-sm" id="bank_address" name="bank_address" value="{{ $data['row']->bankdetails->bank_address ?? old('bank_address') }}" placeholder="Enter Bank Address">
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <label for="upi_id">UPI Id</label>
-                                                            <input type="text" class="form-control" id="upi_id" name="upi_id" value="{{ $data['row']->bankdetails->upi_id ?? old('upi_id') }}" placeholder="Enter UPI Id">
+                                                            <input type="text" class="form-control form-select-sm" id="upi_id" name="upi_id" value="{{ $data['row']->bankdetails->upi_id ?? old('upi_id') }}" placeholder="Enter UPI Id">
                                                         </div>
                                                     </div>
                                                 </div>

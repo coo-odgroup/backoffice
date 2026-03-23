@@ -63,7 +63,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="slab">Cancellation Slab<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="slab" name="slab_id">
+                                            <select class="form-select form-select-sm" id="slab" name="slab_id">
                                             </select>
                                         </div>
                                     </div>
@@ -79,7 +79,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label for="duration">
                                                     Duration<span class="text-danger important">*</span>
                                                 </label>
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-select-sm"
                                                     name="duration[]"
                                                     value="{{ $row->duration }}"
                                                     placeholder="Enter Duration">
@@ -89,7 +89,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label for="deduction">
                                                     Deduction %<span class="text-danger important">*</span>
                                                 </label>
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-select-sm"
                                                     name="deduction[]"
                                                     value="{{ $row->deduction }}"
                                                     placeholder="Enter Deduction %">
@@ -97,11 +97,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-2 d-flex align-items-center mb-3 mt-3">
                                                 @if($index == 0)
-                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                                 @else
-                                                <button type="button" class="btn btn-outline-danger btn-remove">
+                                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove">
                                                     <i class="fa fa-minus"></i>
                                                 </button>
                                                 @endif
@@ -116,20 +116,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="duration">Duration<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-select-sm"
                                                     name="duration[]"
                                                     placeholder="Enter Duration">
                                             </div>
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="deduction">Deduction %<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-select-sm"
                                                     name="deduction[]"
                                                     placeholder="Enter Deduction %">
                                             </div>
 
                                             <div class="col-md-2 d-flex align-items-center mb-3 mt-3">
-                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
@@ -143,20 +143,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="duration">Duration<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-select-sm"
                                                     name="duration[]"
                                                     placeholder="Enter Duration">
                                             </div>
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="deduction">Deduction %<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control"
+                                                <input type="text" class="form-control form-select-sm"
                                                     name="deduction[]"
                                                     placeholder="Enter Deduction %">
                                             </div>
 
                                             <div class="col-md-2 d-flex align-items-center mb-3 mt-3">
-                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>
@@ -278,16 +278,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 newRow.innerHTML = `
                 <div class="col-md-5 mb-3">
                     <label>Duration<span class="text-danger important">*</span></label>
-                    <input type="text" class="form-control" name="duration[]" placeholder="Enter Duration">
+                    <input type="text" class="form-control form-select-sm" name="duration[]" placeholder="Enter Duration">
                 </div>
 
                 <div class="col-md-5 mb-3">
                     <label>Deduction %<span class="text-danger important">*</span></label>
-                    <input type="text" class="form-control" name="deduction[]" placeholder="Enter Deduction %">
+                    <input type="text" class="form-control form-select-sm" name="deduction[]" placeholder="Enter Deduction %">
                 </div>
 
                 <div class="col-md-2 d-flex align-items-center mb-3 mt-3">
-                    <button type="button" class="btn btn-outline-danger btn-remove">
+                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove">
                         <i class="fa fa-minus"></i>
                     </button>
                 </div>

@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -39,34 +39,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By App Name / Code</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="App Name / Code">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="apiApp">Api App</label>
-                                    <select class="form-select" id="apiApp" name="apiApp">
-                                        <option value="">Select Api App</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <div class="row align-items-end">
+                        <div class="col-lg-5 col-md-5 mb-2">
+                            <label for="txtSearch">Search By Api Key</label>
+                            <input type="search" class="form-control form-select-sm" id="txtSearch" name="txtSearch"
+                                placeholder="Api Key">
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="apiApp">Api App</label>
+                            <select class="form-select form-select-sm" id="apiApp" name="apiApp">
+                                <option value="">Select Api App</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <div class="col-lg-3 col-md-3 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -121,24 +116,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
-                data-url="{{ route('apikeys.dataTableView') }}"
-                data-edit-url="{{ route('apikeys.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>App Name</th>
-                        <th>Api Key</th>
-                        <th>Environment</th>
-                        <th>Last Modified</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+                    data-url="{{ route('apikeys.dataTableView') }}"
+                    data-edit-url="{{ route('apikeys.edit', 'ID') }}">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
+                            </th>
+                            <th>Sl No</th>
+                            <th>App Name</th>
+                            <th>Api Key</th>
+                            <th>Environment</th>
+                            <th>Last Modified</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
@@ -227,12 +224,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
-                render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.api_key_id +
-                        '" name="chkStd' + row.api_key_id + '" value="' + row.api_key_id +
-                        '" >';
-                },
-                className: "noPrint text-center"
+                className: "noPrint text-center",
+                render: (d, t, r) =>
+                    `<div class="checkbox"><input class="chkItem" type="checkbox" value="${r.api_key_id}"></div>`
             },
             {
                 data: 'slNo',
@@ -252,7 +246,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {
                 data: 'environment',
                 defaultContent: "--",
-                render: function (data, type, row) {
+                render: function(data, type, row) {
                     if (data == 1) {
                         return 'Staging';
                     } else if (data == 2) {
@@ -264,20 +258,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: null,
-                render: function (data, type, row) {
+                render: function(data, type, row) {
 
-                    let createdBy  = row.created_by_name ?? '--';
-                    let createdAt  = row.created_date ?? '--';
+                    let createdBy = row.created_by_name ?? '--';
+                    let createdAt = row.created_date ?? '--';
 
-                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
                     // Show updated date if exists, else created date
-                    let displayDate = (updatedAt!='--') ? updatedAt : createdAt;
+                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
+                        <span
+                            class="text-decoration-underline fw-semibold"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -291,7 +285,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${displayDate}
-                        </small>
+                        </span>
                     `;
                 }
             },

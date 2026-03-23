@@ -64,13 +64,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-3 mb-3">
                                             <label for="apiApp">Api App<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="apiApp" name="api_app_id">
+                                            <select class="form-select form-select-sm" id="apiApp" name="api_app_id">
                                                 <option value="0">Select Api App</option>
                                             </select>
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label for="environment">Environment<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="environment" name="environment">
+                                            <select class="form-select form-select-sm" id="environment" name="environment">
                                                 <option disabled selected>Select Environment</option>
                                                 <option value="1"
                                                     {{ (isset($data['row']) && $data['row']->environment == 1) ? 'selected' : '' }}>
@@ -88,11 +88,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 Api Key<span class="text-danger important">*</span>
                                             </label>
 
-                                            <div class="input-group">
+                                            <div class="input-group input-group-sm">
                                                 <input type="text"
-                                                    class="form-control"
+                                                    class="form-control form-select-sm"
                                                     id="api_key"
                                                     name="api_key"
+                                                    placeholder="Generate Api Key"
                                                     value="{{ $data['row']->api_key ?? '' }}">
 
                                                 <button type="button" class="btn btn-primary" id="generateApiKey">
