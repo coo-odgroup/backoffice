@@ -39,28 +39,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Company Name</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Company Name">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <div class="row align-items-end">
+                        <div class="col-lg-7 col-md-7 mb-2">
+                            <label for="txtSearch">Search By Company Name</label>
+                            <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                                placeholder="Company Name">
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <div class="col-lg-3 col-md-3 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -116,10 +111,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
                 data-url="{{ route('vendor.dataTableView') }}"
                 data-edit-url="{{ route('vendor.edit', 'ID') }}">
-                <thead class="thead-light">
+                <thead class="table-secondary">
                     <tr>
                         <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                            <div class="checkbox">
+                                <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                            </div>
                         </th>
                         <th>Sl No</th>
                         <th>Company Name</th>
@@ -138,7 +135,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Vendor  ">
+            <input type="hidden" id="hdn_model" value="Vendor">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -210,12 +207,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
-                render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.vendor_id +
-                        '" name="chkStd' + row.vendor_id + '" value="' + row.vendor_id +
-                        '" >';
-                },
-                className: "noPrint text-center"
+                className: "noPrint text-center",
+                render: (d, t, r) =>
+                    `<div class="checkbox"><input class="chkItem" type="checkbox" value="${r.vendor_id}"></div>`
             },
             {
                 data: 'slNo',
@@ -254,11 +248,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
+                    // Show updated date if exists, else created date
                     let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
+                        <span
+                            class="text-decoration-underline fw-semibold"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -272,7 +267,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${displayDate}
-                        </small>
+                        </span>
                     `;
                 }
             },

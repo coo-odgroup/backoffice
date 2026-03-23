@@ -124,7 +124,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
                     data-url="{{ route('blogs.dataTableView') }}"
                     data-edit-url="{{ route('blogs.edit', 'ID') }}">
-                    <thead class="thead-light">
+                    <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
                                 <div class="checkbox">
