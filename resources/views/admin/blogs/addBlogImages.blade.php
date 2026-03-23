@@ -70,7 +70,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </label>
 
                                             <input type="file"
-                                                class="form-control"
+                                                class="form-control form-select-sm"
                                                 id="blog_image"
                                                 name="image_name[]"
                                                 accept="image/*"
@@ -83,7 +83,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-4 mb-3">
                                             <label for="blog">Blog<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="blog" name="blog_id">
+                                            <select class="form-select form-select-sm" id="blog" name="blog_id">
                                                 <option disabled selected>Select Blog</option>
                                             </select>
                                         </div>

@@ -39,34 +39,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By FAQ</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="FAQ">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="faqCategory">Category</label>
-                                    <select class="form-select" id="faqCategory" name="faqCategory">
-                                        <option value="">Select Category</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <div class="row align-items-end">
+                        <div class="col-lg-5 col-md-5 mb-2">
+                            <label for="txtSearch">Search By FAQ</label>
+                            <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                                placeholder="FAQ">
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="faqCategory">Category</label>
+                            <select class="form-select" id="faqCategory" name="faqCategory">
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <div class="col-lg-3 col-md-3 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -126,7 +121,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <thead class="thead-light">
                         <tr>
                             <th class="noPrint no-sort">
-                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
                             </th>
                             <th>Sl No</th>
                             <th>Banner</th>
@@ -222,12 +219,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
-                render: function(data, type, row) {
-                    return `<input class="form-check-input chkItem" type="checkbox"
-                id="check${row.blog_cat_id}"
-                value="${row.blog_cat_id}">`;
-                },
-                className: "noPrint text-center"
+                className: "noPrint text-center",
+                render: (d, t, r) =>
+                    `<div class="checkbox"><input class="chkItem" type="checkbox" value="${r.blog_cat_id}"></div>`
             },
             {
                 data: 'slNo',
@@ -284,24 +278,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     let createdBy = row.created_by_name ?? '--';
                     let createdAt = row.created_date ?? '--';
-                    let updatedBy = row.updated_by_name ?? '--';
-                    let updatedAt = row.updated_date ?? '--';
 
-                    let displayDate = updatedAt !== '--' ? updatedAt : createdAt;
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
+
+                    // Show updated date if exists, else created date
+                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                    <small class="text-primary fw-semibold"
-                        data-bs-toggle="tooltip"
-                        data-bs-html="true"
-                        title="
-                            <div><strong>Created By:</strong> ${createdBy}</div>
-                            <div><strong>Created At:</strong> ${createdAt}</div>
-                            <hr class='my-1'>
-                            <div><strong>Updated By:</strong> ${updatedBy}</div>
-                            <div><strong>Updated At:</strong> ${updatedAt}</div>
-                        ">
-                        ${displayDate}
-                    </small>`;
+                        <span
+                            class="text-decoration-underline fw-semibold"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${displayDate}
+                        </span>
+                    `;
                 }
             },
             {

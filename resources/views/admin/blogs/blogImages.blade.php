@@ -36,23 +36,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate>
     <div class="card">
         <div class="card-body">
-            <!-- FILTER -->
+            <!-- FILTER --> 
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-12 col-sm-12 col-md-12  col-lg-12 mb-2">
-                                    <label for="txtSearch">Search By Blog Title</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Blog Title">
-                                </div>
-                            </div>
+                    <div class="row align-items-end">
+                        <div class="col-lg-9 col-md-9 mb-2">
+                            <label for="txtSearch">Search By Blog Title</label>
+                            <input type="text" class="form-control form-select-sm" id="txtSearch" name="txtSearch"
+                                placeholder="Blog Title">
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <div class="col-lg-3 col-md-3 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>

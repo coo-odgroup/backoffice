@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Blogs')
+@section('page_title', 'Blog Routes')
 @section('content')
 
 <?php
@@ -22,7 +22,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a href="{{ route('blogs.index') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('blog-routes.index') }}" class="btn btn-success btn-sm">
             View @yield('page_title')
         </a>
     </div>
@@ -68,28 +68,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-4 mb-3">
                                                         <label for="blog">Blog<span class="text-danger important">*</span></label>
-                                                        <select class="form-select" id="blog" name="blog_id">
+                                                        <select class="form-select form-select-sm" id="blog" name="blog_id">
                                                             <option disabled selected>Select Blog</option>
                                                         </select>
                                                     </div>
 
                                                     <div class="col-md-4 mb-3">
                                                         <label for="from_city_id">From City<span class="text-danger important">*</span></label>
-                                                        <select class="form-select citySlugVal" id="from_city_id" name="from_city_id">
+                                                        <select class="form-select form-select-sm citySlugVal" id="from_city_id" name="from_city_id">
                                                             <option disabled selected>Select City</option>
                                                         </select>
                                                     </div>
 
                                                     <div class="col-md-4 mb-3">
                                                         <label for="to_city_id">To City<span class="text-danger important">*</span></label>
-                                                        <select class="form-select citySlugVal" id="to_city_id" name="to_city_id">
+                                                        <select class="form-select form-select-sm citySlugVal" id="to_city_id" name="to_city_id">
                                                             <option disabled selected>Select City</option>
                                                         </select>
                                                     </div>
 
                                                     <div class="col-md-12 mb-3">
                                                         <label for="route_slug">Route Slug<span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="route_slug" name="route_slug"
+                                                        <input type="text" class="form-control form-select-sm" id="route_slug" name="route_slug"
                                                             value="{{ $data['row']->route_slug ?? '' }}"
                                                             placeholder="Enter Route Slug" readonly maxlength="100">
                                                         <small class="text-muted char-counter float-end"></small>
@@ -108,7 +108,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strSubmit'] }}
                                         </button>
                                         @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('blogs.index') }}" class="btn btn-secondary btn-sm">
+                                        <a href="{{ route('blog-routes.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
                                         </a>
                                         @else

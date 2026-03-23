@@ -68,7 +68,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="tag_name">Tag Name<span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="tag_name" name="tag_name"
+                                                        <input type="text" class="form-control form-select-sm" id="tag_name" name="tag_name"
                                                             value="{{ $data['row']->tag_name ?? '' }}"
                                                             placeholder="Enter Tag Name" maxlength="100">
                                                         <small class="text-muted char-counter float-end"></small>
@@ -76,7 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="slug">Slug<span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="slug" name="slug"
+                                                        <input type="text" class="form-control form-select-sm" id="slug" name="slug"
                                                             value="{{ $data['row']->slug ?? '' }}"
                                                             placeholder="Enter Slug" maxlength="100">
                                                         <small class="text-muted char-counter float-end"></small>

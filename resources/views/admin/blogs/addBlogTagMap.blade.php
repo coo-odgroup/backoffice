@@ -68,14 +68,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="blog">Blog<span class="text-danger important">*</span></label>
-                                                        <select class="form-select" id="blog" name="blog_id">
+                                                        <select class="form-select form-select-sm" id="blog" name="blog_id">
                                                             <option disabled selected>Select Blog</option>
                                                         </select>
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
-                                                        <label for="blogTags">Blog<span class="text-danger important">*</span></label>
-                                                        <select class="form-select" id="blogTags" name="tag_id">
+                                                        <label for="blogTags">Blog Tags<span class="text-danger important">*</span></label>
+                                                        <select class="form-select form-select-sm" id="blogTags" name="tag_id">
                                                             <option disabled selected>Select Blog Tags</option>
                                                         </select>
                                                     </div>
