@@ -865,4 +865,54 @@ class CommonController extends Controller
             ]);
         }
     }
-}
+
+    public function getAmenities()
+    {
+        try {
+
+            $categories = DB::table('mst_amenity_categories as c')
+                ->leftJoin('mst_amenities as a', 'a.category_id', '=', 'c.id')
+                ->select(
+                    'c.id as category_id',
+                    'c.category_name as category_name',
+                    'a.id as amenity_id',
+                    'a.amenity_name as amenity_name'
+                )
+                ->get()
+                ->groupBy('category_id');
+
+            $data = [];
+
+            foreach ($categories as $group) {
+
+                $first = $group->first();
+
+                $data[] = [
+                    'category_id'   => $first->category_id,
+                    'category_name' => $first->category_name,
+                    'amenities'     => $group->filter(fn($item) => $item->amenity_id)
+                        ->map(function ($item) {
+                            return [
+                                'id'   => $item->amenity_id,
+                                'name' => $item->amenity_name
+                            ];
+                        })->values()
+                ];
+            }
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+
+        } catch (\Exception $e) {
+
+            Log::error('Amenity error', ['error' => $e->getMessage()]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to load amenities'
+            ], 500);
+        }
+    }
+    }

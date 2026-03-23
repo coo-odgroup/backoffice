@@ -51,7 +51,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- Country -->
                         <div class="col-lg-2 col-md-6">
                             <label for="countrySearch">Country</label>
-                            <select class="form-select form-select-sm" id="countrySearch" name="countrySearch">
+                            <select class="form-select form-select-sm" id="country" name="country">
                                 <option value="">Select Country</option>
                             </select>
                         </div>
@@ -169,7 +169,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        commonAjax.initSelect2('#countrySearch', 'Select Country');
+         commonAjax.initSelect2('#country', 'Select Country');
         commonAjax.loadCountryList();
         getDataTableView();
     });

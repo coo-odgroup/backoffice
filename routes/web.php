@@ -138,6 +138,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
     Route::get('/master-logs', [MasterLogController::class, 'index'])->name('master-log.index');
+    Route::post('/get-amenity-list', [CommonController::class, 'getAmenities']);
 
 
 

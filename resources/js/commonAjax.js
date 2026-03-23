@@ -2,7 +2,8 @@ import $ from "jquery";
 import { Modal } from "bootstrap";
 // import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-let ajaxUrl = "http://127.0.0.1:8000/admin/";
+// let ajaxUrl = "http://127.0.0.1:8000/admin/";
+let ajaxUrl = "http://192.168.29.151:8000/admin/";
 
 $.ajaxSetup({
     headers: {
@@ -21,6 +22,7 @@ export function initSelect2(selector, placeholder = "Select Option") {
             width: "100%",
             placeholder: placeholder,
             dropdownAutoWidth: true,
+            allowClear: true
         });
     }
 }
@@ -1470,67 +1472,150 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
     });
 }
 
-export function loadAnnextureList(annexture_type = '', selected_id = 0) {
+    export function loadAnnextureList(annexture_type = '', selected_id = 0) {
 
-    $.ajax({
-        type: "POST",
-        url: ajaxUrl + "get-annexture-list",
-        data: {
-            annexture_type: annexture_type,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
-        dataType: "json",
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "get-annexture-list",
+            data: {
+                annexture_type: annexture_type,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            dataType: "json",
 
-        success: function (response) {
+            success: function (response) {
 
-            let options = '<option value="">Select Option</option>';
+                let options = '<option value="">Select Option</option>';
 
-            if (response.status && response.data.length > 0) {
+                if (response.status && response.data.length > 0) {
 
-                $.each(response.data, function (index, item) {
+                    $.each(response.data, function (index, item) {
 
-                    let selected = (selected_id == item.id) ? "selected" : "";
+                        let selected = (selected_id == item.id) ? "selected" : "";
 
-                    options += `<option value="${item.id}" ${selected}>
-                                    ${item.annexture_name}
-                                </option>`;
-                });
+                        options += `<option value="${item.id}" ${selected}>
+                                        ${item.annexture_name}
+                                    </option>`;
+                    });
+                }
+
+                $(".annexture").html(options);
+            },
+
+            error: function () {
+                console.log("Error loading annexture list");
+            },
+        });
+    }
+
+    export function loadCampaignMasterList(campaign_master_id = 0) {
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "get-campaign-master-list",
+            data: {
+                campaign_master_id: campaign_master_id,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            dataType: "json",
+            success: function (response) {
+                let options = '<option value="">Select Campaign Master</option>';
+                if (response.status && response.data.length > 0) {
+                    $.each(response.data, function (index, app) {
+                        let selected =
+                            campaign_master_id > 0 && app.id == campaign_master_id ? "selected" : "";
+                        options += `<option value="${app.id}" ${selected}>
+                                        ${app.campaign_name}
+                                    </option>`;
+                    });
+                }
+
+                $("#campaignMaster").html(options);
+            },
+            error: function (xhr) {
+                console.log("Error loading Campaign Master");
+            },
+        });
+    }
+
+    export function loadAmenityList(selected_ids = []) {
+
+        $.ajax({
+            type: "POST",
+            url: ajaxUrl + "get-amenity-list",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            dataType: "json",
+
+            success: function (response) {
+
+                let options = '';
+
+                if (response.status && response.data.length > 0) {
+
+                    $.each(response.data, function (i, category) {
+
+                        options += `<optgroup label="${category.category_name}">`;
+
+                        $.each(category.amenities, function (j, amenity) {
+
+                            let selected = selected_ids.includes(amenity.id) ? 'selected' : '';
+
+                            options += `<option value="${amenity.id}" ${selected}>
+                                            ${amenity.name}
+                                        </option>`;
+                        });
+
+                        options += `</optgroup>`;
+                    });
+                }
+
+                // set options
+                $("#selAmenity").html(options);
+
+                // init select2
+                // $("#selAmenity").select2({
+                //     placeholder: "Select Amenities",
+                //     allowClear: true,
+                //     width: '100%'
+                // });
+
+            },
+
+            error: function (xhr) {
+                console.log("Error loading amenities");
             }
+        });
+    }
 
-            $(".annexture").html(options);
-        },
+    export function initClearableInputs() {
 
-        error: function () {
-            console.log("Error loading annexture list");
-        },
-    });
-}
+        $('.clearable').each(function () {
 
-export function loadCampaignMasterList(campaign_master_id = 0) {
-    $.ajax({
-        type: "POST",
-        url: ajaxUrl + "get-campaign-master-list",
-        data: {
-            campaign_master_id: campaign_master_id,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
-        dataType: "json",
-        success: function (response) {
-            let options = '<option value="">Select Campaign Master</option>';
-            if (response.status && response.data.length > 0) {
-                $.each(response.data, function (index, app) {
-                    let selected =
-                        campaign_master_id > 0 && app.id == campaign_master_id ? "selected" : "";
-                    options += `<option value="${app.id}" ${selected}>
-                                    ${app.campaign_name}
-                                </option>`;
-                });
-            }
+            let input = $(this);
 
-            $("#campaignMaster").html(options);
-        },
-        error: function (xhr) {
-            console.log("Error loading Campaign Master");
-        },
-    });
-}
+            // prevent duplicate wrapping
+            if (input.parent('.position-relative').length) return;
+
+            input.wrap('<div class="position-relative"></div>');
+
+            input.after(`
+                <span class="clear-btn position-absolute top-50 end-0 translate-middle-y me-2 text-muted" 
+                    style="cursor:pointer; display:none;">
+                    &times;
+                </span>
+            `);
+        });
+
+        // show/hide button
+        $(document).on('keyup', '.clearable', function () {
+            let btn = $(this).siblings('.clear-btn');
+            btn.toggle($(this).val().length > 0);
+        });
+
+        // clear input
+        $(document).on('click', '.clear-btn', function () {
+            let input = $(this).siblings('input');
+            input.val('').trigger('keyup').focus();
+        });
+    }

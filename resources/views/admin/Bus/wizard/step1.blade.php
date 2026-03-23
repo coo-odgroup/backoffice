@@ -73,36 +73,36 @@
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="selOpeator">Operator <span class="text-danger">*</span></label>
-                                                            <select class="form-select" name="selOpeator" id="selOpeator">
+                                                            <select class="form-select form-select-sm" name="selOpeator" id="selOpeator">
                                                                 <option value="0">Select Operator</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busName">Bus Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Bus Name" name="busName" id="busName">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="busName" id="busName">
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busNumber">Bus Number <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Bus Number" name="busNumber" id="busNumber">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="busNumber" id="busNumber">
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="via">Via</label>
-                                                            <input type="text" class="form-control" placeholder="Via" name="via" id="via">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Via" name="via" id="via">
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="selAmenity">Amenities <span class="text-danger">*</span></label>
-                                                            <select class="form-select" name="selAmenity" id="selAmenity">
+                                                            <select class="form-select form-select-sm" name="selAmenity" id="selAmenity" multiple>
                                                                 <option>Select Amenities</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="maxSeat">Max Seat Booked <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Max Seat" name="maxSeat" id="maxSeat" value="6">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="maxSeat" id="maxSeat" value="6">
                                                         </div>
 
                                                     </div>
@@ -112,49 +112,49 @@
 
                                                         <div class="col-md-3 mb-2">
                                                             <label for="brand">Brand</label>
-                                                            <select class="form-select onSelect" id="brand" name="brand">
+                                                            <select class="form-select form-select-sm onSelect" id="brand" name="brand">
                                                                 <option value="0">Select Brand</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-3 mb-2">
                                                             <label for="busModel">Model</label>
-                                                            <select class="form-select onSelect" id="busModel" name="model">
+                                                            <select class="form-select form-select-sm onSelect" id="busModel" name="model">
                                                                 <option  value="0">Select Model</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-3 mb-2">
                                                             <label for="axleType">Axle Type</label>
-                                                            <select class="form-select onSelect" id="axleType" name="axleType">
+                                                            <select class="form-select form-select-sm onSelect" id="axleType" name="axleType">
                                                                 <option value="0">Select Axle Type</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-3 mb-2">
                                                             <label for="busService">Bus Service</label>
-                                                            <select class="form-select onSelect" id="busService" name="busService">
+                                                            <select class="form-select form-select-sm onSelect" id="busService" name="busService">
                                                                 <option value="0">Select Bus Service</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-2 mb-1">
                                                             <label for="acType">AC Type <span class="text-danger">*</span></label>
-                                                            <select class="form-select onSelect annexture" id="acType" name="acType">
+                                                            <select class="form-select form-select-sm onSelect annexture" id="acType" name="acType">
                                                                 <option value="0">Select AC Type</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-2 mb-1">
                                                             <label for="seatType">Seat Type <span class="text-danger">*</span></label>
-                                                            <select class="form-select onSelect" id="seatType" name="seatType">
+                                                            <select class="form-select form-select-sm onSelect" id="seatType" name="seatType">
                                                                 <option value="0">Select Seat Type</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-2 mb-1">
                                                             <label for="seatLayout">Seat Layout <span class="text-danger">*</span></label>
-                                                            <select class="form-select onSelect" id="seatLayout" name="seatLayout">
+                                                            <select class="form-select form-select-sm onSelect" id="seatLayout" name="seatLayout">
                                                                 <option value="0">Select Seat Layout</option>
                                                             </select>
                                                         </div>
@@ -164,8 +164,6 @@
                                                             <span id="busType"></span>
                                                         </div>
                                                     </div>
-
-                                                    <hr class="wide">
                                                 </div>
                                             </div>
 
@@ -174,7 +172,7 @@
                                                 <div class="p-3 border rounded bg-white">
                                                     <div class="mb-2">
                                                         <label>Cancellation Slab<span class="text-danger">*</span></label>
-                                                        <select class="form-select">
+                                                        <select class="form-select form-select-sm">
                                                             <option>Select Slab</option>
                                                         </select>
                                                     </div>
@@ -196,29 +194,8 @@
                                         <div class="text-center mt-4">
                                             <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
                                         </div>
-
                                     </div>
-
-                               
                                 </div>
-
-                                <!-- BUTTONS -->
-                                <!-- <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('amenities.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
-                                    </div>
-                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -315,7 +292,7 @@
     }
 
     $(document).ready(function() {
-
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('#brand', 'Select Brand');
         commonAjax.initSelect2('#busModel', 'Select Model');
         commonAjax.initSelect2('#axleType', 'Select Axxle Type');
@@ -323,6 +300,7 @@
         commonAjax.initSelect2('.annexture', 'Select AC Type');
         commonAjax.initSelect2('#seatType', 'Select Seat Type');
         commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
+        commonAjax.initSelect2('#selAmenity', 'Select Amenity');
 
         // commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
 
@@ -363,6 +341,8 @@
 
         let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
         commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
+
+         commonAjax.loadAmenityList();
     });
 
     $('#backoffice-form').on('submit', function(e) {
@@ -393,7 +373,7 @@
     });
 
 
-    function searchCity() {
+    function searchCity() {       
 
         let city = document.getElementById("citySearch").value;
 
