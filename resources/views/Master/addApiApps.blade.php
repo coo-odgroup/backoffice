@@ -61,14 +61,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
+                                    <div class="row mb-1">
                                         <div class="col-md-6 mb-3">
                                             <label for="app_name">App Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="app_name" name="app_name" value="{{ $data['row']->app_name ?? '' }}">
+                                            <input type="text" class="form-control form-select-sm" id="app_name" name="app_name" placeholder="Enter App Name" value="{{ $data['row']->app_name ?? '' }}">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="app_code">App Code<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="app_code" name="app_code" value="{{ $data['row']->app_code ?? '' }}">
+                                            <input type="text" class="form-control form-select-sm" id="app_code" name="app_code" placeholder="Enter App Code" value="{{ $data['row']->app_code ?? '' }}">
                                         </div>
                                     </div>
                                 </div>
