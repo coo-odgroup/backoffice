@@ -228,7 +228,6 @@ export function executeBulkAction(ids, action) {
         },
         error: function (xhr) {
             viewAlert("Something went wrong! Please try again later.");
-            //console.log(xhr.responseText);
         },
     });
 }
@@ -1356,12 +1355,12 @@ export function loadBusModelsList(model_id = '', brand_id = '') {
     });
 }
 
-export function loadAxleTypeList(model_id = 0) {
+export function loadAxleTypeList(axle_typet_id = 0) {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-axletype-list",
         data: {
-            model_id: model_id,
+            axle_typet_id: axle_typet_id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
@@ -1370,9 +1369,9 @@ export function loadAxleTypeList(model_id = 0) {
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
                     let selected =
-                        model_id > 0 && app.id == model_id ? "selected" : "";
+                        axle_typet_id > 0 && app.id == axle_typet_id ? "selected" : "";
                     options += `<option value="${app.id}" ${selected}>
-                                    ${app.model_name}
+                                    ${app.axle_type}
                                 </option>`;
                 });
             }

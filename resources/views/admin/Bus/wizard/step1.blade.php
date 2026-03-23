@@ -373,7 +373,7 @@
     });
 
 
-    function searchCity() {       
+    function searchCity() {
 
         let city = document.getElementById("citySearch").value;
 

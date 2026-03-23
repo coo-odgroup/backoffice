@@ -92,24 +92,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             </div>
                                     </div>
                                 </div>
-
-                                <!-- BUTTONS -->
-                                <!-- <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('amenities.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
-                                    </div>
-                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -119,8 +101,39 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     </div>
     </div>
 </form>
+@endsection
+@push('scripts')
 
-<script>
+<script type="module">
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        updatePreview();
+        // loadAllCities();
+        syncCheckboxes();
+    });
+
+    function getShimmerHTML(count = 5) {
+
+        let shimmer = '';
+
+        for (let i = 0; i < count; i++) {
+            shimmer += `
+                <div class="d-flex align-items-center mb-2">
+                    <div class="shimmer-box me-2"></div>
+                    <div class="shimmer-line flex-grow-1"></div>
+                </div>
+            `;
+        }
+
+        return shimmer;
+    }
+
+    $(document).on('change', '.cityCheck', function () {
+        toggleCity(this);
+    });
+
+
     function backStep() {
         document.getElementById("step1").style.display = "block";
         document.getElementById("step2").style.display = "none";
@@ -130,84 +143,47 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         window.location.href = "/admin/bus/create/step3";
     }
 
-    let selectedCities = new Set(
+   let selectedCities = new Map(
         JSON.parse(localStorage.getItem("selectedCities") || "[]")
     );
 
-    function saveToLocalStorage() {
-      localStorage.setItem("selectedCities", JSON.stringify([...selectedCities]));
-    }
+   function saveToLocalStorage() {
+    localStorage.setItem(
+        "selectedCities",
+        JSON.stringify([...selectedCities])
+    );
+}
 
-    function toggleCity(checkbox) {
+    
 
-        let city = checkbox.value;
+    // function toggleCity(checkbox) {
+
+    //     let city = checkbox.value;
+
+    //     if (checkbox.checked) {
+    //         selectedCities.add(city);
+    //     } else {
+    //         selectedCities.delete(city);
+    //     }
+
+    //     saveToLocalStorage();
+    //     updatePreview();
+    // }
+
+     function toggleCity(checkbox) {
+
+        let cityId = checkbox.value;
+        let cityName = $(checkbox).data('city');
 
         if (checkbox.checked) {
-            selectedCities.add(city);
+            selectedCities.set(cityId, cityName); // ✅ store id + name
         } else {
-            selectedCities.delete(city);
+            selectedCities.delete(cityId);
         }
 
         saveToLocalStorage();
         updatePreview();
     }
-
-
-    // ADD / REMOVE CITY
-    // function toggleCity(checkbox) {
-
-    //     let city = checkbox.value;
-    //     let preview = document.getElementById("previewList");
-
-    //     // create safe id (remove spaces & special chars)
-    //     let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
-
-    //     if (checkbox.checked) {
-
-    //         let preview = document.getElementById("previewList");
-
-    //         // remove empty message if exists
-    //         if (preview.innerText.includes("No city is added")) {
-    //             preview.innerHTML = '';
-    //         }
-
-    //         // prevent duplicate
-    //         if (document.getElementById(cityId)) return;
-
-    //         let div = document.createElement("div");
-    //         div.className = "d-flex align-items-center mb-2";
-    //         div.id = cityId;
-    //         div.draggable = true;
-
-    //         div.innerHTML = `
-    //             <span class="me-2 city-index fw-bold"></span>
-    //             <span class="form-control form-control-sm flex-grow-1 me-2 city-item">${city}</span>
-    //             <button class="btn btn-danger btn-sm" type="button">
-    //                 <i class="fa fa-trash"></i>
-    //             </button>
-    //         `;
-
-    //         // remove on button click
-    //         div.querySelector("button").addEventListener("click", function () {
-    //             removeCity(city);
-    //         });
-
-    //         // add drag events
-    //         addDragEvents(div);
-
-    //         preview.appendChild(div);
-    //         updateCityIndex();
-
-    //     } else {
-
-    //         let removeDiv = document.getElementById(cityId);
-    //         if (removeDiv) {
-    //             removeDiv.remove();
-    //             updateCityIndex();
-    //             checkPreviewEmpty();
-    //         }
-    //     }
-    // }
 
     function updateCityIndex() {
 
@@ -226,102 +202,154 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         }
     }
 
+    function removeCity(city) {
 
-    // REMOVE CITY BUTTON
-//    function removeCity(city) {
+        selectedCities.delete(city);
 
-//         let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
+        saveToLocalStorage();
+        updatePreview();
+        syncCheckboxes();
+    }
 
-//         // remove preview item
-//         let div = document.getElementById(cityId);
-//         if (div) {
-//             div.remove();
-//         }
+    // function updatePreview() {
 
-//         // ✅ uncheck corresponding checkbox
-//          $('.cityCheck').filter(function () {
-//                 return $(this).val() === city;
-//          }).prop('checked', false);
+    //     let preview = document.getElementById("previewList");
+    //     preview.innerHTML = '';
 
-//         //  $(`.cityCheck[value="${cityValue}"]`).prop('checked', false);
+    //     if (selectedCities.size === 0) {
+    //         preview.innerHTML = "<p>No city is added</p>";
+    //         return;
+    //     }
 
-//         // update index
-//         updateCityIndex();
+    //     selectedCities.forEach(city => {
 
-//         // check empty state
-//         checkPreviewEmpty();
-//     }
+    //         let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
 
-        function removeCity(city) {
+    //         let div = document.createElement("div");
+    //         div.className = "d-flex align-items-center mb-2";
+    //         div.id = cityId;
 
-            selectedCities.delete(city);
+    //         div.innerHTML = `
+    //             <span class="me-2 city-index fw-bold"></span>
+    //             <span class="form-control form-control-sm flex-grow-1 me-2">${city}</span>
+    //             <button class="btn btn-danger btn-sm" type="button">
+    //                 <i class="fa fa-trash"></i>
+    //             </button>
+    //         `;
 
-            saveToLocalStorage();   // ✅ persist
-            updatePreview();        // ✅ update preview
-            syncCheckboxes();       // ✅ uncheck checkbox
+    //         div.querySelector("button").addEventListener("click", function () {
+    //             removeCity(city);
+    //         });
+
+    //         preview.appendChild(div);
+    //     });
+
+    //     updateCityIndex();
+    // }
+
+    // function updatePreview() {
+
+    //     let preview = document.getElementById("previewList");
+    //     preview.innerHTML = '';
+
+    //     if (selectedCities.size === 0) {
+    //         preview.innerHTML = "<p>No city is added</p>";
+    //         return;
+    //     }
+
+    //     selectedCities.forEach(city => {
+
+    //         let div = document.createElement("div");
+    //         div.className = "d-flex align-items-center mb-2";
+    //         div.draggable = true; // ✅ REQUIRED
+
+    //         div.innerHTML = `
+    //             <span class="me-2 city-index fw-bold"></span>
+    //             <span class="form-control form-control-sm flex-grow-1 me-2">${city}</span>
+    //             <button class="btn btn-danger btn-sm" type="button">
+    //                 <i class="fa fa-trash"></i>
+    //             </button>
+    //         `;
+
+    //         div.querySelector("button").addEventListener("click", function () {
+    //             removeCity(city);
+    //         });
+
+    //         addDragEvents(div); // ✅ IMPORTANT
+
+    //         preview.appendChild(div);
+    //     });
+
+    //     updateCityIndex();
+    // }
+
+    function updatePreview() {
+
+        let preview = document.getElementById("previewList");
+        preview.innerHTML = '';
+
+        if (selectedCities.size === 0) {
+            preview.innerHTML = "<p>No city is added</p>";
+            return;
         }
 
-        function updatePreview() {
+        let index = 0;
 
-            let preview = document.getElementById("previewList");
-            preview.innerHTML = '';
+        selectedCities.forEach((cityName, cityId) => {
 
-            if (selectedCities.size === 0) {
-                preview.innerHTML = "<p>No city is added</p>";
-                return;
-            }
+            index++;
 
-            selectedCities.forEach(city => {
+            let div = document.createElement("div");
+            div.className = "d-flex align-items-center mb-2";
+            div.draggable = true;
 
-                let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
+            div.innerHTML = `
+                <span class="me-2 city-index fw-bold"></span>
+                <span class="form-control form-control-sm flex-grow-1 me-2">${cityName}</span>
+                <input type="hidden" name="cities[${index}][id]" value="${cityId}">
+                <input type="hidden" name="cities[${index}][order]" value="${index}">
+                <button class="btn btn-danger btn-sm" type="button">
+                    <i class="fa fa-trash"></i>
+                </button>
+            `;
 
-                let div = document.createElement("div");
-                div.className = "d-flex align-items-center mb-2";
-                div.id = cityId;
-
-                div.innerHTML = `
-                    <span class="me-2 city-index fw-bold"></span>
-                    <span class="form-control form-control-sm flex-grow-1 me-2">${city}</span>
-                    <button class="btn btn-danger btn-sm" type="button">
-                        <i class="fa fa-trash"></i>
-                    </button>
-                `;
-
-                div.querySelector("button").addEventListener("click", function () {
-                    removeCity(city);
-                });
-
-                preview.appendChild(div);
+            div.querySelector("button").addEventListener("click", function () {
+                removeCity(cityId);
             });
 
-            updateCityIndex();
-        }
+            addDragEvents(div);
+            preview.appendChild(div);
+        });
 
-        function syncCheckboxes() {
+        updateCityIndex();
+    }
 
-            $('.cityCheck').each(function () {
+    function syncCheckboxes() {
 
-                let city = $(this).val();
+        $('.cityCheck').each(function () {
 
-                $(this).prop('checked', selectedCities.has(city));
-            });
-        }
+            let city = $(this).val();
+
+            $(this).prop('checked', selectedCities.has(city));
+        });
+    }
 
 
     // DRAG SORT FUNCTION
-    let dragItem = null;
+   let dragItem = null;
 
     function addDragEvents(element) {
 
-        element.addEventListener("dragstart", function() {
+        element.addEventListener("dragstart", function () {
             dragItem = element;
+            element.classList.add("dragging");
         });
 
-        element.addEventListener("dragover", function(e) {
-            e.preventDefault();
+        element.addEventListener("dragover", function (e) {
+            e.preventDefault(); // ✅ REQUIRED
         });
 
-        element.addEventListener("drop", function(e) {
+        element.addEventListener("drop", function (e) {
             e.preventDefault();
 
             if (dragItem !== element) {
@@ -342,40 +370,13 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             }
         });
 
+        element.addEventListener("dragend", function () {
+            dragItem = null;
+            element.classList.remove("dragging");
+        });
     }
 
-    document.addEventListener("click", function(e) {
 
-        if (e.target.classList.contains("addRow")) {
-
-            let row = e.target.closest(".stationRow");
-
-            let newRow = row.cloneNode(true);
-
-            newRow.querySelector(".addRow").innerHTML = "−";
-
-            newRow.querySelector(".addRow").classList.remove("btn-primary");
-            newRow.querySelector(".addRow").classList.add("btn-danger");
-            newRow.querySelector(".addRow").classList.remove("addRow");
-            newRow.querySelector(".addRow").classList.add("removeRow");
-
-            row.parentNode.appendChild(newRow);
-
-        }
-
-        if (e.target.classList.contains("removeRow")) {
-
-            e.target.closest(".stationRow").remove();
-
-        }
-
-    });
-</script>
-
-@endsection
-@push('scripts')
-
-<script type="module">
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -436,50 +437,98 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         }
     });
 
-    function searchCity(city = "") {
-        let ajaxUrl = "http://192.168.29.151:8000/admin/";
-        $.ajax({
-            type: "POST",
-            url: ajaxUrl + "get-city-search",
-            data: {
-                city: city,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            dataType: "json",
+    // function searchCity(city = "") {
+    //     let ajaxUrl = "http://192.168.29.151:8000/admin/";
+    //     $.ajax({
+    //         type: "POST",
+    //         url: ajaxUrl + "get-city-search",
+    //         data: {
+    //             city: city,
+    //             _token: $('meta[name="csrf-token"]').attr("content"),
+    //         },
+    //         dataType: "json",
 
-            success: function(response) {
+    //         success: function(response) {
 
-                let html = "";
+    //             let html = "";
 
-                if (response.status && response.data.length > 0) {
+    //             if (response.status && response.data.length > 0) {
 
-                    $.each(response.data, function(index, c) {
+    //                 $.each(response.data, function(index, c) {
 
-                        html += `
-                           <div class="checkbox">
-                            <input type="checkbox"
-                                class="cityCheck"
-                                value="${c.city_name}"
-                                data-city="${c.city_name}"
-                                onchange="toggleCity(this)"> ${c.city_name}
-                          </div>`;
-                    });
+    //                     html += `
+    //                        <div class="checkbox">
+    //                         <input type="checkbox"
+    //                             class="cityCheck"
+    //                             value="${c.id}"
+    //                             data-city="${c.city_name}"
+    //                             > ${c.city_name}
+    //                       </div>`;
+    //                 });
 
-                } else {
-                    html = `<p class="text-danger">No city found</p>`;
-                }
+    //             } else {
+    //                 html = `<p class="text-danger">No city found</p>`;
+    //             }
 
-                $("#cityList").html(html);
-            },
+    //             $("#cityList").html(html);
+    //             syncCheckboxes();
+    //         },
             
 
-            error: function() {
-                console.log("Error loading cities");
-            }
-        });
+    //         error: function() {
+    //             console.log("Error loading cities");
+    //         }
+    //     });
 
-        syncCheckboxes();
-    }
+       
+    // }
+
+    function searchCity(city = "") {
+
+    // ✅ show shimmer before request
+    $("#cityList").html(getShimmerHTML(6));
+
+    $.ajax({
+        type: "POST",
+        url: "/admin/get-city-search",
+        data: {
+            city: city,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function(response) {
+
+            let html = "";
+
+            if (response.status && response.data.length > 0) {
+
+                $.each(response.data, function(index, c) {
+
+                    html += `
+                       <div class="checkbox">
+                        <input type="checkbox"
+                            class="cityCheck"
+                            value="${c.id}"
+                            data-name="${c.city_name}">
+                        ${c.city_name}
+                      </div>`;
+                });
+
+            } else {
+                html = `<p class="text-danger">No city found</p>`;
+            }
+
+            $("#cityList").html(html);
+
+            syncCheckboxes(); // ✅ restore checked state
+        },
+
+        error: function() {
+            $("#cityList").html(`<p class="text-danger">Error loading cities</p>`);
+        }
+    });
+}
    
 </script>
 @endpush

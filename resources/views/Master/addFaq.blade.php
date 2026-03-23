@@ -112,9 +112,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 @endsection
 @push('scripts')
-<style>
-
-</style>
 
 <script type="module">
     document.addEventListener('DOMContentLoaded', function() {

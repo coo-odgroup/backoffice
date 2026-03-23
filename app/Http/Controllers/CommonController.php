@@ -713,10 +713,10 @@ class CommonController extends Controller
     {
         try {
 
-            $data = DB::table('mst_bus_models')
-                ->select('id', 'model_name')
+            $data = DB::table('mst_axle_type')
+                ->select('id', 'axle_type')
                 ->where('active_status', 1)
-                ->orderBy('model_name', 'asc')
+                ->orderBy('axle_type', 'asc')
                 ->get();
 
             return response()->json([

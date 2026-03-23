@@ -60,8 +60,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 mb-3">
+                                    <div class="row mb-1">
+                                        <div class="col-md-5">
                                             <label for="slab">Cancellation Slab<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm" id="slab" name="slab_id">
                                             </select>
@@ -75,27 +75,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         @foreach($data['row']->slabInfo as $index => $row)
                                         <div class="row mb-3 {{ $index == 0 ? '' : 'dynamic-item' }}">
 
-                                            <div class="col-md-5 mb-3">
+                                            <div class="col-md-5">
                                                 <label for="duration">
                                                     Duration<span class="text-danger important">*</span>
                                                 </label>
-                                                <input type="text" class="form-control form-select-sm"
+                                                <input type="text" class="form-control form-select-sm clearable"
                                                     name="duration[]"
                                                     value="{{ $row->duration }}"
                                                     placeholder="Enter Duration">
                                             </div>
 
-                                            <div class="col-md-5 mb-3">
+                                            <div class="col-md-5">
                                                 <label for="deduction">
                                                     Deduction %<span class="text-danger important">*</span>
                                                 </label>
-                                                <input type="text" class="form-control form-select-sm"
+                                                <input type="text" class="form-control form-select-sm clearable"
                                                     name="deduction[]"
                                                     value="{{ $row->deduction }}"
                                                     placeholder="Enter Deduction %">
                                             </div>
 
-                                            <div class="col-md-2 d-flex align-items-center mb-3 mt-3">
+                                            <div class="col-md-2 d-flex align-items-center mt-4">
                                                 @if($index == 0)
                                                 <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
@@ -116,19 +116,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="duration">Duration<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-select-sm"
+                                                <input type="text" class="form-control form-select-sm clearable"
                                                     name="duration[]"
                                                     placeholder="Enter Duration">
                                             </div>
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="deduction">Deduction %<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-select-sm"
+                                                <input type="text" class="form-control form-select-sm clearable"
                                                     name="deduction[]"
                                                     placeholder="Enter Deduction %">
                                             </div>
 
-                                            <div class="col-md-2 d-flex align-items-center mb-3 mt-3">
+                                            <div class="col-md-2 d-flex align-items-center mt-4">
                                                 <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
@@ -141,21 +141,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         {{-- Add mode --}}
                                         <div class="row mb-3">
 
-                                            <div class="col-md-5 mb-3">
+                                            <div class="col-md-5">
                                                 <label for="duration">Duration<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-select-sm"
+                                                <input type="text" class="form-control form-select-sm clearable"
                                                     name="duration[]"
                                                     placeholder="Enter Duration">
                                             </div>
 
-                                            <div class="col-md-5 mb-3">
+                                            <div class="col-md-5">
                                                 <label for="deduction">Deduction %<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-select-sm"
+                                                <input type="text" class="form-control form-select-sm clearable"
                                                     name="deduction[]"
                                                     placeholder="Enter Deduction %">
                                             </div>
 
-                                            <div class="col-md-2 d-flex align-items-center mb-3 mt-3">
+                                            <div class="col-md-2 d-flex align-items-center mt-4">
                                                 <button type="button" class="btn btn-outline-primary btn-sm btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
@@ -168,7 +168,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}
@@ -198,6 +198,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
+     $(document).ready(function() {
+
+        commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
+
+        let slab_id = "{{ $data['row']->slab_id ?? '' }}";
+        commonAjax.loadCancellationslabList(slab_id);
+
+         commonAjax.initClearableInputs();
+
+    });
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -253,15 +264,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
-
-        let slab_id = "{{ $data['row']->slab_id ?? '' }}";
-
-        commonAjax.loadCancellationslabList(slab_id);
-
-    });
+   
 
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -278,12 +281,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 newRow.innerHTML = `
                 <div class="col-md-5 mb-3">
                     <label>Duration<span class="text-danger important">*</span></label>
-                    <input type="text" class="form-control form-select-sm" name="duration[]" placeholder="Enter Duration">
+                    <input type="text" class="form-control form-select-sm clearable" name="duration[]" placeholder="Enter Duration">
                 </div>
 
                 <div class="col-md-5 mb-3">
                     <label>Deduction %<span class="text-danger important">*</span></label>
-                    <input type="text" class="form-control form-select-sm" name="deduction[]" placeholder="Enter Deduction %">
+                    <input type="text" class="form-control form-select-sm clearable" name="deduction[]" placeholder="Enter Deduction %">
                 </div>
 
                 <div class="col-md-2 d-flex align-items-center mb-3 mt-3">

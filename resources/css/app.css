@@ -1331,3 +1331,26 @@ svg.svg-inline--fa.fa-file-export {
     background: #f8f9fa;
     border-radius: 5px;
 }
+
+#previewList div {
+    cursor: move;
+}
+
+.dragging {
+    opacity: 0.5;
+}
+
+.shimmer-box {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    background: #eee;
+    animation: shimmer 1.4s infinite;
+}
+
+.shimmer-line {
+    height: 14px;
+    border-radius: 4px;
+    background: #eee;
+    animation: shimmer 1.4s infinite;
+}
