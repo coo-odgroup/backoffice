@@ -3,9 +3,7 @@
 @section('content')
 
 <style>
-    #previewList .d-flex {
-        cursor: move;
-    }
+  
 </style>
 
 <?php
@@ -69,50 +67,30 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                     <!-- ================= STEP 2 ================= -->
 
                                     <div id="step2">
-
-                                        <h3 class="fw-bold mb-4 border-bottom pb-2">City Selection</h4>
-
                                             <div class="row">
-
                                                 <!-- LEFT SIDE -->
                                                 <div class="col-md-6">
-
-                                                    <div class="d-flex mb-3">
-                                                        <input type="text" id="citySearch" class="form-control me-2" placeholder="Search By City Name">
-                                                        <button class="btn btn-warning" onclick="commonAjax.searchCity()">Search</button>
+                                                    <div class="d-flex mb-1">
+                                                        <input type="text" id="citySearch" class="form-control form-control-sm clearable" placeholder="Search By City Name">
                                                     </div>
-
-                                                    <div id="cityList"></div>
-
+                                                    <div id="cityList" class="city-scroll"></div>
                                                 </div>
 
 
                                                 <!-- RIGHT SIDE -->
                                                 <div class="col-md-6">
-
                                                     <h6 class="mb-3">Preview</h6>
-
                                                     <div id="previewList"></div>
-
                                                 </div>
-
                                             </div>
 
 
                                             <!-- STEP 2 BUTTONS -->
                                             <div class="text-center mt-4">
-
                                                 <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
-
                                                 <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
-
                                             </div>
-
                                     </div>
-
-
-
-
                                 </div>
 
                                 <!-- BUTTONS -->
@@ -150,65 +128,184 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     function nextStep() {
         window.location.href = "/admin/bus/create/step3";
-    }   
+    }
 
+    let selectedCities = new Set(
+        JSON.parse(localStorage.getItem("selectedCities") || "[]")
+    );
 
-    // ADD / REMOVE CITY
+    function saveToLocalStorage() {
+      localStorage.setItem("selectedCities", JSON.stringify([...selectedCities]));
+    }
+
     function toggleCity(checkbox) {
 
         let city = checkbox.value;
-        let preview = document.getElementById("previewList");
-        let cityId = "city_" + city.replace(/\s/g, '');
 
         if (checkbox.checked) {
-
-            let div = document.createElement("div");
-            div.className = "d-flex mb-2";
-            div.id = cityId;
-            div.draggable = true;
-
-            div.innerHTML = `
-            <input type="text" class="form-control me-2" value="${city}" readonly>
-            <button class="btn btn-danger" onclick="removeCity('${city}')">
-                <i class="fa fa-trash"></i>
-            </button>
-        `;
-
-            addDragEvents(div);
-
-            preview.appendChild(div);
-
+            selectedCities.add(city);
         } else {
-
-            let removeDiv = document.getElementById(cityId);
-            if (removeDiv) {
-                removeDiv.remove();
-            }
-
+            selectedCities.delete(city);
         }
 
+        saveToLocalStorage();
+        updatePreview();
+    }
+
+
+    // ADD / REMOVE CITY
+    // function toggleCity(checkbox) {
+
+    //     let city = checkbox.value;
+    //     let preview = document.getElementById("previewList");
+
+    //     // create safe id (remove spaces & special chars)
+    //     let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
+
+    //     if (checkbox.checked) {
+
+    //         let preview = document.getElementById("previewList");
+
+    //         // remove empty message if exists
+    //         if (preview.innerText.includes("No city is added")) {
+    //             preview.innerHTML = '';
+    //         }
+
+    //         // prevent duplicate
+    //         if (document.getElementById(cityId)) return;
+
+    //         let div = document.createElement("div");
+    //         div.className = "d-flex align-items-center mb-2";
+    //         div.id = cityId;
+    //         div.draggable = true;
+
+    //         div.innerHTML = `
+    //             <span class="me-2 city-index fw-bold"></span>
+    //             <span class="form-control form-control-sm flex-grow-1 me-2 city-item">${city}</span>
+    //             <button class="btn btn-danger btn-sm" type="button">
+    //                 <i class="fa fa-trash"></i>
+    //             </button>
+    //         `;
+
+    //         // remove on button click
+    //         div.querySelector("button").addEventListener("click", function () {
+    //             removeCity(city);
+    //         });
+
+    //         // add drag events
+    //         addDragEvents(div);
+
+    //         preview.appendChild(div);
+    //         updateCityIndex();
+
+    //     } else {
+
+    //         let removeDiv = document.getElementById(cityId);
+    //         if (removeDiv) {
+    //             removeDiv.remove();
+    //             updateCityIndex();
+    //             checkPreviewEmpty();
+    //         }
+    //     }
+    // }
+
+    function updateCityIndex() {
+
+        $('#previewList .city-index').each(function (index) {
+            $(this).text(index + 1 + '.');
+        });
+
+    }
+
+    function checkPreviewEmpty() {
+
+        let preview = document.getElementById("previewList");
+
+        if (preview.children.length === 0) {
+            preview.innerHTML = `<p class="text-muted mb-0">No city is added</p>`;
+        }
     }
 
 
     // REMOVE CITY BUTTON
-    function removeCity(city) {
+//    function removeCity(city) {
 
-        let cityId = "city_" + city.replace(/\s/g, '');
-        let div = document.getElementById(cityId);
+//         let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
 
-        if (div) {
-            div.remove();
+//         // remove preview item
+//         let div = document.getElementById(cityId);
+//         if (div) {
+//             div.remove();
+//         }
+
+//         // ✅ uncheck corresponding checkbox
+//          $('.cityCheck').filter(function () {
+//                 return $(this).val() === city;
+//          }).prop('checked', false);
+
+//         //  $(`.cityCheck[value="${cityValue}"]`).prop('checked', false);
+
+//         // update index
+//         updateCityIndex();
+
+//         // check empty state
+//         checkPreviewEmpty();
+//     }
+
+        function removeCity(city) {
+
+            selectedCities.delete(city);
+
+            saveToLocalStorage();   // ✅ persist
+            updatePreview();        // ✅ update preview
+            syncCheckboxes();       // ✅ uncheck checkbox
         }
 
-        let checkboxes = document.querySelectorAll(".cityCheck");
+        function updatePreview() {
 
-        checkboxes.forEach(function(cb) {
-            if (cb.value === city) {
-                cb.checked = false;
+            let preview = document.getElementById("previewList");
+            preview.innerHTML = '';
+
+            if (selectedCities.size === 0) {
+                preview.innerHTML = "<p>No city is added</p>";
+                return;
             }
-        });
 
-    }
+            selectedCities.forEach(city => {
+
+                let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
+
+                let div = document.createElement("div");
+                div.className = "d-flex align-items-center mb-2";
+                div.id = cityId;
+
+                div.innerHTML = `
+                    <span class="me-2 city-index fw-bold"></span>
+                    <span class="form-control form-control-sm flex-grow-1 me-2">${city}</span>
+                    <button class="btn btn-danger btn-sm" type="button">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                `;
+
+                div.querySelector("button").addEventListener("click", function () {
+                    removeCity(city);
+                });
+
+                preview.appendChild(div);
+            });
+
+            updateCityIndex();
+        }
+
+        function syncCheckboxes() {
+
+            $('.cityCheck').each(function () {
+
+                let city = $(this).val();
+
+                $(this).prop('checked', selectedCities.has(city));
+            });
+        }
 
 
     // DRAG SORT FUNCTION
@@ -240,6 +337,8 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 } else {
                     parent.insertBefore(dragItem, element);
                 }
+
+                updateCityIndex();
             }
         });
 
@@ -287,88 +386,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         generateBusName();
     });
 
-    function generateBusName() {
 
-        const brandVal = $('#brand').val();
-        const modelVal = $('#busModel').val();
-        const axleVal = $('#axleType').val();
-        const serviceVal = $('#busService').val();
-        const acVal = $('.annexture').val();
-        const seatVal = $('#seatType').val();
-        // const layoutVal   = $('#seatLayout').val();
-
-        // Check ALL selected
-        // if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal && layoutVal) {
-        if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal) {
-
-            const brand = $('#brand option:selected').text();
-            const model = $('#busModel option:selected').text();
-            const axle = $('#axleType option:selected').text();
-            const service = $('#busService option:selected').text();
-            const ac = $('.annexture option:selected').text();
-            const seatType = $('#seatType option:selected').text();
-            const layout = $('#seatLayout option:selected').text();
-
-            // const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType} ${layout}`;
-            const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType}`;
-
-            $('#busType').html(fullName);
-
-        } else {
-            // Clear if not all selected
-            $('#busType').html('');
-        }
-    }
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#brand', 'Select Brand');
-        commonAjax.initSelect2('#busModel', 'Select Model');
-        commonAjax.initSelect2('#axleType', 'Select Axxle Type');
-        commonAjax.initSelect2('#busService', 'Select Bus Service');
-        commonAjax.initSelect2('.annexture', 'Select AC Type');
-        commonAjax.initSelect2('#seatType', 'Select Seat Type');
-        commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
+        searchCity();
+        commonAjax.initClearableInputs();
+        checkPreviewEmpty();
 
-        // commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
-
-        // let category_id = <?= $data['row']->category_id ?? '0' ?>
-
-        // commonAjax.loadAmenityCategory(category_id);
-
-        let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
-        commonAjax.loadBrandList(selectedBrand);
-
-        let model_id = "{{ $data['row']->model_id ?? '' }}";
-        commonAjax.loadBusModelsList(model_id);
-
-        $('#brand').on('change', function() {
-
-            let brandId = $(this).val();
-
-            // Reset model dropdown
-            $('#model').html('<option value="">Select Model</option>');
-
-            if (brandId) {
-                // Load models based on selected brand
-                commonAjax.loadBusModelsList('', brandId);
-            }
-        });
-
-        let axle_id = "{{ $data['row']->axle_id ?? '' }}";
-        commonAjax.loadAxleTypeList(axle_id);
-
-        let bus_service_id = "{{ $data['row']->bus_service_id ?? '' }}";
-        commonAjax.loadBusServicesList(bus_service_id);
-
-        let seat_type_id = "{{ $data['row']->seat_type_id ?? '' }}";
-        commonAjax.loadSeatTypeList(seat_type_id);
-
-        let seat_layout_id = "{{ $data['row']->seat_layout_id ?? '' }}";
-        commonAjax.loadSeatLayoutList(seat_layout_id);
-
-        let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
-        commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
     });
 
     $('#backoffice-form').on('submit', function(e) {
@@ -396,13 +421,23 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+         updatePreview();     // restore preview
+         syncCheckboxes();    // restore checkbox state
     });
 
+    $('#citySearch').on('keyup', function() {
 
-    function searchCity() {
+        let city = $(this).val();
 
-        let city = document.getElementById("citySearch").value;
+        if (city.length >= 3) {
+            searchCity(city);
+        } else if (city.length === 0) {
+            searchCity(); // reload all when cleared
+        }
+    });
 
+    function searchCity(city = "") {
+        let ajaxUrl = "http://192.168.29.151:8000/admin/";
         $.ajax({
             type: "POST",
             url: ajaxUrl + "get-city-search",
@@ -421,27 +456,30 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                     $.each(response.data, function(index, c) {
 
                         html += `
-                    <div class="form-check mb-2">
-                        <input class="form-check-input cityCheck"
-                               type="checkbox"
-                               value="${c.city_name}"
-                               onchange="toggleCity(this)">
-                        <label class="form-check-label">${c.city_name}</label>
-                    </div>`;
+                           <div class="checkbox">
+                            <input type="checkbox"
+                                class="cityCheck"
+                                value="${c.city_name}"
+                                data-city="${c.city_name}"
+                                onchange="toggleCity(this)"> ${c.city_name}
+                          </div>`;
                     });
 
                 } else {
-
                     html = `<p class="text-danger">No city found</p>`;
-
                 }
 
                 $("#cityList").html(html);
+            },
+            
 
+            error: function() {
+                console.log("Error loading cities");
             }
-
         });
 
+        syncCheckboxes();
     }
+   
 </script>
 @endpush

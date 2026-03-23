@@ -1290,3 +1290,44 @@ svg.svg-inline--fa.fa-file-export {
 
 .cursor-pointer { cursor: pointer; }
 
+.select2-results__group {  
+    color: #d4d4d4; /* Bootstrap primary */
+     
+}
+
+.select2-results__option {
+    padding-left: 10px;
+}
+
+.city-scroll {
+    max-height: 350px;   /* adjust as needed */
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.clear-btn {
+    font-size: 18px;
+    line-height: 1;
+}
+.city-item {
+    cursor: pointer;
+}
+
+.city-index {
+    width: 25px;
+    text-align: right;
+}
+
+#previewList .d-flex {
+    cursor: move;
+}
+
+#previewList p {
+    text-align: center;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}

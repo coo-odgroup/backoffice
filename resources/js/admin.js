@@ -158,6 +158,39 @@ window.ckEditors = {};
  * @param {string} selector
  * @param {object} options
  */
+// window.initCkEditor = function (selector, options = {}) {
+
+//     const element = document.querySelector(selector);
+//     if (!element) return;
+
+//     ClassicEditor
+//         .create(element, {
+//             toolbar: [
+//                 'heading',
+//                 '|',
+//                 'bold',
+//                 'italic',
+//                 'underline',
+//                 'link',
+//                 'bulletedList',
+//                 'numberedList',
+//                 '|',
+//                 'blockQuote',
+//                 'insertTable',
+//                 '|',
+//                 'undo',
+//                 'redo'
+//             ],
+//             ...options
+//         })
+//         .then(editor => {
+//             window.ckEditors[selector] = editor;
+//         })
+//         .catch(error => {
+//             console.error('CKEditor init error:', error);
+//         });
+// };
+
 window.initCkEditor = function (selector, options = {}) {
 
     const element = document.querySelector(selector);
@@ -178,12 +211,35 @@ window.initCkEditor = function (selector, options = {}) {
                 'blockQuote',
                 'insertTable',
                 '|',
+                'fullscreen', // custom button
+                '|',
                 'undo',
                 'redo'
             ],
             ...options
         })
         .then(editor => {
+
+            // Register custom fullscreen button
+            editor.ui.componentFactory.add('fullscreen', locale => {
+                const view = new window.CKEDITOR5.ui.button.ButtonView(locale);
+
+                view.set({
+                    label: 'Fullscreen',
+                    withText: true,
+                    tooltip: true
+                });
+
+                view.on('execute', () => {
+                    const editorElement = editor.ui.view.element.closest('.ck-editor');
+
+                    editorElement.classList.toggle('ck-fullscreen');
+                });
+
+                return view;
+            });
+
+            window.ckEditors = window.ckEditors || {};
             window.ckEditors[selector] = editor;
         })
         .catch(error => {
