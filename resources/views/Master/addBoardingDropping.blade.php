@@ -93,7 +93,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </div>
                                             <div class="col-md-4 mb-1">
                                                 <label for="landmark">Landmark</label>
-                                                <input type="text" class="form-control form-control" placeholder="Enter Landmark" id="landmark" name="landmark[]" maxlength="100" value="{{ $data['row']->landmark ?? '' }}">
+                                                <input type="text" class="form-control form-control-sm form-control" placeholder="Enter Landmark" id="landmark" name="landmark[]" maxlength="100" value="{{ $data['row']->landmark ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-4 mb-1">

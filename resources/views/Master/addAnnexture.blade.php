@@ -63,7 +63,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
                                             <label for="selAnnexureType">Annexture Type<span class="text-danger important">*</span></label>
-                                            <select class="form-select selAnnexureType" id="selAnnexureType" name="selAnnexureType">
+                                            <select class="form-select form-select-sm selAnnexureType" id="selAnnexureType" name="selAnnexureType">
                                                 <option value="0">Select Annexure Type</option>
                                             </select>
                                         </div>
@@ -73,18 +73,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-4 mb-3">
                                                 <label for="annexture_name">Annexture Name<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control annexture_name" data-check-url="{{ route('annexture.checkExists') }}"
+                                                <input type="text" class="form-control form-control-sm annexture_name" data-check-url="{{ route('annexture.checkExists') }}"
                                                     placeholder="Enter Annexture Name" id="annexture_name" name="annexture_name[]" maxlength="100" value="{{ $data['row']->annexture_name ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-4 mb-3">
                                                 <label for="annexture_value">Annexture Value<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control" placeholder="Enter Annexture Value" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="annexture_value" name="annexture_value[]" maxlength="3" value="{{ $data['row']->annexture_value ?? '' }}">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Enter Annexture Value" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="annexture_value" name="annexture_value[]" maxlength="3" value="{{ $data['row']->annexture_value ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
                                             <div class="col-md-1 d-flex align-items-center mb-3 <?= $isEdit ?>">
-                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                <button type="button" class="btn btn-sm btn-outline-primary btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
                                             </div>

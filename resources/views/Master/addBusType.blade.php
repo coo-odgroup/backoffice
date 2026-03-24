@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-3">
                                             <label for="classType">Class Type<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="classType" name="classType">
+                                            <select class="form-select form-select-sm" id="classType" name="classType">
                                                 <option disabled selected>Select Class Type</option>
 
                                                 <option value="1"
@@ -80,7 +80,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="busType">Bus Type<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="busType" name="busType" value="{{ $data['row']->bus_type ?? '' }}" placeholder="Enter Bus Type">
+                                            <input type="text" class="form-control form-control-sm" id="busType" name="busType" value="{{ $data['row']->bus_type ?? '' }}" placeholder="Enter Bus Type">
                                         </div>
                                     </div>
                                 </div>

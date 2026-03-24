@@ -67,7 +67,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-4">
                                             <label for="placement">Placement<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="placement" name="placement">
+                                            <select class="form-select form-select-sm" id="placement" name="placement">
                                                 <option value="">Select Placement</option>
                                             </select>
                                         </div>
@@ -76,7 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="col-md-4">
                                             <label for="defaultModel">Default Model<span class="text-danger important">*</span></label>
 
-                                            <select class="form-select" id="defaultModel" name="defaultModel">
+                                            <select class="form-select form-select-sm" id="defaultModel" name="defaultModel">
                                                 <option value="">Select Model</option>
 
                                                 <option value="CPM"
@@ -105,7 +105,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-4">
                                             <label for="planName">Plan Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-sm"
                                                 id="planName"
                                                 name="planName"
                                                 value="{{ $data['row']->plan_name ?? '' }}"
@@ -118,7 +118,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="Price">Price<span class="text-danger important">*</span></label>
 
                                             <input type="text"
-                                                class="form-control"
+                                                class="form-control form-control-sm"
                                                 id="Price"
                                                 name="Price"
                                                 value="{{ $data['row']->price ?? '' }}"
@@ -139,7 +139,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="duration">Time Duration (Days)<span class="text-danger important">*</span></label>
 
                                             <input type="text"
-                                                class="form-control"
+                                                class="form-control form-control-sm"
                                                 id="duration"
                                                 name="duration"
                                                 value="{{ $data['row']->duration_days ?? '' }}"

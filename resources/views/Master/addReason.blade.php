@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
                                             <label for="reason">Reason<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="reason" placeholder="Reason" name="reason" maxlength="100" value="{{ $data['row']->reason ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm" id="reason" placeholder="Reason" name="reason" maxlength="100" value="{{ $data['row']->reason ?? '' }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
 

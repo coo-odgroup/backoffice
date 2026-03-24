@@ -63,7 +63,7 @@ $page_name = 'Add Seat Layout';
                                     <div class="row mb-3">
                                         <div class="col-md-3 mb-3">
                                             <label>Seat Layout Name<span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="layout_name" name="layout_name" placeholder="Seat Layout Name">
+                                            <input type="text" class="form-control form-control-sm" id="layout_name" name="layout_name" placeholder="Seat Layout Name">
                                             <small id="layoutError" class="text-danger"></small>
                                         </div>
                                         <div class="col-md-2 mb-3">
@@ -141,8 +141,6 @@ $page_name = 'Add Seat Layout';
                                                     <div class="berth-label">Lower Berth</div>
 
                                                     <div class="layout-box">
-                                                        <!-- 1st Seat Row -->
-                                                        <!-- <div class="preview-cell"></div> -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -156,7 +154,7 @@ $page_name = 'Add Seat Layout';
                                     </div>
                                     <div class="col-md-11" id="tag" style="display: none;">
                                         <label for="classType">Window Seat<span class="text-danger important">*</span></label>
-                                        <input id="tags" name="window_seat" class="form-control" placeholder="Enter Window Seat">
+                                        <input id="tags" name="window_seat" class="form-control form-control-sm" placeholder="Enter Window Seat">
                                         <small id="seatError" class="text-danger"></small>
                                     </div>
 
@@ -167,24 +165,6 @@ $page_name = 'Add Seat Layout';
                                             </button>
                                         </div>
                                     </div>
-
-                                    <!-- BUTTONS -->
-                                    <!-- <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('states.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
-                                    </div>
-                                </div> -->
                                 </div>
                             </div>
                         </div>

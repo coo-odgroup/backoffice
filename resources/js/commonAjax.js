@@ -2,8 +2,8 @@ import $ from "jquery";
 import { Modal } from "bootstrap";
 // import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-// let ajaxUrl = "http://127.0.0.1:8000/admin/";
-let ajaxUrl = "http://192.168.29.151:8000/admin/";
+let ajaxUrl = "http://127.0.0.1:8000/admin/";
+
 
 $.ajaxSetup({
     headers: {

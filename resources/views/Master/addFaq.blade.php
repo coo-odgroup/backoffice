@@ -76,7 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="col-md-12 mb-3">
                                             <label for="description">Content</label>
                                             <textarea
-                                                class="form-control"
+                                                class="form-control form-control-sm"
                                                 id="content"
                                                 name="content">{{ htmlDecode($data['row']->content ?? '') }}</textarea>
                                         </div>

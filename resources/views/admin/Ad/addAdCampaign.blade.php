@@ -70,20 +70,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-4">
                                             <label for="vendor">Vendor<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="vendor" name="vendor">
+                                            <select class="form-select form-select-sm" id="vendor" name="vendor">
                                                 <option value="">Select Vendor</option>
                                             </select>
                                         </div>
                                         
                                         <div class="col-md-4">
                                             <label for="placement">Placement<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="placement" name="placement">
+                                            <select class="form-select form-select-sm" id="placement" name="placement">
                                                 <option value="">Select Placement</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4">
                                             <label for="pricingPlan">Pricing Plan<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="pricingPlan" name="pricingPlan">
+                                            <select class="form-select form-select-sm" id="pricingPlan" name="pricingPlan">
                                                 <option value="">Select Pricing Plan</option>
                                             </select>
                                         </div>
@@ -96,7 +96,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-6">
                                             <label for="title">Title<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control form-control-sm"
                                                 id="title"
                                                 name="title"
                                                 value="{{ $data['row']->title ?? '' }}"
@@ -109,7 +109,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="startDate">Start Date<span class="text-danger important">*</span></label>
 
                                             <input type="date"
-                                                class="form-control"
+                                                class="form-control form-control-sm"
                                                 id="startDate"
                                                 name="startDate"
                                                 value="{{ $data['row']->start_date ?? '' }}">
@@ -120,7 +120,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="endDate">End Date<span class="text-danger important">*</span></label>
 
                                             <input type="date"
-                                                class="form-control"
+                                                class="form-control form-control-sm"
                                                 id="endDate"
                                                 name="endDate"
                                                 value="{{ $data['row']->end_date ?? '' }}">
@@ -137,7 +137,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="duration">Total Budget<span class="text-danger important">*</span></label>
 
                                             <input type="text"
-                                                class="form-control"
+                                                class="form-control form-control-sm"
                                                 id="budget"
                                                 name="budget"
                                                 value="{{ $data['row']->total_budget ?? '' }}"

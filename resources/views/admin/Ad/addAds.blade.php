@@ -73,7 +73,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             Campaign<span class="text-danger important">*</span>
                                                         </label>
 
-                                                        <select class="form-select" id="campaign" name="campaign">
+                                                        <select class="form-select form-select-sm" id="campaign" name="campaign">
                                                             <option value="">Select Campaign</option>
                                                         </select>
 
@@ -85,7 +85,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             Redirect URL <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text"
-                                                            class="form-control"
+                                                            class="form-control form-control-sm"
                                                             id="redirectUrl"
                                                             name="redirectUrl"
                                                             value="{{ $data['row']->redirect_url ?? '' }}"
@@ -106,7 +106,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-md-12 mb-3">
                                                         <label for="alt_text">Alt Text</label>
                                                         <input type="text"
-                                                            class="form-control"
+                                                            class="form-control form-control-sm"
                                                             id="alt_text"
                                                             name="alt_text"
                                                             value="{{ $data['row']->alt_text ?? '' }}"
@@ -118,7 +118,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-md-12 mb-3">
                                                         <label for="ad_image">Ad Image</label>
                                                         <input type="file"
-                                                            class="form-control"
+                                                            class="form-control form-control-sm"
                                                             id="adImageInput"
                                                             name="ad_image"
                                                             accept="image/*">

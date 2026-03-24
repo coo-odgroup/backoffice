@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6 mb-1">
                                             <label for="category_name">Category Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control" id="category_name" name="category_name" value="{{ $data['row']->category_name ?? '' }}" placeholder="Enter Category Name">
+                                            <input type="text" class="form-control form-control-sm" id="category_name" name="category_name" value="{{ $data['row']->category_name ?? '' }}" placeholder="Enter Category Name">
                                         </div>
                                         <div class="col-md-6 mb-1">
                                             <label for="description">Description</label>
