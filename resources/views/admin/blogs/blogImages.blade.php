@@ -101,7 +101,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('blog-images.dataTableView') }}"
                     data-edit-url="{{ route('blog-images.edit', 'ID') }}">
                     <thead class="table-secondary">

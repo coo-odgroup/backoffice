@@ -112,33 +112,35 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('seat-layout.dataTableView') }}"
-                data-edit-url="{{ route('seat-layout.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>Layout Name</th>
-                        <th>Created By</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                        <th class="no-sort">View</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BusType">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('seat-layout.dataTableView') }}"
+                    data-edit-url="{{ route('seat-layout.edit', 'ID') }}">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                            </th>
+                            <th>Sl No</th>
+                            <th>Layout Name</th>
+                            <th>Created By</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                            <th class="no-sort">View</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="BusType">
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -207,9 +209,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.bustype_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.bustype_id +
                         '" name="chkStd' + row.bustype_id + '" value="' + row.bustype_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },
@@ -226,16 +228,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: null,
-                render: function (data, type, row) {
+                render: function(data, type, row) {
 
-                    let createdBy  = row.created_by_name ?? '--';
-                    let createdAt  = row.created_date ?? '--';
+                    let createdBy = row.created_by_name ?? '--';
+                    let createdAt = row.created_date ?? '--';
 
-                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
                     // Show updated date if exists, else created date
-                    let displayDate = (updatedAt!='--') ? updatedAt : createdAt;
+                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
                         <small

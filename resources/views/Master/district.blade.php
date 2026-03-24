@@ -121,7 +121,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('district.dataTableView') }}"
                     data-edit-url="{{ route('district.edit', 'ID') }}">
                     <thead class="table-secondary">
@@ -226,9 +226,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.district_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.district_id +
                         '" name="chkStd' + row.district_id + '" value="' + row.district_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },

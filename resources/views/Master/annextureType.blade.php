@@ -48,7 +48,7 @@
                             </div>
 
                             <!-- Status -->
-                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                 <label for="selStatus">Status</label>
                                 <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                     <option value="">Select Status</option>
@@ -110,8 +110,8 @@
                     </div>
                     <div id="customPaginationTop"></div>
                 </div>
-                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                         data-url="{{ route('annextureType.dataTableView') }}"
                         data-edit-url="{{ route('annextureType.edit', 'ID') }}">
                         <thead class="table-secondary">
@@ -140,7 +140,7 @@
                         <div id="customTableInfo"></div>
                         <div id="customPagination"></div>
                     </div>
-                 </div>
+                </div>
             </div>
         </div>
         </div>
@@ -241,23 +241,23 @@
                         let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                         return `
-                            <small
-                                class="text-primary fw-semibold"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                data-bs-html="true"
-                                title="
-                                    <div class='audit-box'>
-                                        <div><strong>Created By:</strong> ${createdBy}</div>
-                                        <div><strong>Created At:</strong> ${createdAt}</div>
-                                        <hr class='my-1'>
-                                        <div><strong>Updated By:</strong> ${updatedBy}</div>
-                                        <div><strong>Updated At:</strong> ${updatedAt}</div>
-                                    </div>
-                                ">
-                                ${displayDate}
-                            </small>
-                        `;
+                        <span
+                            class="fw-semibold text-decoration-underline cursor-pointer"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${displayDate}
+                        </span>
+                    `;
                     }
                 },
                 {

@@ -45,12 +45,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
                                     <label for="txtSearch">Search By Placement / Plan Name</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                                    <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
                                         placeholder="Placement / Plan Name">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
+                                    <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                         <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Inactive</option>
@@ -59,7 +59,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selModel">Deafult Model </label>
-                                    <select class="form-select" id="selModel" name="selModel">
+                                    <select class="form-select form-select-sm" id="selModel" name="selModel">
                                         <option value="">Select Deafult Model</option>
                                         <option value="1">CPC</option>
                                         <option value="2">CPM</option>
@@ -123,36 +123,38 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('pricingPlan.dataTableView') }}"
-                data-edit-url="{{ route('pricingPlan.edit', 'ID') }}">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
-                        <th>Sl No</th>
-                        <th>Placement</th>
-                        <th>Plan Name</th>
-                        <th>Model</th>
-                        <th>Price</th>
-                        <th>Time Duration</th>
-                        <th>Last Modified</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="PricingPlan">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    data-url="{{ route('pricingPlan.dataTableView') }}"
+                    data-edit-url="{{ route('pricingPlan.edit', 'ID') }}">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                            </th>
+                            <th>Sl No</th>
+                            <th>Placement</th>
+                            <th>Plan Name</th>
+                            <th>Model</th>
+                            <th>Price</th>
+                            <th>Time Duration</th>
+                            <th>Last Modified</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="PricingPlan">
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -226,9 +228,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.pricing_plan_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.pricing_plan_id +
                         '" name="chkStd' + row.pricing_plan_id + '" value="' + row.pricing_plan_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },
@@ -269,11 +271,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
+                    // Show updated date if exists, else created date
                     let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
+                        <span
+                            class="fw-semibold text-decoration-underline cursor-pointer"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -287,7 +290,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${displayDate}
-                        </small>
+                        </span>
                     `;
                 }
             },

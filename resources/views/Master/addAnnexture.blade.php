@@ -94,9 +94,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 </div>
 
-
-
-
                                 <div class="row mb-3">
                                     <div class="col-12">
                                         <div class="row mb-3">
@@ -132,8 +129,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
+                                <div class="row">
+                                    <div class="col-12 d-flex justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}
                                         </button>

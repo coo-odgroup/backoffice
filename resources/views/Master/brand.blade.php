@@ -57,7 +57,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Status -->
-                        <div class="col-lg-2 col-md-6 mb-2">
+                        <div class="col-lg-2 col-md-6 ">
                             <label for="selStatus">Status</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
