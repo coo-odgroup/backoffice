@@ -109,7 +109,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     document.addEventListener("DOMContentLoaded", function () {
 
         updatePreview();
-        // loadAllCities();
         syncCheckboxes();
     });
 
@@ -148,32 +147,17 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     );
 
    function saveToLocalStorage() {
-    localStorage.setItem(
-        "selectedCities",
-        JSON.stringify([...selectedCities])
-    );
-}
+        localStorage.setItem(
+            "selectedCities",
+            JSON.stringify([...selectedCities])
+        );
+    }
 
     
-
-    // function toggleCity(checkbox) {
-
-    //     let city = checkbox.value;
-
-    //     if (checkbox.checked) {
-    //         selectedCities.add(city);
-    //     } else {
-    //         selectedCities.delete(city);
-    //     }
-
-    //     saveToLocalStorage();
-    //     updatePreview();
-    // }
-
      function toggleCity(checkbox) {
 
         let cityId = checkbox.value;
-        let cityName = $(checkbox).data('city');
+        let cityName = $(checkbox).data('name');
 
         if (checkbox.checked) {
             selectedCities.set(cityId, cityName); // ✅ store id + name
@@ -210,78 +194,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         updatePreview();
         syncCheckboxes();
     }
-
-    // function updatePreview() {
-
-    //     let preview = document.getElementById("previewList");
-    //     preview.innerHTML = '';
-
-    //     if (selectedCities.size === 0) {
-    //         preview.innerHTML = "<p>No city is added</p>";
-    //         return;
-    //     }
-
-    //     selectedCities.forEach(city => {
-
-    //         let cityId = "city_" + city.replace(/[^a-zA-Z0-9]/g, "");
-
-    //         let div = document.createElement("div");
-    //         div.className = "d-flex align-items-center mb-2";
-    //         div.id = cityId;
-
-    //         div.innerHTML = `
-    //             <span class="me-2 city-index fw-bold"></span>
-    //             <span class="form-control form-control-sm flex-grow-1 me-2">${city}</span>
-    //             <button class="btn btn-danger btn-sm" type="button">
-    //                 <i class="fa fa-trash"></i>
-    //             </button>
-    //         `;
-
-    //         div.querySelector("button").addEventListener("click", function () {
-    //             removeCity(city);
-    //         });
-
-    //         preview.appendChild(div);
-    //     });
-
-    //     updateCityIndex();
-    // }
-
-    // function updatePreview() {
-
-    //     let preview = document.getElementById("previewList");
-    //     preview.innerHTML = '';
-
-    //     if (selectedCities.size === 0) {
-    //         preview.innerHTML = "<p>No city is added</p>";
-    //         return;
-    //     }
-
-    //     selectedCities.forEach(city => {
-
-    //         let div = document.createElement("div");
-    //         div.className = "d-flex align-items-center mb-2";
-    //         div.draggable = true; // ✅ REQUIRED
-
-    //         div.innerHTML = `
-    //             <span class="me-2 city-index fw-bold"></span>
-    //             <span class="form-control form-control-sm flex-grow-1 me-2">${city}</span>
-    //             <button class="btn btn-danger btn-sm" type="button">
-    //                 <i class="fa fa-trash"></i>
-    //             </button>
-    //         `;
-
-    //         div.querySelector("button").addEventListener("click", function () {
-    //             removeCity(city);
-    //         });
-
-    //         addDragEvents(div); // ✅ IMPORTANT
-
-    //         preview.appendChild(div);
-    //     });
-
-    //     updateCityIndex();
-    // }
 
     function updatePreview() {
 
@@ -387,8 +299,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         generateBusName();
     });
 
-
-
     $(document).ready(function() {
 
         searchCity();
@@ -437,98 +347,50 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         }
     });
 
-    // function searchCity(city = "") {
-    //     let ajaxUrl = "http://192.168.29.151:8000/admin/";
-    //     $.ajax({
-    //         type: "POST",
-    //         url: ajaxUrl + "get-city-search",
-    //         data: {
-    //             city: city,
-    //             _token: $('meta[name="csrf-token"]').attr("content"),
-    //         },
-    //         dataType: "json",
-
-    //         success: function(response) {
-
-    //             let html = "";
-
-    //             if (response.status && response.data.length > 0) {
-
-    //                 $.each(response.data, function(index, c) {
-
-    //                     html += `
-    //                        <div class="checkbox">
-    //                         <input type="checkbox"
-    //                             class="cityCheck"
-    //                             value="${c.id}"
-    //                             data-city="${c.city_name}"
-    //                             > ${c.city_name}
-    //                       </div>`;
-    //                 });
-
-    //             } else {
-    //                 html = `<p class="text-danger">No city found</p>`;
-    //             }
-
-    //             $("#cityList").html(html);
-    //             syncCheckboxes();
-    //         },
-            
-
-    //         error: function() {
-    //             console.log("Error loading cities");
-    //         }
-    //     });
-
-       
-    // }
-
     function searchCity(city = "") {
+  
+        $("#cityList").html(getShimmerHTML(6));
+        $.ajax({
+            type: "POST",
+            url: "/admin/get-city-search",
+            data: {
+                city: city,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            dataType: "json",
 
-    // ✅ show shimmer before request
-    $("#cityList").html(getShimmerHTML(6));
+            success: function(response) {
 
-    $.ajax({
-        type: "POST",
-        url: "/admin/get-city-search",
-        data: {
-            city: city,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
-        dataType: "json",
+                let html = "";
 
-        success: function(response) {
+                if (response.status && response.data.length > 0) {
 
-            let html = "";
+                    $.each(response.data, function(index, c) {
 
-            if (response.status && response.data.length > 0) {
+                        html += `
+                        <div class="checkbox">
+                            <input type="checkbox"
+                                class="cityCheck"
+                                value="${c.id}"
+                                data-name="${c.city_name}">
+                            ${c.city_name}
+                        </div>`;
+                    });
 
-                $.each(response.data, function(index, c) {
+                } else {
+                    html = `<p class="text-danger">No city found</p>`;
+                }
 
-                    html += `
-                       <div class="checkbox">
-                        <input type="checkbox"
-                            class="cityCheck"
-                            value="${c.id}"
-                            data-name="${c.city_name}">
-                        ${c.city_name}
-                      </div>`;
-                });
+                $("#cityList").html(html);
 
-            } else {
-                html = `<p class="text-danger">No city found</p>`;
+                syncCheckboxes(); // ✅ restore checked state
+            },
+
+            error: function() {
+                $("#cityList").html(`<p class="text-danger">Error loading cities</p>`);
             }
-
-            $("#cityList").html(html);
-
-            syncCheckboxes(); // ✅ restore checked state
-        },
-
-        error: function() {
-            $("#cityList").html(`<p class="text-danger">Error loading cities</p>`);
-        }
-    });
-}
+        });
+    }
    
 </script>
 @endpush
