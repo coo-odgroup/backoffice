@@ -42,18 +42,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
                         <div class="col-lg-5 col-md-5 mb-2">
                             <label for="txtSearch">Search By Slab Info</label>
-                            <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Slab Info">
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
                             <label for="amenityCategory">Category</label>
-                            <select class="form-select" id="amenityCategory" name="amenityCategory">
+                            <select class="form-select form-select-sm" id="amenityCategory" name="amenityCategory">
                                 <option value="">Select Category</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
                             <label for="selStatus">Status</label>
-                            <select class="form-select" id="selStatus" name="selStatus">
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>

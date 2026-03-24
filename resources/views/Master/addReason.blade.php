@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -69,13 +69,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
 
                                     </div>
-                                    
+
                                     <!-- BUTTONS -->
-                                    <div class="row mt-4">
+                                    <div class="row align-items-start">
                                         <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                             <button class="btn btn-primary btn-sm" type="submit">
                                                 {{ $data['strSubmit'] }}
                                             </button>
+
                                             @if($data['strReset'] == 'Cancel')
                                             <a href="{{ route('reason.index') }}" class="btn btn-secondary btn-sm">
                                                 {{ $data['strReset'] }}

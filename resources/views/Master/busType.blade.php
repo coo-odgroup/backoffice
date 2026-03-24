@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -37,48 +37,51 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
-                <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
-                                    <label for="txtSearch">Search By Bus Type</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
-                                        placeholder="Bus Type">
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="classSearch">Class</label>
-                                    <select class="form-select" id="classSearch" name="classSearch">
-                                        <option value="">Select Class</option>
-                                        <option value="1">AC</option>
-                                        <option value="2">NON AC</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+           <div class="mb-2 border-bottom d-none" id="filterBox">
+    <div class="card-body">
+        <div class="row align-items-end g-2">
 
-                        <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
-                            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-search me-1"></i>Search
-                            </button>
-                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                <i class="fa-solid fa-rotate-left me-1"></i>Reset
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <!-- Search -->
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label">Search By Bus Type</label>
+                <input type="text" class="form-control form-control-sm"
+                    id="txtSearch" name="txtSearch"
+                    placeholder="Bus Type">
             </div>
+
+            <!-- Class -->
+            <div class="col-lg-2 col-md-6">
+                <label class="form-label">Class</label>
+                <select class="form-select form-select-sm" id="classSearch" name="classSearch">
+                    <option value="">Select Class</option>
+                    <option value="1">AC</option>
+                    <option value="2">NON AC</option>
+                </select>
+            </div>
+
+            <!-- Status -->
+            <div class="col-lg-2 col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                    <option value="">Select Status</option>
+                    <option value="1">Active</option>
+                    <option value="0">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="col-lg-5 d-flex justify-content-end flex-wrap action-btns gap-1">
+                <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
+                    <i class="fa-solid fa-search me-1"></i>Search
+                </button>
+                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                    <i class="fa-solid fa-rotate-left me-1"></i>Reset
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
             <!-- Table start -->
             <div id="tableActions">
                 <div class="d-flex justify-content-between mb-2">
@@ -121,13 +124,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
+            <div class="table-responsive">
+            </div>
             <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
                 data-url="{{ route('bustype.dataTableView') }}"
                 data-edit-url="{{ route('bustype.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
                         <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                            <div class="checkbox">
+                                <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                            </div>
                         </th>
                         <th>Sl No</th>
                         <th>Bus Type</th>
@@ -150,6 +157,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPagination"></div>
             </div>
         </div>
+    </div>
     </div>
     </div>
 </form>
@@ -216,9 +224,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.bustype_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.bustype_id +
                         '" name="chkStd' + row.bustype_id + '" value="' + row.bustype_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },
@@ -236,7 +244,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {
                 data: 'class_id',
                 defaultContent: "--",
-                render: function (data, type, row) {
+                render: function(data, type, row) {
                     if (data == 1) {
                         return 'AC';
                     } else if (data == 2) {
@@ -246,22 +254,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     }
                 }
             },
-            {
+             {
                 data: null,
-                render: function (data, type, row) {
+                render: function(data, type, row) {
 
-                    let createdBy  = row.created_by_name ?? '--';
-                    let createdAt  = row.created_date ?? '--';
+                    let createdBy = row.created_by_name ?? '--';
+                    let createdAt = row.created_date ?? '--';
 
-                    let updatedBy  = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt  = (row.updated_date) ? row.updated_date : '--';
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
                     // Show updated date if exists, else created date
-                    let displayDate = (updatedAt!='--') ? updatedAt : createdAt;
+                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
+                        <span
+                            class="fw-semibold text-decoration-underline cursor-pointer"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -275,7 +283,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${displayDate}
-                        </small>
+                        </span>
                     `;
                 }
             },

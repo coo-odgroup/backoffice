@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- Status -->
                         <div class="col-lg-2 col-md-6">
                             <label for="selStatus">Status</label>
-                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                            <select class="form-select form-select-sm " id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
@@ -133,7 +133,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('cities.dataTableView') }}"
                     data-edit-url="{{ route('cities.edit', 'ID') }}">
                     <thead class="table-secondary">

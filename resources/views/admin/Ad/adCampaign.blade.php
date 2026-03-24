@@ -45,31 +45,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <div class="row">
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
                                     <label for="txtSearch">Search By Title</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                                    <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
                                         placeholder="Title">
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
                                     <label for="vendor">Vendor<span class="text-danger important">*</span></label>
-                                    <select class="form-select" id="vendor" name="vendor">
+                                    <select class="form-select form-select-sm" id="vendor" name="vendor">
                                         <option value="">Select Vendor</option>
                                     </select>
                                 </div>
 
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
                                     <label for="placement">Placement<span class="text-danger important">*</span></label>
-                                    <select class="form-select" id="placement" name="placement">
+                                    <select class="form-select form-select-sm" id="placement" name="placement">
                                         <option value="">Select Placement</option>
                                     </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
                                     <label for="pricingPlan">Pricing Plan<span class="text-danger important">*</span></label>
-                                    <select class="form-select" id="pricingPlan" name="pricingPlan">
+                                    <select class="form-select form-select-sm" id="pricingPlan" name="pricingPlan">
                                         <option value="">Select Pricing Plan</option>
                                     </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
+                                    <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                         <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Inactive</option>
@@ -132,14 +132,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+
+            <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                 data-url="{{ route('AdCampaign.dataTableView') }}"
                 data-edit-url="{{ route('AdCampaign.edit', 'ID') }}">
                 <thead class="thead-light">
                     <tr>
-                        <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
+                         <th class="noPrint no-sort">
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
+                            </th>
                         <th>Sl No</th>
                         <th>Vendor</th>
                         <th>Placement</th>
@@ -165,6 +169,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customTableInfo"></div>
                 <div id="customPagination"></div>
             </div>
+        </div>
         </div>
     </div>
     </div>
@@ -259,9 +264,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.campaign_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.campaign_id +
                         '" name="chkStd' + row.campaign_id + '" value="' + row.campaign_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },
@@ -300,7 +305,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'totalBudget',
                 defaultContent: "--"
             },
-            {
+             {
                 data: null,
                 render: function(data, type, row) {
 
@@ -310,11 +315,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
+                    // Show updated date if exists, else created date
                     let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
+                        <span
+                            class="fw-semibold text-decoration-underline cursor-pointer"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -328,7 +334,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${displayDate}
-                        </small>
+                        </span>
                     `;
                 }
             },

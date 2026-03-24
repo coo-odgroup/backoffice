@@ -113,7 +113,7 @@
                     <div id="customPaginationTop"></div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                    <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                         data-url="{{ route('busService.dataTableView') }}"
                         data-edit-url="{{ route('busService.edit', 'ID') }}">
                         <thead class="table-secondary">
@@ -125,7 +125,6 @@
                                 </th>
                                 <th>Sl No</th>
                                 <th>Bus Service name</th>
-                                <!-- <th>Description</th> -->
                                 <th>Last Modified</th>
                                 <th>Status</th>
                                 <th class="no-sort">Action</th>

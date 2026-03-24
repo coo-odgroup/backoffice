@@ -42,12 +42,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
                         <div class="col-lg-7 col-md-7 mb-2">
                             <label for="txtSearch">Search By Company Name</label>
-                            <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Company Name">
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
                             <label for="selStatus">Status</label>
-                            <select class="form-select" id="selStatus" name="selStatus">
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
@@ -108,38 +108,41 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
-                data-url="{{ route('vendor.dataTableView') }}"
-                data-edit-url="{{ route('vendor.edit', 'ID') }}">
-                <thead class="table-secondary">
-                    <tr>
-                        <th class="noPrint no-sort">
-                            <div class="checkbox">
-                                <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
-                            </div>
-                        </th>
-                        <th>Sl No</th>
-                        <th>Company Name</th>
-                        <th>Person Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>GST</th>
-                        <th>Last Modified</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Vendor">
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
+                    data-url="{{ route('vendor.dataTableView') }}"
+                    data-edit-url="{{ route('vendor.edit', 'ID') }}">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="noPrint no-sort">
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
+                            </th>
+                            <th>Sl No</th>
+                            <th>Company Name</th>
+                            <th>Person Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>GST</th>
+                            <th>Last Modified</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="Vendor">
+
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
         </div>
     </div>

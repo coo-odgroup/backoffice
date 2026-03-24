@@ -93,7 +93,6 @@ class CitiesController extends Controller
                     ])->withInput();
                 }
 
-                // ================= UPDATE =================
                 if ($id != 0) {
 
                     $oldData = Cities::find($id);
@@ -117,7 +116,6 @@ class CitiesController extends Controller
                         }
                     }
 
-                    // ✅ AUDIT LOG
                     if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
                             'mst_cities',
@@ -128,7 +126,6 @@ class CitiesController extends Controller
                         );
                     }
 
-                    // ✅ SAVE
                     $oldData->fill($newData);
                     $oldData->updated_by = 1;
                     $oldData->save();
@@ -136,7 +133,7 @@ class CitiesController extends Controller
                     $cityId = $id;
                 }
 
-                // ================= INSERT =================
+
                 else {
 
                     $row = [
@@ -149,7 +146,6 @@ class CitiesController extends Controller
                         'created_at'    => now()
                     ];
 
-                    // ✅ AUDIT LOG
                     app(CommonController::class)->auditLog(
                         'mst_cities',
                         null,
@@ -165,7 +161,6 @@ class CitiesController extends Controller
                     $cityId = $obj->id;
                 }
 
-                // ================= SYNONYMS =================
                 $synonyms = request('txtSynonym', []);
 
                 if ($id != 0) {

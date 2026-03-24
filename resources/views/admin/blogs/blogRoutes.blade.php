@@ -42,7 +42,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
                         <div class="col-lg-9 col-md-9 mb-2">
                             <label for="txtSearch">Search By Blog Routes</label>
-                            <input type="text" class="form-control" id="txtSearch" name="txtSearch" placeholder="Blog Routes">
+                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch" placeholder="Blog Routes">
                         </div>
 
                         <!-- BUTTONS -->
@@ -100,7 +100,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('blog-routes.dataTableView') }}"
                     data-edit-url="{{ route('blog-routes.edit', 'ID') }}">
                     <thead class="table-secondary">

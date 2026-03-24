@@ -113,7 +113,6 @@ $page_name = 'Add Seat Layout';
                                             <button id="generateBtn" type="button" class="btn btn-secondary w-100">Generate</button>
                                         </div>
                                     </div>
-
                                     <!-- Preview Seat Layout -->
                                     <div class="row mb-2" id="seat_layout">
                                         <div class="row" id="upperSection">
@@ -126,7 +125,6 @@ $page_name = 'Add Seat Layout';
                                                     <div class="berth-label">Upper Berth</div>
 
                                                     <div class="layout-box">
-                                                        <!-- <div class="preview-cell"></div> -->
                                                     </div>
                                                 </div>
                                             </div>
@@ -148,7 +146,6 @@ $page_name = 'Add Seat Layout';
 
                                     </div>
 
-
                                     <div class="col-md-11 justify-content-end mb-3" id="validBtn" style="display: none;">
                                         <button id="validBtns" type="button" class="btn btn-secondary">Validate Seat</button>
                                     </div>
@@ -157,7 +154,6 @@ $page_name = 'Add Seat Layout';
                                         <input id="tags" name="window_seat" class="form-control form-control-sm" placeholder="Enter Window Seat">
                                         <small id="seatError" class="text-danger"></small>
                                     </div>
-
                                     <div class="row mt-4">
                                         <div class="col-12 d-flex gap-2">
                                             <button type="submit" class="btn btn-primary" id="saveLayout">

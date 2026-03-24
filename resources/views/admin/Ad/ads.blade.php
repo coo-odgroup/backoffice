@@ -48,13 +48,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         Campaign<span class="text-danger important">*</span>
                                     </label>
 
-                                    <select class="form-select" id="campaign" name="campaign">
+                                    <select class="form-select form-select-sm" id="campaign" name="campaign">
                                         <option value="">Select Campaign</option>
                                     </select>
                                 </div>
                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
                                     <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
+                                    <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                         <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Inactive</option>
@@ -118,13 +118,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('Ads.dataTableView') }}"
                     data-edit-url="{{ route('Ads.edit', 'ID') }}">
                     <thead class="thead-light">
                         <tr>
                             <th class="noPrint no-sort">
-                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
                             </th>
                             <th>Sl No</th>
                             <th>Campaign</th>
@@ -144,7 +146,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BlogCategory">
+            <input type="hidden" id="hdn_model" value="Ads">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -220,9 +222,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return `<input class="form-check-input chkItem" type="checkbox"
-                id="check${row.ads_id}"
-                value="${row.ads_id}">`;
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.ads_id +
+                        '" name="chkStd' + row.ads_id + '" value="' + row.ads_id +
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },
@@ -258,30 +260,38 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {
                 data: 'clicks',
                 defaultContent: "--"
-            }, {
+            },
+            {
                 data: null,
                 render: function(data, type, row) {
 
                     let createdBy = row.created_by_name ?? '--';
                     let createdAt = row.created_date ?? '--';
-                    let updatedBy = row.updated_by_name ?? '--';
-                    let updatedAt = row.updated_date ?? '--';
 
-                    let displayDate = updatedAt !== '--' ? updatedAt : createdAt;
+                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
+
+                    // Show updated date if exists, else created date
+                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                    <small class="text-primary fw-semibold"
-                        data-bs-toggle="tooltip"
-                        data-bs-html="true"
-                        title="
-                            <div><strong>Created By:</strong> ${createdBy}</div>
-                            <div><strong>Created At:</strong> ${createdAt}</div>
-                            <hr class='my-1'>
-                            <div><strong>Updated By:</strong> ${updatedBy}</div>
-                            <div><strong>Updated At:</strong> ${updatedAt}</div>
-                        ">
-                        ${displayDate}
-                    </small>`;
+                        <span
+                            class="fw-semibold text-decoration-underline cursor-pointer"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-html="true"
+                            title="
+                                <div class='audit-box'>
+                                    <div><strong>Created By:</strong> ${createdBy}</div>
+                                    <div><strong>Created At:</strong> ${createdAt}</div>
+                                    <hr class='my-1'>
+                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
+                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
+                                </div>
+                            ">
+                            ${displayDate}
+                        </span>
+                    `;
                 }
             },
             {

@@ -37,31 +37,38 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
+            <div class="mb-2 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row align-items-end">
-                        <div class="col-lg-5 col-md-5 mb-2">
-                            <label for="txtSearch">Search By FAQ</label>
-                            <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                    <div class="row align-items-end g-2">
+
+                        <!-- Search -->
+                        <div class="col-lg-4 col-md-6">
+                            <label class="form-label">Search By FAQ</label>
+                            <input type="text" class="form-control form-control-sm"
+                                id="txtSearch" name="txtSearch"
                                 placeholder="FAQ">
                         </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="faqCategory">Category</label>
-                            <select class="form-select" id="faqCategory" name="faqCategory">
+
+                        <!-- Category -->
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Category</label>
+                            <select class="form-select form-select-sm" id="faqCategory" name="faqCategory">
                                 <option value="">Select Category</option>
                             </select>
                         </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="selStatus">Status</label>
-                            <select class="form-select" id="selStatus" name="selStatus">
+
+                        <!-- Status -->
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-lg-3 col-md-3 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <!-- Buttons -->
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -69,6 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
