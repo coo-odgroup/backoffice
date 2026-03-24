@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-6">
                                             <label for="brand">Bus Brand Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="brand" name="brand" value="{{ $data['row']->brand_name ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm clearable" id="brand" name="brand" value="{{ $data['row']->brand_name ?? '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -141,6 +141,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let selectedCountry = "{{ $data['row']->country ?? '' }}";
 
         commonAjax.loadCountryList(selectedCountry);
+
+         commonAjax.initClearableInputs();
 
     });
 </script>

@@ -43,7 +43,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
 
                         <!-- Search -->
-                        <div class="col-lg-3 col-md-6 mb-2">
+                        <div class="col-lg-3 col-md-6">
                             <label for="txtSearch">Search By City Name/Alias</label>
                             <input type="text" class="form-control form-control-sm"
                                 id="txtSearch" name="txtSearch"
@@ -51,7 +51,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- State -->
-                        <div class="col-lg-2 col-md-6 mb-2">
+                        <div class="col-lg-2 col-md-6">
                             <label for="selState">State</label>
                             <select class="form-select form-select-sm" id="selState" name="selState">
                                 <option value="0">Select State</option>
@@ -59,7 +59,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- District -->
-                        <div class="col-lg-2 col-md-6 mb-2">
+                        <div class="col-lg-2 col-md-6">
                             <label for="selDistrict">District</label>
                             <select class="form-select form-select-sm" id="selDistrict" name="selDistrict">
                                 <option value="0">Select District</option>
@@ -67,7 +67,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Status -->
-                        <div class="col-lg-2 col-md-6 mb-2">
+                        <div class="col-lg-2 col-md-6">
                             <label for="selStatus">Status</label>
                             <select class="form-select form-select-sm " id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
@@ -77,7 +77,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-3 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-3 d-flex justify-content-end flex-wrap action-btns gap-2 mt-2">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-check me-1"></i>Submit
                             </button>
