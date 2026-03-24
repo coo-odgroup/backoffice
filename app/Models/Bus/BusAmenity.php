@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BusAmenity extends Model
 {
-    protected $table = 'bus_amenities';
+    protected $table = 'odbusdev.bus_amenities';
     protected $fillable = [
         'bus_id',
         'category_id',

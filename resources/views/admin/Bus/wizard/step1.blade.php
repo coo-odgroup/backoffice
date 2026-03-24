@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-    $page_name = 'All ' . trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 ?>
 
 <!-- Breadcrumb -->
@@ -72,20 +72,20 @@
                                                     <div class="row">
 
                                                         <div class="col-md-6 mb-2">
-                                                            <label for="selOpeator">Operator <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm" name="selOpeator" id="selOpeator">
-                                                                <option value="0">Select Operator</option>
+                                                            <label for="busOperator">Bus Operator <span class="text-danger">*</span></label>
+                                                            <select class="form-select form-select-sm" name="bus_operator_id" id="busOperator">
+                                                                <option value="0">Select Bus Operator</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busName">Bus Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="busName" id="busName">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="name" id="busName">
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busNumber">Bus Number <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="busNumber" id="busNumber">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="bus_number" id="busNumber">
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
@@ -95,14 +95,14 @@
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="selAmenity">Amenities <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm" name="selAmenity" id="selAmenity" multiple>
+                                                            <select class="form-select form-select-sm" name="amenities_id[]" id="selAmenity" multiple>
                                                                 <option>Select Amenities</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="maxSeat">Max Seat Booked <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="maxSeat" id="maxSeat" value="6">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="max_seat_book" id="maxSeat" value="6">
                                                         </div>
 
                                                     </div>
@@ -120,7 +120,7 @@
                                                         <div class="col-md-3 mb-2">
                                                             <label for="busModel">Model</label>
                                                             <select class="form-select form-select-sm onSelect" id="busModel" name="model">
-                                                                <option  value="0">Select Model</option>
+                                                                <option value="0">Select Model</option>
                                                             </select>
                                                         </div>
 
@@ -162,6 +162,7 @@
                                                         <div class="col-md-6 mb-1">
                                                             <label for="busType">Bus Type<span class="text-danger">*</span></label>
                                                             <span id="busType"></span>
+                                                            <input type="hidden" name="type" id="busTypeVal" value="">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -172,8 +173,8 @@
                                                 <div class="p-3 border rounded bg-white">
                                                     <div class="mb-2">
                                                         <label>Cancellation Slab<span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm">
-                                                            <option>Select Slab</option>
+                                                        <select class="form-select form-select-sm" id="slab" name="slab">
+                                                            <option>Select Cancellation Slab</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -184,7 +185,7 @@
                                         <div class="row">
 
                                             <div class="col-md-4 mb-2 d-flex align-items-center">
-                                                <input type="checkbox" class="me-2">
+                                                <input type="checkbox" class="me-2" name="is_irctc_model">
                                                 <label class="mb-0">Has IRCTC Module</label>
                                             </div>
 
@@ -192,7 +193,8 @@
 
                                         <!-- BUTTON -->
                                         <div class="text-center mt-4">
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
+                                            <!-- <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button> -->
+                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>
                                 </div>
@@ -208,9 +210,9 @@
 
 <script>
     function nextStep() {
-         window.location.href = "/admin/bus/create/step2";
+        window.location.href = "/admin/bus/create/step2";
     }
-    
+
     document.addEventListener("click", function(e) {
 
         if (e.target.classList.contains("addRow")) {
@@ -249,13 +251,13 @@
         $('.form-select').val('').trigger('change');
     });
 
-    $('.onSelect').on('change', function () {
+    $('.onSelect').on('change', function() {
         generateBusName();
     });
 
     function generateBusName() {
 
-         let parts = [];
+        let parts = [];
 
         if ($('#brand').val() != 0) {
             parts.push($('#brand option:selected').text());
@@ -289,6 +291,7 @@
         const fullName = parts.join(' ');
 
         $('#busType').html(fullName);
+        $('#busTypeVal').val(fullName);
     }
 
     $(document).ready(function() {
@@ -342,22 +345,36 @@
         let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
         commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
 
-         commonAjax.loadAmenityList();
+        commonAjax.loadAmenityList();
+
+        // Jagan
+        commonAjax.initSelect2('#busOperator', 'Select Bus Opeator');
+        let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
+        commonAjax.loadBusOperatorList(bus_operator_id);
+
+        commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
+        let slab_id = "{{ $data['row']->slab_id ?? '' }}";
+        commonAjax.loadCancellationslabList(slab_id);
     });
 
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('amenityCategory', 'Select Amenity Category'))
+        if (!validator.selectDropdown('busOperator', 'Select Bus Operator'))
             return false;
 
-        if (!validator.blankCheck('amenity_name', 'Amenity Name cannot be left blank'))
+        if (!validator.blankCheck('busName', 'bus Name cannot be left blank'))
             return false;
-        if (!validator.maxLength('amenity_name', 100, 'Amenity Name'))
+        if (!validator.maxLength('busName', 100, 'bus Name'))
             return false;
 
-        if (!validator.blankCheck('icon', 'Icon Class cannot be left blank'))
+        if (!validator.blankCheck('busNumber', 'bus Number cannot be left blank'))
+            return false;
+        if (!validator.maxLength('busNumber', 100, 'bus Number'))
+            return false;
+
+        if (!validator.selectDropdown('slab', 'Select Cancellation slab'))
             return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');
