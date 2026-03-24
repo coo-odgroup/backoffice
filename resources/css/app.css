@@ -64,11 +64,6 @@ label {
     font-weight: 300 !important;
 }
 
-/* table {
-    min-width: 1200px;
-} */
-
-
 /* =====================================================
    RESPONSIVE (MAX 768px)
 ===================================================== */
@@ -479,13 +474,6 @@ td.seat {
     font-size: 12px !important;
 }
 
-.seater {
-    background: #4CAF50;
-    color: #fff;
-}
-
-/* .sleeper-h { background:#2196F3; color:#fff; }
-.sleeper-v { background:#FF9800; color:#fff; } */
 td:focus {
     outline: 2px dashed #000;
 }
@@ -550,12 +538,6 @@ td:focus {
     border-radius: 12px;
 }
 
-/* .preview-cell {
-    width: 40px;
-    height: 40px;
-    border: 1px solid #ccc;
-} */
-
 .seat_prv,
 .sleeper_prv {
     height: 36px;
@@ -599,18 +581,15 @@ td:focus {
 }
 
 .seater {
-    background: #4CAF50;
-    color: #fff;
+    background: #4CAF50;   
 }
 
 .sleeper {
-    background: #f32144;
-    color: #fff;
+    background: #f32144;    
 }
 
 .vertical-sleeper {
-    background: #FF9800;
-    color: #fff;
+    background: #FF9800;   
 }
 
 #seat_layout {
@@ -750,8 +729,7 @@ td:focus {
 .audit-top-card {
     background: #fff;
     border-radius: 12px;
-    padding: 20px;
-    /* box-shadow:0 3px 10px rgba(0,0,0,0.08); */
+    padding: 20px;    
     border: 1px solid rgb(210, 210, 210) !important;
 }
 
@@ -841,7 +819,6 @@ td:focus {
     background: #fff;
     border-radius: 10px;
     padding: 20px;
-    /* box-shadow:0 3px 10px rgba(0,0,0,0.08); */
     border: 1px solid rgb(210, 210, 210);
 }
 
@@ -1049,7 +1026,6 @@ td:focus {
     border-radius: 6px;
     cursor: pointer;
     border: 1px solid #ddd;
-    ;
 }
 
 
@@ -1120,7 +1096,6 @@ td:focus {
 
 .log-badge.blue {
     background: #eaf2ff;
-    color: #2d6cdf;
 }
 
 
