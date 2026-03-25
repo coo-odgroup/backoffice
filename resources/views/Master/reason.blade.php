@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -27,7 +27,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <span class="btn-text">Filter</span>
         </button>
         <a href="{{ route('reason.add') }}" class="btn btn-success btn-sm">
-             + Add @yield('page_title')
+            + Add @yield('page_title')
         </a>
     </div>
 </div>
@@ -39,36 +39,44 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row align-items-end">
+
                         <!-- FILTER FIELDS -->
-                        <div class="col-12">
+                        <div class="col-lg-9">
                             <div class="row">
-                                <div class="col-6 col-sm-6 col-md-6  col-lg-2 mb-2">
+
+                                <div class="col-6 col-md-4 col-lg-3 mb-2">
                                     <label for="txtSearch">Search By RoleType</label>
-                                    <input type="text" class="form-control" id="txtSearch" name="txtSearch"
+                                    <input type="text"
+                                        class="form-control form-control-sm"
+                                        id="txtSearch"
+                                        name="txtSearch"
                                         placeholder="Role Type">
                                 </div>
-                                 <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">System Role</label>
-                                    <select class="form-select" id="selSystemRole" name="selSystemRole">
+
+                                <div class="col-6 col-md-4 col-lg-3 mb-2">
+                                    <label for="selSystemRole">System Role</label>
+                                    <select class="form-select form-select-sm" id="selSystemRole" name="selSystemRole">
                                         <option value="">Select</option>
                                         <option value="1">True</option>
                                         <option value="2">False</option>
                                     </select>
                                 </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+
+                                <div class="col-6 col-md-4 col-lg-3 mb-2">
                                     <label for="selStatus">Status</label>
-                                    <select class="form-select" id="selStatus" name="selStatus">
+                                    <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                         <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Inactive</option>
                                     </select>
                                 </div>
+
                             </div>
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-12 d-flex justify-content-end flex-wrap action-btns">
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -76,6 +84,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -121,14 +130,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-            <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+             <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                 data-url="{{ route('reason.dataTableView') }}"
                 data-edit-url="{{ route('reason.edit', 'ID') }}">
-                <thead class="thead-light">
+                <thead class="table-secondary">
                     <tr>
                         <th class="noPrint no-sort">
-                            <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
-                        </th>
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
+                            </th>
                         <th>Sl No</th>
                         <th>Reason</th>
                         <th>Last Modified</th>
@@ -148,6 +160,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customTableInfo"></div>
                 <div id="customPagination"></div>
             </div>
+        </div>
         </div>
     </div>
     </div>
@@ -208,9 +221,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.reason_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.reason_id +
                         '" name="chkStd' + row.reason_id + '" value="' + row.reason_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },
@@ -235,11 +248,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
+                    // Show updated date if exists, else created date
                     let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
-                        <small
-                            class="text-primary fw-semibold"
+                        <span
+                            class="fw-semibold text-decoration-underline cursor-pointer"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -253,7 +267,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             ">
                             ${displayDate}
-                        </small>
+                        </span>
                     `;
                 }
             },

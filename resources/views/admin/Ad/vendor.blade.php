@@ -37,15 +37,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
+            <div class="mb-1 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
-                        <div class="col-lg-7 col-md-7 mb-2">
+
+                        <!-- Search -->
+                        <div class="col-lg-4 col-md-6 mb-2">
                             <label for="txtSearch">Search By Company Name</label>
                             <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Company Name">
                         </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
+
+                        <!-- Status -->
+                        <div class="col-lg-2 col-md-3 mb-2">
                             <label for="selStatus">Status</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
@@ -54,8 +58,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-lg-3 col-md-3 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <!-- BUTTONS (LEFT SIDE) -->
+                         <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -63,6 +67,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>

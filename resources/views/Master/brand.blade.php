@@ -57,11 +57,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Status -->
-<<<<<<< HEAD
-                        <div class="col-lg-2 col-md-6 ">
-=======
                         <div class="col-lg-2 col-md-6">
->>>>>>> 54b84f77afab55574b09a15400f741430c65c624
                             <label for="selStatus">Status</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
@@ -71,7 +67,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>

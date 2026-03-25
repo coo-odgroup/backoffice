@@ -133,7 +133,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <thead class="thead-light">
                         <tr>
                             <th class="noPrint no-sort">
-                                <input id="checkboxall" name="btSelectItem" class="form-check-input chkAll" type="checkbox">
+                                <div class="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                </div>
                             </th>
                             <th>Sl No</th>
                             <th>Placement</th>
@@ -229,9 +231,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<input class="form-check-input chkItem" type="checkbox" id="check' + row.ad_placement_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.ad_placement_id +
                         '" name="chkStd' + row.ad_placement_id + '" value="' + row.ad_placement_id +
-                        '" >';
+                        '" ></div>';
                 },
                 className: "noPrint text-center"
             },

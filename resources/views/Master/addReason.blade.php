@@ -61,8 +61,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-md-4 mb-3">
+                                    <div class="row">
+                                        <div class="col-md-4 ">
                                             <label for="reason">Reason<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control form-control-sm" id="reason" placeholder="Reason" name="reason" maxlength="100" value="{{ $data['row']->reason ?? '' }}">
                                             <small class="text-muted char-counter float-end"></small>
