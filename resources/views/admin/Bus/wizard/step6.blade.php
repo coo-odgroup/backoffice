@@ -75,7 +75,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-4">
                                                 <label class="form-label fw-semibold">Bus Number</label>
-                                                <input type="text" class="form-control" placeholder="Bus Number">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Bus Number">
                                             </div>
 
                                         </div>
@@ -86,7 +86,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-4">
                                                 <label class="form-label fw-semibold">Conductor Number</label>
-                                                <input type="text" class="form-control" placeholder="Input Number">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Input Number">
                                             </div>
 
                                             <div class="col-md-2 text-center">
@@ -118,7 +118,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-4">
                                                 <label class="form-label fw-semibold">Manager Number</label>
-                                                <input type="text" class="form-control" placeholder="Input Number">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Input Number">
                                             </div>
 
                                             <div class="col-md-2 text-center">
@@ -150,7 +150,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-4">
                                                 <label class="form-label fw-semibold">Owner Number</label>
-                                                <input type="text" class="form-control" placeholder="Input Number">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Input Number">
                                             </div>
 
                                             <div class="col-md-2 text-center">
@@ -178,7 +178,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
                                         <!-- Buttons -->
-                                        <div class="text-center mt-5">
+                                        <div class="text-center mt-1">
 
                                             <button class="btn btn-warning px-5 rounded-pill me-3">
                                                 Back

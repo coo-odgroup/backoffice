@@ -74,7 +74,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                         <div class="table-responsive">
 
-                                            <table class="table align-middle">
+                                            <table class="table table-hover table-condensed">
 
                                                 <thead class="border-bottom">
                                                     <tr class="text-left">
@@ -100,11 +100,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                         <td>1.</td>
 
                                                         <td>
-                                                            <input type="text" class="form-control" value="Baripada">
+                                                            <input type="text" class="form-control form-control-sm" value="Baripada">
                                                         </td>
 
                                                         <td>
-                                                            <select class="form-select">
+                                                            <select class="form-select form-select-s,">
                                                                 <option>0</option>
                                                                 <option>1</option>
                                                                 <option>2</option>
@@ -112,11 +112,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                         </td>
 
                                                         <td>
-                                                            <input type="text" class="form-control" value="Baripada">
+                                                            <input type="text" class="form-control form-select-sm" value="Baripada">
                                                         </td>
 
                                                         <td>
-                                                            <select class="form-select">
+                                                            <select class="form-select form-select-sm">
                                                                 <option>0</option>
                                                                 <option>1</option>
                                                                 <option>2</option>
@@ -124,41 +124,35 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                         </td>
 
                                                         <td>
-                                                            <input type="number" class="form-control" value="650.00">
+                                                            <input type="number" class="form-control form-control-sm" value="650.00">
                                                         </td>
 
                                                         <td>
-                                                            <input type="number" class="form-control" value="750.00">
+                                                            <input type="number" class="form-control form-control-sm" value="750.00">
                                                         </td>
 
                                                         <td>
-                                                            <input type="number" class="form-control" value="750.00">
+                                                            <input type="number" class="form-control form-control-sm" value="750.00">
                                                         </td>
 
                                                         <td>
-                                                            <input type="number" class="form-control" value="255">
+                                                            <input type="number" class="form-control form-control-sm" value="255">
                                                         </td>
 
                                                         <td>
-                                                            <input type="time" class="form-control" value="16:00">
+                                                            <input type="time" class="form-control form-control-sm" value="16:00">
                                                         </td>
 
                                                         <td>
-
                                                             <div class="d-flex justify-content-center gap-2">
-
                                                                 <div class="form-check form-switch">
                                                                     <input class="form-check-input" type="checkbox">
                                                                 </div>
-
                                                                 <button class="btn btn-outline-danger btn-sm">
                                                                     ✕
                                                                 </button>
-
                                                             </div>
-
                                                         </td>
-
                                                     </tr>
 
 
@@ -167,89 +161,79 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                         <td>2.</td>
 
-                                                        <td><input type="text" class="form-control" value="Balasore"></td>
+                                                        <td>
+                                                            <input type="text" class="form-control form-control-sm" value="Baripada">
+                                                        </td>
 
                                                         <td>
-                                                            <select class="form-select">
-                                                                <option>2</option>
-                                                                <option>1</option>
+                                                            <select class="form-select form-select-s">
+                                                                <option value="1">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                                <option value="4">4</option>
                                                             </select>
                                                         </td>
 
-                                                        <td><input type="text" class="form-control" value="Baripada"></td>
+                                                        <td>
+                                                            <input type="text" class="form-control form-select-sm" value="Baripada">
+                                                        </td>
 
                                                         <td>
-                                                            <select class="form-select">
-                                                                <option>1</option>
-                                                                <option>2</option>
+                                                            <select class="form-select form-select-sm">
+                                                                <option value="1">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                                <option value="4">4</option>
                                                             </select>
                                                         </td>
 
-                                                        <td><input type="number" class="form-control" value="650.00"></td>
-                                                        <td><input type="number" class="form-control" value="750.00"></td>
-                                                        <td><input type="number" class="form-control" value="750.00"></td>
-                                                        <td><input type="number" class="form-control" value="255"></td>
-                                                        <td><input type="time" class="form-control" value="16:00"></td>
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm" value="650.00">
+                                                        </td>
 
                                                         <td>
+                                                            <input type="number" class="form-control form-control-sm" value="750.00">
+                                                        </td>
 
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm" value="750.00">
+                                                        </td>
+
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm" value="255">
+                                                        </td>
+
+                                                        <td>
+                                                            <input type="time" class="form-control form-control-sm" value="16:00">
+                                                        </td>
+
+                                                        <td>
                                                             <div class="d-flex justify-content-center gap-2">
-
                                                                 <div class="form-check form-switch">
                                                                     <input class="form-check-input" type="checkbox">
                                                                 </div>
-
                                                                 <button class="btn btn-outline-danger btn-sm">
                                                                     ✕
                                                                 </button>
-
                                                             </div>
-
                                                         </td>
-
                                                     </tr>
-
                                                 </tbody>
-
                                             </table>
-
                                         </div>
 
 
                                         <!-- Buttons -->
-                                        <div class="text-center mt-5">
-
+                                        <div class="text-center mt-1">
                                             <button type="button" class="btn btn-warning px-5 rounded-pill me-4" onclick="backStep()">
                                                 Back
                                             </button>
-
                                             <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">
                                                 Next
                                             </button>
-
                                         </div>
-
                                     </div>
-
                                 </div>
-
-                                <!-- BUTTONS -->
-                                <!-- <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('amenities.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
-                                    </div>
-                                </div> -->
                             </div>
                         </div>
                     </div>

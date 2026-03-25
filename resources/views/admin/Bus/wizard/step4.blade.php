@@ -94,9 +94,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                         <input type="checkbox">
                                                                     </div>
                                                                 </div>
+                                                                <div class="col-md-1">
+                                                                    <select class="form-select form-select-sm">
+                                                                        <option value="">Select</option>
+                                                                        <option value="">Boarding</option>
+                                                                        <option value="">Dropping</option>
+                                                                    </select>
+                                                                </div>
 
                                                                 <div class="col-md-4">
-                                                                    <select class="form-select">
+                                                                    <select class="form-select form-select-sm">
                                                                         <option>Select Station</option>
                                                                         <option>Balasore</option>
                                                                         <option>Soro</option>
@@ -105,11 +112,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                 </div>
 
                                                                 <div class="col-md-1">
-                                                                    <input type="time" class="form-control" value="00:00">
+                                                                    <input type="time" class="form-control form-control-sm" value="00:00">
                                                                 </div>
 
                                                                 <div class="col-md-2">
-                                                                    <button class="btn btn-primary addRow">+</button>
+                                                                    <button class="btn btn-primary btn-sm addRow">+</button>
                                                                 </div>
 
                                                             </div>
@@ -145,8 +152,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                     </div>
                                                                 </div>
 
+                                                                <div class="col-md-1">
+                                                                    <select class="form-select form-select-sm">
+                                                                        <option value="">Select</option>
+                                                                        <option value="">Boarding</option>
+                                                                        <option value="">Dropping</option>
+                                                                    </select>
+                                                                </div>
+
                                                                 <div class="col-md-4">
-                                                                    <select class="form-select">
+                                                                    <select class="form-select form-select-sm">
                                                                         <option>Select Station</option>
                                                                         <option>Balasore</option>
                                                                         <option>Soro</option>
@@ -155,20 +170,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                 </div>
 
                                                                 <div class="col-md-1">
-                                                                    <input type="time" class="form-control" value="00:00">
+                                                                    <input type="time" class="form-control form-control-sm" value="00:00">
                                                                 </div>
 
                                                                 <div class="col-md-2">
-                                                                    <button class="btn btn-primary addRow">+</button>
+                                                                    <button class="btn btn-primary btn-sm addRow">+</button>
                                                                 </div>
-
                                                             </div>
-
                                                         </div>
-
                                                     </div>
                                                 </div>
-
                                             </div>
 
 
@@ -186,17 +197,23 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                     <div class="accordion-body">
 
                                                         <div class="stationRows">
-
                                                             <div class="row align-items-center stationRow">
-
                                                                 <div class="col-md-1">
                                                                     <div class="checkbox">
                                                                         <input type="checkbox">
                                                                     </div>
                                                                 </div>
 
+                                                                <div class="col-md-1">
+                                                                    <select class="form-select form-select-sm">
+                                                                        <option value="">Select</option>
+                                                                        <option value="">Boarding</option>
+                                                                        <option value="">Dropping</option>
+                                                                    </select>
+                                                                </div>
+
                                                                 <div class="col-md-4">
-                                                                    <select class="form-select">
+                                                                    <select class="form-select form-select-sm">
                                                                         <option>Select Station</option>
                                                                         <option>Balasore</option>
                                                                         <option>Soro</option>
@@ -205,53 +222,27 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                 </div>
 
                                                                 <div class="col-md-1">
-                                                                    <input type="time" class="form-control" value="00:00">
+                                                                    <input type="time" class="form-control form-control-sm" value="00:00">
                                                                 </div>
 
                                                                 <div class="col-md-2">
-                                                                    <button class="btn btn-primary addRow">+</button>
+                                                                    <button class="btn btn-primary btn-sm addRow">+</button>
                                                                 </div>
-
                                                             </div>
-
                                                         </div>
-
                                                     </div>
                                                 </div>
-
                                             </div>
-
                                         </div>
-
 
                                         <div class="text-center mt-5">
-
                                             <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
-
                                             <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
-
                                         </div>
-
                                     </div>
                                 </div>
 
-                                <!-- BUTTONS -->
-                                <!-- <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('amenities.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
-                                    </div>
-                                </div> -->
+
                             </div>
                         </div>
                     </div>
