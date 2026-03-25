@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\Bus;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bus\Bus;
+use App\Models\Bus\BusAmenity;
 use App\Models\Master\Amenity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -18,15 +20,67 @@ class BusWizardController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        return view('admin.bus.wizard.step1',compact('data'));
+        return view('admin.bus.wizard.step1', compact('data'));
     }
 
     public function postStep1(Request $request)
     {
         $request->validate([
-            'busName' => 'required',
-            'busNumber' => 'required'
+            'name' => 'required',
+            'bus_number' => 'required',
+            'bus_operator_id' => 'required',
+            'slab' => 'required',
         ]);
+
+        $bus_operator_id = (int)request('bus_operator_id');
+        $cancellationslabs_id = (int)request('slab');
+        $name = htmlEncode(request('name'));
+        $bus_number = htmlEncode(request('bus_number'));
+        $via = htmlEncode(request('via'));
+        $max_seat_book = htmlEncode(request('max_seat_book'));
+        // $type = htmlEncode(request('type'));
+        $is_irctc_model = request('is_irctc_model') === 'on' ? 1 : 0;
+
+        $obj = new Bus();
+        $obj->bus_operator_id = $bus_operator_id;
+        $obj->bus_type_id = 1;
+        $obj->bus_sitting_id = 1;
+        $obj->bus_seat_layout_id = 1;
+        $obj->cancellationslabs_id = $cancellationslabs_id;
+        $obj->name = $name;
+        $obj->bus_number = $bus_number;
+        $obj->via = $via;
+        $obj->max_seat_book = $max_seat_book;
+        // $obj->type = $type;
+        $obj->is_irctc_model = $is_irctc_model;
+        $obj->active_status = 1;
+
+        $obj->save();
+
+        $bus_id = $obj->id;
+
+        $amenities_ids = request('amenities_id');
+
+        $amenitiesData = [];
+
+        if (!empty($amenities_ids) && is_array($amenities_ids)) {
+
+            foreach ($amenities_ids as $amenities_id) {
+                $amenitiesData[] = [
+                    'bus_id' => $bus_id,
+                    'category_id' => 1,
+                    'amenities_id' => $amenities_id,
+                    'active_status' => 1,
+                    'created_at' => now(),
+                    'created_by' => 1
+                ];
+            }
+
+            BusAmenity::insert($amenitiesData);
+        }
+
+        session()->flash('level', 'success');
+        session()->flash('message', 'Bus Info Created successfully.');
 
         session(['bus.step1' => $request->all()]);
         return redirect()->route('bus.step2');
@@ -38,7 +92,7 @@ class BusWizardController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        return view('admin.bus.wizard.step2',compact('data'));
+        return view('admin.bus.wizard.step2', compact('data'));
     }
 
     public function postStep2(Request $request)
@@ -53,7 +107,7 @@ class BusWizardController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        return view('admin.bus.wizard.step3',compact('data'));
+        return view('admin.bus.wizard.step3', compact('data'));
     }
 
     public function postStep3(Request $request)
@@ -68,7 +122,7 @@ class BusWizardController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        return view('admin.bus.wizard.step4',compact('data'));
+        return view('admin.bus.wizard.step4', compact('data'));
     }
 
     public function postStep4(Request $request)
@@ -83,7 +137,7 @@ class BusWizardController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        return view('admin.bus.wizard.step5',compact('data'));
+        return view('admin.bus.wizard.step5', compact('data'));
     }
 
     public function postStep5(Request $request)
@@ -98,7 +152,7 @@ class BusWizardController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        return view('admin.bus.wizard.step6',compact('data'));
+        return view('admin.bus.wizard.step6', compact('data'));
     }
 
     public function businfo()

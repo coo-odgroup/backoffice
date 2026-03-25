@@ -1130,13 +1130,13 @@ export function loadPricingPlanList(selected_plan_id = 0) {
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
-        success: function(response) {
+        success: function (response) {
 
             let options = '<option value="">-- Select Pricing Plan --</option>';
 
             if (response.status && response.data.length > 0) {
 
-                response.data.forEach(function(plan) {
+                response.data.forEach(function (plan) {
 
                     let selected = plan.id == selected_plan_id ? "selected" : "";
 
@@ -1147,7 +1147,7 @@ export function loadPricingPlanList(selected_plan_id = 0) {
 
             $("#pricingPlan").html(options);
         },
-        error: function() {
+        error: function () {
 
             $("#pricingPlan").html('<option value="">-- Select Pricing Plan --</option>');
         }
@@ -1316,13 +1316,13 @@ export function loadAnnexureTypeList(selected_id = 0) {
                                                   </option>`;
                 });
             }
-      $(".selAnnexureType").html(options);
+            $(".selAnnexureType").html(options);
         },
 
         error: function () {
             $(".selAnnexureType").html('<option value="">-- Select Annexure Type --</option>');
         }
-            });
+    });
 }
 
 export function loadBusModelsList(model_id = '', brand_id = '') {
@@ -1471,150 +1471,179 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
     });
 }
 
-    export function loadAnnextureList(annexture_type = '', selected_id = 0) {
+export function loadAnnextureList(annexture_type = '', selected_id = 0) {
 
-        $.ajax({
-            type: "POST",
-            url: ajaxUrl + "get-annexture-list",
-            data: {
-                annexture_type: annexture_type,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            dataType: "json",
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-annexture-list",
+        data: {
+            annexture_type: annexture_type,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
 
-            success: function (response) {
+        success: function (response) {
 
-                let options = '<option value="">Select Option</option>';
+            let options = '<option value="">Select Option</option>';
 
-                if (response.status && response.data.length > 0) {
+            if (response.status && response.data.length > 0) {
 
-                    $.each(response.data, function (index, item) {
+                $.each(response.data, function (index, item) {
 
-                        let selected = (selected_id == item.id) ? "selected" : "";
+                    let selected = (selected_id == item.id) ? "selected" : "";
 
-                        options += `<option value="${item.id}" ${selected}>
+                    options += `<option value="${item.id}" ${selected}>
                                         ${item.annexture_name}
                                     </option>`;
-                    });
-                }
+                });
+            }
 
-                $(".annexture").html(options);
-            },
+            $(".annexture").html(options);
+        },
 
-            error: function () {
-                console.log("Error loading annexture list");
-            },
-        });
-    }
+        error: function () {
+            console.log("Error loading annexture list");
+        },
+    });
+}
 
-    export function loadCampaignMasterList(campaign_master_id = 0) {
-        $.ajax({
-            type: "POST",
-            url: ajaxUrl + "get-campaign-master-list",
-            data: {
-                campaign_master_id: campaign_master_id,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            dataType: "json",
-            success: function (response) {
-                let options = '<option value="">Select Campaign Master</option>';
-                if (response.status && response.data.length > 0) {
-                    $.each(response.data, function (index, app) {
-                        let selected =
-                            campaign_master_id > 0 && app.id == campaign_master_id ? "selected" : "";
-                        options += `<option value="${app.id}" ${selected}>
+export function loadCampaignMasterList(campaign_master_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-campaign-master-list",
+        data: {
+            campaign_master_id: campaign_master_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Campaign Master</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        campaign_master_id > 0 && app.id == campaign_master_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
                                         ${app.campaign_name}
                                     </option>`;
-                    });
-                }
+                });
+            }
 
-                $("#campaignMaster").html(options);
-            },
-            error: function (xhr) {
-                console.log("Error loading Campaign Master");
-            },
-        });
-    }
+            $("#campaignMaster").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Campaign Master");
+        },
+    });
+}
 
-    export function loadAmenityList(selected_ids = []) {
+export function loadAmenityList(selected_ids = []) {
 
-        $.ajax({
-            type: "POST",
-            url: ajaxUrl + "get-amenity-list",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            dataType: "json",
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-amenity-list",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
 
-            success: function (response) {
+        success: function (response) {
 
-                let options = '';
+            let options = '';
 
-                if (response.status && response.data.length > 0) {
+            if (response.status && response.data.length > 0) {
 
-                    $.each(response.data, function (i, category) {
+                $.each(response.data, function (i, category) {
 
-                        options += `<optgroup label="${category.category_name}">`;
+                    options += `<optgroup label="${category.category_name}">`;
 
-                        $.each(category.amenities, function (j, amenity) {
+                    $.each(category.amenities, function (j, amenity) {
 
-                            let selected = selected_ids.includes(amenity.id) ? 'selected' : '';
+                        let selected = selected_ids.includes(amenity.id) ? 'selected' : '';
 
-                            options += `<option value="${amenity.id}" ${selected}>
+                        options += `<option value="${amenity.id}" ${selected}>
                                             ${amenity.name}
                                         </option>`;
-                        });
-
-                        options += `</optgroup>`;
                     });
-                }
 
-                // set options
-                $("#selAmenity").html(options);
-
-                // init select2
-                // $("#selAmenity").select2({
-                //     placeholder: "Select Amenities",
-                //     allowClear: true,
-                //     width: '100%'
-                // });
-
-            },
-
-            error: function (xhr) {
-                console.log("Error loading amenities");
+                    options += `</optgroup>`;
+                });
             }
-        });
-    }
 
-    export function initClearableInputs() {
+            // set options
+            $("#selAmenity").html(options);
 
-        $('.clearable').each(function () {
+            // init select2
+            // $("#selAmenity").select2({
+            //     placeholder: "Select Amenities",
+            //     allowClear: true,
+            //     width: '100%'
+            // });
 
-            let input = $(this);
+        },
 
-            // prevent duplicate wrapping
-            if (input.parent('.position-relative').length) return;
+        error: function (xhr) {
+            console.log("Error loading amenities");
+        }
+    });
+}
 
-            input.wrap('<div class="position-relative"></div>');
+export function initClearableInputs() {
 
-            input.after(`
+    $('.clearable').each(function () {
+
+        let input = $(this);
+
+        // prevent duplicate wrapping
+        if (input.parent('.position-relative').length) return;
+
+        input.wrap('<div class="position-relative"></div>');
+
+        input.after(`
                 <span class="clear-btn position-absolute top-50 end-0 translate-middle-y me-2 text-muted" 
                     style="cursor:pointer; display:none;">
                     &times;
                 </span>
             `);
-        });
+    });
 
-        // show/hide button
-        $(document).on('keyup', '.clearable', function () {
-            let btn = $(this).siblings('.clear-btn');
-            btn.toggle($(this).val().length > 0);
-        });
+    // show/hide button
+    $(document).on('keyup', '.clearable', function () {
+        let btn = $(this).siblings('.clear-btn');
+        btn.toggle($(this).val().length > 0);
+    });
 
-        // clear input
-        $(document).on('click', '.clear-btn', function () {
-            let input = $(this).siblings('input');
-            input.val('').trigger('keyup').focus();
-        });
-    }
+    // clear input
+    $(document).on('click', '.clear-btn', function () {
+        let input = $(this).siblings('input');
+        input.val('').trigger('keyup').focus();
+    });
+}
+
+export function loadBusOperatorList(bus_operator_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-busoperator-list",
+        data: {
+            bus_operator_id: bus_operator_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Bus Operator</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        bus_operator_id > 0 && app.id == bus_operator_id ? "selected" : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.name}
+                                </option>`;
+                });
+            }
+
+            $("#busOperator").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Bus Operator");
+        },
+    });
+}

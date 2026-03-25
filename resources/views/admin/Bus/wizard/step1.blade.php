@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-    $page_name = 'All ' . trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 ?>
 
 <!-- Breadcrumb -->
@@ -67,25 +67,25 @@
                                         <div class="row mb-1">
 
                                             <!-- LEFT SIDE (8 columns) -->
-                                            <div class="col-md-9">
+                                            <div class="col-md-8">
                                                 <div class="p-3 border rounded bg-white">
                                                     <div class="row">
 
                                                         <div class="col-md-6 mb-2">
-                                                            <label for="selOpeator">Operator <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm" name="selOpeator" id="selOpeator">
-                                                                <option value="0">Select Operator</option>
+                                                            <label for="busOperator">Bus Operator <span class="text-danger">*</span></label>
+                                                            <select class="form-select form-select-sm" name="bus_operator_id" id="busOperator">
+                                                                <option value="0">Select Bus Operator</option>
                                                             </select>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busName">Bus Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="busName" id="busName">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="name" id="busName">
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busNumber">Bus Number <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="busNumber" id="busNumber">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="bus_number" id="busNumber">
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
@@ -93,107 +93,230 @@
                                                             <input type="text" class="form-control form-control-sm clearable" placeholder="Via" name="via" id="via">
                                                         </div>
 
-                                                        <div class="col-md-6 mb-2">
+                                                        <!-- <div class="col-md-6 mb-2">
                                                             <label for="selAmenity">Amenities <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm" name="selAmenity" id="selAmenity" multiple>
+                                                            <select class="form-select form-select-sm" name="amenities_id[]" id="selAmenity" multiple>
                                                                 <option>Select Amenities</option>
                                                             </select>
-                                                        </div>
+                                                        </div> -->
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="maxSeat">Max Seat Booked <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="maxSeat" id="maxSeat" value="6">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="max_seat_book" id="maxSeat" value="6">
                                                         </div>
 
                                                     </div>
-                                                    <hr class="wide">
-                                                    <!-- SECOND SECTION -->
-                                                    <div class="row">
+                                                    <div class="card mt-2">
+                                                        <div class="card-body">
+                                                            <label class="form-label fw-bold">Bus Type <span class="text-danger">*</span></label>
+                                                            <!-- SECOND SECTION -->
+                                                            <div class="row">
 
-                                                        <div class="col-md-3 mb-2">
-                                                            <label for="brand">Brand</label>
-                                                            <select class="form-select form-select-sm onSelect" id="brand" name="brand">
-                                                                <option value="0">Select Brand</option>
-                                                            </select>
+                                                                <div class="col-md-3 mb-2">
+                                                                    <label for="brand">Brand</label>
+                                                                    <select class="form-select form-select-sm onSelect" id="brand" name="brand">
+                                                                        <option value="0">Select Brand</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-3 mb-2">
+                                                                    <label for="busModel">Model</label>
+                                                                    <select class="form-select form-select-sm onSelect" id="busModel" name="model">
+                                                                        <option value="0">Select Model</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-3 mb-2">
+                                                                    <label for="axleType">Axle Type</label>
+                                                                    <select class="form-select form-select-sm onSelect" id="axleType" name="axleType">
+                                                                        <option value="0">Select Axle Type</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-3 mb-2">
+                                                                    <label for="busService">Bus Service</label>
+                                                                    <select class="form-select form-select-sm onSelect" id="busService" name="busService">
+                                                                        <option value="0">Select Bus Service</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-2 mb-1">
+                                                                    <label for="acType">AC Type <span class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm onSelect annexture" id="acType" name="acType">
+                                                                        <option value="0">Select AC Type</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-2 mb-1">
+                                                                    <label for="seatType">Seat Type <span class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm onSelect" id="seatType" name="seatType">
+                                                                        <option value="0">Select Seat Type</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-2 mb-1">
+                                                                    <label for="seatLayout">Seat Layout <span class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm onSelect" id="seatLayout" name="seatLayout">
+                                                                        <option value="0">Select Seat Layout</option>
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-md-6 mb-1">
+                                                                    <label for="busType">Bus Type<span class="text-danger">*</span></label>
+                                                                    <span id="busType"></span>
+                                                                    <input type="hidden" name="type" id="busTypeVal" value="">
+                                                                </div>
+                                                            </div>
                                                         </div>
+                                                    </div>
+                                                    <div class="card mt-2">
+                                                        <div class="card-body">
+                                                            <label class="form-label fw-bold">Amenities <span class="text-danger">*</span></label>
 
-                                                        <div class="col-md-3 mb-2">
-                                                            <label for="busModel">Model</label>
-                                                            <select class="form-select form-select-sm onSelect" id="busModel" name="model">
-                                                                <option  value="0">Select Model</option>
-                                                            </select>
-                                                        </div>
+                                                            <!-- Search -->
+                                                            <input type="text" id="amenitySearch" class="form-control mb-3"
+                                                                placeholder="Search amenities...">
 
-                                                        <div class="col-md-3 mb-2">
-                                                            <label for="axleType">Axle Type</label>
-                                                            <select class="form-select form-select-sm onSelect" id="axleType" name="axleType">
-                                                                <option value="0">Select Axle Type</option>
-                                                            </select>
-                                                        </div>
+                                                            <!-- Accordion -->
+                                                            <div class="accordion" id="amenityAccordion">
 
-                                                        <div class="col-md-3 mb-2">
-                                                            <label for="busService">Bus Service</label>
-                                                            <select class="form-select form-select-sm onSelect" id="busService" name="busService">
-                                                                <option value="0">Select Bus Service</option>
-                                                            </select>
-                                                        </div>
+                                                                <!-- Category 1 -->
+                                                                <div class="accordion-item">
+                                                                    <h2 class="accordion-header" id="heading1">
+                                                                        <button class="accordion-button collapsed" type="button"
+                                                                            data-bs-toggle="collapse" data-bs-target="#cat1">
+                                                                            Seating Comfort
+                                                                        </button>
+                                                                    </h2>
+                                                                    <div id="cat1" class="accordion-collapse collapse"
+                                                                        data-bs-parent="#amenityAccordion">
+                                                                        <div class="accordion-body">
 
-                                                        <div class="col-md-2 mb-1">
-                                                            <label for="acType">AC Type <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm onSelect annexture" id="acType" name="acType">
-                                                                <option value="0">Select AC Type</option>
-                                                            </select>
-                                                        </div>
+                                                                            <div class="row g-1">
+                                                                                <div class="col-md-2">
+                                                                                    <label class="amenity-chip">
+                                                                                        <input type="checkbox" value="Pushback Seat">
+                                                                                        Pushback Seat
+                                                                                    </label>
+                                                                                </div>
 
-                                                        <div class="col-md-2 mb-1">
-                                                            <label for="seatType">Seat Type <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm onSelect" id="seatType" name="seatType">
-                                                                <option value="0">Select Seat Type</option>
-                                                            </select>
-                                                        </div>
+                                                                                <div class="col-md-2">
+                                                                                    <label class="amenity-chip">
+                                                                                        <input type="checkbox" value="Sleeper Bed">
+                                                                                        Sleeper Bed
+                                                                                    </label>
+                                                                                </div>
 
-                                                        <div class="col-md-2 mb-1">
-                                                            <label for="seatLayout">Seat Layout <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm onSelect" id="seatLayout" name="seatLayout">
-                                                                <option value="0">Select Seat Layout</option>
-                                                            </select>
-                                                        </div>
+                                                                                <div class="col-md-2">
+                                                                                    <label class="amenity-chip">
+                                                                                        <input type="checkbox" value="Charging Point">
+                                                                                        Charging Point
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
 
-                                                        <div class="col-md-6 mb-1">
-                                                            <label for="busType">Bus Type<span class="text-danger">*</span></label>
-                                                            <span id="busType"></span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Category 2 -->
+                                                                <div class="accordion-item">
+                                                                    <h2 class="accordion-header" id="heading2">
+                                                                        <button class="accordion-button collapsed" type="button"
+                                                                            data-bs-toggle="collapse" data-bs-target="#cat2">
+                                                                            Safety
+                                                                        </button>
+                                                                    </h2>
+                                                                    <div id="cat2" class="accordion-collapse collapse"
+                                                                        data-bs-parent="#amenityAccordion">
+                                                                        <div class="accordion-body">
+
+                                                                            <div class="row g-1">
+                                                                                <div class="col-md-2">
+                                                                                    <label class="amenity-chip">
+                                                                                        <input type="checkbox" value="CCTV">
+                                                                                        CCTV
+                                                                                    </label>
+                                                                                </div>
+
+                                                                                <div class="col-md-2">
+                                                                                    <label class="amenity-chip">
+                                                                                        <input type="checkbox" value="Fire Extinguisher">
+                                                                                        Fire Extinguisher
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                            <!-- Selected Amenities -->
+                                                            <div class="mt-3">
+                                                                <label class="form-label">Selected Amenities:</label>
+                                                                <div id="selectedAmenities" class="d-flex flex-wrap gap-2"></div>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
 
                                             <!-- RIGHT SIDE (4 columns) -->
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                 <div class="p-3 border rounded bg-white">
                                                     <div class="mb-2">
-                                                        <label>Cancellation Slab<span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm">
-                                                            <option>Select Slab</option>
+                                                        <label for="slab">Cancellation Slab<span class="text-danger">*</span></label>
+                                                        <select class="form-select form-select-sm" id="slab" name="slab">
+                                                            <option>Select Cancellation Slab</option>
                                                         </select>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <!-- THIRD SECTION -->
-                                        <div class="row">
+                                    <!-- THIRD SECTION -->
+                                    <div class="row">
 
-                                            <div class="col-md-4 mb-2 d-flex align-items-center">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Is IRCTC Module <span class="text-danger">*</span></label>
+
+                                            <div class="d-flex gap-3">
+
+                                                <!-- YES -->
+                                                <label class="radio-box">
+                                                    <input type="radio" name="irctc_module" value="1">
+                                                    <div class="box">
+                                                        Yes
+                                                    </div>
+                                                </label>
+
+                                                <!-- NO -->
+                                                <label class="radio-box">
+                                                    <input type="radio" name="irctc_module" value="0">
+                                                    <div class="box">
+                                                        No
+                                                    </div>
+                                                </label>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- <div class="col-md-4 mb-2 d-flex align-items-center">
                                                 <input type="checkbox" class="me-2">
                                                 <label class="mb-0">Has IRCTC Module</label>
-                                            </div>
+                                            </div> -->
 
-                                        </div>
+                                    </div>
 
-                                        <!-- BUTTON -->
-                                        <div class="text-center mt-4">
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
-                                        </div>
+                                    <!-- BUTTON -->
+                                    <div class="text-center mt-4">
+                                        <!-- <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button> -->
+                                        <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                     </div>
                                 </div>
                             </div>
@@ -204,13 +327,16 @@
         </div>
     </div>
     </div>
+    </div>
 </form>
+@endsection
+@push('scripts')
 
-<script>
+<script type="module">
     function nextStep() {
-         window.location.href = "/admin/bus/create/step2";
+        window.location.href = "/admin/bus/create/step2";
     }
-    
+
     document.addEventListener("click", function(e) {
 
         if (e.target.classList.contains("addRow")) {
@@ -237,25 +363,64 @@
         }
 
     });
-</script>
 
-@endsection
-@push('scripts')
+    const selectedContainer = document.getElementById("selectedAmenities");
 
-<script type="module">
+    // Handle checkbox selection
+    document.querySelectorAll('.amenity-chip input').forEach(cb => {
+        cb.addEventListener('change', function() {
+            renderSelected();
+        });
+    });
+
+    function renderSelected() {
+        selectedContainer.innerHTML = '';
+
+        document.querySelectorAll('.amenity-chip input:checked')
+            .forEach(cb => {
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.innerHTML = `
+            ${cb.value} <span onclick="removeAmenity('${cb.value}')">&times;</span>
+        `;
+                selectedContainer.appendChild(tag);
+            });
+    }
+
+    function removeAmenity(value) {
+        document.querySelectorAll('.amenity-chip input')
+            .forEach(cb => {
+                if (cb.value === value) {
+                    cb.checked = false;
+                }
+            });
+        renderSelected();
+    }
+
+    // Search filter
+    document.getElementById("amenitySearch").addEventListener("keyup", function() {
+        let val = this.value.toLowerCase();
+
+        document.querySelectorAll(".amenity-chip").forEach(el => {
+            el.style.display = el.innerText.toLowerCase().includes(val) ?
+                "block" :
+                "none";
+        });
+    });
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
     });
 
-    $('.onSelect').on('change', function () {
+    $('.onSelect').on('change', function() {
         generateBusName();
     });
 
     function generateBusName() {
 
-         let parts = [];
+        let parts = [];
 
         if ($('#brand').val() != 0) {
             parts.push($('#brand option:selected').text());
@@ -289,6 +454,7 @@
         const fullName = parts.join(' ');
 
         $('#busType').html(fullName);
+        $('#busTypeVal').val(fullName);
     }
 
     $(document).ready(function() {
@@ -342,22 +508,36 @@
         let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
         commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
 
-         commonAjax.loadAmenityList();
+        commonAjax.loadAmenityList();
+
+        // Jagan
+        commonAjax.initSelect2('#busOperator', 'Select Bus Opeator');
+        let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
+        commonAjax.loadBusOperatorList(bus_operator_id);
+
+        commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
+        let slab_id = "{{ $data['row']->slab_id ?? '' }}";
+        commonAjax.loadCancellationslabList(slab_id);
     });
 
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('amenityCategory', 'Select Amenity Category'))
+        if (!validator.selectDropdown('busOperator', 'Select Bus Operator'))
             return false;
 
-        if (!validator.blankCheck('amenity_name', 'Amenity Name cannot be left blank'))
+        if (!validator.blankCheck('busName', 'bus Name cannot be left blank'))
             return false;
-        if (!validator.maxLength('amenity_name', 100, 'Amenity Name'))
+        if (!validator.maxLength('busName', 100, 'bus Name'))
             return false;
 
-        if (!validator.blankCheck('icon', 'Icon Class cannot be left blank'))
+        if (!validator.blankCheck('busNumber', 'bus Number cannot be left blank'))
+            return false;
+        if (!validator.maxLength('busNumber', 100, 'bus Number'))
+            return false;
+
+        if (!validator.selectDropdown('slab', 'Select Cancellation slab'))
             return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');

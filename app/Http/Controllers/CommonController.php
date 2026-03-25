@@ -226,9 +226,7 @@ class CommonController extends Controller
                     'deleted_at' => now(),
                     'deleted_by' => $userId
                 ]);
-            }
-
-            else {
+            } else {
                 DB::rollBack();
                 return response()->json(['message' => 'Invalid action'], 400);
             }
@@ -238,7 +236,6 @@ class CommonController extends Controller
             return response()->json([
                 'message' => 'Action completed successfully'
             ]);
-
         } catch (\Throwable $e) {
 
             DB::rollBack();
@@ -679,7 +676,7 @@ class CommonController extends Controller
             ]);
         }
     }
-    
+
     public function getBusModelsList(Request $request)
     {
         try {
@@ -699,7 +696,6 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $data
             ]);
-
         } catch (\Throwable $t) {
 
             return response()->json([
@@ -833,7 +829,6 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $data
             ]);
-
         } catch (\Throwable $t) {
 
             return response()->json([
@@ -904,7 +899,6 @@ class CommonController extends Controller
                 'status' => true,
                 'data'   => $data
             ]);
-
         } catch (\Exception $e) {
 
             Log::error('Amenity error', ['error' => $e->getMessage()]);
@@ -915,4 +909,27 @@ class CommonController extends Controller
             ], 500);
         }
     }
+
+    public function getBusOperatorList()
+    {
+        try {
+
+            $data = DB::table('users')
+                ->select('id', 'name', 'unique_id', 'organization_name')
+                ->where('active_status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
     }
+}
