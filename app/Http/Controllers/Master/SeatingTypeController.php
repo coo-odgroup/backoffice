@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class SeatingTypeController extends Controller
@@ -128,7 +129,6 @@ class SeatingTypeController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -145,14 +145,16 @@ class SeatingTypeController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = SeatType::select('id', 'seat_type');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = SeatType::select('id', 'seat_type')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("seatingtype");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/seatingtype";
@@ -170,60 +172,109 @@ class SeatingTypeController extends Controller
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $txtSeatType  = htmlEncode(request('txtSeatType'));
-
-                    $duplicate = SeatType::select('id')->where(['seat_type' => $txtSeatType]);
-
-                    // return $txtSeatType;exit;
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'Seat Type already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? SeatType::find($id) : new SeatType();
-                        $obj->seat_type = $txtSeatType;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Seat Type ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $txtSeatType = htmlEncode(request('txtSeatType'));
+
+                $duplicate = SeatType::select('id')
+                    ->where(['seat_type' => $txtSeatType]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Seat Type already exist'
+                    ])->withInput();
+                }
+
+                if ($id != 0) {
+
+                    $oldData = SeatType::find($id);
+
+                    $newData = [
+                        'seat_type'    => $txtSeatType,
+                        'active_status'=> 1
+                    ];
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_seat_type',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->seat_type    = $txtSeatType;
+                    $oldData->active_status = 1;
+                    $oldData->updated_by  = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'seat_type'     => $txtSeatType,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+                    app(CommonController::class)->auditLog(
+                        'mst_seat_type',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new SeatType();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'Seat Type ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'SeatingTypeController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addSeatingtype', compact('data'));
     }
 

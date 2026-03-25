@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class AdsController extends Controller
 {
@@ -191,8 +191,8 @@ class AdsController extends Controller
                 }
 
                 $data['row'] = $dataResQry;
-            } else {
 
+            } else {
                 $id = 0;
                 $redirectPage = "admin/ads";
             }
@@ -202,13 +202,13 @@ class AdsController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'campaign' => 'bail|required',
+                    'campaign'    => 'bail|required',
                     'redirectUrl' => 'bail|required',
-                    'alt_text' => 'bail|required'
+                    'alt_text'    => 'bail|required'
                 ], [
-                    'campaign.required' => 'Campaign must be selected.',
+                    'campaign.required'    => 'Campaign must be selected.',
                     'redirectUrl.required' => 'Redirect URL cannot be left blank.',
-                    'alt_text.required' => 'Alt Text cannot be left blank.'
+                    'alt_text.required'    => 'Alt Text cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
@@ -217,32 +217,16 @@ class AdsController extends Controller
 
                 DB::beginTransaction();
 
-                $campaign_id = request('campaign');
+                $campaign_id = (int) request('campaign');
                 $redirect_url = htmlEncode(request('redirectUrl'));
                 $alt_text = htmlEncode(request('alt_text'));
 
-                $obj = ($id != 0)
-                    ? DB::connection('mysql_dev')->table('ads')->where('id', $id)->first()
-                    : null;
-
-                if ($id != 0) {
-                    $ads = DB::connection('mysql_dev')->table('ads')->where('id', $id);
-                }
-
                 $dataArr = [
-                    'campaign_id' => $campaign_id,
+                    'campaign_id'  => $campaign_id,
                     'redirect_url' => $redirect_url,
-                    'alt_text' => $alt_text,
-                    'active_status' => 1
+                    'alt_text'     => $alt_text,
+                    'active_status'=> 1
                 ];
-
-                if ($id == 0) {
-                    $dataArr['created_by'] = 1;
-                    $dataArr['created_at'] = now();
-                } else {
-                    $dataArr['updated_by'] = 1;
-                    $dataArr['updated_at'] = now();
-                }
 
                 $path = "uploads/Ad/Ads";
 
@@ -250,49 +234,95 @@ class AdsController extends Controller
                     Storage::disk('public')->makeDirectory($path);
                 }
 
+                $newImage = null;
+
                 if (request()->hasFile('ad_image')) {
 
                     if ($id != 0 && !empty($data['row']->image)) {
-
                         if (Storage::disk('public')->exists($path . '/' . $data['row']->image)) {
                             Storage::disk('public')->delete($path . '/' . $data['row']->image);
                         }
                     }
 
                     $file = request()->file('ad_image');
-
                     $imageName = 'ad-' . time() . rand() . '.' . $file->getClientOriginalExtension();
-
                     $file->storeAs($path, $imageName, 'public');
 
                     $dataArr['image'] = $imageName;
+                    $newImage = $imageName;
                 }
 
-                /*
-                |--------------------------------
-                | Insert / Update
-                |--------------------------------
-                */
+                if ($id != 0) {
 
-                if ($id == 0) {
+                    $oldData = DB::connection('mysql_dev')
+                        ->table('ads')
+                        ->where('id', $id)
+                        ->first();
 
-                    DB::connection('mysql_dev')->table('ads')->insert($dataArr);
-                } else {
+                    $newData = $dataArr;
+
+                    if (!$newImage) {
+                        $newData['image'] = $oldData->image;
+                    }
+
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'ads',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $dataArr['updated_by'] = 1;
+                    $dataArr['updated_at'] = now();
 
                     DB::connection('mysql_dev')
                         ->table('ads')
                         ->where('id', $id)
                         ->update($dataArr);
-                }
 
-                session()->flash('level', 'success');
-                session()->flash('message', 'Ads ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                } else {
+
+                    $dataArr['created_by'] = 1;
+                    $dataArr['created_at'] = now();
+
+                    app(CommonController::class)->auditLog(
+                        'ads',
+                        null,
+                        'INSERT',
+                        [],
+                        $dataArr
+                    );
+
+                    DB::connection('mysql_dev')->table('ads')->insert($dataArr);
+                }
 
                 DB::commit();
 
+                session()->flash('level', 'success');
+                session()->flash('message', 'Ads ' . ($id ? 'updated' : 'created') . ' successfully.');
+
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
 
             Log::error("Error", [
                 'Controller' => 'AdsController',
@@ -300,13 +330,9 @@ class AdsController extends Controller
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
 

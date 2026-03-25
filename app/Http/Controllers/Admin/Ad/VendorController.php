@@ -10,9 +10,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 use Mews\Purifier\Facades\Purifier;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class VendorController extends Controller
 {
@@ -53,7 +52,9 @@ class VendorController extends Controller
                 }
 
                 $data['row'] = $row;
+
             } else {
+                $id = 0;
                 $redirectPage = "admin/vendor";
             }
 
@@ -61,61 +62,44 @@ class VendorController extends Controller
 
                 $validator = Validator::make(request()->all(), [
 
-                    'id'             => 'nullable',
-
-                    'companyName'   => 'nullable|max:150',
-
-                    'personName' => 'required|max:100',
-
-                    'email'          => 'required|email|max:100',
-
-                    'phone'          => [
-                        'required',
-                        'regex:/^[0-9]{10}$/'
-                    ],
-
-                    'gst'     => 'nullable|max:15'
+                    'companyName' => 'nullable|max:150',
+                    'personName'  => 'required|max:100',
+                    'email'       => 'required|email|max:100',
+                    'phone'       => ['required','regex:/^[0-9]{10}$/'],
+                    'gst'         => 'nullable|max:15'
 
                 ], [
 
                     'personName.required' => 'Contact Person cannot be left blank.',
-                    'personName.max'      => 'Contact Person cannot be more than 100 characters.',
-
-                    'email.required'          => 'Email cannot be left blank.',
-                    'email.email'             => 'Please enter a valid Email Id.',
-                    'email.max'               => 'Email cannot be more than 100 characters.',
-
-                    'phone.required'          => 'Phone Number cannot be left blank.',
-                    'phone.regex'             => 'Enter a valid 10 digit mobile number.',
-
-                    'companyName.max'        => 'Company Name cannot be more than 150 characters.',
-
-                    'gst.max'          => 'GST Number cannot be more than 15 characters.'
+                    'email.required'      => 'Email cannot be left blank.',
+                    'phone.required'      => 'Phone Number cannot be left blank.',
                 ]);
+
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 }
 
                 DB::beginTransaction();
 
-                $companyName    = trim(Purifier::clean(request('companyName')));
-                $personName     = trim(Purifier::clean(request('personName')));
-                $email          = trim(Purifier::clean(request('email')));
-                $phone          = trim(Purifier::clean(request('phone')));
-                $gst            = trim(Purifier::clean(request('gst')));
+                $companyName = htmlEncode(trim(Purifier::clean(request('companyName'))));
+                $personName  = htmlEncode(trim(Purifier::clean(request('personName'))));
+                $email       = htmlEncode(trim(Purifier::clean(request('email'))));
+                $phone       = htmlEncode(trim(Purifier::clean(request('phone'))));
+                $gst         = htmlEncode(trim(Purifier::clean(request('gst'))));
 
                 $duplicateEmail = Vendor::where('email', $email);
                 $duplicatePhone = Vendor::where('phone', $phone);
 
                 if ($id > 0) {
                     $duplicateEmail->where('id', '!=', $id);
+                    $duplicatePhone->where('id', '!=', $id);
                 }
 
                 if ($duplicateEmail->exists()) {
                     DB::rollBack();
                     return back()->with([
                         'level'   => 'danger',
-                        'message' => 'Email Id  already exists.'
+                        'message' => 'Email Id already exists.'
                     ])->withInput();
                 }
 
@@ -127,21 +111,73 @@ class VendorController extends Controller
                     ])->withInput();
                 }
 
-                $obj = ($id > 0) ? Vendor::find($id) : new Vendor();
-
-                $obj->company_name            = htmlEncode($companyName);
-                $obj->contact_person          = htmlEncode($personName);
-                $obj->email                   = htmlEncode($email);
-                $obj->phone                   = htmlEncode($phone);
-                $obj->gst_number              = htmlEncode($gst);
-
                 if ($id > 0) {
-                    $obj->updated_by = 1;
-                } else {
-                    $obj->created_by = 1;
-                }
 
-                $obj->save();
+                    $oldData = Vendor::find($id);
+
+                    $newData = [
+                        'company_name'   => $companyName,
+                        'contact_person' => $personName,
+                        'email'          => $email,
+                        'phone'          => $phone,
+                        'gst_number'     => $gst
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_vendor',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->company_name   = $companyName;
+                    $oldData->contact_person = $personName;
+                    $oldData->email          = $email;
+                    $oldData->phone          = $phone;
+                    $oldData->gst_number     = $gst;
+                    $oldData->updated_by     = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'company_name'   => $companyName,
+                        'contact_person' => $personName,
+                        'email'          => $email,
+                        'phone'          => $phone,
+                        'gst_number'     => $gst,
+                        'created_by'     => 1,
+                        'active_status'  => 1,
+                        'created_at'     => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_vendor',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new Vendor();
+                    $obj->fill($row);
+                    $obj->save();
+                }
 
                 DB::commit();
 
@@ -153,6 +189,7 @@ class VendorController extends Controller
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class FaqController extends Controller
@@ -169,15 +170,19 @@ class FaqController extends Controller
                 }
 
                 $data['row'] = $row;
+
             } else {
+                $id = 0;
                 $redirectPage = "admin/faq";
             }
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'faqCategory' => 'required|integer|min:1',
-                    'faq_name'    => 'required|string|max:150',
+                    'faqCategory' => 'bail|required|integer|min:1',
+                    'faq_name'    => 'bail|required|string|max:150',
                     'content'     => 'nullable|string',
                 ], [
                     'faqCategory.required' => 'FAQ Category cannot be left blank.',
@@ -191,8 +196,9 @@ class FaqController extends Controller
                 DB::beginTransaction();
 
                 $categoryId = (int) Purifier::clean(request('faqCategory'));
-                $title = htmlEncode(trim(Purifier::clean(request('faq_name'))));
-                $content = htmlEncode(Purifier::clean(request('content')));
+                $title      = htmlEncode(trim(Purifier::clean(request('faq_name'))));
+                $content    = htmlEncode(Purifier::clean(request('content')));
+
                 $duplicate = Faq::where('title', $title)
                     ->where('faq_category_id', $categoryId);
 
@@ -208,20 +214,69 @@ class FaqController extends Controller
                     ])->withInput();
                 }
 
-                $faq = ($id > 0) ? Faq::find($id) : new Faq();
-
-                $faq->faq_category_id = $categoryId;
-                $faq->title           = $title;
-                $faq->content         = $content;
-                $faq->active_status   = 1;
-
                 if ($id > 0) {
-                    $faq->updated_by = 1;
-                } else {
-                    $faq->created_by = 1;
-                }
 
-                $faq->save();
+                    $oldData = Faq::find($id);
+
+                    $newData = [
+                        'faq_category_id' => $categoryId,
+                        'title'           => $title,
+                        'content'         => $content,
+                        'active_status'   => 1
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_faq',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->faq_category_id = $categoryId;
+                    $oldData->title           = $title;
+                    $oldData->content         = $content;
+                    $oldData->active_status   = 1;
+                    $oldData->updated_by      = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'faq_category_id' => $categoryId,
+                        'title'           => $title,
+                        'content'         => $content,
+                        'active_status'   => 1,
+                        'created_by'      => 1,
+                        'created_at'      => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_faq',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $faq = new Faq();
+                    $faq->fill($row);
+                    $faq->save();
+                }
 
                 DB::commit();
 
@@ -233,6 +288,7 @@ class FaqController extends Controller
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

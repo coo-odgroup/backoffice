@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class DistrictController extends Controller
@@ -134,7 +135,6 @@ class DistrictController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -151,14 +151,17 @@ class DistrictController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Districts::select('id', 'district_name', 'state_id')->where('active_status', 1);
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = Districts::select('id', 'district_name', 'state_id')
+                    ->where('active_status', 1)
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("district");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/district";
@@ -170,73 +173,121 @@ class DistrictController extends Controller
 
                 $validator = Validator::make(request()->all(), [
                     'txtDistrict' => 'bail|required',
-                    'selState' => 'required',
+                    'selState'    => 'required',
                 ], [
                     'txtDistrict.required' => 'District Name cannot be left blank.',
-                    'selState.required' => 'State cannot be left blank.',
+                    'selState.required'    => 'State cannot be left blank.',
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $selState  = (int)request('selState');
-                    $txtDistrict  = htmlEncode(request('txtDistrict'));
-
-
-                    $duplicate = Districts::select('id')
-                        ->where([
-                            'district_name' => $txtDistrict
-                        ]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'District already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? Districts::find($id) : new Districts();
-
-                        $obj->state_id = $selState;
-                        $obj->district_name = $txtDistrict;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'District ' . (($id != 0) ?
-                            'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $selState    = (int) request('selState');
+                $txtDistrict = htmlEncode(request('txtDistrict'));
+
+                $duplicate = Districts::select('id')
+                    ->where(['district_name' => $txtDistrict]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'District already exist'
+                    ])->withInput();
+                }
+
+                if ($id != 0) {
+
+                    $oldData = Districts::find($id);
+
+                    $newData = [
+                        'state_id'      => $selState,
+                        'district_name' => $txtDistrict
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_districts',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->state_id = $selState;
+                    $oldData->district_name = $txtDistrict;
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'state_id'      => $selState,
+                        'district_name' => $txtDistrict,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_districts',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new Districts();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'District ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'DistrictsController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addDistricts', compact('data'));
     }
 

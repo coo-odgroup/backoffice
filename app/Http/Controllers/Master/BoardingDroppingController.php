@@ -10,6 +10,7 @@ use App\Models\Master\BoardingDropping;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\DB;
 
 class BoardingDroppingController extends Controller
@@ -27,7 +28,6 @@ class BoardingDroppingController extends Controller
         $data['strSubmit'] = 'Submit';
         $data['strReset']  = 'Reset';
 
-
         try {
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
@@ -38,13 +38,21 @@ class BoardingDroppingController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $dataResQry = BoardingDropping::select('id', 'cities_id', 'type', 'brd_drp_point', 'landmark', 'latitude', 'longitude', 'sequence_no');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = BoardingDropping::select(
+                    'id',
+                    'cities_id',
+                    'type',
+                    'brd_drp_point',
+                    'landmark',
+                    'latitude',
+                    'longitude',
+                    'sequence_no'
+                )->where('id', $id)->first();
 
                 if (empty($dataResQry)) {
                     return redirect("boardingDropping");
                 }
+
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
@@ -54,37 +62,9 @@ class BoardingDroppingController extends Controller
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-
-                    'selCity'                => 'required',
-                    'selCity.*'              => 'required|integer|exists:mst_cities,id',
-
-                    'type'                   => 'required|array',
-                    'type.*'                 => 'required|in:1,2',
-
-                    'brd_drp_point'          => 'required|array',
-                    'brd_drp_point.*'        => 'required|string|max:255',
-
-                    // Longitude: -180 to 180, DECIMAL(10,8)
-                    'longitude'              => 'nullable|array',
-                    'longitude.*'            => [
-                        'nullable',
-                        'numeric',
-                        'between:-180,180',
-                        'regex:/^-?\d{1,3}(\.\d{1,8})?$/'
-                    ],
-
-                    // Latitude: -90 to 90, DECIMAL(10,8)
-                    'latitude'               => 'nullable|array',
-                    'latitude.*'             => [
-                        'nullable',
-                        'numeric',
-                        'between:-90,90',
-                        'regex:/^-?\d{1,2}(\.\d{1,8})?$/'
-                    ],
-
-                    'sequence_no'            => 'nullable|array',
-                    'sequence_no.*'          => 'nullable|integer|min:1',
-
+                    'selCity'         => 'required',
+                    'type'            => 'required|array',
+                    'brd_drp_point'   => 'required|array',
                 ]);
 
                 if ($validator->fails()) {
@@ -95,75 +75,92 @@ class BoardingDroppingController extends Controller
 
                 $cityId     = (int) Purifier::clean(request('selCity'));
 
-                $types      = array_map(fn($val) => (int) Purifier::clean($val), request('type', []));
-                $points     = array_map(fn($val) => Purifier::clean($val), request('brd_drp_point', []));
-                $landmarks  = array_map(fn($val) => Purifier::clean($val), request('landmark', []));
-                $latitudes  = array_map(fn($val) => Purifier::clean($val), request('latitude', []));
-                $longitudes = array_map(fn($val) => Purifier::clean($val), request('longitude', []));
-                $sequences  = array_map(fn($val) => (int) Purifier::clean($val), request('sequence_no', []));
-
-                foreach ($types as $i => $type) {
-
-                    $query = DB::table('mst_boarding_droping')
-                        ->where('cities_id', $cityId)
-                        ->whereRaw('LOWER(brd_drp_point) = ?', [strtolower(trim($points[$i]))])
-                        ->where('active_status', 1);
-
-                    if ($id > 0) {
-                        $query->where('id', '!=', $id);
-                    }
-
-                    $exists = $query->get();
-
-                    if ($exists->count() > 0) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level'   => 'danger',
-                            'message' => 'Duplicate Boarding / Dropping found for the same city'
-                        ])->withInput();
-                    }
-                }
+                $types      = request('type', []);
+                $points     = request('brd_drp_point', []);
+                $landmarks  = request('landmark', []);
+                $latitudes  = request('latitude', []);
+                $longitudes = request('longitude', []);
+                $sequences  = request('sequence_no', []);
 
                 $insertData = [];
 
                 foreach ($types as $i => $type) {
 
                     $insertData[] = [
-                        'cities_id'     => (int) $cityId,
+                        'cities_id'     => $cityId,
                         'type'          => (int) $type,
                         'brd_drp_point' => htmlEncode(trim($points[$i] ?? '')),
                         'landmark'      => htmlEncode(trim($landmarks[$i] ?? '')),
                         'latitude'      => $latitudes[$i] ?? null,
                         'longitude'     => $longitudes[$i] ?? null,
                         'sequence_no'   => $sequences[$i] ?? null,
-                        'active_status' => 1,
-                        'created_at'    => now(),
-                        'created_by'    => 1,
                     ];
                 }
 
                 if ($id > 0) {
-                    DB::table('mst_boarding_droping')->where('id', $id)->update($insertData[0]);
+
+                    $oldData = DB::table('mst_boarding_droping')
+                        ->where('id', $id)
+                        ->first();
+
+                    $newData = $insertData[0]; 
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_boarding_droping',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    DB::table('mst_boarding_droping')
+                        ->where('id', $id)
+                        ->update($newData);
+
                 } else {
+
+                    foreach ($insertData as $row) {
+                        app(CommonController::class)->auditLog(
+                            'mst_boarding_droping',
+                            null,
+                            'INSERT',
+                            [],
+                            $row
+                        );
+                    }
+
                     DB::table('mst_boarding_droping')->insert($insertData);
                 }
 
-                session()->flash('level', 'success');
-                session()->flash('message', 'Boarding / Dropping ' . (($id != 0) ?
-                    'updated' : 'created') . ' successfully.');
-
                 DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'Boarding / Dropping ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
             Log::error('BoardingDropping add error', [
                 'Method' => $method,
-                'Error'  => $t->getMessage(),
-                'Trace'  => $t->getTraceAsString()
+                'Error'  => $t->getMessage()
             ]);
 
             return back()->with([

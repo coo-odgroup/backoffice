@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Http\Controllers\CommonController;
 
 class BlogRoutesController extends Controller
 {
@@ -128,7 +127,6 @@ class BlogRoutesController extends Controller
             'data' => $data,
         ]);
     }
-
     public function add($encId = null)
     {
         $data = [];
@@ -147,14 +145,16 @@ class BlogRoutesController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = BlogRoutes::select('id', 'blog_id', 'from_city_id', 'to_city_id', 'route_slug');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = BlogRoutes::select('id', 'blog_id', 'from_city_id', 'to_city_id', 'route_slug')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("blog-routes");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/blog-routes";
@@ -162,67 +162,107 @@ class BlogRoutesController extends Controller
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
                 $validator = Validator::make(request()->all(), [
-                    'blog_id' => 'bail|required',
-                    'from_city_id' => 'bail|required',
-                    'to_city_id' => 'bail|required',
-                    'route_slug' => 'bail|required'
-                ], [
-                    'blog_id.required' => 'Title selection is required.',
-                    'from_city_id.required' => 'Slug selection is required.',
-                    'to_city_id.required' => 'Short Description selection is required.',
-                    'route_slug.required' => 'Category selection is required.'
+                    'blog_id'       => 'bail|required',
+                    'from_city_id'  => 'bail|required',
+                    'to_city_id'    => 'bail|required',
+                    'route_slug'    => 'bail|required'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
+                }
 
-                    $blog_id = request('blog_id');
-                    $from_city_id = request('from_city_id');
-                    $to_city_id = request('to_city_id');
-                    $route_slug = htmlEncode(request('route_slug'));
+                DB::beginTransaction();
 
-                    $obj = ($id != 0) ? BlogRoutes::find($id) : new BlogRoutes();
-                    $obj->blog_id = $blog_id;
-                    $obj->from_city_id = $from_city_id;
-                    $obj->to_city_id = $to_city_id;
-                    $obj->route_slug = $route_slug;
-                    $obj->created_at = now();
-                    $obj->created_by = 1;
+                $blog_id       = request('blog_id');
+                $from_city_id  = request('from_city_id');
+                $to_city_id    = request('to_city_id');
+                $route_slug    = htmlEncode(request('route_slug'));
 
-                    if ($id != 0) {
-                        $obj->updated_by = 1;
+                if ($id != 0) {
+
+                    $oldData = BlogRoutes::find($id);
+
+                    $newData = [
+                        'blog_id'      => $blog_id,
+                        'from_city_id' => $from_city_id,
+                        'to_city_id'   => $to_city_id,
+                        'route_slug'   => $route_slug,
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_blog_routes',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
                     }
 
-                    $obj->save();
+                    $oldData->fill($newData);
+                    $oldData->updated_by = 1;
+                    $oldData->updated_at = now();
+                    $oldData->save();
 
-                    session()->flash('level', 'success');
-                    session()->flash('message', 'Blog Routes ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                } else {
 
-                    DB::commit();
-                    return redirect($redirectPage);
+                    $row = [
+                        'blog_id'      => $blog_id,
+                        'from_city_id' => $from_city_id,
+                        'to_city_id'   => $to_city_id,
+                        'route_slug'   => $route_slug,
+                        'created_by'   => 1,
+                        'created_at'   => now(),
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_blog_routes',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    BlogRoutes::create($row);
                 }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'Blog Routes ' . ($id ? 'updated' : 'created') . ' successfully.');
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'BlogRoutesController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('admin.blogs.addBlogRoutes', compact('data'));
     }
 

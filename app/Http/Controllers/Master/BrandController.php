@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 
 class BrandController extends Controller
 {
@@ -173,9 +174,11 @@ class BrandController extends Controller
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'country' => 'required',
-                    'brand'   => 'required|max:100'
+                    'country' => 'bail|required',
+                    'brand'   => 'bail|required|max:100'
                 ], [
                     'country.required' => 'Country must be selected.',
                     'brand.required'   => 'Bus Brand Name cannot be blank.'
@@ -208,6 +211,37 @@ class BrandController extends Controller
 
                 if ($id != 0) {
 
+                    $oldData = DB::table('mst_bus_brand')
+                        ->where('id',$id)
+                        ->first();
+
+                    $newData = [
+                        'country'    => $country,
+                        'brand_name' => $brand
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_bus_brand',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
                     DB::table('mst_bus_brand')
                         ->where('id',$id)
                         ->update([
@@ -219,20 +253,32 @@ class BrandController extends Controller
 
                 } else {
 
-                    DB::table('mst_bus_brand')->insert([
+                    $row = [
                         'country'       => $country,
                         'brand_name'    => $brand,
                         'created_by'    => auth()->id(),
                         'active_status' => 1,
                         'created_at'    => now()
-                    ]);
+                    ];
 
+                    app(CommonController::class)->auditLog(
+                        'mst_bus_brand',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    DB::table('mst_bus_brand')->insert($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level','success');
-                session()->flash('message','Bus Brand '.($id ? 'updated' : 'created').' successfully.');
+                session()->flash(
+                    'message',
+                    'Bus Brand '.(($id != 0) ? 'updated' : 'created').' successfully.'
+                );
 
                 return redirect($redirectPage);
             }

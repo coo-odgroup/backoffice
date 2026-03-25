@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class ApiKeysController extends Controller
@@ -134,7 +135,6 @@ class ApiKeysController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -151,14 +151,16 @@ class ApiKeysController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = ApiKeys::select('id', 'api_app_id', 'api_key', 'last_used_at', 'expires_at', 'environment');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = ApiKeys::select('id', 'api_app_id', 'api_key', 'last_used_at', 'expires_at', 'environment')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("apikeys");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/apikeys";
@@ -170,71 +172,125 @@ class ApiKeysController extends Controller
 
                 $validator = Validator::make(request()->all(), [
                     'api_app_id' => 'bail|required',
-                    'api_key' => 'bail|required|max:100'
+                    'api_key'    => 'bail|required|max:100'
                 ], [
                     'api_app_id.required' => 'App App cannot be left blank.',
-                    'api_key.required' => 'App Key cannot be left blank.',
-                    'api_key.max' => 'App Key cannot exceed 100 characters.'
+                    'api_key.required'    => 'App Key cannot be left blank.',
+                    'api_key.max'         => 'App Key cannot exceed 100 characters.'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $api_app_id = request('api_app_id');
-                    $environment = request('environment');
-                    $api_key = htmlEncode(request('api_key'));
-
-                    $duplicate = ApiKeys::select('id')->where(['api_key' => $api_key]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'Api Keys already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? ApiKeys::find($id) : new ApiKeys();
-                        $obj->api_key = $api_key;
-                        $obj->api_app_id = $api_app_id;
-                        $obj->environment = $environment;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'App Key ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $api_app_id = request('api_app_id');
+                $environment = request('environment');
+                $api_key = htmlEncode(request('api_key'));
+
+                $duplicate = ApiKeys::select('id')->where(['api_key' => $api_key]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level' => 'danger',
+                        'message' => 'Api Keys already exist'
+                    ])->withInput();
+                }
+
+                if ($id != 0) {
+
+                    $oldData = ApiKeys::find($id);
+
+                    $newData = [
+                        'api_app_id' => $api_app_id,
+                        'api_key'    => $api_key,
+                        'environment'=> $environment
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_api_keys',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->api_key = $api_key;
+                    $oldData->api_app_id = $api_app_id;
+                    $oldData->environment = $environment;
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'api_app_id'   => $api_app_id,
+                        'api_key'      => $api_key,
+                        'environment'  => $environment,
+                        'created_by'   => 1,
+                        'active_status'=> 1,
+                        'created_at'   => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_api_keys',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new ApiKeys();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'App Key ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'ApiKeysController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addApiKeys', compact('data'));
     }
 

@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mews\Purifier\Facades\Purifier;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class BlogImagesController extends Controller
 {

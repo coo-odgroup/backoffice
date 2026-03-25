@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class BusTypeController extends Controller
@@ -132,7 +133,6 @@ class BusTypeController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -149,14 +149,16 @@ class BusTypeController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = BusType::select('id', 'class_id', 'bus_type');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = BusType::select('id', 'class_id', 'bus_type')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("bustype");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/bustype";
@@ -168,68 +170,120 @@ class BusTypeController extends Controller
 
                 $validator = Validator::make(request()->all(), [
                     'classType' => 'required',
-                    'busType' => 'bail|required'
+                    'busType'   => 'bail|required'
                 ], [
                     'classType.required' => 'Class Name cannot be left blank.',
-                    'busType.required' => 'Bus Type Name cannot be left blank.'
+                    'busType.required'   => 'Bus Type Name cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $classType = (int)request('classType');
-                    $busType = htmlEncode(request('busType'));
-
-                    $duplicate = BusType::select('id')->where(['bus_type' => $busType]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'Bus Type already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? BusType::find($id) : new BusType();
-                        $obj->class_id = $classType;
-                        $obj->bus_type = $busType;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Bus Type ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $classType = (int) request('classType');
+                $busType   = htmlEncode(request('busType'));
+
+                $duplicate = BusType::select('id')->where(['bus_type' => $busType]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Bus Type already exist'
+                    ])->withInput();
+                }
+
+                if ($id != 0) {
+
+                    $oldData = BusType::find($id);
+
+                    $newData = [
+                        'class_id' => $classType,
+                        'bus_type' => $busType
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_bus_type',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->class_id = $classType;
+                    $oldData->bus_type = $busType;
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'class_id'      => $classType,
+                        'bus_type'      => $busType,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_bus_type',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new BusType();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'Bus Type ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'BusTypeController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constantbt.SERVER_ERROR_MESSAGE');
-
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constantbt.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addBusType', compact('data'));
     }
 

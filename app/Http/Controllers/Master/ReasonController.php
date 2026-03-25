@@ -9,6 +9,7 @@ use App\Models\Master\Reason;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\DB;
 
 class ReasonController extends Controller
@@ -37,12 +38,9 @@ class ReasonController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = Reason::select(
-                    'id',
-                    'reason',
-                )->where('id', $id)->first();
-
-                log::info($row);
+                $row = Reason::select('id', 'reason')
+                    ->where('id', $id)
+                    ->first();
 
                 if (!$row) {
                     return redirect('reason');
@@ -51,15 +49,18 @@ class ReasonController extends Controller
                 $data['row'] = $row;
 
             } else {
+                $id = 0;
                 $redirectPage = "admin/reason";
             }
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'reason'    => 'required|max:500',
+                    'reason' => 'bail|required|max:500',
                 ], [
-                    'roleType.required' => 'Role Type cannot be left blank.',
+                    'reason.required' => 'Reason cannot be left blank.',
                 ]);
 
                 if ($validator->fails()) {
@@ -68,20 +69,64 @@ class ReasonController extends Controller
 
                 DB::beginTransaction();
 
-                $reason    = trim(Purifier::clean(request('reason')));
-
-                $obj = ($id > 0) ? Reason::find($id) : new Reason();
-
-                $obj->reason           = htmlEncode($reason);
-                $obj->active_status   = 1;
+                $reason = htmlEncode(trim(Purifier::clean(request('reason'))));
 
                 if ($id > 0) {
-                    $obj->updated_by = 1;
-                } else {
-                    $obj->created_by = 1;
-                }
 
-                $obj->save();
+                    $oldData = Reason::find($id);
+
+                    $newData = [
+                        'reason'        => $reason,
+                        'active_status' => 1
+                    ];
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_reason',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->reason = $reason;
+                    $oldData->active_status = 1;
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'reason'        => $reason,
+                        'active_status' => 1,
+                        'created_by'    => 1,
+                        'created_at'    => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_reason',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new Reason();
+                    $obj->fill($row);
+                    $obj->save();
+                }
 
                 DB::commit();
 

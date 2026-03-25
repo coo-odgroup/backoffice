@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class CityApisController extends Controller
@@ -141,7 +142,6 @@ class CityApisController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -158,14 +158,16 @@ class CityApisController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = CityApis::select('id', 'city_id', 'api_app_id', 'api_city_ids');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = CityApis::select('id', 'city_id', 'api_app_id', 'api_city_ids')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("cityapis");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/cityapis";
@@ -176,73 +178,128 @@ class CityApisController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'city_id' => 'bail|required',
-                    'api_app_id' => 'bail|required',
+                    'city_id'      => 'bail|required',
+                    'api_app_id'   => 'bail|required',
                     'api_city_ids' => 'bail|required'
                 ], [
-                    'city_id.required' => 'City cannot be left blank.',
-                    'api_app_id.required' => 'App cannot be left blank.',
+                    'city_id.required'      => 'City cannot be left blank.',
+                    'api_app_id.required'   => 'App cannot be left blank.',
                     'api_city_ids.required' => 'App City Ids cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $city_id = request('city_id');
-                    $api_app_id = request('api_app_id');
-                    $api_city_ids = htmlEncode(request('api_city_ids'));
-
-                    $duplicate = CityApis::select('id')->where(['api_city_ids' => $api_city_ids]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'Api City Id already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? CityApis::find($id) : new CityApis();
-                        $obj->city_id = $city_id;
-                        $obj->api_app_id = $api_app_id;
-                        $obj->api_city_ids = $api_city_ids;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Api City ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $city_id      = request('city_id');
+                $api_app_id   = request('api_app_id');
+                $api_city_ids = htmlEncode(request('api_city_ids'));
+
+                $duplicate = CityApis::select('id')
+                    ->where(['api_city_ids' => $api_city_ids]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Api City Id already exist'
+                    ])->withInput();
+                }
+
+                if ($id != 0) {
+
+                    $oldData = CityApis::find($id);
+
+                    $newData = [
+                        'city_id'      => $city_id,
+                        'api_app_id'   => $api_app_id,
+                        'api_city_ids' => $api_city_ids
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_city_apis',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->city_id = $city_id;
+                    $oldData->api_app_id = $api_app_id;
+                    $oldData->api_city_ids = $api_city_ids;
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'city_id'       => $city_id,
+                        'api_app_id'    => $api_app_id,
+                        'api_city_ids'  => $api_city_ids,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_city_apis',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new CityApis();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'Api City ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'CityApisController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
-                'level' => 'danger',
-                'message' => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addCityApis', compact('data'));
     }
 

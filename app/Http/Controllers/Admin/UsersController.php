@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 use Mews\Purifier\Facades\Purifier;
 
 class UsersController extends Controller
@@ -139,7 +140,7 @@ class UsersController extends Controller
         ]);
     }
 
-    public function add()
+   public function add()
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
@@ -153,108 +154,102 @@ class UsersController extends Controller
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
                 $validator = Validator::make(request()->all(), [
                     'user_role' => 'bail|required|exists:mst_roles,id',
-
                     'name' => 'bail|required|max:150',
-
                     'organization_name' => 'bail|required|max:150',
-
                     'primary_email' => 'bail|required|email|max:150|unique:users,primary_email',
-
                     'primary_contact' => 'bail|required|numeric|digits_between:10,15',
-
                     'location' => 'bail|required|max:150'
-                ], [
-                    'user_role.required' => 'User Role cannot be left blank.',
-                    'user_role.exists' => 'Selected User Role is invalid.',
-
-                    'name.required' => 'User Name cannot be left blank.',
-                    'name.max' => 'User Name cannot exceed 150 characters.',
-
-                    'organization_name.required' => 'Organization Name cannot be left blank.',
-                    'organization_name.max' => 'Organization Name cannot exceed 150 characters.',
-
-                    'primary_email.required' => 'Primary Email cannot be left blank.',
-                    'primary_email.email' => 'Enter a valid Email address.',
-                    'primary_email.max' => 'Email cannot exceed 150 characters.',
-                    'primary_email.unique' => 'Email already exists.',
-
-                    'primary_contact.required' => 'Primary Contact cannot be left blank.',
-                    'primary_contact.numeric' => 'Primary Contact must be numeric.',
-                    'primary_contact.digits_between' => 'Primary Contact must be between 10 to 15 digits.',
-
-                    'location.required' => 'Location cannot be left blank.',
-                    'location.max' => 'Location cannot exceed 150 characters.'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $user_role = Purifier::clean(request('user_role'));
-                    $unique_id = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4)) . rand(1000, 9999);
-                    $name = htmlEncode(Purifier::clean(request('name')));
-                    $organization_name = htmlEncode(Purifier::clean(request('organization_name')));
-                    $primary_email = htmlEncode(Purifier::clean(request('primary_email')));
-                    $primary_contact = htmlEncode(Purifier::clean(request('primary_contact')));
-                    $location = htmlEncode(Purifier::clean(request('location')));
-
-                    $duplicate = Users::select('id')->where(['name' => $name]);
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'User already exist'
-                        ])->withInput();
-                    } else {
-
-                        $obj = new Users();
-                        $obj->user_role = $user_role;
-                        $obj->unique_id = $unique_id;
-                        $obj->name = $name;
-                        $obj->organization_name = $organization_name;
-                        $obj->primary_email = $primary_email;
-                        $obj->primary_contact = $primary_contact;
-                        $obj->location = $location;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        $obj->save();
-
-                        $users_id = $obj->id;
-
-                        $this->saveUsersInfo($users_id);
-                        $this->saveAddress($users_id);
-                        $this->saveBankDetails($users_id);
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Users created successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $user_role = Purifier::clean(request('user_role'));
+                $unique_id = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4)) . rand(1000, 9999);
+
+                $name = htmlEncode(Purifier::clean(request('name')));
+                $organization_name = htmlEncode(Purifier::clean(request('organization_name')));
+                $primary_email = htmlEncode(Purifier::clean(request('primary_email')));
+                $primary_contact = htmlEncode(Purifier::clean(request('primary_contact')));
+                $location = htmlEncode(Purifier::clean(request('location')));
+
+                $duplicate = Users::where('name', $name);
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level' => 'danger',
+                        'message' => 'User already exist'
+                    ])->withInput();
+                }
+
+                $row = [
+                    'user_role'         => $user_role,
+                    'unique_id'         => $unique_id,
+                    'name'              => $name,
+                    'organization_name' => $organization_name,
+                    'primary_email'     => $primary_email,
+                    'primary_contact'   => $primary_contact,
+                    'location'          => $location,
+                    'created_by'        => 1,
+                    'active_status'     => 1,
+                    'created_at'        => now()
+                ];
+
+                app(CommonController::class)->auditLog(
+                    'users',
+                    null,
+                    'INSERT',
+                    [],
+                    $row
+                );
+
+                $obj = new Users();
+                $obj->fill($row);
+                $obj->save();
+
+                $users_id = $obj->id;
+
+                $this->saveUsersInfo($users_id);
+                $this->saveAddress($users_id);
+                $this->saveBankDetails($users_id);
+
+                app(CommonController::class)->auditLog(
+                    'users_full_creation',
+                    $users_id,
+                    'INSERT',
+                    [],
+                    ['message' => 'User with related info, address and bank details created']
+                );
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'Users created successfully.');
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'UsersController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('admin.users.addUsers', compact('data'));
     }
 

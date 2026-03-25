@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class CancellationslabController extends Controller
@@ -123,7 +124,6 @@ class CancellationslabController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -140,14 +140,16 @@ class CancellationslabController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Cancellationslab::select('id', 'slab_name', 'description');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = Cancellationslab::select('id', 'slab_name', 'description')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("cancellationslab");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/cancellationslab";
@@ -165,63 +167,115 @@ class CancellationslabController extends Controller
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $slab_name = htmlEncode(request('slab_name'));
-                    $description = htmlEncode(request('description'));
-
-                    $duplicate = Cancellationslab::select('id')->where(['slab_name' => $slab_name]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'Slab already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? Cancellationslab::find($id) : new Cancellationslab();
-                        $obj->slab_name = $slab_name;
-                        $obj->description = $description;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Cancellation Slab ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $slab_name   = htmlEncode(request('slab_name'));
+                $description = htmlEncode(request('description'));
+
+                $duplicate = Cancellationslab::select('id')
+                    ->where(['slab_name' => $slab_name]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Slab already exist'
+                    ])->withInput();
+                }
+
+                if ($id != 0) {
+
+                    $oldData = Cancellationslab::find($id);
+
+                    $newData = [
+                        'slab_name'   => $slab_name,
+                        'description' => $description
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_cancellation_slab',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->slab_name = $slab_name;
+                    $oldData->description = $description;
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'slab_name'    => $slab_name,
+                        'description'  => $description,
+                        'created_by'   => 1,
+                        'active_status'=> 1,
+                        'created_at'   => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_cancellation_slab',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new Cancellationslab();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'Cancellation Slab ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'CancellationslabController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addCancellationslab', compact('data'));
     }
-
     public function edit($encId)
     {
         return $this->add($encId);

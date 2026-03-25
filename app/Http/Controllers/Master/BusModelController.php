@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class BusModelController extends Controller
@@ -167,6 +168,7 @@ class BusModelController extends Controller
                 }
 
                 $data['row'] = $dataResQry;
+
             } else {
 
                 $id = 0;
@@ -175,9 +177,11 @@ class BusModelController extends Controller
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'brand' => 'required',
-                    'model' => 'required|max:100',
+                    'brand' => 'bail|required',
+                    'model' => 'bail|required|max:100',
                     'description' => 'max:500'
                 ], [
                     'brand.required' => 'Brand must be selected.',
@@ -203,7 +207,6 @@ class BusModelController extends Controller
                 }
 
                 if ($duplicate->exists()) {
-
                     return back()->with([
                         'level'   => 'danger',
                         'message' => 'Bus Model already exists'
@@ -212,34 +215,81 @@ class BusModelController extends Controller
 
                 if ($id != 0) {
 
+                    $oldData = DB::table('mst_bus_models')
+                        ->where('id', $id)
+                        ->first();
+
+                    $newData = [
+                        'brand_id'   => $brand,
+                        'model_name' => $model,
+                        'description'=> $description
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_bus_models',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
                     DB::table('mst_bus_models')
                         ->where('id', $id)
                         ->update([
                             'brand_id'   => $brand,
                             'model_name' => $model,
-                            'description' => $description,
+                            'description'=> $description,
                             'updated_by' => auth()->id(),
                             'updated_at' => now()
                         ]);
+
                 } else {
 
-                    DB::table('mst_bus_models')->insert([
+                    $row = [
                         'brand_id'      => $brand,
                         'model_name'    => $model,
                         'description'   => $description,
                         'created_by'    => auth()->id(),
                         'active_status' => 1,
                         'created_at'    => now()
-                    ]);
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_bus_models',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    DB::table('mst_bus_models')->insert($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level', 'success');
-                session()->flash('message', 'Bus Model ' . ($id ? 'updated' : 'created') . ' successfully.');
+                session()->flash(
+                    'message',
+                    'Bus Model ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();
@@ -258,6 +308,7 @@ class BusModelController extends Controller
 
         return view('Master.addBusModel', compact('data'));
     }
+
     public function edit($encId)
     {
         return $this->add($encId);

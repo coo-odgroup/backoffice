@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class FaqCategoryController extends Controller
@@ -149,14 +150,18 @@ class FaqCategoryController extends Controller
                 }
 
                 $data['row'] = $row;
+
             } else {
+                $id = 0;
                 $redirectPage = "admin/faqcategory";
             }
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'category_name' => 'required|max:100',
+                    'category_name' => 'bail|required|max:100',
                     'sequence_no'   => 'nullable|integer'
                 ], [
                     'category_name.required' => 'FAQ Category Name cannot be left blank.'
@@ -169,10 +174,9 @@ class FaqCategoryController extends Controller
                 DB::beginTransaction();
 
                 $categoryName = htmlEncode(
-                    trim(
-                        Purifier::clean(request('category_name'))
-                    )
+                    trim(Purifier::clean(request('category_name')))
                 );
+
                 $duplicate = FaqCategory::where('category_name', $categoryName);
 
                 if ($id > 0) {
@@ -187,26 +191,72 @@ class FaqCategoryController extends Controller
                     ])->withInput();
                 }
 
-
                 if ($id == 0 && empty(request('sequence_no'))) {
                     $sequence = (FaqCategory::max('sequence_no') ?? 0) + 1;
                 } else {
                     $sequence = request('sequence_no') ?? 1;
                 }
 
-                $obj = ($id > 0) ? FaqCategory::find($id) : new FaqCategory();
-
-                $obj->category_name = $categoryName;
-                $obj->sequence_no   = $sequence;
-                $obj->active_status = 1;
-
                 if ($id > 0) {
-                    $obj->updated_by = 1; // auth()->id()
-                } else {
-                    $obj->created_by = 1; // auth()->id()
-                }
 
-                $obj->save();
+                    $oldData = FaqCategory::find($id);
+
+                    $newData = [
+                        'category_name' => $categoryName,
+                        'sequence_no'   => $sequence,
+                        'active_status' => 1
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_faq_category',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->category_name = $categoryName;
+                    $oldData->sequence_no   = $sequence;
+                    $oldData->active_status = 1;
+                    $oldData->updated_by    = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'category_name' => $categoryName,
+                        'sequence_no'   => $sequence,
+                        'active_status' => 1,
+                        'created_by'    => 1,
+                        'created_at'    => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_faq_category',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new FaqCategory();
+                    $obj->fill($row);
+                    $obj->save();
+                }
 
                 DB::commit();
 
@@ -218,6 +268,7 @@ class FaqCategoryController extends Controller
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

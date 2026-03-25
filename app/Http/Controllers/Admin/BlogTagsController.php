@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Http\Controllers\CommonController;
+
 
 class BlogTagsController extends Controller
 {
@@ -139,14 +139,16 @@ class BlogTagsController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = BlogTags::select('id', 'tag_name', 'slug');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = BlogTags::select('id', 'tag_name', 'slug')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("blog-tags");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/blog-tags";
@@ -154,59 +156,100 @@ class BlogTagsController extends Controller
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
                 $validator = Validator::make(request()->all(), [
                     'tag_name' => 'bail|required',
-                    'slug' => 'bail|required'
-                ], [
-                    'tag_name.required' => 'Tag Name is required.',
-                    'slug.required' => 'Slug is required.'
+                    'slug'     => 'bail|required'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
+                }
 
-                    $tag_name = htmlEncode(request('tag_name'));
-                    $slug = htmlEncode(request('slug'));
+                DB::beginTransaction();
 
-                    $obj = ($id != 0) ? BlogTags::find($id) : new BlogTags();
-                    $obj->tag_name = $tag_name;
-                    $obj->slug = $slug;
-                    $obj->created_at = now();
-                    $obj->created_by = 1;
+                $tag_name = htmlEncode(request('tag_name'));
+                $slug     = htmlEncode(request('slug'));
 
-                    if ($id != 0) {
-                        $obj->updated_by = 1;
+                if ($id != 0) {
+
+                    $oldData = BlogTags::find($id);
+
+                    $newData = [
+                        'tag_name' => $tag_name,
+                        'slug'     => $slug,
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
                     }
 
-                    $obj->save();
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_blog_tags',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
 
-                    session()->flash('level', 'success');
-                    session()->flash('message', 'Blog Tags ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                    $oldData->fill($newData);
+                    $oldData->updated_by = 1;
+                    $oldData->updated_at = now();
+                    $oldData->save();
 
-                    DB::commit();
-                    return redirect($redirectPage);
+                } else {
+
+                    $row = [
+                        'tag_name'   => $tag_name,
+                        'slug'       => $slug,
+                        'created_by' => 1,
+                        'created_at' => now(),
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_blog_tags',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    BlogTags::create($row);
                 }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'Blog Tags ' . ($id ? 'updated' : 'created') . ' successfully.');
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'BlogTagsController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('admin.blogs.addBlogTags', compact('data'));
     }
 

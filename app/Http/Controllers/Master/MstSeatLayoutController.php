@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class MstSeatLayoutController extends Controller
@@ -142,6 +143,7 @@ class MstSeatLayoutController extends Controller
                 }
 
                 $data['row'] = $dataResQry;
+
             } else {
 
                 $id = 0;
@@ -150,8 +152,10 @@ class MstSeatLayoutController extends Controller
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'mstSeatLayout' => 'required',
+                    'mstSeatLayout' => 'bail|required',
                 ], [
                     'mstSeatLayout.required' => 'Seat Layout cannot be blank.',
                 ]);
@@ -161,6 +165,7 @@ class MstSeatLayoutController extends Controller
                 }
 
                 DB::beginTransaction();
+
                 $mstSeatLayout = htmlEncode(request('mstSeatLayout'));
 
                 $duplicate = DB::table('mst_seat_layout')
@@ -171,45 +176,89 @@ class MstSeatLayoutController extends Controller
                 }
 
                 if ($duplicate->exists()) {
-
                     return back()->with([
                         'level'   => 'danger',
-                        'message' => 'Axel Type  already exists'
+                        'message' => 'Seat Layout already exists'
                     ])->withInput();
                 }
 
                 if ($id != 0) {
 
+                    $oldData = DB::table('mst_seat_layout')
+                        ->where('id', $id)
+                        ->first();
+
+                    $newData = [
+                        'seat_layout' => $mstSeatLayout
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_seat_layout',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
                     DB::table('mst_seat_layout')
                         ->where('id', $id)
                         ->update([
                             'seat_layout' => $mstSeatLayout,
-                            'updated_by' => auth()->id(),
-                            'updated_at' => now()
+                            'updated_by'  => auth()->id(),
+                            'updated_at'  => now()
                         ]);
+
                 } else {
 
-                    DB::table('mst_seat_layout')->insert([
-                        'seat_layout' => $mstSeatLayout,
-                        'created_by'    => auth()->id(),
-                        'active_status' => 1,
-                        'created_at'    => now()
-                    ]);
+                    $row = [
+                        'seat_layout'  => $mstSeatLayout,
+                        'created_by'   => auth()->id(),
+                        'active_status'=> 1,
+                        'created_at'   => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_seat_layout',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    DB::table('mst_seat_layout')->insert($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level', 'success');
-                session()->flash('message', 'Axle Type ' . ($id ? 'updated' : 'created') . ' successfully.');
+                session()->flash(
+                    'message',
+                    'Seat Layout ' . ($id ? 'updated' : 'created') . ' successfully.'
+                );
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
             Log::error("Error", [
-                'Controller' => 'AxleTypeController',
+                'Controller' => 'SeatLayoutController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 
 class CancellationslabInfoController extends Controller
 {
@@ -127,7 +128,6 @@ class CancellationslabInfoController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -144,16 +144,17 @@ class CancellationslabInfoController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = CancellationSlab::with('slabInfo')->select('*', 'id as slab_id');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = CancellationSlab::with('slabInfo')
+                    ->select('*', 'id as slab_id')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("cancellationslab-info");
                 }
+
                 $data['row'] = $dataResQry;
 
-                // return $data['row'];
             } else {
                 $id = 0;
                 $redirectPage = "admin/cancellationslab-info";
@@ -169,6 +170,11 @@ class CancellationslabInfoController extends Controller
                     $durations = request('duration');
                     $deductions = request('deduction');
 
+                    $oldRows = DB::table('mst_cancellationslab_info')
+                        ->where('slab_id', $slab_id)
+                        ->get()
+                        ->toArray();
+
                     if ($id > 0) {
                         DB::table('mst_cancellationslab_info')
                             ->where('slab_id', $slab_id)
@@ -179,14 +185,24 @@ class CancellationslabInfoController extends Controller
 
                     foreach ($durations as $key => $duration) {
 
-                        $insertData[] = [
-                            'slab_id' => $slab_id,
-                            'duration' => $duration,
-                            'deduction' => $deductions[$key] ?? 0,
+                        $row = [
+                            'slab_id'    => $slab_id,
+                            'duration'   => $duration,
+                            'deduction'  => $deductions[$key] ?? 0,
                             'active_status' => 1,
                             'created_at' => now(),
                             'updated_at' => now()
                         ];
+
+                        $insertData[] = $row;
+
+                        app(CommonController::class)->auditLog(
+                            'mst_cancellationslab_info',
+                            null,
+                            ($id > 0 ? 'UPDATE' : 'INSERT'),
+                            ($id > 0 ? $oldRows : []),
+                            $row
+                        );
                     }
 
                     DB::table('mst_cancellationslab_info')->insert($insertData);
@@ -194,9 +210,13 @@ class CancellationslabInfoController extends Controller
                     DB::commit();
 
                     session()->flash('level', 'success');
-                    session()->flash('message', 'Cancellation Slab Info ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
+                    session()->flash(
+                        'message',
+                        'Cancellation Slab Info ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                    );
 
                     return redirect($redirectPage);
+
                 } catch (\Exception $e) {
 
                     DB::rollBack();
@@ -207,22 +227,23 @@ class CancellationslabInfoController extends Controller
                     ]);
                 }
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'CancellationslabInfoController',
                 'Method'     => $method,
                 'Error'      => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addCancellationslabInfo', compact('data'));
     }
 

@@ -9,6 +9,7 @@ use App\Models\Master\Modules;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\DB;
 
 class ModulesController extends Controller
@@ -44,11 +45,14 @@ class ModulesController extends Controller
                 }
 
                 $data['row'] = $row;
+
             } else {
                 $redirectPage = "admin/modules";
             }
 
             if (request()->isMethod('post')) {
+
+                request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
                     'moduleCode.*' => [
@@ -69,25 +73,16 @@ class ModulesController extends Controller
 
                 $parentId = (int) Purifier::clean(request('selParent', 0));
 
-                $codes = array_map(function ($val) {
-                    return strtoupper(trim(Purifier::clean($val)));
-                }, request('moduleCode', []));
-
-                $names = array_map(function ($val) {
-                    return trim(Purifier::clean($val));
-                }, request('moduleName', []));
-
-                $seqs = array_map(function ($val) {
-                    return (int) Purifier::clean($val);
-                }, request('sequence_no', []));
+                $codes = array_map(fn($v) => strtoupper(trim(Purifier::clean($v))), request('moduleCode', []));
+                $names = array_map(fn($v) => trim(Purifier::clean($v)), request('moduleName', []));
+                $seqs  = array_map(fn($v) => (int) Purifier::clean($v), request('sequence_no', []));
 
                 if ($id > 0) {
 
-                    // Duplicate check
                     if (
                         Modules::where('code', $codes[0])
-                        ->where('id', '!=', $id)
-                        ->exists()
+                            ->where('id', '!=', $id)
+                            ->exists()
                     ) {
                         DB::rollBack();
                         return back()->with([
@@ -96,18 +91,49 @@ class ModulesController extends Controller
                         ])->withInput();
                     }
 
-                    // Auto sequence if parent selected
                     $sequence = ($parentId > 0)
                         ? (Modules::where('parent_id', $parentId)->max('sequence_no') ?? 0) + 1
                         : ($seqs[0] ?? 1);
 
-                    $row->update([
+                    $oldData = Modules::find($id);
+
+                    $newData = [
+                        'parent_id'   => $parentId,
+                        'code'        => htmlEncode($codes[0]),
+                        'name'        => htmlEncode($names[0]),
+                        'sequence_no' => $sequence
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_modules',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->update([
                         'parent_id'   => $parentId,
                         'code'        => htmlEncode($codes[0]),
                         'name'        => htmlEncode($names[0]),
                         'sequence_no' => $sequence,
                         'updated_by'  => 1
                     ]);
+
                 } else {
 
                     foreach ($codes as $index => $code) {
@@ -124,14 +150,24 @@ class ModulesController extends Controller
                             ? (Modules::where('parent_id', $parentId)->max('sequence_no') ?? 0) + 1
                             : ($seqs[$index] ?? 1);
 
-                        Modules::create([
+                        $row = [
                             'parent_id'     => $parentId,
                             'code'          => htmlEncode($code),
                             'name'          => htmlEncode($names[$index]),
                             'sequence_no'   => $sequence,
                             'active_status' => 1,
                             'created_by'    => 1
-                        ]);
+                        ];
+
+                        app(CommonController::class)->auditLog(
+                            'mst_modules',
+                            null,
+                            'INSERT',
+                            [],
+                            $row
+                        );
+
+                        Modules::create($row);
                     }
                 }
 
@@ -145,6 +181,7 @@ class ModulesController extends Controller
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

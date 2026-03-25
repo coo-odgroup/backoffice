@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class AxleTypeController extends Controller
@@ -143,6 +144,7 @@ class AxleTypeController extends Controller
                 }
 
                 $data['row'] = $dataResQry;
+
             } else {
 
                 $id = 0;
@@ -151,8 +153,10 @@ class AxleTypeController extends Controller
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'axleType' => 'required',
+                    'axleType' => 'bail|required',
                 ], [
                     'axleType.required' => 'Axle Type cannot be blank.',
                 ]);
@@ -162,6 +166,7 @@ class AxleTypeController extends Controller
                 }
 
                 DB::beginTransaction();
+
                 $axleType = htmlEncode(request('axleType'));
 
                 $duplicate = DB::table('mst_axle_type')
@@ -172,14 +177,43 @@ class AxleTypeController extends Controller
                 }
 
                 if ($duplicate->exists()) {
-
                     return back()->with([
                         'level'   => 'danger',
-                        'message' => 'Axel Type  already exists'
+                        'message' => 'Axle Type already exists'
                     ])->withInput();
                 }
 
                 if ($id != 0) {
+
+                    $oldData = DB::table('mst_axle_type')
+                        ->where('id', $id)
+                        ->first();
+
+                    $newData = [
+                        'axle_type' => $axleType
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_axle_type',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
 
                     DB::table('mst_axle_type')
                         ->where('id', $id)
@@ -188,23 +222,38 @@ class AxleTypeController extends Controller
                             'updated_by' => auth()->id(),
                             'updated_at' => now()
                         ]);
+
                 } else {
 
-                    DB::table('mst_axle_type')->insert([
+                    $row = [
                         'axle_type'    => $axleType,
-                        'created_by'    => auth()->id(),
-                        'active_status' => 1,
-                        'created_at'    => now()
-                    ]);
+                        'created_by'   => auth()->id(),
+                        'active_status'=> 1,
+                        'created_at'   => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_axle_type',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    DB::table('mst_axle_type')->insert($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level', 'success');
-                session()->flash('message', 'Axle Type ' . ($id ? 'updated' : 'created') . ' successfully.');
+                session()->flash(
+                    'message',
+                    'Axle Type ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

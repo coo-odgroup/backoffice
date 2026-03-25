@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mews\Purifier\Facades\Purifier;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Http\Controllers\CommonController;
 
 class PricingPlanController extends Controller
 {
@@ -52,21 +51,23 @@ class PricingPlanController extends Controller
                 }
 
                 $data['row'] = $row;
-            } else {
 
+            } else {
+                $id = 0;
                 $redirectPage = route('pricingPlan.index');
             }
 
-
             if (request()->isMethod('post')) {
+
+                request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
 
-                    'placement'     => 'required',
-                    'defaultModel'  => 'required',
-                    'planName'      => 'required|max:100',
-                    'Price'         => 'required|numeric',
-                    'duration'      => 'required|integer|min:1|max:90',
+                    'placement'     => 'bail|required',
+                    'defaultModel'  => 'bail|required',
+                    'planName'      => 'bail|required|max:100',
+                    'Price'         => 'bail|required|numeric',
+                    'duration'      => 'bail|required|integer|min:1|max:90',
 
                 ], [
 
@@ -90,28 +91,80 @@ class PricingPlanController extends Controller
 
                 DB::beginTransaction();
 
-                $placementId = trim(Purifier::clean(request('placement')));
+                $placementId = (int) Purifier::clean(request('placement'));
                 $model       = trim(Purifier::clean(request('defaultModel')));
-                $planName    = trim(Purifier::clean(request('planName')));
-                $price       = trim(Purifier::clean(request('Price')));
-                $duration    = trim(Purifier::clean(request('duration')));
-
-
-                $obj = ($id > 0) ? PricingPlan::find($id) : new PricingPlan();
-
-                $obj->plan_name     = htmlEncode($planName);
-                $obj->placement_id  = $placementId;
-                $obj->model         = $model;
-                $obj->price         = htmlEncode($price);
-                $obj->duration_days = $duration;
+                $planName    = htmlEncode(trim(Purifier::clean(request('planName'))));
+                $price       = (float) Purifier::clean(request('Price'));
+                $duration    = (int) Purifier::clean(request('duration'));
 
                 if ($id > 0) {
-                    $obj->updated_by = 1;
-                } else {
-                    $obj->created_by = 1;
-                }
 
-                $obj->save();
+                    $oldData = PricingPlan::find($id);
+
+                    $newData = [
+                        'plan_name'     => $planName,
+                        'placement_id'  => $placementId,
+                        'model'         => $model,
+                        'price'         => $price,
+                        'duration_days' => $duration
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_pricing_plan',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+
+                    $oldData->plan_name     = $planName;
+                    $oldData->placement_id  = $placementId;
+                    $oldData->model         = $model;
+                    $oldData->price         = $price;
+                    $oldData->duration_days = $duration;
+                    $oldData->updated_by    = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'plan_name'     => $planName,
+                        'placement_id'  => $placementId,
+                        'model'         => $model,
+                        'price'         => $price,
+                        'duration_days' => $duration,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_pricing_plan',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new PricingPlan();
+                    $obj->fill($row);
+                    $obj->save();
+                }
 
                 DB::commit();
 
@@ -123,6 +176,7 @@ class PricingPlanController extends Controller
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

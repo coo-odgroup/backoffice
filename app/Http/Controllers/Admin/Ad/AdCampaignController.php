@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mews\Purifier\Facades\Purifier;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Http\Controllers\CommonController;
 
 class AdCampaignController extends Controller
 {
@@ -54,23 +53,25 @@ class AdCampaignController extends Controller
                 }
 
                 $data['row'] = $row;
-            } else {
 
+            } else {
+                $id = 0;
                 $redirectPage = route('AdCampaign.index');
             }
 
-
             if (request()->isMethod('post')) {
+
+                request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
 
-                    'vendor'       => 'required',
-                    'placement'    => 'required',
-                    'pricingPlan'  => 'required',
-                    'title'        => 'required|max:100',
-                    'startDate'    => 'required|date',
-                    'endDate'      => 'required|date|after_or_equal:startDate',
-                    'budget'       => 'required|numeric|max:99999999',
+                    'vendor'       => 'bail|required',
+                    'placement'    => 'bail|required',
+                    'pricingPlan'  => 'bail|required',
+                    'title'        => 'bail|required|max:100',
+                    'startDate'    => 'bail|required|date',
+                    'endDate'      => 'bail|required|date|after_or_equal:startDate',
+                    'budget'       => 'bail|required|numeric|max:99999999',
 
                 ], [
 
@@ -83,7 +84,7 @@ class AdCampaignController extends Controller
 
                     'startDate.required'    => 'Start Date cannot be blank.',
                     'endDate.required'      => 'End Date cannot be blank.',
-                    'endDate.after_or_equal' => 'End Date cannot be earlier than Start Date.',
+                    'endDate.after_or_equal'=> 'End Date cannot be earlier than Start Date.',
 
                     'budget.required'       => 'Budget cannot be left blank.',
                     'budget.numeric'        => 'Budget must contain numbers only.',
@@ -95,31 +96,87 @@ class AdCampaignController extends Controller
 
                 DB::beginTransaction();
 
-                $vendor       = trim(Purifier::clean(request('vendor')));
-                $placement    = trim(Purifier::clean(request('placement')));
-                $pricingPlan  = trim(Purifier::clean(request('pricingPlan')));
-                $title        = trim(Purifier::clean(request('title')));
+                $vendor       = (int) Purifier::clean(request('vendor'));
+                $placement    = (int) Purifier::clean(request('placement'));
+                $pricingPlan  = (int) Purifier::clean(request('pricingPlan'));
+                $title        = htmlEncode(trim(Purifier::clean(request('title'))));
                 $startDate    = trim(Purifier::clean(request('startDate')));
                 $endDate      = trim(Purifier::clean(request('endDate')));
-                $budget       = trim(Purifier::clean(request('budget')));
-
-                $obj = ($id > 0) ? AdCampaign::find($id) : new AdCampaign();
-
-                $obj->vendor_id       = $vendor;
-                $obj->placement_id    = $placement;
-                $obj->pricing_plan_id = $pricingPlan;
-                $obj->title           = htmlEncode($title);
-                $obj->start_date      = $startDate;
-                $obj->end_date        = $endDate;
-                $obj->total_budget    = $budget;
+                $budget       = (float) Purifier::clean(request('budget'));
 
                 if ($id > 0) {
-                    $obj->updated_by = 1;
-                } else {
-                    $obj->created_by = 1;
-                }
 
-                $obj->save();
+                    $oldData = AdCampaign::find($id);
+
+                    $newData = [
+                        'vendor_id'       => $vendor,
+                        'placement_id'    => $placement,
+                        'pricing_plan_id' => $pricingPlan,
+                        'title'           => $title,
+                        'start_date'      => $startDate,
+                        'end_date'        => $endDate,
+                        'total_budget'    => $budget
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_ad_campaign',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->vendor_id       = $vendor;
+                    $oldData->placement_id    = $placement;
+                    $oldData->pricing_plan_id = $pricingPlan;
+                    $oldData->title           = $title;
+                    $oldData->start_date      = $startDate;
+                    $oldData->end_date        = $endDate;
+                    $oldData->total_budget    = $budget;
+                    $oldData->updated_by      = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'vendor_id'       => $vendor,
+                        'placement_id'    => $placement,
+                        'pricing_plan_id' => $pricingPlan,
+                        'title'           => $title,
+                        'start_date'      => $startDate,
+                        'end_date'        => $endDate,
+                        'total_budget'    => $budget,
+                        'created_by'      => 1,
+                        'active_status'   => 1,
+                        'created_at'      => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_ad_campaign',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new AdCampaign();
+                    $obj->fill($row);
+                    $obj->save();
+                }
 
                 DB::commit();
 
@@ -131,6 +188,7 @@ class AdCampaignController extends Controller
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

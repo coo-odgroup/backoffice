@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Http\Controllers\CommonController;
 
 class BlogController extends Controller
 {
@@ -140,7 +140,6 @@ class BlogController extends Controller
 
     public function add($encId = null)
     {
-
         $config = config('blog.blog');
 
         $data = [];
@@ -159,14 +158,14 @@ class BlogController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Blog::select('id', 'category_id', 'title', 'slug', 'short_description', 'content', 'thumb_alt_text', 'thumb_image', 'feature_alt_text', 'featured_image', 'author_name', 'is_featured', 'active_status', 'published_at', 'meta_title', 'meta_description', 'meta_keywords', 'og_image', 'canonical_url', 'view_count');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = Blog::where('id', $id)->first();
 
                 if (empty($dataResQry)) {
                     return redirect("blogs");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/blogs";
@@ -174,151 +173,193 @@ class BlogController extends Controller
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
                 $validator = Validator::make(request()->all(), [
                     'title' => 'bail|required',
                     'slug' => 'bail|required',
                     'short_description' => 'bail|required',
                     'category_id' => 'bail|required'
-                ], [
-                    'title.required' => 'Title cannot be left blank.',
-                    'slug.required' => 'Slug cannot be left blank.',
-                    'short_description.required' => 'Short Description cannot be left blank.',
-                    'category_id.required' => 'Category cannot be left blank.'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $title = htmlEncode(request('title'));
-                    $slug = htmlEncode(request('slug'));
-                    $short_description = htmlEncode(request('short_description'));
-                    $content = htmlEncode(request('content'));
-                    $category_id = request('category_id');
-                    $is_featured = request('is_featured');
-                    $thumb_alt_text = htmlEncode(request('thumb_alt_text'));
-                    $feature_alt_text = htmlEncode(request('feature_alt_text'));
-                    $meta_title = htmlEncode(request('meta_title'));
-                    $canonical_url = htmlEncode(request('canonical_url'));
-                    $meta_description = htmlEncode(request('meta_description'));
-                    $meta_keywords = htmlEncode(request('meta_keywords'));
-
-                    $duplicate = Blog::select('id')->where(['title' => $title]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'Blog already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? Blog::find($id) : new Blog();
-                        $obj->title = $title;
-                        $obj->slug = $slug;
-                        $obj->short_description = $short_description;
-                        $obj->content = $content;
-                        $obj->category_id = $category_id;
-                        $obj->is_featured = $is_featured;
-                        $obj->thumb_alt_text = $thumb_alt_text;
-                        $obj->feature_alt_text = $feature_alt_text;
-                        $obj->meta_title = $meta_title;
-                        $obj->canonical_url = $canonical_url;
-                        $obj->meta_description = $meta_description;
-                        $obj->meta_keywords = $meta_keywords;
-                        $obj->published_at = now();
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $path = $config['path'];
-
-                        if (!Storage::disk('public')->exists($path)) {
-                            Storage::disk('public')->makeDirectory($path);
-                        }
-
-                        if (request()->hasFile('thumb_image')) {
-
-                            // delete old image
-                            if (!empty($data['row']->thumb_image) && Storage::disk('public')->exists($path . '/' . $data['row']->thumb_image)) {
-                                Storage::disk('public')->delete($path . '/' . $data['row']->thumb_image);
-                            }
-
-                            // upload new image
-                            $file = request()->file('thumb_image');
-                            $thumb_image = 'thumb-' . time() . rand() . '.' . $file->getClientOriginalExtension();
-
-                            $file->storeAs($path, $thumb_image, 'public');
-
-                            $obj->thumb_image = $thumb_image;
-                        }
-
-                        if (request()->hasFile('featured_image')) {
-
-                            // delete old image
-                            if (!empty($data['row']->featured_image) && Storage::disk('public')->exists($path . '/' . $data['row']->featured_image)) {
-                                Storage::disk('public')->delete($path . '/' . $data['row']->featured_image);
-                            }
-
-                            // upload new image
-                            $file2 = request()->file('featured_image');
-                            $featured_image = 'featured-' . time() . rand() . '.' . $file2->getClientOriginalExtension();
-
-                            $file2->storeAs($path, $featured_image, 'public');
-
-                            $obj->featured_image = $featured_image;
-                        }
-
-                        if (request()->hasFile('og_image')) {
-
-                            // delete old image
-                            if (!empty($data['row']->og_image) && Storage::disk('public')->exists($path . '/' . $data['row']->og_image)) {
-                                Storage::disk('public')->delete($path . '/' . $data['row']->og_image);
-                            }
-
-                            // upload new image
-                            $file3 = request()->file('og_image');
-                            $og_image = 'og-' . time() . rand() . '.' . $file3->getClientOriginalExtension();
-
-                            $file3->storeAs($path, $og_image, 'public');
-
-                            $obj->og_image = $og_image;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Blog Category ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $title = htmlEncode(request('title'));
+                $slug = htmlEncode(request('slug'));
+                $short_description = htmlEncode(request('short_description'));
+                $content = htmlEncode(request('content'));
+                $category_id = request('category_id');
+                $is_featured = request('is_featured');
+
+                $thumb_alt_text = htmlEncode(request('thumb_alt_text'));
+                $feature_alt_text = htmlEncode(request('feature_alt_text'));
+
+                $meta_title = htmlEncode(request('meta_title'));
+                $canonical_url = htmlEncode(request('canonical_url'));
+                $meta_description = htmlEncode(request('meta_description'));
+                $meta_keywords = htmlEncode(request('meta_keywords'));
+
+                $duplicate = Blog::where('title', $title);
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level' => 'danger',
+                        'message' => 'Blog already exist'
+                    ])->withInput();
+                }
+
+                $path = $config['path'];
+
+                if (!Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->makeDirectory($path);
+                }
+
+                $newThumb = null;
+                $newFeature = null;
+                $newOg = null;
+
+                if (request()->hasFile('thumb_image')) {
+                    if ($id && !empty($data['row']->thumb_image)) {
+                        Storage::disk('public')->delete($path . '/' . $data['row']->thumb_image);
+                    }
+
+                    $file = request()->file('thumb_image');
+                    $newThumb = 'thumb-' . time() . rand() . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs($path, $newThumb, 'public');
+                }
+
+                if (request()->hasFile('featured_image')) {
+                    if ($id && !empty($data['row']->featured_image)) {
+                        Storage::disk('public')->delete($path . '/' . $data['row']->featured_image);
+                    }
+
+                    $file2 = request()->file('featured_image');
+                    $newFeature = 'featured-' . time() . rand() . '.' . $file2->getClientOriginalExtension();
+                    $file2->storeAs($path, $newFeature, 'public');
+                }
+
+                if (request()->hasFile('og_image')) {
+                    if ($id && !empty($data['row']->og_image)) {
+                        Storage::disk('public')->delete($path . '/' . $data['row']->og_image);
+                    }
+
+                    $file3 = request()->file('og_image');
+                    $newOg = 'og-' . time() . rand() . '.' . $file3->getClientOriginalExtension();
+                    $file3->storeAs($path, $newOg, 'public');
+                }
+
+                if ($id > 0) {
+
+                    $oldData = Blog::find($id);
+
+                    $newData = [
+                        'title' => $title,
+                        'slug' => $slug,
+                        'short_description' => $short_description,
+                        'content' => $content,
+                        'category_id' => $category_id,
+                        'is_featured' => $is_featured,
+                        'thumb_alt_text' => $thumb_alt_text,
+                        'feature_alt_text' => $feature_alt_text,
+                        'meta_title' => $meta_title,
+                        'canonical_url' => $canonical_url,
+                        'meta_description' => $meta_description,
+                        'meta_keywords' => $meta_keywords,
+                        'thumb_image' => $newThumb ?: $oldData->thumb_image,
+                        'featured_image' => $newFeature ?: $oldData->featured_image,
+                        'og_image' => $newOg ?: $oldData->og_image,
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_blog',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->fill($newData);
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'title' => $title,
+                        'slug' => $slug,
+                        'short_description' => $short_description,
+                        'content' => $content,
+                        'category_id' => $category_id,
+                        'is_featured' => $is_featured,
+                        'thumb_alt_text' => $thumb_alt_text,
+                        'feature_alt_text' => $feature_alt_text,
+                        'meta_title' => $meta_title,
+                        'canonical_url' => $canonical_url,
+                        'meta_description' => $meta_description,
+                        'meta_keywords' => $meta_keywords,
+                        'thumb_image' => $newThumb,
+                        'featured_image' => $newFeature,
+                        'og_image' => $newOg,
+                        'created_by' => 1,
+                        'active_status' => 1,
+                        'published_at' => now(),
+                        'created_at' => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_blog',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    Blog::create($row);
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'Blog ' . ($id ? 'updated' : 'created') . ' successfully.');
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'BlogController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('admin.blogs.addBlogs', compact('data'));
     }
 

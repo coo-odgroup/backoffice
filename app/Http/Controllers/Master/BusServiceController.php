@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class BusServiceController extends Controller
@@ -151,8 +152,10 @@ class BusServiceController extends Controller
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'busService' => 'required|max:100'
+                    'busService' => 'bail|required|max:100'
                 ], [
                     'busService.required' => 'Bus Service Name cannot be blank.'
                 ]);
@@ -174,7 +177,6 @@ class BusServiceController extends Controller
                 }
 
                 if ($duplicate->exists()) {
-
                     return back()->with([
                         'level'   => 'danger',
                         'message' => 'Bus Service already exists'
@@ -182,6 +184,37 @@ class BusServiceController extends Controller
                 }
 
                 if ($id != 0) {
+
+                    $oldData = DB::table('mst_bus_service')
+                        ->where('id', $id)
+                        ->first();
+
+                    $newData = [
+                        'bus_service_name' => $busService,
+                        'description'      => $description
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_bus_service',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
 
                     DB::table('mst_bus_service')
                         ->where('id',$id)
@@ -194,19 +227,32 @@ class BusServiceController extends Controller
 
                 } else {
 
-                    DB::table('mst_bus_service')->insert([
+                    $row = [
                         'bus_service_name' => $busService,
                         'description'      => $description,
                         'created_by'       => auth()->id(),
                         'active_status'    => 1,
                         'created_at'       => now()
-                    ]);
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_bus_service',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    DB::table('mst_bus_service')->insert($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level','success');
-                session()->flash('message','Bus Service '.($id ? 'updated' : 'created').' successfully.');
+                session()->flash(
+                    'message',
+                    'Bus Service '.(($id != 0) ? 'updated' : 'created').' successfully.'
+                );
 
                 return redirect($redirectPage);
             }

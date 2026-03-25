@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
 
 class ApiAppsController extends Controller
@@ -128,7 +129,6 @@ class ApiAppsController extends Controller
 
     public function add($encId = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -145,14 +145,16 @@ class ApiAppsController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = ApiApps::select('id', 'app_name', 'app_code');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = ApiApps::select('id', 'app_name', 'app_code')
+                    ->where('id', $id)
+                    ->first();
 
                 if (empty($dataResQry)) {
                     return redirect("apiapps");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/apiapps";
@@ -174,60 +176,112 @@ class ApiAppsController extends Controller
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $app_name = htmlEncode(request('app_name'));
-                    $app_code = htmlEncode(request('app_code'));
-
-                    $duplicate = ApiApps::select('id')->where(['app_name' => $app_name]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'App Name already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? ApiApps::find($id) : new ApiApps();
-                        $obj->app_name = $app_name;
-                        $obj->app_code = $app_code;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'App Name and Code ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
                 }
+
+                DB::beginTransaction();
+
+                $app_name = htmlEncode(request('app_name'));
+                $app_code = htmlEncode(request('app_code'));
+
+                $duplicate = ApiApps::select('id')->where(['app_name' => $app_name]);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level' => 'danger',
+                        'message' => 'App Name already exist'
+                    ])->withInput();
+                }
+
+                if ($id != 0) {
+
+                    $oldData = ApiApps::find($id);
+
+                    $newData = [
+                        'app_name' => $app_name,
+                        'app_code' => $app_code
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_api_apps',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->app_name = $app_name;
+                    $oldData->app_code = $app_code;
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'app_name'     => $app_name,
+                        'app_code'     => $app_code,
+                        'created_by'   => 1,
+                        'active_status'=> 1,
+                        'created_at'   => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_api_apps',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new ApiApps();
+                    $obj->fill($row);
+                    $obj->save();
+                }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash(
+                    'message',
+                    'App Name and Code ' . (($id != 0) ? 'updated' : 'created') . ' successfully.'
+                );
+
+                return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'ApiAppsController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('Master.addApiApps', compact('data'));
     }
 

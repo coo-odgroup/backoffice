@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Mews\Purifier\Facades\Purifier;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Http\Controllers\CommonController;
 
 class BlogCategoryController extends Controller
 {
@@ -146,22 +146,25 @@ class BlogCategoryController extends Controller
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
-
             if ($id > 0) {
 
                 $redirectPage = "admin/blog-category/edit/" . $encId;
-                $data['strPage']    = $method = 'Edit';
-                $data['strSubmit']  = 'Update';
-                $data['strReset']   = 'Cancel';
+                $data['strPage'] = $method = 'Edit';
+                $data['strSubmit'] = 'Update';
+                $data['strReset'] = 'Cancel';
 
-                $dataResQry = BlogCategory::select('id', 'category_name', 'slug', 'description', 'icon', 'alt_text', 'banner_image', 'meta_title', 'meta_description', 'meta_keywords', 'og_image', 'canonical_url');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
+                $dataResQry = BlogCategory::select(
+                    'id','category_name','slug','description','icon','alt_text',
+                    'banner_image','meta_title','meta_description','meta_keywords',
+                    'og_image','canonical_url'
+                )->where('id', $id)->first();
 
                 if (empty($dataResQry)) {
                     return redirect("admin/blog-category");
                 }
+
                 $data['row'] = $dataResQry;
+
             } else {
                 $id = 0;
                 $redirectPage = "admin/blog-category";
@@ -169,132 +172,171 @@ class BlogCategoryController extends Controller
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
                 $validator = Validator::make(request()->all(), [
-                    'categoryName' => 'required|max:50',
+                    'categoryName'  => 'required|max:50',
                     'categoryAlias' => 'required|max:50',
-                    'banner_image' => [
-                        'nullable',
-                        'max:' . $config['max_size'], // in KB
-                    ]
-
-                ], [
-                    'categoryName.required' => 'Category name cannot be left blank.',
-                    'categoryName.exists' => 'Category Name already exist.',
-                    'categoryName.max' => 'Category Name exceed max characters.',
-
-                    'categoryAlias.required' => 'Category alias cannot be left blank.',
-                    'categoryAlias.exists' => 'Category alias already exist.',
-                    'categoryAlias.max' => 'Category alias exceed max characters.',
+                    'banner_image'  => ['nullable','max:' . $config['max_size']]
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
+                }
+
+                DB::beginTransaction();
+
+                $categoryName = htmlEncode(Purifier::clean(request('categoryName')));
+                $categoryAlias = htmlEncode(Purifier::clean(request('categoryAlias')));
+                $altText = htmlEncode(Purifier::clean(request('categoryAlias')));
+                $icon = htmlEncode(Purifier::clean(request('icon')));
+                $description = htmlEncode(Purifier::clean(request('description')));
+
+                $meta_title = htmlEncode(request('meta_title'));
+                $canonical_url = htmlEncode(request('canonical_url'));
+                $meta_description = htmlEncode(request('meta_description'));
+                $meta_keywords = htmlEncode(request('meta_keywords'));
+
+                $duplicate = BlogCategory::where('category_name', $categoryName);
+
+                if ($id != 0) {
+                    $duplicate->where('id', '!=', $id);
+                }
+
+                if ($duplicate->exists()) {
+                    return back()->with([
+                        'level' => 'danger',
+                        'message' => 'Category already exist'
+                    ])->withInput();
+                }
+
+                $path = $config['path'];
+
+                if (!Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->makeDirectory($path);
+                }
+
+                $newBanner = null;
+                $newOg = null;
+
+                if (request()->hasFile('banner_image')) {
+
+                    if ($id && !empty($data['row']->banner_image)) {
+                        Storage::disk('public')->delete($path . '/' . $data['row']->banner_image);
+                    }
+
+                    $file = request()->file('banner_image');
+                    $newBanner = 'banner-' . time() . rand() . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs($path, $newBanner, 'public');
+                }
+
+                if (request()->hasFile('og_image')) {
+
+                    if ($id && !empty($data['row']->og_image)) {
+                        Storage::disk('public')->delete($path . '/' . $data['row']->og_image);
+                    }
+
+                    $file = request()->file('og_image');
+                    $newOg = 'og-' . time() . rand() . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs($path, $newOg, 'public');
+                }
+
+                if ($id > 0) {
+
+                    $oldData = BlogCategory::find($id);
+
+                    $newData = [
+                        'category_name'   => $categoryName,
+                        'slug'            => $categoryAlias,
+                        'icon'            => $icon,
+                        'description'     => $description,
+                        'alt_text'        => $altText,
+                        'meta_title'      => $meta_title,
+                        'canonical_url'   => $canonical_url,
+                        'meta_description'=> $meta_description,
+                        'meta_keywords'   => $meta_keywords,
+                        'banner_image'    => $newBanner ?: $oldData->banner_image,
+                        'og_image'        => $newOg ?: $oldData->og_image
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_blog_category',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+                    $oldData->fill($newData);
+                    $oldData->updated_by = 1;
+                    $oldData->save();
+
                 } else {
 
-                    DB::beginTransaction();
+                    $row = [
+                        'category_name'   => $categoryName,
+                        'slug'            => $categoryAlias,
+                        'icon'            => $icon,
+                        'description'     => $description,
+                        'alt_text'        => $altText,
+                        'meta_title'      => $meta_title,
+                        'canonical_url'   => $canonical_url,
+                        'meta_description'=> $meta_description,
+                        'meta_keywords'   => $meta_keywords,
+                        'banner_image'    => $newBanner,
+                        'og_image'        => $newOg,
+                        'created_by'      => 1,
+                        'active_status'   => 1,
+                        'created_at'      => now()
+                    ];
 
-                    $categoryName = htmlEncode(Purifier::clean(request('categoryName')));
-                    $categoryAlias = htmlEncode(Purifier::clean(request('categoryAlias')));
-                    $altText = (request('categoryAlias') !== null) ? htmlEncode(Purifier::clean(request('categoryAlias'))) : null;
-                    $icon = (request('icon') !== null) ? htmlEncode(Purifier::clean(request('icon'))) : null;
-                    $description = (request('description') !== null) ? htmlEncode(Purifier::clean(request('description'))) : null;
+                    app(CommonController::class)->auditLog(
+                        'mst_blog_category',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
 
-                    $meta_title = htmlEncode(request('meta_title'));
-                    $canonical_url = htmlEncode(request('canonical_url'));
-                    $meta_description = htmlEncode(request('meta_description'));
-                    $meta_keywords = htmlEncode(request('meta_keywords'));
-
-                    $duplicate = BlogCategory::select('id')->where(['category_name' => $categoryName]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'Category already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? BlogCategory::find($id) : new BlogCategory();
-                        $obj->category_name = $categoryName;
-                        $obj->slug = $categoryAlias;
-                        $obj->icon = $icon;
-                        $obj->description = $description;
-                        $obj->alt_text = $altText;
-                        $obj->meta_title = $meta_title;
-                        $obj->canonical_url = $canonical_url;
-                        $obj->meta_description = $meta_description;
-                        $obj->meta_keywords = $meta_keywords;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        $path = $config['path'];
-
-                        if (!Storage::disk('public')->exists($path)) {
-                            Storage::disk('public')->makeDirectory($path);
-                        }
-
-                        if (request()->hasFile('banner_image')) {
-
-                            // delete old image
-                            if (!empty($data['row']->banner_image) && Storage::disk('public')->exists($path . '/' . $data['row']->banner_image)) {
-                                Storage::disk('public')->delete($path . '/' . $data['row']->banner_image);
-                            }
-
-                            // upload new image
-                            $file = request()->file('banner_image');
-                            $filename = 'banner-' . time() . rand() . '.' . $file->getClientOriginalExtension();
-
-                            $file->storeAs($path, $filename, 'public');
-
-                            $obj->banner_image = $filename;
-                        }
-
-                        if (request()->hasFile('og_image')) {
-
-                            // delete old image
-                            if (!empty($data['row']->og_image) && Storage::disk('public')->exists($path . '/' . $data['row']->og_image)) {
-                                Storage::disk('public')->delete($path . '/' . $data['row']->og_image);
-                            }
-
-                            // upload new image
-                            $file3 = request()->file('og_image');
-                            $og_image = 'og-' . time() . rand() . '.' . $file3->getClientOriginalExtension();
-
-                            $file3->storeAs($path, $og_image, 'public');
-
-                            $obj->og_image = $og_image;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Blog Category ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
+                    BlogCategory::create($row);
                 }
+
+                DB::commit();
+
+                session()->flash('level', 'success');
+                session()->flash('message', 'Blog Category ' . ($id ? 'updated' : 'created') . ' successfully.');
+
+                return redirect($redirectPage);
+
             }
+
         } catch (\Throwable $t) {
+
+            DB::rollBack();
+
             Log::error("Error", [
                 'Controller' => 'BlogCategoryController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
 
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
             return back()->with([
                 'level' => 'danger',
-                'message' => $errorMsg
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
         return view('admin.blogs.addBlogCategory', compact('data'));
     }
 

@@ -9,6 +9,7 @@ use App\Models\Master\Roles;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\DB;
 
 class RolesController extends Controller
@@ -45,8 +46,6 @@ class RolesController extends Controller
                     'is_system_role'
                 )->where('id', $id)->first();
 
-                log::info($row);
-
                 if (!$row) {
                     return redirect('roles');
                 }
@@ -54,19 +53,23 @@ class RolesController extends Controller
                 $data['row'] = $row;
 
             } else {
+                $id = 0;
                 $redirectPage = "admin/roles";
             }
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
-                    'roleType'    => 'required|max:100',
+                    'roleType'    => 'bail|required|max:100',
                     'roleCode'    => [
+                        'bail',
                         'required',
                         'max:100',
                         'regex:/^[A-Z]+(_[A-Z]+)*$/'
                     ],
-                    'Type'        => 'required|in:1,2',
+                    'Type'        => 'bail|required|in:1,2',
                     'description' => 'nullable|max:256'
                 ], [
                     'roleType.required' => 'Role Type cannot be left blank.',
@@ -81,9 +84,9 @@ class RolesController extends Controller
 
                 DB::beginTransaction();
 
-                $roleType    = trim(Purifier::clean(request('roleType')));
-                $roleCode    = strtoupper(trim(Purifier::clean(request('roleCode'))));
-                $description = trim(Purifier::clean(request('description')));
+                $roleType    = htmlEncode(trim(Purifier::clean(request('roleType'))));
+                $roleCode    = htmlEncode(strtoupper(trim(Purifier::clean(request('roleCode')))));
+                $description = htmlEncode(trim(Purifier::clean(request('description'))));
                 $roleFlag    = (int) Purifier::clean(request('Type'));
 
                 $duplicate = Roles::where('code', $roleCode);
@@ -100,21 +103,72 @@ class RolesController extends Controller
                     ])->withInput();
                 }
 
-                $obj = ($id > 0) ? Roles::find($id) : new Roles();
-
-                $obj->name            = htmlEncode($roleType);
-                $obj->code            = htmlEncode($roleCode);
-                $obj->description     = htmlEncode($description);
-                $obj->is_system_role  = $roleFlag;
-                $obj->active_status   = 1;
-
                 if ($id > 0) {
-                    $obj->updated_by = 1;
-                } else {
-                    $obj->created_by = 1;
-                }
 
-                $obj->save();
+                    $oldData = Roles::find($id);
+
+                    $newData = [
+                        'name'           => $roleType,
+                        'code'           => $roleCode,
+                        'description'    => $description,
+                        'is_system_role' => $roleFlag,
+                        'active_status'  => 1
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_roles',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->name            = $roleType;
+                    $oldData->code            = $roleCode;
+                    $oldData->description     = $description;
+                    $oldData->is_system_role  = $roleFlag;
+                    $oldData->active_status   = 1;
+                    $oldData->updated_by      = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'name'           => $roleType,
+                        'code'           => $roleCode,
+                        'description'    => $description,
+                        'is_system_role' => $roleFlag,
+                        'active_status'  => 1,
+                        'created_by'     => 1,
+                        'created_at'     => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_roles',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new Roles();
+                    $obj->fill($row);
+                    $obj->save();
+                }
 
                 DB::commit();
 

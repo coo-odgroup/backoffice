@@ -8,9 +8,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 use Mews\Purifier\Facades\Purifier;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class AdPlacementController extends Controller
 {
@@ -51,28 +50,32 @@ class AdPlacementController extends Controller
                 }
 
                 $data['row'] = $row;
+
             } else {
+                $id = 0;
                 $redirectPage = route('AdPlacement.index');
             }
 
             if (request()->isMethod('post')) {
 
+                request()->replace(request()->all());
+
                 $validator = Validator::make(request()->all(), [
 
-                    'placement'     => 'required|max:100',
-                    'slug'          => 'required|max:100',
-                    'description'   => 'max:500',
-                    'defaultModel'  => 'required',
+                    'placement'     => 'bail|required|max:100',
+                    'slug'          => 'bail|required|max:100',
+                    'description'   => 'nullable|max:500',
+                    'defaultModel'  => 'bail|required',
 
                 ], [
 
-                    'placement.required'   => 'Placement cannot be left blank.',
-                    'placement.max'        => 'Placement cannot be more than 100 characters.',
+                    'placement.required'    => 'Placement cannot be left blank.',
+                    'placement.max'         => 'Placement cannot be more than 100 characters.',
 
-                    'slug.required'        => 'Slug cannot be left blank.',
-                    'slug.max'             => 'Slug cannot be more than 100 characters.',
+                    'slug.required'         => 'Slug cannot be left blank.',
+                    'slug.max'              => 'Slug cannot be more than 100 characters.',
 
-                    'description.max'      => 'Description cannot be more than 500 characters.',
+                    'description.max'       => 'Description cannot be more than 500 characters.',
 
                     'defaultModel.required' => 'Default Model must be selected.',
                 ]);
@@ -83,25 +86,75 @@ class AdPlacementController extends Controller
 
                 DB::beginTransaction();
 
-                $placement    = trim(Purifier::clean(request('placement')));
-                $slug         = trim(Purifier::clean(request('slug')));
-                $description  = trim(Purifier::clean(request('description')));
+                $placement    = htmlEncode(trim(Purifier::clean(request('placement'))));
+                $slug         = htmlEncode(trim(Purifier::clean(request('slug'))));
+                $description  = htmlEncode(trim(Purifier::clean(request('description'))));
                 $defaultModel = trim(Purifier::clean(request('defaultModel')));
 
-                $obj = ($id > 0) ? AdPlacement::find($id) : new AdPlacement();
-
-                $obj->name          = htmlEncode($placement);
-                $obj->slug          = htmlEncode($slug);
-                $obj->description   = htmlEncode($description);
-                $obj->default_model = $defaultModel;
-
                 if ($id > 0) {
-                    $obj->updated_by = 1;
-                } else {
-                    $obj->created_by = 1;
-                }
 
-                $obj->save();
+                    $oldData = AdPlacement::find($id);
+
+                    $newData = [
+                        'name'          => $placement,
+                        'slug'          => $slug,
+                        'description'   => $description,
+                        'default_model' => $defaultModel
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'mst_ad_placement',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
+                    $oldData->name          = $placement;
+                    $oldData->slug          = $slug;
+                    $oldData->description   = $description;
+                    $oldData->default_model = $defaultModel;
+                    $oldData->updated_by    = 1;
+                    $oldData->save();
+
+                } else {
+
+                    $row = [
+                        'name'          => $placement,
+                        'slug'          => $slug,
+                        'description'   => $description,
+                        'default_model' => $defaultModel,
+                        'created_by'    => 1,
+                        'active_status' => 1,
+                        'created_at'    => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_ad_placement',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $obj = new AdPlacement();
+                    $obj->fill($row);
+                    $obj->save();
+                }
 
                 DB::commit();
 
@@ -113,6 +166,7 @@ class AdPlacementController extends Controller
 
                 return redirect($redirectPage);
             }
+
         } catch (\Throwable $t) {
 
             DB::rollBack();

@@ -192,8 +192,6 @@ class AmenityCategoryController extends Controller
                         'message' => 'Amenity Category already exist'
                     ])->withInput();
                 }
-
-                // ================= UPDATE =================
                 if ($id != 0) {
 
                     $oldData = AmenityCategory::find($id);
@@ -216,7 +214,6 @@ class AmenityCategoryController extends Controller
                         }
                     }
 
-                    // ✅ LOG BEFORE UPDATE
                     if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
                             'mst_amenity_category',
@@ -227,14 +224,13 @@ class AmenityCategoryController extends Controller
                         );
                     }
 
-                    // ✅ SAVE
+
                     $oldData->category_name = $category_name;
                     $oldData->description   = $description;
                     $oldData->updated_by    = 1;
                     $oldData->save();
                 }
 
-                // ================= INSERT =================
                 else {
 
                     $row = [
@@ -245,7 +241,6 @@ class AmenityCategoryController extends Controller
                         'created_at'    => now()
                     ];
 
-                    // ✅ LOG BEFORE INSERT
                     app(CommonController::class)->auditLog(
                         'mst_amenity_category',
                         null,
