@@ -50,7 +50,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <!-- City -->
                         <div class="col-6 col-sm-6 col-md-3 col-lg-2 mb-2">
-                            <label for="selCity">City <span class="text-danger">*</span></label>
+                            <label for="selCity">City </label>
                             <select class="form-select form-select-sm selCity" id="selCity" name="selCity">
                                 <option value="0">Select City</option>
                             </select>
@@ -58,7 +58,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <!-- Type -->
                         <div class="col-6 col-sm-6 col-md-3 col-lg-2 mb-2">
-                            <label for="type">Type <span class="text-danger">*</span></label>
+                            <label for="type">Type </label>
                             <select class="form-select  form-select-sm  type" id="type" name="type">
                                 <option selected>Select Type</option>
                                 <option value="1">Boarding</option>
@@ -134,7 +134,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('boardingDropping.dataTableView') }}"
                     data-edit-url="{{ route('boardingDropping.edit', 'ID') }}">
-                    <thead class="thead-light">
+                    <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
                                 <div class="checkbox">

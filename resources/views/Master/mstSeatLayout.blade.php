@@ -60,7 +60,7 @@
                             </div>
 
                             <!-- BUTTONS -->
-                            <div class="col-12  d-flex justify-content-end flex-wrap action-btns">
+                            <div class="col-12  d-flex justify-content-end flex-wrap action-btns mt-1">
                                 <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                     <i class="fa-solid fa-search me-1"></i>Search
                                 </button>
@@ -116,7 +116,7 @@
                     <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                         data-url="{{ route('mstSeatLayout.dataTableView') }}"
                         data-edit-url="{{ route('mstSeatLayout.edit', 'ID') }}">
-                        <thead class="thead-light">
+                        <thead class="table-secondary">
                             <tr>
                                 <th class="noPrint no-sort">
                                     <div class="checkbox">

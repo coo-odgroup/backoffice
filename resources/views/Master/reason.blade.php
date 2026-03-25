@@ -76,11 +76,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-lg-3 d-flex justify-content-lg-end gap-2 mb-2">
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
-
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
@@ -135,7 +134,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                 data-url="{{ route('reason.dataTableView') }}"
                 data-edit-url="{{ route('reason.edit', 'ID') }}">
-                <thead class="thead-light">
+                <thead class="table-secondary">
                     <tr>
                         <th class="noPrint no-sort">
                                 <div class="checkbox">

@@ -73,7 +73,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -131,7 +131,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
                     data-url="{{ route('pricingPlan.dataTableView') }}"
                     data-edit-url="{{ route('pricingPlan.edit', 'ID') }}">
-                    <thead class="thead-light">
+                    <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
                                 <div class="checkbox">

@@ -50,7 +50,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <!-- Vendor -->
                         <div class="col-lg-2 col-md-4 col-6">
-                            <label for="vendor">Vendor<span class="text-danger important">*</span></label>
+                            <label for="vendor">Vendor</label>
                             <select class="form-select form-select-sm" id="vendor" name="vendor">
                                 <option value="">Select Vendor</option>
                             </select>
@@ -58,7 +58,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <!-- Placement -->
                         <div class="col-lg-2 col-md-4 col-6">
-                            <label for="placement">Placement<span class="text-danger important">*</span></label>
+                            <label for="placement">Placement</label>
                             <select class="form-select form-select-sm" id="placement" name="placement">
                                 <option value="">Select Placement</option>
                             </select>
@@ -66,7 +66,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <!-- Pricing Plan -->
                         <div class="col-lg-2 col-md-4 col-6">
-                            <label for="pricingPlan">Pricing Plan<span class="text-danger important">*</span></label>
+                            <label for="pricingPlan">Pricing Plan</label>
                             <select class="form-select form-select-sm" id="pricingPlan" name="pricingPlan">
                                 <option value="">Select Pricing Plan</option>
                             </select>
@@ -83,7 +83,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-2 d-flex justify-content-end gap-1">
+                         <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -142,7 +142,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('AdCampaign.dataTableView') }}"
                     data-edit-url="{{ route('AdCampaign.edit', 'ID') }}">
-                    <thead class="thead-light">
+                    <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
                                 <div class="checkbox">

@@ -58,7 +58,7 @@
                             </div>
 
                             <!-- Buttons -->
-                            <div class="col-12 col-sm-4 col-md-6 col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns">
+                            <div class="col-12 col-sm-4 col-md-6 col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns mt-2">
                                 <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                     <i class="fa-solid fa-search me-1"></i>Search
                                 </button>

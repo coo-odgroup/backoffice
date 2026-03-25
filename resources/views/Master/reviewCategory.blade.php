@@ -112,7 +112,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('reviewcategory.dataTableView') }}"
                     data-edit-url="{{ route('reviewcategory.edit', 'ID') }}">
-                    <thead class="thead-light">
+                    <thead class="table-secondary"s>
                         <tr>
                             <th class="noPrint no-sort">
                                 <div class="checkbox">
