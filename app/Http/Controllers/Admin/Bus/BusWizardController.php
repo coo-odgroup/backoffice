@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bus\Bus;
 use App\Models\Bus\BusAmenity;
 use App\Models\Master\Amenity;
+use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,13 @@ class BusWizardController extends Controller
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
+        $data['categories'] = AmenityCategory::with(['amenities' => function ($q) {
+            $q->where('active_status', 1);
+        }])
+            ->whereHas('amenities', function ($q) {
+                $q->where('active_status', 1);
+            })
+            ->get();
         return view('admin.bus.wizard.step1', compact('data'));
     }
 

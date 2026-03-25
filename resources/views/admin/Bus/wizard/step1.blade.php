@@ -178,7 +178,50 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                 placeholder="Search amenities...">
 
                                                             <!-- Accordion -->
-                                                            <div class="accordion" id="amenityAccordion"></div>
+                                                            <div class="accordion" id="amenityAccordion">
+                                                                @foreach($data['categories'] as $catIndex => $category)
+
+                                                                @php
+                                                                $collapseId = 'cat' . $category->id . '_' . $catIndex;
+                                                                @endphp
+
+                                                                <div class="accordion-item">
+                                                                    <h2 class="accordion-header">
+                                                                        <button class="accordion-button collapsed" type="button"
+                                                                            data-bs-toggle="collapse"
+                                                                            data-bs-target="#{{ $collapseId }}">
+                                                                            {{ $category->category_name }}
+                                                                        </button>
+                                                                    </h2>
+
+                                                                    <input type="hidden" name="category_id[]" value="{{ $category->id }}">
+
+                                                                    <div id="{{ $collapseId }}" class="accordion-collapse collapse"
+                                                                        data-bs-parent="#amenityAccordion">
+
+                                                                        <div class="accordion-body">
+                                                                            <div class="row g-1">
+
+                                                                                @foreach($category->amenities as $amenity)
+                                                                                <div class="col-md-3">
+                                                                                    <label class="amenity-chip">
+                                                                                        <input type="checkbox" name="amenities_id[]"
+                                                                                            value="{{ $amenity->id }}">
+
+                                                                                        <span class="amenity-label">
+                                                                                            {{ $amenity->amenity_name }}
+                                                                                        </span>
+                                                                                    </label>
+                                                                                </div>
+                                                                                @endforeach
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                @endforeach
+                                                            </div>
 
                                                             <!-- Selected Amenities -->
                                                             <div class="mt-3">

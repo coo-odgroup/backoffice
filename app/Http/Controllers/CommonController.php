@@ -938,25 +938,40 @@ class CommonController extends Controller
     {
         $search = $request->search;
 
-        $categories = AmenityCategory::with([
-            'amenities' => function ($q) use ($search) {
-                $q->where('active_status', 1)
-                    ->where('amenity_name', 'LIKE', "%$search%");
-            }
-        ])
-            ->where('active_status', 1) // category active
-            ->where(function ($query) use ($search) {
+        $query = AmenityCategory::query()
+            ->where('active_status', 1);
 
-                // Search in category name
-                $query->where('category_name', 'LIKE', "%$search%")
-
-                    // OR search in amenities
-                    ->orWhereHas('amenities', function ($q) use ($search) {
-                        $q->where('active_status', 1)
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('category_name', 'LIKE', "%$search%")
+                    ->orWhereHas('amenities', function ($q2) use ($search) {
+                        $q2->where('active_status', 1)
                             ->where('amenity_name', 'LIKE', "%$search%");
                     });
-            })
-            ->get();
+            });
+        }
+
+        $categories = $query->get();
+
+        $categories->map(function ($category) use ($search) {
+
+            if (!$search) {
+                $category->amenities = $category->amenities()
+                    ->where('active_status', 1)
+                    ->get();
+            } elseif (stripos($category->category_name, $search) !== false) {
+                $category->amenities = $category->amenities()
+                    ->where('active_status', 1)
+                    ->get();
+            }  else {
+                $category->amenities = $category->amenities()
+                    ->where('active_status', 1)
+                    ->where('amenity_name', 'LIKE', "%$search%")
+                    ->get();
+            }
+
+            return $category;
+        });
 
         return response()->json($categories);
     }
@@ -970,13 +985,13 @@ class CommonController extends Controller
         }
 
         $data = CancellationslabInfo::where('slab_id', $slabId)
-                    ->where('active_status', 1)
-                    ->orderBy('id', 'asc')
-                    ->get([
-                        'id',
-                        'duration as hours',
-                        'deduction as charge'
-                    ]);
+            ->where('active_status', 1)
+            ->orderBy('id', 'asc')
+            ->get([
+                'id',
+                'duration as hours',
+                'deduction as charge'
+            ]);
 
         return response()->json($data);
     }
