@@ -17,6 +17,11 @@ class BusInfoController extends Controller
         return view('master.amenities');
     }
 
+    public function preview()
+    {
+         return view('admin.bus.wizard.preview');
+    }
+
     public function dataTableView()
     {
         $recordsTotal     = 0;
