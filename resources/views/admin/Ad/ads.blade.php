@@ -37,34 +37,32 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
+            <div class="mb-1 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row">
-                        <!-- FILTER FIELDS -->
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-md-2 mb-3">
-                                    <label for="campaign">
-                                        Campaign<span class="text-danger important">*</span>
-                                    </label>
+                    <div class="row align-items-end">
 
-                                    <select class="form-select form-select-sm" id="campaign" name="campaign">
-                                        <option value="">Select Campaign</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                                    <label for="selStatus">Status</label>
-                                    <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                                        <option value="">Select Status</option>
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <!-- Campaign -->
+                        <div class="col-lg-4 col-md-6">
+                            <label for="campaign">
+                                Campaign<span class="text-danger important">*</span>
+                            </label>
+                            <select class="form-select form-select-sm" id="campaign" name="campaign">
+                                <option value="">Select Campaign</option>
+                            </select>
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-12 mt-3 d-flex justify-content-end flex-wrap action-btns">
+                        <!-- Status -->
+                        <div class="col-lg-3 col-md-6">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-lg-5 d-flex justify-content-end gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -72,6 +70,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>

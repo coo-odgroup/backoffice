@@ -61,7 +61,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
+                                    <div class="row">
                                         <div class="col-md-12 mb-3">
                                             <label for="name">Category Name<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control form-select-sm" id="name" name="name" placeholder="Enter category name" value="{{ $data['row']->name ?? '' }}">
@@ -74,7 +74,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}

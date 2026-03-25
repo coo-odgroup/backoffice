@@ -60,7 +60,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
+                                    <div class="row ">
                                         <div class="col-md-4">
                                             <label for="selCity">City<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm selCity" id="selCity" name="selCity">
@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                     </div>
                                     <div id="boardingDroppingWrapper">
-                                        <div class="row mb-3">
+                                        <div class="row">
                                             <div class="col-md-4 mb-1">
                                                 <label for="type">Type<span class="text-danger important">*</span></label>
                                                 <select class="form-select form-select-sm type" id="type" name="type[]">

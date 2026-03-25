@@ -115,7 +115,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table_mob table-responsive" id="datatable"
                     data-url="{{ route('apikeys.dataTableView') }}"
                     data-edit-url="{{ route('apikeys.edit', 'ID') }}">
                     <thead class="table-secondary">

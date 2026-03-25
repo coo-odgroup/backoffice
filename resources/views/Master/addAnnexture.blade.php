@@ -94,9 +94,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 </div>
 
-                                <div class="row mb-3">
+                                <div class="row">
                                     <div class="col-12">
-                                        <div class="row mb-3">
+                                        <div class="row">
                                             <div class="col-md-8">
                                                 <div class="card shadow-sm border-0 d-none" id="annexturePreviewCard">
 
@@ -130,10 +130,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- BUTTONS -->
                                 <div class="row">
-                                    <div class="col-12 d-flex justify-content-md-start justify-content-center">
+                                    <div class="col-12 d-flex justify-content-md-start justify-content-center gap-2">
+
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}
                                         </button>
+
                                         @if($data['strReset'] == 'Cancel')
                                         <a href="{{ route('annexture.index') }}" class="btn btn-secondary btn-sm">
                                             {{ $data['strReset'] }}
@@ -143,6 +145,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             {{ $data['strReset'] }}
                                         </button>
                                         @endif
+
                                     </div>
                                 </div>
                             </div>
@@ -376,7 +379,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 } else {
 
-                
+
                     $('#annexturePreviewCard').addClass('d-none');
                     $('#annexturePreviewBody').html('');
                 }

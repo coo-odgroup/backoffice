@@ -61,7 +61,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
+                                    <div class="row">
                                         <div class="col-md-3 mb-1">
                                             <label for="faqCategory">FAQ Category<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm" id="faqCategory" name="faqCategory">

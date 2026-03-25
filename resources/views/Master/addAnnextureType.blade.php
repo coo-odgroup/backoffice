@@ -60,8 +60,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6 mb-1">
+                                    <div class="row ">
+                                        <div class="col-md-6 ">
                                             <label for="annextureType">Annexture Type<span class="text-danger important">*</span></label>
                                             <input type="text"
                                                 class="form-control form-control-sm"

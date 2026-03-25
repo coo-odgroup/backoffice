@@ -131,7 +131,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('boardingDropping.dataTableView') }}"
                     data-edit-url="{{ route('boardingDropping.edit', 'ID') }}">
                     <thead class="thead-light">
