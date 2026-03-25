@@ -12,6 +12,7 @@ use App\Models\Master\Districts;
 use App\Models\Master\States;
 use App\Models\Master\ApiApps;
 use App\Models\Master\AuditLog;
+use App\Models\Master\CancellationslabInfo;
 use App\Models\Master\Modules;
 use App\Models\Master\FaqCategory;
 use App\Models\Master\Roles;
@@ -931,5 +932,52 @@ class CommonController extends Controller
                 'data'   => []
             ]);
         }
+    }
+
+    public function searchAmenities(Request $request)
+    {
+        $search = $request->search;
+
+        $categories = AmenityCategory::with([
+            'amenities' => function ($q) use ($search) {
+                $q->where('active_status', 1)
+                    ->where('amenity_name', 'LIKE', "%$search%");
+            }
+        ])
+            ->where('active_status', 1) // category active
+            ->where(function ($query) use ($search) {
+
+                // Search in category name
+                $query->where('category_name', 'LIKE', "%$search%")
+
+                    // OR search in amenities
+                    ->orWhereHas('amenities', function ($q) use ($search) {
+                        $q->where('active_status', 1)
+                            ->where('amenity_name', 'LIKE', "%$search%");
+                    });
+            })
+            ->get();
+
+        return response()->json($categories);
+    }
+
+    public function getSlabDetails(Request $request)
+    {
+        $slabId = $request->slab_id;
+
+        if (!$slabId) {
+            return response()->json([]);
+        }
+
+        $data = CancellationslabInfo::where('slab_id', $slabId)
+                    ->where('active_status', 1)
+                    ->orderBy('id', 'asc')
+                    ->get([
+                        'id',
+                        'duration as hours',
+                        'deduction as charge'
+                    ]);
+
+        return response()->json($data);
     }
 }

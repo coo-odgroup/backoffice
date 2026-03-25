@@ -178,80 +178,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                 placeholder="Search amenities...">
 
                                                             <!-- Accordion -->
-                                                            <div class="accordion" id="amenityAccordion">
-
-                                                                <!-- Category 1 -->
-                                                                <div class="accordion-item">
-                                                                    <h2 class="accordion-header" id="heading1">
-                                                                        <button class="accordion-button collapsed" type="button"
-                                                                            data-bs-toggle="collapse" data-bs-target="#cat1">
-                                                                            Seating Comfort
-                                                                        </button>
-                                                                    </h2>
-                                                                    <div id="cat1" class="accordion-collapse collapse"
-                                                                        data-bs-parent="#amenityAccordion">
-                                                                        <div class="accordion-body">
-
-                                                                            <div class="row g-1">
-                                                                                <div class="col-md-2">
-                                                                                    <label class="amenity-chip">
-                                                                                        <input type="checkbox" value="Pushback Seat">
-                                                                                        Pushback Seat
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-md-2">
-                                                                                    <label class="amenity-chip">
-                                                                                        <input type="checkbox" value="Sleeper Bed">
-                                                                                        Sleeper Bed
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-md-2">
-                                                                                    <label class="amenity-chip">
-                                                                                        <input type="checkbox" value="Charging Point">
-                                                                                        Charging Point
-                                                                                    </label>
-                                                                                </div>
-                                                                            </div>
-
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <!-- Category 2 -->
-                                                                <div class="accordion-item">
-                                                                    <h2 class="accordion-header" id="heading2">
-                                                                        <button class="accordion-button collapsed" type="button"
-                                                                            data-bs-toggle="collapse" data-bs-target="#cat2">
-                                                                            Safety
-                                                                        </button>
-                                                                    </h2>
-                                                                    <div id="cat2" class="accordion-collapse collapse"
-                                                                        data-bs-parent="#amenityAccordion">
-                                                                        <div class="accordion-body">
-
-                                                                            <div class="row g-1">
-                                                                                <div class="col-md-2">
-                                                                                    <label class="amenity-chip">
-                                                                                        <input type="checkbox" value="CCTV">
-                                                                                        CCTV
-                                                                                    </label>
-                                                                                </div>
-
-                                                                                <div class="col-md-2">
-                                                                                    <label class="amenity-chip">
-                                                                                        <input type="checkbox" value="Fire Extinguisher">
-                                                                                        Fire Extinguisher
-                                                                                    </label>
-                                                                                </div>
-                                                                            </div>
-
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
+                                                            <div class="accordion" id="amenityAccordion"></div>
 
                                                             <!-- Selected Amenities -->
                                                             <div class="mt-3">
@@ -275,6 +202,20 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                         </select>
                                                     </div>
                                                 </div>
+
+                                                <!-- Slab Details -->
+                                                <div class="mt-3" id="slabDetails" style="display:none;">
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Hours Before Departure</th>
+                                                                <th>Cancellation Charges (%)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="slabTableBody"></tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -297,7 +238,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                 <!-- NO -->
                                                 <label class="radio-box">
-                                                    <input type="radio" name="irctc_module" value="0">
+                                                    <input type="radio" name="irctc_module" value="0" checked>
                                                     <div class="box">
                                                         No
                                                     </div>
@@ -366,13 +307,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     const selectedContainer = document.getElementById("selectedAmenities");
 
-    // Handle checkbox selection
-    document.querySelectorAll('.amenity-chip input').forEach(cb => {
-        cb.addEventListener('change', function() {
+    // ✅ Handle checkbox change (DYNAMIC)
+    document.addEventListener('change', function(e) {
+        if (e.target.matches('.amenity-chip input')) {
             renderSelected();
-        });
+        }
     });
 
+    // ✅ Render selected tags
     function renderSelected() {
         selectedContainer.innerHTML = '';
 
@@ -380,32 +322,30 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             .forEach(cb => {
                 const tag = document.createElement('div');
                 tag.className = 'tag';
+
                 tag.innerHTML = `
-            ${cb.value} <span onclick="removeAmenity('${cb.value}')">&times;</span>
-        `;
+                ${cb.nextElementSibling ? cb.nextElementSibling.innerText : cb.parentElement.innerText.trim()}
+                <span data-value="${cb.value}" class="remove-tag">&times;</span>
+            `;
+
                 selectedContainer.appendChild(tag);
             });
     }
 
-    function removeAmenity(value) {
-        document.querySelectorAll('.amenity-chip input')
-            .forEach(cb => {
-                if (cb.value === value) {
-                    cb.checked = false;
-                }
-            });
-        renderSelected();
-    }
+    // ✅ Remove tag (DYNAMIC)
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-tag')) {
+            const value = e.target.getAttribute('data-value');
 
-    // Search filter
-    document.getElementById("amenitySearch").addEventListener("keyup", function() {
-        let val = this.value.toLowerCase();
+            document.querySelectorAll('.amenity-chip input')
+                .forEach(cb => {
+                    if (cb.value == value) {
+                        cb.checked = false;
+                    }
+                });
 
-        document.querySelectorAll(".amenity-chip").forEach(el => {
-            el.style.display = el.innerText.toLowerCase().includes(val) ?
-                "block" :
-                "none";
-        });
+            renderSelected();
+        }
     });
 
     $('#btnReset').click(function() {
@@ -597,5 +537,147 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         });
 
     }
+
+    let timer;
+
+    // ✅ Store selected amenities globally
+    let selectedAmenities = new Set();
+
+    $('#amenitySearch').on('keyup', function() {
+
+        clearTimeout(timer);
+
+        let search = $(this).val();
+
+        timer = setTimeout(function() {
+
+            // ✅ If empty → clear accordion
+            if (search.length < 1) {
+                $('#amenityAccordion').html('');
+                return;
+            }
+
+            // ✅ Show loader
+            $('#amenityAccordion').html('<p class="text-muted">Searching...</p>');
+
+            $.ajax({
+                url: '/admin/search-amenities',
+                type: 'GET',
+                data: {
+                    search: search
+                },
+
+                success: function(res) {
+
+                    let html = '';
+
+                    // ✅ Empty state
+                    if (res.length === 0) {
+                        $('#amenityAccordion').html('<p class="text-muted">No amenities found</p>');
+                        return;
+                    }
+
+                    // ✅ Build accordion
+                    res.forEach(function(category, index) {
+
+                        let collapseId = `cat${category.id}_${index}`;
+
+                        html += `
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#${collapseId}">
+                                    ${category.category_name}
+                                </button>
+                            </h2>
+
+                            <input type="hidden" name="category_id[]" value="${category.id}">
+
+                            <div id="${collapseId}" class="accordion-collapse collapse show">
+                                <div class="accordion-body">
+                                    <div class="row g-1">
+                        `;
+
+                        category.amenities.forEach(function(amenity) {
+
+                            let checked = selectedAmenities.has(String(amenity.id)) ? 'checked' : '';
+
+                            html += `
+                                <div class="col-md-3">
+                                    <label class="amenity-chip">
+                                        <input type="checkbox" name="amenities_id[]" value="${amenity.id}" ${checked}>
+                                        <span class="amenity-label">${amenity.amenity_name}</span>
+                                    </label>
+                                </div>
+                            `;
+                        });
+
+                        html += `
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    });
+
+                    $('#amenityAccordion').html(html);
+                },
+
+                error: function() {
+                    $('#amenityAccordion').html('<p class="text-danger">Something went wrong</p>');
+                }
+            });
+
+        }, 300);
+
+    });
+
+
+    // ✅ Track selections (VERY IMPORTANT)
+    $(document).on('change', '.amenity-chip input', function() {
+
+        let val = $(this).val();
+
+        if ($(this).is(':checked')) {
+            selectedAmenities.add(val);
+        } else {
+            selectedAmenities.delete(val);
+        }
+    });
+
+    $('#slab').on('change', function() {
+
+        let slabId = $(this).val();
+
+        if (!slabId) {
+            $('#slabDetails').hide();
+            return;
+        }
+
+        $.ajax({
+            url: '/admin/get-slab-details',
+            type: 'GET',
+            data: {
+                slab_id: slabId
+            },
+            success: function(res) {
+
+                let tableHtml = '';
+
+                res.forEach((row, i) => {
+                    tableHtml += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${row.hours}</td>
+                        <td>${row.charge} %</td>
+                    </tr>
+                `;
+                });
+
+                $('#slabTableBody').html(tableHtml);
+                $('#slabDetails').show();
+            }
+        });
+    });
 </script>
 @endpush

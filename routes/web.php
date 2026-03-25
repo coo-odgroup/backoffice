@@ -141,7 +141,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/master-logs', [MasterLogController::class, 'index'])->name('master-log.index');
     Route::post('/get-amenity-list', [CommonController::class, 'getAmenities']);
 
-
+    Route::get('search-amenities', [CommonController::class, 'searchAmenities']);
+    Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
 
     //Subhasis
     //___________________________________________________________________________________________________________________________________________________

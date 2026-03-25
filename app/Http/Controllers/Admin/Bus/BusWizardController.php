@@ -59,23 +59,26 @@ class BusWizardController extends Controller
 
         $bus_id = $obj->id;
 
-        $amenities_ids = request('amenities_id');
+        $category_ids  = request('category_id', []);
+        $amenities_ids = request('amenities_id', []);
 
         $amenitiesData = [];
 
-        if (!empty($amenities_ids) && is_array($amenities_ids)) {
+        foreach ($amenities_ids as $i => $amenities_id) {
 
-            foreach ($amenities_ids as $amenities_id) {
-                $amenitiesData[] = [
-                    'bus_id' => $bus_id,
-                    'category_id' => 1,
-                    'amenities_id' => $amenities_id,
-                    'active_status' => 1,
-                    'created_at' => now(),
-                    'created_by' => 1
-                ];
-            }
+            if (!isset($category_ids[$i])) continue;
 
+            $amenitiesData[] = [
+                'bus_id' => $bus_id,
+                'category_id' => $category_ids[$i],
+                'amenities_id' => $amenities_id,
+                'active_status' => 1,
+                'created_at' => now(),
+                'created_by' => 1
+            ];
+        }
+
+        if (!empty($amenitiesData)) {
             BusAmenity::insert($amenitiesData);
         }
 
