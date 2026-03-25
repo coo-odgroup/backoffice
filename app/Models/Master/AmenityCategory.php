@@ -13,4 +13,9 @@ class AmenityCategory extends Model
         'display_order',
         'active_status'
     ];
+
+    public function amenities()
+    {
+        return $this->hasMany(Amenity::class, 'category_id');
+    }
 }

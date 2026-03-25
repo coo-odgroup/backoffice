@@ -12,6 +12,7 @@ use App\Models\Master\Districts;
 use App\Models\Master\States;
 use App\Models\Master\ApiApps;
 use App\Models\Master\AuditLog;
+use App\Models\Master\CancellationslabInfo;
 use App\Models\Master\Modules;
 use App\Models\Master\FaqCategory;
 use App\Models\Master\Roles;
@@ -931,5 +932,67 @@ class CommonController extends Controller
                 'data'   => []
             ]);
         }
+    }
+
+    public function searchAmenities(Request $request)
+    {
+        $search = $request->search;
+
+        $query = AmenityCategory::query()
+            ->where('active_status', 1);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('category_name', 'LIKE', "%$search%")
+                    ->orWhereHas('amenities', function ($q2) use ($search) {
+                        $q2->where('active_status', 1)
+                            ->where('amenity_name', 'LIKE', "%$search%");
+                    });
+            });
+        }
+
+        $categories = $query->get();
+
+        $categories->map(function ($category) use ($search) {
+
+            if (!$search) {
+                $category->amenities = $category->amenities()
+                    ->where('active_status', 1)
+                    ->get();
+            } elseif (stripos($category->category_name, $search) !== false) {
+                $category->amenities = $category->amenities()
+                    ->where('active_status', 1)
+                    ->get();
+            }  else {
+                $category->amenities = $category->amenities()
+                    ->where('active_status', 1)
+                    ->where('amenity_name', 'LIKE', "%$search%")
+                    ->get();
+            }
+
+            return $category;
+        });
+
+        return response()->json($categories);
+    }
+
+    public function getSlabDetails(Request $request)
+    {
+        $slabId = $request->slab_id;
+
+        if (!$slabId) {
+            return response()->json([]);
+        }
+
+        $data = CancellationslabInfo::where('slab_id', $slabId)
+            ->where('active_status', 1)
+            ->orderBy('id', 'asc')
+            ->get([
+                'id',
+                'duration as hours',
+                'deduction as charge'
+            ]);
+
+        return response()->json($data);
     }
 }
