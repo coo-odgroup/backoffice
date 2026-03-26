@@ -24,7 +24,7 @@ label {
 }
 
 .btn-sm {
-    font-size: 0.675rem !important ;
+    font-size: 0.675rem !important;
     padding: 4px 10px;
 }
 
@@ -549,12 +549,12 @@ td:focus {
 
 /* Default */
 .seat_prv {
-    background-image: url("/assets/seats/../../public/assets/seats/SeatGray.png");
+    background-image: url("/assets/seats/../../public/assets/seats/seat_layout.png");
 }
 
 .sleeper_prv {
     grid-column: span 2;
-    background-image: url("/assets/seats/../../public/assets/seats/SleeperGray.png");
+    background-image: url("/assets/seats/../../public/assets/seats/sleeper_layout.png");
 }
 
 .vertical_sleeper_prv {
@@ -576,20 +576,20 @@ td:focus {
 }
 
 .accordion-header button {
-    font-size: 14px;  
+    font-size: 14px;
     font-weight: 600;
 }
 
 .seater {
-    background: #4CAF50;   
+    background: #4CAF50;
 }
 
 .sleeper {
-    background: #f32144;    
+    background: #f32144;
 }
 
 .vertical-sleeper {
-    background: #FF9800;   
+    background: #FF9800;
 }
 
 #seat_layout {
@@ -729,7 +729,7 @@ td:focus {
 .audit-top-card {
     background: #fff;
     border-radius: 12px;
-    padding: 20px;    
+    padding: 20px;
     border: 1px solid rgb(210, 210, 210) !important;
 }
 
@@ -1184,7 +1184,7 @@ svg.svg-inline--fa.fa-file-export {
 /* GRID */
 .layout-box {
     display: grid;
-   /* / grid-template-columns: repeat(10, 1fr); */
+    /* / grid-template-columns: repeat(10, 1fr); */
     gap: 8px;
     background: #f6f6f2;
     padding: 14px;
@@ -1263,11 +1263,14 @@ svg.svg-inline--fa.fa-file-export {
     grid-column: span 1;
 }
 
-.cursor-pointer { cursor: pointer; }
+.cursor-pointer {
+    cursor: pointer;
+}
 
-.select2-results__group {  
-    color: #d4d4d4; /* Bootstrap primary */
-     
+.select2-results__group {
+    color: #d4d4d4;
+    /* Bootstrap primary */
+
 }
 
 .select2-results__option {
@@ -1275,7 +1278,8 @@ svg.svg-inline--fa.fa-file-export {
 }
 
 .city-scroll {
-    max-height: 350px;   /* adjust as needed */
+    max-height: 350px;
+    /* adjust as needed */
     overflow-y: auto;
     overflow-x: hidden;
     border: 1px solid #ddd;
@@ -1287,6 +1291,7 @@ svg.svg-inline--fa.fa-file-export {
     font-size: 18px;
     line-height: 1;
 }
+
 .city-item {
     cursor: pointer;
 }
@@ -1328,4 +1333,419 @@ svg.svg-inline--fa.fa-file-export {
     border-radius: 4px;
     background: #eee;
     animation: shimmer 1.4s infinite;
+}
+
+/* Preview Section */
+
+/* OUTER MAIN BOX */
+.bpv-main-box {
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* optional spacing fix */
+.bpv-wrapper {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.bpv-wrapper {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.bpv-title {
+    font-weight: 600;
+}
+
+/* CARD */
+.bpv-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #d2d2d2;
+}
+
+.bpv-heading {
+    font-weight: 600;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #8d8d8d;
+    background: #fafafa;
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+
+
+/* GRID */
+.bpv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.bpv-grid span {
+    font-size: 12px;
+    color: #888;
+}
+
+.bpv-grid p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* TAGS */
+.bpv-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bpv-tags span {
+    background: #f1f4ff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+/* TABLE */
+.bpv-table {
+    margin: 0;
+}
+
+.bpv-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    background: #f1f3f5;
+    font-size: 13px;
+}
+
+.bpv-table td {
+    font-size: 13px;
+}
+
+/* BADGE */
+.bpv-badge {
+    background: #28a745;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* BACK BUTTON */
+.bpv-back-btn {
+    background: #ffc107;
+    padding: 10px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+}
+
+/* AMENITIES */
+.bpv-amenities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.bpv-amenity-col h6 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.bpv-amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+}
+
+.bpv-amenity-item i {
+    font-size: 16px;
+    color: #4a6cf7;
+}
+
+/* SEAT LAYOUT */
+.bpv-seat-box {
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    background: #fafafa;
+    margin-bottom: 15px;
+}
+
+.bpv-placeholder {
+    color: #999;
+    margin: 0;
+}
+
+.bpv-seat-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.bpv-seat-info span {
+    font-size: 12px;
+    color: #888;
+}
+
+.bpv-seat-info p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.bpv-amenity-item i {
+    font-size: 18px;
+    color: #4a6cf7;
+    background: #eef2ff;
+    padding: 8px;
+    border-radius: 8px;
+    min-width: 34px;
+    text-align: center;
+}
+
+.bpv-icon {
+    margin-right: 8px;
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+.bpv-seat-box {
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+/* ================= COMPACT SEAT LAYOUT ================= */
+
+.bpv-seat-box {
+    padding: 15px !important;
+}
+
+/* MAIN CARD SMALLER */
+.bus-layout {
+    padding: 12px !important;
+    border-radius: 10px;
+}
+
+/* REDUCE GAP */
+.berth-row {
+    gap: 10px !important;
+    margin: 10px 0 !important;
+}
+
+/* LABEL SMALL */
+.berth-label {
+    width: 40px;
+    font-size: 11px;
+}
+
+/* GRID COMPACT */
+.layout-box {
+    grid-template-columns: repeat(12, 34px) !important;
+    gap: 6px !important;
+    padding: 10px !important;
+}
+
+/* SEAT WRAPPER SMALL */
+.seat-wrap {
+    width: 34px !important;
+    min-height: 45px !important;
+}
+
+/* SLEEPER WIDTH */
+.sleeper-wrap {
+    width: 74px !important;
+}
+
+/* SEAT SIZE */
+.bus-seat,
+.bus-sleeper {
+    height: 28px !important;
+}
+
+/* NUMBER SMALL */
+.seat-number {
+    font-size: 10px !important;
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+
+    /* ROTATE FULL SEAT AREA */
+    .seat-left {
+        transform: rotate(90deg);
+        transform-origin: center;
+        width: max-content;
+        margin: auto;
+    }
+
+    /* FIX CONTAINER HEIGHT AFTER ROTATION */
+    .bpv-seat-box {
+        height: 420px;
+        /* adjust if needed */
+        overflow: auto;
+    }
+
+    .bpv-wrapper {
+        max-width: 100% !important;
+        padding: 0 10px;
+    }
+
+    .bpv-main-box {
+        padding: 10px;
+    }
+
+    .bpv-card {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+
+    .bpv-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .bpv-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .bpv-heading {
+        font-size: 14px;
+    }
+
+    .bpv-grid p {
+        font-size: 13px;
+    }
+}
+
+
+
+/* End Preview Section */
+.amenity-chip {
+  display: block;
+  border: 1px solid #aaa9a9;
+  padding: 5px 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: center;
+}
+
+.amenity-chip input {
+  display: none;
+}
+
+.amenity-chip:hover {
+  background: #f8f9fa;
+}
+
+.amenity-chip input:checked + span,
+.amenity-chip input:checked {
+  background: #ffc107;
+  color: #000;
+}
+
+.amenity-chip input:checked ~ * {
+  font-weight: 600;
+}
+
+.tag {
+  background: #ffc107;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 13px;
+}
+
+.tag span {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.radio-box {
+  cursor: pointer;
+}
+
+.radio-box input {
+  display: none;
+}
+
+.radio-box .box {
+  padding: 10px;
+  border: 1px solid #726c6c;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: 0.2s;
+  text-align: center;
+  min-width: 80px;
+}
+
+/* Hover */
+.radio-box .box:hover {
+  background: #f8f9fa;
+}
+
+/* Active (Checked) */
+.radio-box input:checked + .box {
+  border-color: #ffc107;
+  background: #ffc107;
+  color: #000;
+  font-weight: 600;
+}
+
+.radio-box input, .day-box input {
+  display: none;
+}
+
+.radio-box .box, .day-box div {
+  padding: 8px;
+  border: 1px solid #929292;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  min-width: 90px;
+  text-align: center;
+}
+
+.radio-box input:checked + .box,
+.day-box input:checked + div {
+  background: #ffc107;
+  border-color: #ffc107;
+  font-weight: 600;
+}
+
+.radio-box .box:hover,
+.day-box div:hover {
+  background: #f8f9fa;
+}
+
+.offer-chip {
+  padding: 8px 14px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.offer-chip:hover {
+  background: #f8f9fa;
+}
+
+.offer-chip.active {
+  background: #ff5b5b;
+  color: #fff;
+  border-color: #ff5b5b;
 }

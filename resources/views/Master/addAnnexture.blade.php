@@ -61,7 +61,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-4 mb-3">
+                                        <div class="col-md-4">
                                             <label for="selAnnexureType">Annexture Type<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm selAnnexureType" id="selAnnexureType" name="selAnnexureType">
                                                 <option value="0">Select Annexure Type</option>
@@ -70,20 +70,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     </div>
                                     <div id="boardingDroppingWrapper">
                                         <div class="row mb-3">
-
-                                            <div class="col-md-4 mb-3">
-                                                <label for="annexture_name">Annexture Name<span class="text-danger important">*</span></label>
+                                            <div class="col-md-4">
+                                                <label for="annexture_name">Annexture Name <span class="text-danger important">*</span></label>
                                                 <input type="text" class="form-control form-control-sm annexture_name" data-check-url="{{ route('annexture.checkExists') }}"
                                                     placeholder="Enter Annexture Name" id="annexture_name" name="annexture_name[]" maxlength="100" value="{{ $data['row']->annexture_name ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
-                                            <div class="col-md-4 mb-3">
-                                                <label for="annexture_value">Annexture Value<span class="text-danger important">*</span></label>
+                                            <div class="col-md-4">
+                                                <label for="annexture_value">Annexture Value <span class="text-danger important">*</span></label>
                                                 <input type="text" class="form-control form-control-sm" placeholder="Enter Annexture Value" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="annexture_value" name="annexture_value[]" maxlength="3" value="{{ $data['row']->annexture_value ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
-                                            <div class="col-md-1 d-flex align-items-center mb-3 <?= $isEdit ?>">
+                                            <div class="col-md-1 d-flex align-items-center <?= $isEdit ?>">
                                                 <button type="button" class="btn btn-sm btn-outline-primary btn-add">
                                                     <i class="fa fa-plus"></i>
                                                 </button>
@@ -94,7 +93,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 </div>
 
-                                <div class="row">
+                                <div class="row mt-2">
                                     <div class="col-12">
                                         <div class="row">
                                             <div class="col-md-8">
@@ -115,7 +114,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody id="annexturePreviewBody">
-
                                                                 </tbody>
                                                             </table>
                                                         </div>
@@ -239,36 +237,35 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             let newRow =
                 "<div id='bd_row" + rowCount + "' class='boarding-dropping-item'>" +
 
-                "<div class='row mb-3'>" +
+                "<div class='row'>" +
 
-                "<div class='col-md-4 mb-3'>" +
+                "<div class='col-md-4'>" +
                 "<label>Annexture Name <span class='text-danger important'>*</span></label>" +
                 "<input type='text' maxlength='100' " +
                 "placeholder='Enter Annexture Name' " +
-                "class='form-control annexture_name' " +
+                "class='form-control form-control-sm annexture_name' " +
                 "data-check-url='{{ route('annexture.checkExists') }}' " +
                 "name='annexture_name[]'>" +
                 "<small class='text-muted char-counter float-end'></small>" +
                 "</div>" +
 
-                "<div class='col-md-4 mb-3'>" +
-                "<label>Annexture Value</label>" +
+                "<div class='col-md-4'>" +
+                "<label>Annexture Value <span class=1text-danger'>*</span></label>" +
                 "<input type='text' maxlength='3' " +
-                "class='form-control annexture_value' " +
+                "class='form-control form-control-sm annexture_value' " +
                 "placeholder='Enter Annexture Value' " +
                 "oninput=\"this.value = this.value.replace(/[^0-9]/g, '')\" " +
                 "name='annexture_value[]'>" +
                 "<small class='text-muted char-counter float-end'></small>" +
                 "</div>" +
 
-                "<div class='col-md-2 d-flex align-items-center mb-3'>" +
-                "<button type='button' class='btn btn-outline-danger btn-remove' data-id='bd_row" + rowCount + "'>" +
+                "<div class='col-md-2 d-flex align-items-center'>" +
+                "<button type='button' class='btn btn-outline-danger btn-remove btn-sm' data-id='bd_row" + rowCount + "'>" +
                 "<i class='fa fa-trash'></i>" +
                 "</button>" +
                 "</div>" +
 
                 "</div>" +
-                "<hr>" +
                 "</div>";
 
             $("#boardingDroppingWrapper").append(newRow);
