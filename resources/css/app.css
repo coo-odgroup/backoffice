@@ -1519,5 +1519,58 @@ svg.svg-inline--fa.fa-file-export {
     background: #fff;
 }
 
+/* ================= COMPACT SEAT LAYOUT ================= */
+
+.bpv-seat-box {
+    padding: 15px !important;
+}
+
+/* MAIN CARD SMALLER */
+.bus-layout {
+    padding: 12px !important;
+    border-radius: 10px;
+}
+
+/* REDUCE GAP */
+.berth-row {
+    gap: 10px !important;
+    margin: 10px 0 !important;
+}
+
+/* LABEL SMALL */
+.berth-label {
+    width: 40px;
+    font-size: 11px;
+}
+
+/* GRID COMPACT */
+.layout-box {
+    grid-template-columns: repeat(12, 34px) !important;
+    gap: 6px !important;
+    padding: 10px !important;
+}
+
+/* SEAT WRAPPER SMALL */
+.seat-wrap {
+    width: 34px !important;
+    min-height: 45px !important;
+}
+
+/* SLEEPER WIDTH */
+.sleeper-wrap {
+    width: 74px !important;
+}
+
+/* SEAT SIZE */
+.bus-seat,
+.bus-sleeper {
+    height: 28px !important;
+}
+
+/* NUMBER SMALL */
+.seat-number {
+    font-size: 10px !important;
+    margin-top: 4px;
+}
 
 /* End Preview Section */
