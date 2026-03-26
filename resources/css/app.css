@@ -549,12 +549,12 @@ td:focus {
 
 /* Default */
 .seat_prv {
-    background-image: url("/assets/seats/../../public/assets/seats/SeatGray.png");
+    background-image: url("/assets/seats/../../public/assets/seats/seat_layout.png");
 }
 
 .sleeper_prv {
     grid-column: span 2;
-    background-image: url("/assets/seats/../../public/assets/seats/SleeperGray.png");
+    background-image: url("/assets/seats/../../public/assets/seats/sleeper_layout.png");
 }
 
 .vertical_sleeper_prv {
@@ -1329,3 +1329,195 @@ svg.svg-inline--fa.fa-file-export {
     background: #eee;
     animation: shimmer 1.4s infinite;
 }
+
+/* Preview Section */
+
+/* OUTER MAIN BOX */
+.bpv-main-box {
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* optional spacing fix */
+.bpv-wrapper {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.bpv-wrapper {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.bpv-title {
+    font-weight: 600;
+}
+
+/* CARD */
+.bpv-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border: 1px solid #d2d2d2;
+}
+
+.bpv-heading {
+    font-weight: 600;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #8d8d8d;
+    background: #fafafa;
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+
+
+/* GRID */
+.bpv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 12px;
+}
+
+.bpv-grid span {
+    font-size: 12px;
+    color: #888;
+}
+
+.bpv-grid p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* TAGS */
+.bpv-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bpv-tags span {
+    background: #f1f4ff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+/* TABLE */
+.bpv-table {
+    margin: 0;
+}
+
+.bpv-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+     background: #f1f3f5;
+    font-size: 13px;
+}
+
+.bpv-table td {
+    font-size: 13px;
+}
+
+/* BADGE */
+.bpv-badge {
+    background: #28a745;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* BACK BUTTON */
+.bpv-back-btn {
+    background: #ffc107;
+    padding: 10px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+}
+
+/* AMENITIES */
+.bpv-amenities {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.bpv-amenity-col h6 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.bpv-amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+}
+
+.bpv-amenity-item i {
+    font-size: 16px;
+    color: #4a6cf7;
+}
+
+/* SEAT LAYOUT */
+.bpv-seat-box {
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    background: #fafafa;
+    margin-bottom: 15px;
+}
+
+.bpv-placeholder {
+    color: #999;
+    margin: 0;
+}
+
+.bpv-seat-info {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 15px;
+}
+
+.bpv-seat-info span {
+    font-size: 12px;
+    color: #888;
+}
+
+.bpv-seat-info p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.bpv-amenity-item i {
+    font-size: 18px;
+    color: #4a6cf7;
+    background: #eef2ff;
+    padding: 8px;
+    border-radius: 8px;
+    min-width: 34px;
+    text-align: center;
+}
+
+.bpv-icon {
+    margin-right: 8px;
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+.bpv-seat-box {
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+
+/* End Preview Section */
