@@ -42,7 +42,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
 
                         <!-- FILTER FIELDS -->
-                        <div class="col-lg-9">
+                        <div class="col-lg-8">
                             <div class="row">
 
                                 <div class="col-6 col-md-4 col-lg-3 mb-2">
@@ -76,7 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- BUTTONS -->
-                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -130,37 +130,37 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
 
-             <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                data-url="{{ route('reason.dataTableView') }}"
-                data-edit-url="{{ route('reason.edit', 'ID') }}">
-                <thead class="table-secondary">
-                    <tr>
-                        <th class="noPrint no-sort">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
+                    data-url="{{ route('reason.dataTableView') }}"
+                    data-edit-url="{{ route('reason.edit', 'ID') }}">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="noPrint no-sort">
                                 <div class="checkbox">
                                     <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
                                 </div>
                             </th>
-                        <th>Sl No</th>
-                        <th>Reason</th>
-                        <th>Last Modified</th>
-                        <th>Status</th>
-                        <th class="no-sort">Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Reason">
+                            <th>Sl No</th>
+                            <th>Reason</th>
+                            <th>Last Modified</th>
+                            <th>Status</th>
+                            <th class="no-sort">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="Reason">
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
-        </div>
         </div>
     </div>
     </div>

@@ -171,8 +171,8 @@ class CampaignMasterController extends Controller
                     'short_desc'    => 'nullable|max:255',
                     'full_desc'     => 'nullable|max:255',
 
-                    'start'         => 'bail|required|date',
-                    'stop'          => 'bail|required|date|after_or_equal:start',
+                    'start'         => 'bail|required',
+                    'stop'          => 'bail|required',
 
                 ], [
                     'campaign_name.required' => 'Campaign Name cannot be left blank.',
@@ -182,11 +182,8 @@ class CampaignMasterController extends Controller
                     'full_desc.max'          => 'Full Description cannot exceed 255 characters.',
 
                     'start.required'         => 'Start Date cannot be left blank.',
-                    'start.date'             => 'Start Date must be a valid date.',
 
                     'stop.required'          => 'Stop Date cannot be left blank.',
-                    'stop.date'              => 'Stop Date must be a valid date.',
-                    'stop.after_or_equal'    => 'Stop Date must be after or equal to Start Date.',
                 ]);
 
                 if ($validator->fails()) {

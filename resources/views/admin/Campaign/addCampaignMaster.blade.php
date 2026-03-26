@@ -36,7 +36,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="card">
                 <div class="card-body">
                     <!-- FILTER -->
-                    <div class="mb-3">
+                    <div c>
                         <div class="card-body">
                             <div class="row">
                                 @if (session('message'))
@@ -61,22 +61,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row mb-3">
+                                    <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="campaign_name">Campaign Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="campaign_name" name="campaign_name" value="{{ $data['row']->campaign_name ?? old('campaign_name') }}" placeholder="Enter Campaign Name">
+                                            <input type="text" class="form-control form-control-sm" id="campaign_name" name="campaign_name" value="{{ $data['row']->campaign_name ?? old('campaign_name') }}" placeholder="Enter Campaign Name">
+                                        </div>
+                                       <div class="col-md-3 mb-3">
+                                            <label for="start">Start<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control form-control-sm" id="start" name="start" value="{{ $data['row']->start ?? old('start') }}" placeholder="Enter Start">
                                         </div>
                                         <div class="col-md-3 mb-3">
-                                            <label for="start">Start Time<span class="text-danger important">*</span></label>
-                                            <input type="date" class="form-control" id="start" name="start" value="{{ $data['row']->start ?? old('start') }}" placeholder="Enter Start Time">
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <label for="stop">Stop Time<span class="text-danger important">*</span></label>
-                                            <input type="date" class="form-control" id="stop" name="stop" value="{{ $data['row']->stop ?? old('stop') }}" placeholder="Enter Stop Time">
+                                            <label for="stop">Stop<span class="text-danger important">*</span></label>
+                                            <input type="text" class="form-control form-control-sm" id="stop" name="stop" value="{{ $data['row']->stop ?? old('stop') }}" placeholder="Enter Stop">
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="short_desc">Short Description</label>
-                                            <textarea class="form-control" id="short_desc" name="short_desc" placeholder="Enter Short Description">{{ $data['row']->short_desc ?? old('short_desc') }}</textarea>
+                                            <textarea class="form-control form-control-sm" id="short_desc" name="short_desc" placeholder="Enter Short Description">{{ $data['row']->short_desc ?? old('short_desc') }}</textarea>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="full_desc">Full Description</label>
@@ -86,7 +86,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
 
                                 <!-- BUTTONS -->
-                                <div class="row mt-4">
+                                <div class="row">
                                     <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             {{ $data['strSubmit'] }}
