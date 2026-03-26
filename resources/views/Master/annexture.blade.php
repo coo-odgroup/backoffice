@@ -37,7 +37,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
+            <div class="mb-2 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
 

@@ -60,7 +60,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 @endif
 
                                 <!-- POST FIELDS -->
-                                <div class="col-12">
+                                <!-- <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-4 mb-3">
                                             <label for="campaignMaster">Campaign Master<span class="text-danger important">*</span></label>
@@ -189,23 +189,193 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <input type="text" class="form-control" id="day_of_week" name="day_of_week" value="{{ $data['row']->day_of_week ?? old('day_of_week') }}" placeholder="Enter Active Days">
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
 
-                                <!-- BUTTONS -->
-                                <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('campaign.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
+                                <div class="row">
+
+                                    <!-- Campaign Master -->
+                                    <div class="col-md-4 mb-3">
+                                        <label>Campaign Master *</label>
+                                        <select class="form-select form-select-sm">
+                                            <option>Select Campaign</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Offer Type -->
+                                    <div class="col-md-4 mb-3">
+                                        <label>Offer Type</label>
+                                        <div class="d-flex gap-2">
+                                            <label class="radio-box">
+                                                <input type="radio" name="offer_type" value="PERCENTAGE">
+                                                <div class="box">% Percentage</div>
+                                            </label>
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="offer_type" value="FLAT">
+                                                <div class="box">₹ Flat</div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mb-3">
+                                         <div id="offerValuesContainer" class="d-flex flex-wrap gap-2"></div>
+                                    </div>
+
+                                    <div class="col-md-2 mb-3">
+                                        <label>Offer Value</label>
+                                        <input type="text" class="form-control form-control-sm">
+                                    </div>
+
+                                    <div class="col-md-2 mb-3">
+                                        <label>Min Ticket Value</label>
+                                        <input type="text" class="form-control form-control-sm" value="300">
+                                    </div>
+
+                                    <!-- Coupon Type -->
+                                    <div class="col-12 mb-3">
+                                        <label>Coupon Type</label>
+                                        <div class="d-flex gap-3 flex-wrap">
+                                            <label class="radio-box">
+                                                <input type="radio" name="coupon_type" value="OPERATOR">
+                                                <div class="box">Operator</div>
+                                            </label>
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="coupon_type" value="ROUTE">
+                                                <div class="box">Route</div>
+                                            </label>
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="coupon_type" value="OPERATOR_ROUTE">
+                                                <div class="box">Operator + Route</div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Operator Section -->
+                                    <div id="operatorSection" class="col-12 d-none mb-3">
+                                        <label>Operators</label>
+                                        <select class="form-select mb-2" multiple>
+                                            <option>VRL Travels</option>
+                                            <option>SRS Travels</option>
+                                        </select>
+
+                                        <label>Buses</label>
+                                        <select class="form-select" multiple>
+                                            <option>Bus 1</option>
+                                            <option>Bus 2</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Route Section -->
+                                    <div id="routeSection" class="col-12 d-none mb-3 row">
+                                        <div class="col-md-6">
+                                            <label>Source</label>
+                                            <select class="form-select">
+                                                <option>Chennai</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label>Destination</label>
+                                            <select class="form-select">
+                                                <option>Bangalore</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Validity -->
+                                    <div class="col-12 mb-3">
+                                        <label>Validity</label>
+                                        <div class="d-flex gap-2 flex-wrap">
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="validity" value="1W">
+                                                <div class="box">1W</div>
+                                            </label>
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="validity" value="2W">
+                                                <div class="box">2W</div>
+                                            </label>
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="validity" value="3W">
+                                                <div class="box">3W</div>
+                                            </label>
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="validity" value="4W">
+                                                <div class="box">4W</div>
+                                            </label>
+
+                                            <label class="radio-box">
+                                                <input type="radio" name="validity" value="DATE">
+                                                <div class="box">Date Range</div>
+                                            </label>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Date Range -->
+                                    <div id="dateRange" class="row d-none mb-3">
+                                        <div class="col-md-6">
+                                            <input type="date" class="form-control">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="date" class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <!-- Exclude Dates -->
+                                    <div class="col-md-4 mb-3">
+                                        <label>Exclude Dates</label>
+                                        <input type="date" id="excludeDate" class="form-control">
+                                        <div id="excludeList" class="mt-2"></div>
+                                    </div>
+
+                                    <!-- Active Days -->
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fw-bold">Active Days</label>
+
+                                        <div class="d-flex flex-wrap gap-2">
+
+                                            <label class="day-box">
+                                                <input type="checkbox" name="days[]" value="Sun">
+                                                <div class="box">Sun</div>
+                                            </label>
+
+                                            <label class="day-box">
+                                                <input type="checkbox" name="days[]" value="Mon">
+                                                <div class="box">Mon</div>
+                                            </label>
+
+                                            <label class="day-box">
+                                                <input type="checkbox" name="days[]" value="Tue">
+                                                <div class="box">Tue</div>
+                                            </label>
+
+                                            <label class="day-box">
+                                                <input type="checkbox" name="days[]" value="Wed">
+                                                <div class="box">Wed</div>
+                                            </label>
+
+                                            <label class="day-box">
+                                                <input type="checkbox" name="days[]" value="Thu">
+                                                <div class="box">Thu</div>
+                                            </label>
+
+                                            <label class="day-box">
+                                                <input type="checkbox" name="days[]" value="Fri">
+                                                <div class="box">Fri</div>
+                                            </label>
+
+                                            <label class="day-box">
+                                                <input type="checkbox" name="days[]" value="Sat">
+                                                <div class="box">Sat</div>
+                                            </label>
+
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -214,14 +384,83 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
             </div>
         </div>
-    </div>
-    </div>
 </form>
 
 @endsection
 @push('scripts')
 
 <script type="module">
+    const percentageValues = [5, 7.5, 10, 12.5, 15, 20, 25];
+    const flatValues = [75, 100, 125, 150, 200, 250, 300];
+
+    const container = document.getElementById("offerValuesContainer");
+    const offerInput = document.querySelector('input[name="offer_value"]') || document.querySelector('input[type="text"]');
+
+    // Handle Offer Type Change
+    document.querySelectorAll('[name="offer_type"]').forEach(el => {
+    el.addEventListener('change', function () {
+        renderOfferValues(this.value);
+    });
+    });
+
+    function renderOfferValues(type) {
+    container.innerHTML = '';
+
+    let values = type === 'PERCENTAGE' ? percentageValues : flatValues;
+
+    values.forEach(val => {
+        let div = document.createElement('div');
+        div.className = 'offer-chip';
+        div.innerText = type === 'PERCENTAGE' ? val + '%' : '₹' + val;
+
+        div.onclick = function () {
+        document.querySelectorAll('.offer-chip').forEach(c => c.classList.remove('active'));
+        div.classList.add('active');
+
+        // Set value in input
+        if (offerInput) {
+            offerInput.value = val;
+        }
+        };
+
+        container.appendChild(div);
+    });
+    }
+    
+    document.querySelectorAll('[name="coupon_type"]').forEach(el => {
+        el.addEventListener('change', function() {
+
+            operatorSection.classList.add('d-none');
+            routeSection.classList.add('d-none');
+
+            if (this.value === 'OPERATOR') {
+                operatorSection.classList.remove('d-none');
+            }
+            if (this.value === 'ROUTE') {
+                routeSection.classList.remove('d-none');
+            }
+            if (this.value === 'OPERATOR_ROUTE') {
+                operatorSection.classList.remove('d-none');
+                routeSection.classList.remove('d-none');
+            }
+        });
+    });
+
+    // Validity Toggle
+    document.querySelectorAll('[name="validity"]').forEach(el => {
+        el.addEventListener('change', function() {
+            dateRange.classList.toggle('d-none', this.value !== 'DATE');
+        });
+    });
+
+    // Exclude Dates
+    document.getElementById('excludeDate').addEventListener('change', function() {
+        let val = this.value;
+        let tag = document.createElement('span');
+        tag.className = 'badge bg-warning text-dark me-1';
+        tag.innerHTML = val;
+        document.getElementById('excludeList').appendChild(tag);
+    });
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
