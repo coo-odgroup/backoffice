@@ -24,7 +24,7 @@ label {
 }
 
 .btn-sm {
-    font-size: 0.675rem !important ;
+    font-size: 0.675rem !important;
     padding: 4px 10px;
 }
 
@@ -576,20 +576,20 @@ td:focus {
 }
 
 .accordion-header button {
-    font-size: 14px;  
+    font-size: 14px;
     font-weight: 600;
 }
 
 .seater {
-    background: #4CAF50;   
+    background: #4CAF50;
 }
 
 .sleeper {
-    background: #f32144;    
+    background: #f32144;
 }
 
 .vertical-sleeper {
-    background: #FF9800;   
+    background: #FF9800;
 }
 
 #seat_layout {
@@ -729,7 +729,7 @@ td:focus {
 .audit-top-card {
     background: #fff;
     border-radius: 12px;
-    padding: 20px;    
+    padding: 20px;
     border: 1px solid rgb(210, 210, 210) !important;
 }
 
@@ -1184,7 +1184,7 @@ svg.svg-inline--fa.fa-file-export {
 /* GRID */
 .layout-box {
     display: grid;
-   /* / grid-template-columns: repeat(10, 1fr); */
+    /* / grid-template-columns: repeat(10, 1fr); */
     gap: 8px;
     background: #f6f6f2;
     padding: 14px;
@@ -1263,11 +1263,14 @@ svg.svg-inline--fa.fa-file-export {
     grid-column: span 1;
 }
 
-.cursor-pointer { cursor: pointer; }
+.cursor-pointer {
+    cursor: pointer;
+}
 
-.select2-results__group {  
-    color: #d4d4d4; /* Bootstrap primary */
-     
+.select2-results__group {
+    color: #d4d4d4;
+    /* Bootstrap primary */
+
 }
 
 .select2-results__option {
@@ -1275,7 +1278,8 @@ svg.svg-inline--fa.fa-file-export {
 }
 
 .city-scroll {
-    max-height: 350px;   /* adjust as needed */
+    max-height: 350px;
+    /* adjust as needed */
     overflow-y: auto;
     overflow-x: hidden;
     border: 1px solid #ddd;
@@ -1287,6 +1291,7 @@ svg.svg-inline--fa.fa-file-export {
     font-size: 18px;
     line-height: 1;
 }
+
 .city-item {
     cursor: pointer;
 }
@@ -1361,7 +1366,7 @@ svg.svg-inline--fa.fa-file-export {
     border-radius: 12px;
     padding: 18px 20px;
     margin-bottom: 5px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     border: 1px solid #d2d2d2;
 }
 
@@ -1379,7 +1384,7 @@ svg.svg-inline--fa.fa-file-export {
 /* GRID */
 .bpv-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 12px;
 }
 
@@ -1415,7 +1420,7 @@ svg.svg-inline--fa.fa-file-export {
 .bpv-table th {
     background: #f8f9fa;
     font-weight: 600;
-     background: #f1f3f5;
+    background: #f1f3f5;
     font-size: 13px;
 }
 
@@ -1484,7 +1489,7 @@ svg.svg-inline--fa.fa-file-export {
 
 .bpv-seat-info {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
 }
 
@@ -1572,5 +1577,60 @@ svg.svg-inline--fa.fa-file-export {
     font-size: 10px !important;
     margin-top: 4px;
 }
+
+@media (max-width: 768px) {
+
+    /* ROTATE FULL SEAT AREA */
+    .seat-left {
+        transform: rotate(90deg);
+        transform-origin: center;
+        width: max-content;
+        margin: auto;
+    }
+
+    /* FIX CONTAINER HEIGHT AFTER ROTATION */
+    .bpv-seat-box {
+        height: 420px;
+        /* adjust if needed */
+        overflow: auto;
+    }
+
+    .bpv-wrapper {
+        max-width: 100% !important;
+        padding: 0 10px;
+    }
+
+    .bpv-main-box {
+        padding: 10px;
+    }
+
+    .bpv-card {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+
+    .bpv-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .bpv-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .bpv-heading {
+        font-size: 14px;
+    }
+
+    .bpv-grid p {
+        font-size: 13px;
+    }
+}
+
+
 
 /* End Preview Section */
