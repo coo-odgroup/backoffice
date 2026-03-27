@@ -218,12 +218,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     </div>
 
                                     <div class="col-12 mb-3">
-                                         <div id="offerValuesContainer" class="d-flex flex-wrap gap-2"></div>
+                                        <div id="offerValuesContainer" class="d-flex flex-wrap gap-2"></div>
                                     </div>
 
                                     <div class="col-md-2 mb-3">
                                         <label>Offer Value</label>
-                                        <input type="text" class="form-control form-control-sm">
+                                        <input type="text" name="offer_value" class="form-control form-control-sm">
                                     </div>
 
                                     <div class="col-md-2 mb-3">
@@ -287,43 +287,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <!-- Validity -->
                                     <div class="col-12 mb-3">
                                         <label>Validity</label>
-                                        <div class="d-flex gap-2 flex-wrap">
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="1W">
-                                                <div class="box">1W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="2W">
-                                                <div class="box">2W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="3W">
-                                                <div class="box">3W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="4W">
-                                                <div class="box">4W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="DATE">
-                                                <div class="box">Date Range</div>
-                                            </label>
-
-                                        </div>
+                                        <div id="validityContainer" class="d-flex gap-2 flex-wrap"></div>
                                     </div>
 
                                     <!-- Date Range -->
                                     <div id="dateRange" class="row d-none mb-3">
-                                        <div class="col-md-6">
-                                            <input type="date" class="form-control">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="date" class="form-control">
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label fw-bold">Active Days</label>
+                                            <div id="activeDaysContainer" class="d-flex flex-wrap gap-2"></div>
                                         </div>
                                     </div>
 
@@ -390,43 +361,137 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-    const percentageValues = [5, 7.5, 10, 12.5, 15, 20, 25];
-    const flatValues = [75, 100, 125, 150, 200, 250, 300];
-
     const container = document.getElementById("offerValuesContainer");
     const offerInput = document.querySelector('input[name="offer_value"]') || document.querySelector('input[type="text"]');
 
+
+    window.loadDynamicOptions = function(annexture_type, containerId, type = '') {
+
+        let container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin/get-annexture-list') }}",
+            data: {
+                annexture_type: annexture_type,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function(response) {
+
+                if (response.status && response.data.length > 0) {
+
+                    response.data.forEach(item => {
+
+                        let label = document.createElement('label');
+                        label.className = (type === 'checkbox') ? 'day-box' : 'radio-box';
+
+                        let input = document.createElement('input');
+
+                        if (type === 'checkbox') {
+                            input.type = 'checkbox';
+                            input.name = 'days[]';
+                        } else {
+                            input.type = 'radio';
+                            input.name = 'validity';
+                        }
+
+                        input.value = item.annexture_name;
+
+                        let div = document.createElement('div');
+                        div.className = 'box';
+                        div.innerText = item.annexture_name;
+
+                        // special case: DATE RANGE
+                        if (item.annexture_name === 'Date Range' || item.annexture_name === 'DATE') {
+                            input.value = 'DATE';
+                        }
+
+                        label.appendChild(input);
+                        label.appendChild(div);
+
+                        container.appendChild(label);
+                    });
+
+                } else {
+                    container.innerHTML = '<p>No Data Found</p>';
+                }
+            }
+        });
+    };
     // Handle Offer Type Change
     document.querySelectorAll('[name="offer_type"]').forEach(el => {
-    el.addEventListener('change', function () {
-        renderOfferValues(this.value);
+        el.addEventListener('change', function() {
+
+            let type = this.value;
+
+            if (type === 'PERCENTAGE') {
+                loadAnnextureList('CAMPAIGN_PERCENTAGE', 'PERCENTAGE');
+            } else if (type === 'FLAT') {
+                loadAnnextureList('CAMPAIGN_FLAT', 'FLAT');
+            }
+
+        });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // Load Validity
+        loadDynamicOptions('CAMPAIGN_VALIDITY', 'validityContainer');
+
+        // Load Active Days
+        loadDynamicOptions('CAMPAIGN_ACTIVE_DAYS', 'activeDaysContainer', 'checkbox');
     });
 
-    function renderOfferValues(type) {
-    container.innerHTML = '';
+    window.loadAnnextureList = function(annexture_type = '', type = '') {
 
-    let values = type === 'PERCENTAGE' ? percentageValues : flatValues;
-
-    values.forEach(val => {
-        let div = document.createElement('div');
-        div.className = 'offer-chip';
-        div.innerText = type === 'PERCENTAGE' ? val + '%' : '₹' + val;
-
-        div.onclick = function () {
-        document.querySelectorAll('.offer-chip').forEach(c => c.classList.remove('active'));
-        div.classList.add('active');
-
-        // Set value in input
-        if (offerInput) {
-            offerInput.value = val;
-        }
-        };
-
-        container.appendChild(div);
-    });
-    }
     
+
+        let container = document.getElementById("offerValuesContainer");
+        container.innerHTML = '';
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin/get-annexture-list') }}",
+            data: {
+                annexture_type: annexture_type,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function(response) {
+
+                if (response.status && response.data.length > 0) {
+
+                    response.data.forEach(item => {
+
+                        let div = document.createElement('div');
+                        div.className = 'offer-chip';
+
+                        div.innerText = (type === 'PERCENTAGE') ?
+                            item.annexture_name :
+                            '₹' + item.annexture_name;
+
+                        div.onclick = function() {
+
+                            document.querySelectorAll('.offer-chip')
+                                .forEach(c => c.classList.remove('active'));
+
+                            div.classList.add('active');
+
+                            document.querySelector('[name="offer_value"]').value = item.annexture_name;
+                        };
+
+                        container.appendChild(div);
+                    });
+
+                } else {
+                    container.innerHTML = '<p>No Data Found</p>';
+                }
+            }
+        });
+    };
+
+
+
     document.querySelectorAll('[name="coupon_type"]').forEach(el => {
         el.addEventListener('change', function() {
 
@@ -447,10 +512,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     // Validity Toggle
-    document.querySelectorAll('[name="validity"]').forEach(el => {
-        el.addEventListener('change', function() {
-            dateRange.classList.toggle('d-none', this.value !== 'DATE');
-        });
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'validity') {
+
+            let val = e.target.value;
+
+            document.getElementById('dateRange')
+                .classList.toggle('d-none', val !== 'DATE');
+        }
     });
 
     // Exclude Dates
