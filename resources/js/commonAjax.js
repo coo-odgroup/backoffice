@@ -4,7 +4,6 @@ import { Modal } from "bootstrap";
 
 let ajaxUrl = "http://127.0.0.1:8000/admin/";
 
-
 $.ajaxSetup({
     headers: {
         "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
@@ -22,7 +21,7 @@ export function initSelect2(selector, placeholder = "Select Option") {
             width: "100%",
             placeholder: placeholder,
             dropdownAutoWidth: true,
-            allowClear: true
+            allowClear: true,
         });
     }
 }
@@ -135,8 +134,7 @@ export function actionRec(action) {
 
     let message = "";
 
-    if (action === "D")
-        message = "Are you sure to delete selected record(s)?";
+    if (action === "D") message = "Are you sure to delete selected record(s)?";
     if (action === "A")
         message = "Are you sure to activate selected record(s)?";
     if (action === "UN")
@@ -351,7 +349,6 @@ export function viewUserRecord(id) {
 
             // If single object
             if (response && Object.keys(response).length > 0) {
-
                 html += `
                     <div class="card shadow-sm mb-2">
                         <div class="card-header bg-light">
@@ -363,39 +360,39 @@ export function viewUserRecord(id) {
 
                                     <tr>
                                         <th style="width:25%">Users ID</th>
-                                        <td style="width:25%">${response.id ?? '-'}</td>
+                                        <td style="width:25%">${response.id ?? "-"}</td>
 
                                         <th style="width:25%">Unique ID</th>
-                                        <td style="width:25%">${response.unique_id ?? '-'}</td>
+                                        <td style="width:25%">${response.unique_id ?? "-"}</td>
                                     </tr>
 
                                     <tr>
                                         <th>User Name</th>
-                                        <td>${response.name ?? '-'}</td>
+                                        <td>${response.name ?? "-"}</td>
 
                                         <th>Organization Name</th>
-                                        <td>${response.organization_name ?? '-'}</td>
+                                        <td>${response.organization_name ?? "-"}</td>
                                     </tr>
 
                                     <tr>
                                         <th>Primary Email</th>
-                                        <td>${response.primary_email ?? '-'}</td>
+                                        <td>${response.primary_email ?? "-"}</td>
 
                                         <th>Primary Contact</th>
-                                        <td>${response.primary_contact ?? '-'}</td>
+                                        <td>${response.primary_contact ?? "-"}</td>
                                     </tr>
 
                                     <tr>
                                         <th>Location</th>
-                                        <td>${response.location ?? '-'}</td>
+                                        <td>${response.location ?? "-"}</td>
 
                                         <th>User Role</th>
-                                        <td>${response.user_role ?? '-'}</td>
+                                        <td>${response.user_role ?? "-"}</td>
                                     </tr>
 
                                     <tr>
                                         <th>Active Status</th>
-                                        <td>${response.active_status == 1 ? 'Active' : 'Inactive'}</td>
+                                        <td>${response.active_status == 1 ? "Active" : "Inactive"}</td>
 
                                         <th></th>
                                         <td></td>
@@ -417,42 +414,42 @@ export function viewUserRecord(id) {
                                     <tbody>
                                         <tr>
                                             <th style="width:25%">Secondary Email</th>
-                                            <td style="width:25%">${response.info.secondary_email ?? '-'}</td>
+                                            <td style="width:25%">${response.info.secondary_email ?? "-"}</td>
 
                                             <th style="width:25%">Secondary Contact</th>
-                                            <td style="width:25%">${response.info.secondary_contact ?? '-'}</td>
+                                            <td style="width:25%">${response.info.secondary_contact ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>Aadhaar No</th>
-                                            <td>${response.info.aadhaar_no ?? '-'}</td>
+                                            <td>${response.info.aadhaar_no ?? "-"}</td>
 
                                             <th>PAN Card No</th>
-                                            <td>${response.info.pancard_no ?? '-'}</td>
+                                            <td>${response.info.pancard_no ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>President Name</th>
-                                            <td>${response.info.president_name ?? '-'}</td>
+                                            <td>${response.info.president_name ?? "-"}</td>
 
                                             <th>President Phone</th>
-                                            <td>${response.info.president_phone ?? '-'}</td>
+                                            <td>${response.info.president_phone ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>General Secretary Name</th>
-                                            <td>${response.info.general_secretary_name ?? '-'}</td>
+                                            <td>${response.info.general_secretary_name ?? "-"}</td>
 
                                             <th>General Secretary Phone</th>
-                                            <td>${response.info.general_secretary_phone ?? '-'}</td>
+                                            <td>${response.info.general_secretary_phone ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>GST Available</th>
-                                            <td>${response.info.has_gst == 1 ? 'Yes' : 'No'}</td>
+                                            <td>${response.info.has_gst == 1 ? "Yes" : "No"}</td>
 
                                             <th>GST No</th>
-                                            <td>${response.info.gst_no ?? '-'}</td>
+                                            <td>${response.info.gst_no ?? "-"}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -471,23 +468,23 @@ export function viewUserRecord(id) {
                                     <tbody>
                                         <tr>
                                             <th style="width:25%">Address</th>
-                                            <td style="width:25%">${response.address.address ?? '-'}</td>
+                                            <td style="width:25%">${response.address.address ?? "-"}</td>
 
                                             <th style="width:25%">Street</th>
-                                            <td style="width:25%">${response.address.street ?? '-'}</td>
+                                            <td style="width:25%">${response.address.street ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>Landmark</th>
-                                            <td>${response.address.landmark ?? '-'}</td>
+                                            <td>${response.address.landmark ?? "-"}</td>
 
                                             <th>City</th>
-                                            <td>${response.address.city ?? '-'}</td>
+                                            <td>${response.address.city ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>Pincode</th>
-                                            <td>${response.address.pincode ?? '-'}</td>
+                                            <td>${response.address.pincode ?? "-"}</td>
 
                                             <th></th>
                                             <td></td>
@@ -509,26 +506,26 @@ export function viewUserRecord(id) {
                                     <tbody>
                                         <tr>
                                             <th style="width:25%">Account Name</th>
-                                            <td style="width:25%">${response.bankdetails.bank_account_name ?? '-'}</td>
+                                            <td style="width:25%">${response.bankdetails.bank_account_name ?? "-"}</td>
 
                                             <th style="width:25%">Bank Name</th>
-                                            <td style="width:25%">${response.bankdetails.bank_name ?? '-'}</td>
+                                            <td style="width:25%">${response.bankdetails.bank_name ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>Account Number</th>
-                                            <td>${response.bankdetails.bank_account_number ?? '-'}</td>
+                                            <td>${response.bankdetails.bank_account_number ?? "-"}</td>
 
                                             <th>IFSC</th>
-                                            <td>${response.bankdetails.bank_ifsc ?? '-'}</td>
+                                            <td>${response.bankdetails.bank_ifsc ?? "-"}</td>
                                         </tr>
 
                                         <tr>
                                             <th>Bank Address</th>
-                                            <td>${response.bankdetails.bank_address ?? '-'}</td>
+                                            <td>${response.bankdetails.bank_address ?? "-"}</td>
 
                                             <th>UPI ID</th>
-                                            <td>${response.bankdetails.upi_id ?? '-'}</td>
+                                            <td>${response.bankdetails.upi_id ?? "-"}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -537,7 +534,6 @@ export function viewUserRecord(id) {
                     `;
                 }
             } else {
-
                 html = `
                     <div class="alert alert-info text-center">
                         No record found.
@@ -629,7 +625,9 @@ export function loadCityListSlugVal(selected_city_id = 0) {
             $(".citySlugVal").html(options);
         },
         error: function () {
-            $(".citySlugVal").html('<option value="">-- Select City --</option>');
+            $(".citySlugVal").html(
+                '<option value="">-- Select City --</option>',
+            );
         },
     });
 }
@@ -737,41 +735,41 @@ export function loadApiAppsList(app_id = 0) {
 }
 
 export function loadParentList(parent_id = 0) {
-
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-parent-module-list",
         data: {
             parent_id: parent_id,
-            _token: $('meta[name="csrf-token"]').attr('content')
+            _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
         success: function (response) {
-
             let options = '<option value="0">Select Parent Module</option>';
 
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (i, module) {
-                    let selected = (parent_id == module.id) ? 'selected' : '';
+                    let selected = parent_id == module.id ? "selected" : "";
                     options += `<option value="${module.id}" ${selected}>
                                     ${module.code}
                                 </option>`;
                 });
             }
 
-            $('#selParent').html(options);
-        }
+            $("#selParent").html(options);
+        },
     });
 }
 
 export function initCharCounter(fieldSelectors = []) {
-
-    fieldSelectors.forEach(selector => {
-
+    fieldSelectors.forEach((selector) => {
         let inputs = [];
 
         // If selector starts with . or [ → treat as querySelectorAll
-        if (selector.startsWith('.') || selector.startsWith('[') || selector.includes('name=')) {
+        if (
+            selector.startsWith(".") ||
+            selector.startsWith("[") ||
+            selector.includes("name=")
+        ) {
             inputs = document.querySelectorAll(selector);
         } else {
             // Otherwise treat as ID (for backward compatibility)
@@ -783,10 +781,9 @@ export function initCharCounter(fieldSelectors = []) {
 
         if (!inputs.length) return;
 
-        inputs.forEach(input => {
-
-            const counter = input.parentElement.querySelector('.char-counter');
-            const maxLength = input.getAttribute('maxlength');
+        inputs.forEach((input) => {
+            const counter = input.parentElement.querySelector(".char-counter");
+            const maxLength = input.getAttribute("maxlength");
 
             if (!counter || !maxLength) return;
 
@@ -795,14 +792,12 @@ export function initCharCounter(fieldSelectors = []) {
                 counter.textContent = `Remaining ${currentLength}/${maxLength}`;
             };
 
-            input.removeEventListener('input', updateCounter); // prevent duplicate binding
-            input.addEventListener('input', updateCounter);
+            input.removeEventListener("input", updateCounter); // prevent duplicate binding
+            input.addEventListener("input", updateCounter);
 
             updateCounter();
         });
-
     });
-
 }
 
 export function loadRoleList(role_id = 0) {
@@ -864,78 +859,70 @@ export function loadBlogCategoryList(cat_id = 0) {
 }
 
 export function loadFaqCategory(cat_id = 0) {
-
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-faq-category-list",
         data: {
-            _token: $('meta[name="csrf-token"]').attr('content')
+            _token: $('meta[name="csrf-token"]').attr("content"),
         },
         success: function (response) {
-
             if (response.status === true) {
-
-                let $dropdown = $('#faqCategory');
+                let $dropdown = $("#faqCategory");
 
                 $dropdown.empty();
-                $dropdown.append('<option value="0">Select FAQ Category</option>');
+                $dropdown.append(
+                    '<option value="0">Select FAQ Category</option>',
+                );
 
                 $.each(response.data, function (index, item) {
-
-                    let selected = (cat_id != 0 && cat_id == item.id) ? 'selected' : '';
+                    let selected =
+                        cat_id != 0 && cat_id == item.id ? "selected" : "";
 
                     $dropdown.append(
                         `<option value="${item.id}" ${selected}>
                             ${item.category_name}
-                        </option>`
+                        </option>`,
                     );
                 });
 
                 if ($dropdown.hasClass("select2-hidden-accessible")) {
-                    $dropdown.trigger('change');
+                    $dropdown.trigger("change");
                 }
-
             } else {
-                console.error('Failed to load FAQ categories');
+                console.error("Failed to load FAQ categories");
             }
         },
         error: function (xhr) {
-            console.error('AJAX Error:', xhr.responseText);
-        }
+            console.error("AJAX Error:", xhr.responseText);
+        },
     });
 }
 
-$(document).on('click', '.remove-image', function () {
-
+$(document).on("click", ".remove-image", function () {
     let button = $(this);
-    let containerId = button.data('container');
+    let containerId = button.data("container");
 
-    confirmAlert('Are you sure to proceed!', function () {
-
+    confirmAlert("Are you sure to proceed!", function () {
         $.ajax({
             url: ajaxUrl + "remove-image",
             type: "POST",
             data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                id: button.data('id'),
-                table: button.data('table'),
-                column: button.data('column'),
-                path: button.data('path')
+                _token: $('meta[name="csrf-token"]').attr("content"),
+                id: button.data("id"),
+                table: button.data("table"),
+                column: button.data("column"),
+                path: button.data("path"),
             },
             success: function (response) {
-
                 if (response.status) {
-                    $('#' + containerId).addClass('d-none');
+                    $("#" + containerId).addClass("d-none");
                     viewAlert(response.message);
                 } else {
                     viewAlert(response.message);
                 }
-
-            }
+            },
         });
-
     });
-
 });
 
 export function loadBlogList(blog_id = 0) {
@@ -967,7 +954,6 @@ export function loadBlogList(blog_id = 0) {
     });
 }
 
-
 export function loadBlogTagsList(tag_id = 0) {
     $.ajax({
         type: "POST",
@@ -998,7 +984,6 @@ export function loadBlogTagsList(tag_id = 0) {
 }
 
 export function searchCity() {
-
     let city = $("#citySearch").val();
 
     $.ajax({
@@ -1011,13 +996,10 @@ export function searchCity() {
         dataType: "json",
 
         success: function (response) {
-
             let html = "";
 
             if (response.status && response.data.length > 0) {
-
                 $.each(response.data, function (index, city) {
-
                     html += `<div class="form-check mb-2">
                                 <input class="form-check-input cityCheck"
                                        type="checkbox"
@@ -1028,28 +1010,20 @@ export function searchCity() {
                                 </label>
                             </div>`;
                 });
-
             } else {
-
                 html = `<p class="text-danger">No city found</p>`;
-
             }
 
             $("#cityList").html(html);
-
         },
 
         error: function () {
             console.log("Error loading cities");
-        }
-
+        },
     });
-
 }
 
-
 export function loadPlacementList(selected_placement_id = 0) {
-
     $("#placement").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -1061,14 +1035,12 @@ export function loadPlacementList(selected_placement_id = 0) {
         },
         dataType: "json",
         success: function (response) {
-
             let options = '<option value="">-- Select Placement --</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach(function (placement) {
-
-                    let selected = placement.id == selected_placement_id ? "selected" : "";
+                    let selected =
+                        placement.id == selected_placement_id ? "selected" : "";
 
                     options += `<option value="${placement.id}" ${selected}>${placement.name}</option>`;
                 });
@@ -1077,14 +1049,14 @@ export function loadPlacementList(selected_placement_id = 0) {
             $("#placement").html(options);
         },
         error: function () {
-            $("#placement").html('<option value="">-- Select Placement --</option>');
+            $("#placement").html(
+                '<option value="">-- Select Placement --</option>',
+            );
         },
     });
 }
 
-
 export function loadVendorList(selected_vendor_id = 0) {
-
     $("#vendor").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -1096,14 +1068,12 @@ export function loadVendorList(selected_vendor_id = 0) {
         },
         dataType: "json",
         success: function (response) {
-
             let options = '<option value="">-- Select Vendor --</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach(function (vendor) {
-
-                    let selected = vendor.id == selected_vendor_id ? "selected" : "";
+                    let selected =
+                        vendor.id == selected_vendor_id ? "selected" : "";
 
                     options += `<option value="${vendor.id}" ${selected}>${vendor.company_name}</option>`;
                 });
@@ -1117,9 +1087,7 @@ export function loadVendorList(selected_vendor_id = 0) {
     });
 }
 
-
 export function loadPricingPlanList(selected_plan_id = 0) {
-
     $("#pricingPlan").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -1131,31 +1099,28 @@ export function loadPricingPlanList(selected_plan_id = 0) {
         },
         dataType: "json",
         success: function (response) {
-
             let options = '<option value="">-- Select Pricing Plan --</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach(function (plan) {
-
-                    let selected = plan.id == selected_plan_id ? "selected" : "";
+                    let selected =
+                        plan.id == selected_plan_id ? "selected" : "";
 
                     options += `<option value="${plan.id}" ${selected}>${plan.plan_name}</option>`;
                 });
-
             }
 
             $("#pricingPlan").html(options);
         },
         error: function () {
-
-            $("#pricingPlan").html('<option value="">-- Select Pricing Plan --</option>');
-        }
+            $("#pricingPlan").html(
+                '<option value="">-- Select Pricing Plan --</option>',
+            );
+        },
     });
 }
 
 export function loadCampaignList(selected_campaign_id = 0) {
-
     $("#campaign").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -1167,14 +1132,12 @@ export function loadCampaignList(selected_campaign_id = 0) {
         },
         dataType: "json",
         success: function (response) {
-
             let options = '<option value="">-- Select Campaign --</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach(function (campaign) {
-
-                    let selected = campaign.id == selected_campaign_id ? "selected" : "";
+                    let selected =
+                        campaign.id == selected_campaign_id ? "selected" : "";
 
                     options += `<option value="${campaign.id}" ${selected}>${campaign.title}</option>`;
                 });
@@ -1183,13 +1146,14 @@ export function loadCampaignList(selected_campaign_id = 0) {
             $("#campaign").html(options);
         },
         error: function () {
-            $("#campaign").html('<option value="">-- Select Campaign --</option>');
+            $("#campaign").html(
+                '<option value="">-- Select Campaign --</option>',
+            );
         },
     });
 }
 
 export function loadCountryList(selected_country_id = 0) {
-
     $("#country").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -1201,13 +1165,10 @@ export function loadCountryList(selected_country_id = 0) {
         },
         dataType: "json",
         success: function (response) {
-
             let options = '<option value="">-- Select Country --</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach(function (country) {
-
                     let selected =
                         country.id == selected_country_id ? "selected" : "";
 
@@ -1218,14 +1179,14 @@ export function loadCountryList(selected_country_id = 0) {
             $("#country").html(options);
         },
         error: function () {
-            $("#country").html('<option value="">-- Select Country --</option>');
+            $("#country").html(
+                '<option value="">-- Select Country --</option>',
+            );
         },
     });
 }
 
-
 export function loadBrandList(selected_brand_id = 0) {
-
     $("#brandSearch, #brand").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -1238,27 +1199,25 @@ export function loadBrandList(selected_brand_id = 0) {
         dataType: "json",
 
         success: function (response) {
-
             let options = '<option value="">-- Select Brand --</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach(function (brand) {
-
                     let selected =
                         brand.id == selected_brand_id ? "selected" : "";
 
                     options += `<option value="${brand.id}" ${selected}>${brand.brand_name}</option>`;
                 });
-
             }
 
             $("#brandSearch, #brand").html(options);
         },
 
         error: function () {
-            $("#brandSearch, #brand").html('<option value="">-- Select Brand --</option>');
-        }
+            $("#brandSearch, #brand").html(
+                '<option value="">-- Select Brand --</option>',
+            );
+        },
     });
 }
 
@@ -1292,7 +1251,6 @@ export function loadCancellationslabList(slab_id = 0) {
 }
 
 export function loadAnnexureTypeList(selected_id = 0) {
-
     $(".selAnnexureType").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -1305,7 +1263,8 @@ export function loadAnnexureTypeList(selected_id = 0) {
         dataType: "json",
 
         success: function (response) {
-            let options = '<option value="">-- Select Annexure Type --</option>';
+            let options =
+                '<option value="">-- Select Annexure Type --</option>';
 
             if (response.status && response.data.length > 0) {
                 response.data.forEach(function (item) {
@@ -1320,12 +1279,14 @@ export function loadAnnexureTypeList(selected_id = 0) {
         },
 
         error: function () {
-            $(".selAnnexureType").html('<option value="">-- Select Annexure Type --</option>');
-        }
+            $(".selAnnexureType").html(
+                '<option value="">-- Select Annexure Type --</option>',
+            );
+        },
     });
 }
 
-export function loadBusModelsList(model_id = '', brand_id = '') {
+export function loadBusModelsList(model_id = "", brand_id = "") {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-busmodels-list",
@@ -1369,7 +1330,9 @@ export function loadAxleTypeList(axle_typet_id = 0) {
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
                     let selected =
-                        axle_typet_id > 0 && app.id == axle_typet_id ? "selected" : "";
+                        axle_typet_id > 0 && app.id == axle_typet_id
+                            ? "selected"
+                            : "";
                     options += `<option value="${app.id}" ${selected}>
                                     ${app.axle_type}
                                 </option>`;
@@ -1398,7 +1361,9 @@ export function loadBusServicesList(bus_service_id = 0) {
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
                     let selected =
-                        bus_service_id > 0 && app.id == bus_service_id ? "selected" : "";
+                        bus_service_id > 0 && app.id == bus_service_id
+                            ? "selected"
+                            : "";
                     options += `<option value="${app.id}" ${selected}>
                                     ${app.bus_service_name}
                                 </option>`;
@@ -1427,7 +1392,9 @@ export function loadSeatTypeList(seat_type_id = 0) {
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
                     let selected =
-                        seat_type_id > 0 && app.id == seat_type_id ? "selected" : "";
+                        seat_type_id > 0 && app.id == seat_type_id
+                            ? "selected"
+                            : "";
                     options += `<option value="${app.id}" ${selected}>
                                     ${app.seat_type}
                                 </option>`;
@@ -1456,7 +1423,9 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
                     let selected =
-                        seat_layout_id > 0 && app.id == seat_layout_id ? "selected" : "";
+                        seat_layout_id > 0 && app.id == seat_layout_id
+                            ? "selected"
+                            : "";
                     options += `<option value="${app.id}" ${selected}>
                                     ${app.seat_layout}
                                 </option>`;
@@ -1471,7 +1440,10 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
     });
 }
 
-export function loadAnnextureList(annexture_type = '', selected_id = 0) {
+function loadAnnextureList(annexture_type = '', type = '') {
+
+    let container = document.getElementById("offerValuesContainer");
+    container.innerHTML = '';
 
     $.ajax({
         type: "POST",
@@ -1480,30 +1452,36 @@ export function loadAnnextureList(annexture_type = '', selected_id = 0) {
             annexture_type: annexture_type,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
-        dataType: "json",
-
         success: function (response) {
-
-            let options = '<option value="">Select Option</option>';
 
             if (response.status && response.data.length > 0) {
 
-                $.each(response.data, function (index, item) {
+                response.data.forEach(item => {
 
-                    let selected = (selected_id == item.id) ? "selected" : "";
+                    let div = document.createElement('div');
+                    div.className = 'offer-chip';
 
-                    options += `<option value="${item.id}" ${selected}>
-                                        ${item.annexture_name}
-                                    </option>`;
+                    div.innerText = (type === 'PERCENTAGE')
+                        ? item.annexture_name + '%'
+                        : '₹' + item.annexture_name;
+
+                    div.onclick = function () {
+
+                        document.querySelectorAll('.offer-chip')
+                            .forEach(c => c.classList.remove('active'));
+
+                        div.classList.add('active');
+
+                        document.querySelector('input[name="offer_value"]').value = item.annexture_name;
+                    };
+
+                    container.appendChild(div);
                 });
+
+            } else {
+                container.innerHTML = '<p>No Data Found</p>';
             }
-
-            $(".annexture").html(options);
-        },
-
-        error: function () {
-            console.log("Error loading annexture list");
-        },
+        }
     });
 }
 
@@ -1521,7 +1499,9 @@ export function loadCampaignMasterList(campaign_master_id = 0) {
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
                     let selected =
-                        campaign_master_id > 0 && app.id == campaign_master_id ? "selected" : "";
+                        campaign_master_id > 0 && app.id == campaign_master_id
+                            ? "selected"
+                            : "";
                     options += `<option value="${app.id}" ${selected}>
                                         ${app.campaign_name}
                                     </option>`;
@@ -1537,7 +1517,6 @@ export function loadCampaignMasterList(campaign_master_id = 0) {
 }
 
 export function loadAmenityList(selected_ids = []) {
-
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-amenity-list",
@@ -1547,18 +1526,16 @@ export function loadAmenityList(selected_ids = []) {
         dataType: "json",
 
         success: function (response) {
-
-            let options = '';
+            let options = "";
 
             if (response.status && response.data.length > 0) {
-
                 $.each(response.data, function (i, category) {
-
                     options += `<optgroup label="${category.category_name}">`;
 
                     $.each(category.amenities, function (j, amenity) {
-
-                        let selected = selected_ids.includes(amenity.id) ? 'selected' : '';
+                        let selected = selected_ids.includes(amenity.id)
+                            ? "selected"
+                            : "";
 
                         options += `<option value="${amenity.id}" ${selected}>
                                             ${amenity.name}
@@ -1578,23 +1555,20 @@ export function loadAmenityList(selected_ids = []) {
             //     allowClear: true,
             //     width: '100%'
             // });
-
         },
 
         error: function (xhr) {
             console.log("Error loading amenities");
-        }
+        },
     });
 }
 
 export function initClearableInputs() {
-
-    $('.clearable').each(function () {
-
+    $(".clearable").each(function () {
         let input = $(this);
 
         // prevent duplicate wrapping
-        if (input.parent('.position-relative').length) return;
+        if (input.parent(".position-relative").length) return;
 
         input.wrap('<div class="position-relative"></div>');
 
@@ -1607,15 +1581,15 @@ export function initClearableInputs() {
     });
 
     // show/hide button
-    $(document).on('keyup', '.clearable', function () {
-        let btn = $(this).siblings('.clear-btn');
+    $(document).on("keyup", ".clearable", function () {
+        let btn = $(this).siblings(".clear-btn");
         btn.toggle($(this).val().length > 0);
     });
 
     // clear input
-    $(document).on('click', '.clear-btn', function () {
-        let input = $(this).siblings('input');
-        input.val('').trigger('keyup').focus();
+    $(document).on("click", ".clear-btn", function () {
+        let input = $(this).siblings("input");
+        input.val("").trigger("keyup").focus();
     });
 }
 
@@ -1633,7 +1607,9 @@ export function loadBusOperatorList(bus_operator_id = 0) {
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
                     let selected =
-                        bus_operator_id > 0 && app.id == bus_operator_id ? "selected" : "";
+                        bus_operator_id > 0 && app.id == bus_operator_id
+                            ? "selected"
+                            : "";
                     options += `<option value="${app.id}" ${selected}>
                                     ${app.name}
                                 </option>`;

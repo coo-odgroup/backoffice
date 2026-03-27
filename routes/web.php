@@ -120,7 +120,6 @@ Route::prefix('admin')->group(function () {
     Route::post('get-annexure-type-list', [CommonController::class, 'getAnnexureTypeList']);
     Route::post('get-campaign-master-list', [CommonController::class, 'getCampaignMasterList']);
     Route::post('get-busoperator-list', [CommonController::class, 'getBusOperatorList']);
-
     Route::post('get-annexture-list', [CommonController::class, 'getAnnextureList']);
 
     // Common Bus Info

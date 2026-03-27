@@ -218,12 +218,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     </div>
 
                                     <div class="col-12 mb-3">
-                                         <div id="offerValuesContainer" class="d-flex flex-wrap gap-2"></div>
+                                        <div id="offerValuesContainer" class="d-flex flex-wrap gap-2"></div>
                                     </div>
 
                                     <div class="col-md-2 mb-3">
                                         <label>Offer Value</label>
-                                        <input type="text" class="form-control form-control-sm">
+                                        <input type="text" name="offer_value" class="form-control form-control-sm">
                                     </div>
 
                                     <div class="col-md-2 mb-3">
@@ -287,50 +287,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <!-- Validity -->
                                     <div class="col-12 mb-3">
                                         <label>Validity</label>
-                                        <div class="d-flex gap-2 flex-wrap">
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="1W">
-                                                <div class="box">1W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="2W">
-                                                <div class="box">2W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="3W">
-                                                <div class="box">3W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="4W">
-                                                <div class="box">4W</div>
-                                            </label>
-
-                                            <label class="radio-box">
-                                                <input type="radio" name="validity" value="DATE">
-                                                <div class="box">Date Range</div>
-                                            </label>
-
-                                        </div>
+                                        <div id="validityContainer" class="d-flex gap-2 flex-wrap"></div>
                                     </div>
 
                                     <!-- Date Range -->
                                     <div id="dateRange" class="row d-none mb-3">
-                                        <div class="col-md-6">
-                                            <input type="date" class="form-control">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="date" class="form-control">
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label fw-bold">Active Days</label>
+                                            <div id="activeDaysContainer" class="d-flex flex-wrap gap-2"></div>
                                         </div>
                                     </div>
 
                                     <!-- Exclude Dates -->
                                     <div class="col-md-4 mb-3">
                                         <label>Exclude Dates</label>
-                                        <input type="date" id="excludeDate" class="form-control">
+                                        <input type="date" id="excludeDate" class="form-control form-control">
                                         <div id="excludeList" class="mt-2"></div>
                                     </div>
 
@@ -377,6 +348,117 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         </div>
                                     </div>
+
+                                    <div class="row g-3">
+
+                                        <!-- LEFT SIDE (FORM FIELDS) -->
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 h-100">
+
+                                                <h6 class="mb-3">Campaign Details</h6>
+
+                                                <div class="row g-3">
+
+                                                    <div class="col-md-6">
+                                                        <label>Coupon Title</label>
+                                                        <input type="text" name="offer_value" class="form-control form-control-sm">
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label>Valid By *</label>
+                                                        <select id="validBy" class="form-select form-select-sm" name="valid_by">
+                                                            <option value="">Select Valid By</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label>Coupon Code</label>
+                                                        <input type="text" name="min_ticket_value" class="form-control form-control-sm" value="300">
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label>User Type</label>
+                                                        <select id="userType" class="form-select form-select-sm" name="user_type">
+                                                            <option value="">Select User Type</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <label>Max Users</label>
+                                                        <input type="text" name="extra_input" class="form-control form-control-sm">
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <label>Short Description</label>
+                                                        <textarea name="short_description"
+                                                            class="form-control form-control-sm"
+                                                            rows="12"
+                                                            placeholder="Enter short description"></textarea>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- RIGHT SIDE (CKEDITOR) -->
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 h-100">
+                                                <h6 class="mb-3">Detailed Description</h6>
+                                                <textarea
+                                                    class="form-control form-select-sm"
+                                                    id="content"
+                                                    name="content">
+                                                </textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-4">
+
+                                            <!-- Auto Apply -->
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">
+                                                    Auto Apply: <span class="text-danger">*</span>
+                                                </label>
+
+                                                <div class="d-flex gap-3">
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="auto_apply_module" value="1">
+                                                        <div class="box">Yes</div>
+                                                    </label>
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="auto_apply_module" value="0" checked>
+                                                        <div class="box">No</div>
+                                                    </label>
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Apply Once/User -->
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">
+                                                    Apply Once/User: <span class="text-danger">*</span>
+                                                </label>
+
+                                                <div class="d-flex gap-3">
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="irctc_module" value="1">
+                                                        <div class="box">Yes</div>
+                                                    </label>
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="irctc_module" value="0" checked>
+                                                        <div class="box">No</div>
+                                                    </label>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -384,49 +466,173 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
             </div>
         </div>
+    </div>
 </form>
 
 @endsection
 @push('scripts')
 
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script type="module">
-    const percentageValues = [5, 7.5, 10, 12.5, 15, 20, 25];
-    const flatValues = [75, 100, 125, 150, 200, 250, 300];
-
     const container = document.getElementById("offerValuesContainer");
     const offerInput = document.querySelector('input[name="offer_value"]') || document.querySelector('input[type="text"]');
 
+
+    window.loadDynamicOptions = function(annexture_type, containerId, type = '') {
+
+        let container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin/get-annexture-list') }}",
+            data: {
+                annexture_type: annexture_type,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function(response) {
+
+                if (response.status && response.data.length > 0) {
+
+                    response.data.forEach(item => {
+
+                        let label = document.createElement('label');
+                        label.className = (type === 'checkbox') ? 'day-box' : 'radio-box';
+
+                        let input = document.createElement('input');
+
+                        if (type === 'checkbox') {
+                            input.type = 'checkbox';
+                            input.name = 'days[]';
+                        } else {
+                            input.type = 'radio';
+                            input.name = 'validity';
+                        }
+
+                        input.value = item.annexture_name;
+
+                        let div = document.createElement('div');
+                        div.className = 'box';
+                        div.innerText = item.annexture_name;
+
+                        // special case: DATE RANGE
+                        if (item.annexture_name === 'Date Range' || item.annexture_name === 'DATE') {
+                            input.value = 'DATE';
+                        }
+
+                        label.appendChild(input);
+                        label.appendChild(div);
+
+                        container.appendChild(label);
+                    });
+
+                } else {
+                    container.innerHTML = '<p>No Data Found</p>';
+                }
+            }
+        });
+    };
+
+
+    window.loadDropdownOptions = function(annexture_type, elementId) {
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin/get-annexture-list') }}",
+            data: {
+                annexture_type: annexture_type,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function(response) {
+
+                let options = '<option value="">Select Option</option>';
+
+                if (response.status && response.data.length > 0) {
+
+                    response.data.forEach(item => {
+                        options += `<option value="${item.id}">
+                                    ${item.annexture_name}
+                                </option>`;
+                    });
+                }
+
+                document.getElementById(elementId).innerHTML = options;
+            }
+        });
+    };
+
     // Handle Offer Type Change
     document.querySelectorAll('[name="offer_type"]').forEach(el => {
-    el.addEventListener('change', function () {
-        renderOfferValues(this.value);
+        el.addEventListener('change', function() {
+
+            let type = this.value;
+
+            if (type === 'PERCENTAGE') {
+                loadAnnextureList('CAMPAIGN_PERCENTAGE', 'PERCENTAGE');
+            } else if (type === 'FLAT') {
+                loadAnnextureList('CAMPAIGN_FLAT', 'FLAT');
+            }
+
+        });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        loadDynamicOptions('CAMPAIGN_VALIDITY', 'validityContainer');
+        loadDynamicOptions('CAMPAIGN_ACTIVE_DAYS', 'activeDaysContainer', 'checkbox');
+        loadDropdownOptions('CAMPAIGN_VALID_BY', 'validBy');
+        loadDropdownOptions('CAMPAIGN_USER_TYPE', 'userType');
     });
 
-    function renderOfferValues(type) {
-    container.innerHTML = '';
+    window.loadAnnextureList = function(annexture_type = '', type = '') {
 
-    let values = type === 'PERCENTAGE' ? percentageValues : flatValues;
 
-    values.forEach(val => {
-        let div = document.createElement('div');
-        div.className = 'offer-chip';
-        div.innerText = type === 'PERCENTAGE' ? val + '%' : '₹' + val;
 
-        div.onclick = function () {
-        document.querySelectorAll('.offer-chip').forEach(c => c.classList.remove('active'));
-        div.classList.add('active');
+        let container = document.getElementById("offerValuesContainer");
+        container.innerHTML = '';
 
-        // Set value in input
-        if (offerInput) {
-            offerInput.value = val;
-        }
-        };
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin/get-annexture-list') }}",
+            data: {
+                annexture_type: annexture_type,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function(response) {
 
-        container.appendChild(div);
-    });
-    }
-    
+                if (response.status && response.data.length > 0) {
+
+                    response.data.forEach(item => {
+
+                        let div = document.createElement('div');
+                        div.className = 'offer-chip';
+
+                        div.innerText = (type === 'PERCENTAGE') ?
+                            item.annexture_name :
+                            '₹' + item.annexture_name;
+
+                        div.onclick = function() {
+
+                            document.querySelectorAll('.offer-chip')
+                                .forEach(c => c.classList.remove('active'));
+
+                            div.classList.add('active');
+
+                            document.querySelector('[name="offer_value"]').value = item.annexture_name;
+                        };
+
+                        container.appendChild(div);
+                    });
+
+                } else {
+                    container.innerHTML = '<p>No Data Found</p>';
+                }
+            }
+        });
+    };
+
+
+
     document.querySelectorAll('[name="coupon_type"]').forEach(el => {
         el.addEventListener('change', function() {
 
@@ -447,10 +653,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     // Validity Toggle
-    document.querySelectorAll('[name="validity"]').forEach(el => {
-        el.addEventListener('change', function() {
-            dateRange.classList.toggle('d-none', this.value !== 'DATE');
-        });
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'validity') {
+
+            let val = e.target.value;
+
+            document.getElementById('dateRange')
+                .classList.toggle('d-none', val !== 'DATE');
+        }
     });
 
     // Exclude Dates
@@ -594,8 +804,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
+    window.addEventListener('DOMContentLoaded', function() {
+
+        if (window.CKEDITOR && document.getElementById('content')) {
+            window.CKEDITOR.replace('content', {
+                height: 400
+            });
+        }
+
+    });
+
     function isNumeric(value) {
         return /^[0-9]+(\.[0-9]+)?$/.test(value);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        if (document.getElementById('content')) {
+            CKEDITOR.replace('content', {
+                height: 400
+            });
+        }
+
+    });
 </script>
 @endpush
