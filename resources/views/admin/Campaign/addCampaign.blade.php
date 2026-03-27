@@ -301,7 +301,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <!-- Exclude Dates -->
                                     <div class="col-md-4 mb-3">
                                         <label>Exclude Dates</label>
-                                        <input type="date" id="excludeDate" class="form-control">
+                                        <input type="date" id="excludeDate" class="form-control form-control">
                                         <div id="excludeList" class="mt-2"></div>
                                     </div>
 
@@ -348,6 +348,117 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         </div>
                                     </div>
+
+                                    <div class="row g-3">
+
+                                        <!-- LEFT SIDE (FORM FIELDS) -->
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 h-100">
+
+                                                <h6 class="mb-3">Campaign Details</h6>
+
+                                                <div class="row g-3">
+
+                                                    <div class="col-md-6">
+                                                        <label>Coupon Title</label>
+                                                        <input type="text" name="offer_value" class="form-control form-control-sm">
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label>Valid By *</label>
+                                                        <select id="validBy" class="form-select form-select-sm" name="valid_by">
+                                                            <option value="">Select Valid By</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label>Coupon Code</label>
+                                                        <input type="text" name="min_ticket_value" class="form-control form-control-sm" value="300">
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label>User Type</label>
+                                                        <select id="userType" class="form-select form-select-sm" name="user_type">
+                                                            <option value="">Select User Type</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <label>Max Users</label>
+                                                        <input type="text" name="extra_input" class="form-control form-control-sm">
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <label>Short Description</label>
+                                                        <textarea name="short_description"
+                                                            class="form-control form-control-sm"
+                                                            rows="12"
+                                                            placeholder="Enter short description"></textarea>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- RIGHT SIDE (CKEDITOR) -->
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 h-100">
+                                                <h6 class="mb-3">Detailed Description</h6>
+                                                <textarea
+                                                    class="form-control form-select-sm"
+                                                    id="content"
+                                                    name="content">
+                                                </textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-4">
+
+                                            <!-- Auto Apply -->
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">
+                                                    Auto Apply: <span class="text-danger">*</span>
+                                                </label>
+
+                                                <div class="d-flex gap-3">
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="auto_apply_module" value="1">
+                                                        <div class="box">Yes</div>
+                                                    </label>
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="auto_apply_module" value="0" checked>
+                                                        <div class="box">No</div>
+                                                    </label>
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Apply Once/User -->
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">
+                                                    Apply Once/User: <span class="text-danger">*</span>
+                                                </label>
+
+                                                <div class="d-flex gap-3">
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="irctc_module" value="1">
+                                                        <div class="box">Yes</div>
+                                                    </label>
+
+                                                    <label class="radio-box">
+                                                        <input type="radio" name="irctc_module" value="0" checked>
+                                                        <div class="box">No</div>
+                                                    </label>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -355,11 +466,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
             </div>
         </div>
+    </div>
 </form>
 
 @endsection
 @push('scripts')
 
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script type="module">
     const container = document.getElementById("offerValuesContainer");
     const offerInput = document.querySelector('input[name="offer_value"]') || document.querySelector('input[type="text"]');
@@ -419,6 +532,35 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         });
     };
+
+
+    window.loadDropdownOptions = function(annexture_type, elementId) {
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin/get-annexture-list') }}",
+            data: {
+                annexture_type: annexture_type,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function(response) {
+
+                let options = '<option value="">Select Option</option>';
+
+                if (response.status && response.data.length > 0) {
+
+                    response.data.forEach(item => {
+                        options += `<option value="${item.id}">
+                                    ${item.annexture_name}
+                                </option>`;
+                    });
+                }
+
+                document.getElementById(elementId).innerHTML = options;
+            }
+        });
+    };
+
     // Handle Offer Type Change
     document.querySelectorAll('[name="offer_type"]').forEach(el => {
         el.addEventListener('change', function() {
@@ -436,16 +578,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.addEventListener('DOMContentLoaded', function() {
 
-        // Load Validity
         loadDynamicOptions('CAMPAIGN_VALIDITY', 'validityContainer');
-
-        // Load Active Days
         loadDynamicOptions('CAMPAIGN_ACTIVE_DAYS', 'activeDaysContainer', 'checkbox');
+        loadDropdownOptions('CAMPAIGN_VALID_BY', 'validBy');
+        loadDropdownOptions('CAMPAIGN_USER_TYPE', 'userType');
     });
 
     window.loadAnnextureList = function(annexture_type = '', type = '') {
 
-    
+
 
         let container = document.getElementById("offerValuesContainer");
         container.innerHTML = '';
@@ -663,8 +804,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
+    window.addEventListener('DOMContentLoaded', function() {
+
+        if (window.CKEDITOR && document.getElementById('content')) {
+            window.CKEDITOR.replace('content', {
+                height: 400
+            });
+        }
+
+    });
+
     function isNumeric(value) {
         return /^[0-9]+(\.[0-9]+)?$/.test(value);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        if (document.getElementById('content')) {
+            CKEDITOR.replace('content', {
+                height: 400
+            });
+        }
+
+    });
 </script>
 @endpush
