@@ -372,7 +372,8 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                             <input type="checkbox"
                                 class="cityCheck"
                                 value="${c.id}"
-                                data-name="${c.city_name}">
+                                data-name="${c.city_name}"
+                                name="city[]">
                             ${c.city_name}
                         </div>`;
                     });

@@ -114,49 +114,49 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                                 <div class="col-md-3 mb-2">
                                                                     <label for="brand">Brand</label>
-                                                                    <select class="form-select form-select-sm onSelect" id="brand" name="brand">
+                                                                    <select class="form-select form-select-sm onSelect" id="brand" name="brand_id">
                                                                         <option value="0">Select Brand</option>
                                                                     </select>
                                                                 </div>
 
                                                                 <div class="col-md-3 mb-2">
                                                                     <label for="busModel">Model</label>
-                                                                    <select class="form-select form-select-sm onSelect" id="busModel" name="model">
+                                                                    <select class="form-select form-select-sm onSelect" id="busModel" name="model_id">
                                                                         <option value="0">Select Model</option>
                                                                     </select>
                                                                 </div>
 
                                                                 <div class="col-md-3 mb-2">
                                                                     <label for="axleType">Axle Type</label>
-                                                                    <select class="form-select form-select-sm onSelect" id="axleType" name="axleType">
+                                                                    <select class="form-select form-select-sm onSelect" id="axleType" name="axle_type_id">
                                                                         <option value="0">Select Axle Type</option>
                                                                     </select>
                                                                 </div>
 
                                                                 <div class="col-md-3 mb-2">
                                                                     <label for="busService">Bus Service</label>
-                                                                    <select class="form-select form-select-sm onSelect" id="busService" name="busService">
+                                                                    <select class="form-select form-select-sm onSelect" id="busService" name="service_id">
                                                                         <option value="0">Select Bus Service</option>
                                                                     </select>
                                                                 </div>
 
                                                                 <div class="col-md-2 mb-1">
                                                                     <label for="acType">AC Type <span class="text-danger">*</span></label>
-                                                                    <select class="form-select form-select-sm onSelect annexture" id="acType" name="acType">
+                                                                    <select class="form-select form-select-sm onSelect annexture" id="acType" name="ac_type_id">
                                                                         <option value="0">Select AC Type</option>
                                                                     </select>
                                                                 </div>
 
                                                                 <div class="col-md-2 mb-1">
                                                                     <label for="seatType">Seat Type <span class="text-danger">*</span></label>
-                                                                    <select class="form-select form-select-sm onSelect" id="seatType" name="seatType">
+                                                                    <select class="form-select form-select-sm onSelect" id="seatType" name="seat_type_id">
                                                                         <option value="0">Select Seat Type</option>
                                                                     </select>
                                                                 </div>
 
                                                                 <div class="col-md-2 mb-1">
                                                                     <label for="seatLayout">Seat Layout <span class="text-danger">*</span></label>
-                                                                    <select class="form-select form-select-sm onSelect" id="seatLayout" name="seatLayout">
+                                                                    <select class="form-select form-select-sm onSelect" id="seatLayout" name="seat_layout_type_id">
                                                                         <option value="0">Select Seat Layout</option>
                                                                     </select>
                                                                 </div>
@@ -164,7 +164,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                 <div class="col-md-6 mb-1">
                                                                     <label for="busType">Bus Type<span class="text-danger">*</span></label>
                                                                     <span id="busType"></span>
-                                                                    <input type="hidden" name="type" id="busTypeVal" value="">
+                                                                    <input type="hidden" name="gen_bus_type" id="busTypeVal" value="">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -174,7 +174,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                             <label class="form-label fw-bold">Amenities <span class="text-danger">*</span></label>
 
                                                             <!-- Search -->
-                                                            <input type="text" id="amenitySearch" class="form-control mb-3"
+                                                            <input type="text" id="amenitySearch" class="form-control mb-3 clearable"
                                                                 placeholder="Search amenities...">
 
                                                             <!-- Accordion -->
@@ -193,8 +193,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                             {{ $category->category_name }}
                                                                         </button>
                                                                     </h2>
-
-                                                                    <input type="hidden" name="category_id[]" value="{{ $category->id }}">
 
                                                                     <div id="{{ $collapseId }}" class="accordion-collapse collapse"
                                                                         data-bs-parent="#amenityAccordion">
@@ -290,16 +288,10 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             </div>
                                         </div>
 
-                                        <!-- <div class="col-md-4 mb-2 d-flex align-items-center">
-                                                <input type="checkbox" class="me-2">
-                                                <label class="mb-0">Has IRCTC Module</label>
-                                            </div> -->
-
                                     </div>
 
                                     <!-- BUTTON -->
                                     <div class="text-center mt-4">
-                                        <!-- <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button> -->
                                         <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                     </div>
                                 </div>
@@ -320,6 +312,10 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     function nextStep() {
         window.location.href = "/admin/bus/create/step2";
     }
+
+    $(document).ready(function() {
+        commonAjax.initClearableInputs();
+    });
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -424,7 +420,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         commonAjax.loadAmenityList();
 
         // Jagan
-        commonAjax.initSelect2('#busOperator', 'Select Bus Opeator');
+        commonAjax.initSelect2('#busOperator', 'Select Bus Operator');
         let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
         commonAjax.loadBusOperatorList(bus_operator_id);
 

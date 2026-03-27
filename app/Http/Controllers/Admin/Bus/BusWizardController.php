@@ -33,6 +33,7 @@ class BusWizardController extends Controller
 
     public function postStep1(Request $request)
     {
+        // return $request;
         $request->validate([
             'name' => 'required',
             'bus_number' => 'required',
@@ -46,35 +47,55 @@ class BusWizardController extends Controller
         $bus_number = htmlEncode(request('bus_number'));
         $via = htmlEncode(request('via'));
         $max_seat_book = htmlEncode(request('max_seat_book'));
-        // $type = htmlEncode(request('type'));
-        $is_irctc_model = request('is_irctc_model') === 'on' ? 1 : 0;
+
+        $gen_bus_type = request('gen_bus_type');
+        $gen_bus_type = preg_replace('/\s+/', ' ', $gen_bus_type);
+        $gen_bus_type = trim($gen_bus_type);
+
+        $is_irctc_model = (int)request('is_irctc_model');
+        $brand_id = (int)request('brand_id');
+        $axle_type_id = (int)request('axle_type_id');
+        $model_id = (int)request('model_id');
+        $service_id = (int)request('service_id');
+        $ac_type_id = (int)request('ac_type_id');
+        $seat_type_id = (int)request('seat_type_id');
+        $seat_layout_type_id = (int)request('seat_layout_type_id');
 
         $obj = new Bus();
         $obj->bus_operator_id = $bus_operator_id;
-        $obj->bus_type_id = 1;
-        $obj->bus_sitting_id = 1;
-        $obj->bus_seat_layout_id = 1;
         $obj->cancellationslabs_id = $cancellationslabs_id;
         $obj->name = $name;
         $obj->bus_number = $bus_number;
         $obj->via = $via;
         $obj->max_seat_book = $max_seat_book;
-        // $obj->type = $type;
+        $obj->gen_bus_type = $gen_bus_type;
         $obj->is_irctc_model = $is_irctc_model;
+        $obj->brand_id = $brand_id;
+        $obj->axle_type_id = $axle_type_id;
+        $obj->model_id = $model_id;
+        $obj->service_id = $service_id;
+        $obj->ac_type_id = $ac_type_id;
+        $obj->seat_type_id = $seat_type_id;
+        $obj->seat_layout_type_id = $seat_layout_type_id;
         $obj->active_status = 1;
 
         $obj->save();
 
         $bus_id = $obj->id;
 
-        $category_ids  = request('category_id', []);
         $amenities_ids = request('amenities_id', []);
+
+        $category_ids = Amenity::whereIn('id', $amenities_ids)
+            ->pluck('category_id')
+            ->unique();
 
         $amenitiesData = [];
 
         foreach ($amenities_ids as $i => $amenities_id) {
 
-            if (!isset($category_ids[$i])) { continue; }
+            if (!isset($category_ids[$i])) {
+                continue;
+            }
 
             $amenitiesData[] = [
                 'bus_id' => $bus_id,
@@ -93,8 +114,8 @@ class BusWizardController extends Controller
         session()->flash('level', 'success');
         session()->flash('message', 'Bus Info Created successfully.');
 
-        session(['bus.step1' => $request->all()]);
-        return redirect()->route('bus.step2');
+        $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
+        return redirect()->route('bus.step2', ['encId' => $enc_bus_id]);
     }
 
     public function step2()
