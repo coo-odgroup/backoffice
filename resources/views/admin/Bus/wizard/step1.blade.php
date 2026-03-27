@@ -205,7 +205,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                                 @foreach($category->amenities as $amenity)
                                                                                 <div class="col-md-3">
                                                                                     <label class="amenity-chip">
-                                                                                        <input type="checkbox" name="amenities_id[]"
+                                                                                        <input type="checkbox" class="amenity-checkbox" name="amenities_id[]"
                                                                                             value="{{ $amenity->id }}">
 
                                                                                         <span class="amenity-label">
@@ -320,76 +320,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     function nextStep() {
         window.location.href = "/admin/bus/create/step2";
     }
-
-    document.addEventListener("click", function(e) {
-
-        if (e.target.classList.contains("addRow")) {
-
-            let row = e.target.closest(".stationRow");
-
-            let newRow = row.cloneNode(true);
-
-            newRow.querySelector(".addRow").innerHTML = "−";
-
-            newRow.querySelector(".addRow").classList.remove("btn-primary");
-            newRow.querySelector(".addRow").classList.add("btn-danger");
-            newRow.querySelector(".addRow").classList.remove("addRow");
-            newRow.querySelector(".addRow").classList.add("removeRow");
-
-            row.parentNode.appendChild(newRow);
-
-        }
-
-        if (e.target.classList.contains("removeRow")) {
-
-            e.target.closest(".stationRow").remove();
-
-        }
-
-    });
-
-    const selectedContainer = document.getElementById("selectedAmenities");
-
-    // ✅ Handle checkbox change (DYNAMIC)
-    document.addEventListener('change', function(e) {
-        if (e.target.matches('.amenity-chip input')) {
-            renderSelected();
-        }
-    });
-
-    // ✅ Render selected tags
-    function renderSelected() {
-        selectedContainer.innerHTML = '';
-
-        document.querySelectorAll('.amenity-chip input:checked')
-            .forEach(cb => {
-                const tag = document.createElement('div');
-                tag.className = 'tag';
-
-                tag.innerHTML = `
-                ${cb.nextElementSibling ? cb.nextElementSibling.innerText : cb.parentElement.innerText.trim()}
-                <span data-value="${cb.value}" class="remove-tag">&times;</span>
-            `;
-
-                selectedContainer.appendChild(tag);
-            });
-    }
-
-    // ✅ Remove tag (DYNAMIC)
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-tag')) {
-            const value = e.target.getAttribute('data-value');
-
-            document.querySelectorAll('.amenity-chip input')
-                .forEach(cb => {
-                    if (cb.value == value) {
-                        cb.checked = false;
-                    }
-                });
-
-            renderSelected();
-        }
-    });
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -535,159 +465,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
-
-    function searchCity() {
-
-        let city = document.getElementById("citySearch").value;
-
-        $.ajax({
-            type: "POST",
-            url: ajaxUrl + "get-city-search",
-            data: {
-                city: city,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            dataType: "json",
-
-            success: function(response) {
-
-                let html = "";
-
-                if (response.status && response.data.length > 0) {
-
-                    $.each(response.data, function(index, c) {
-
-                        html += `
-                    <div class="form-check mb-2">
-                        <input class="form-check-input cityCheck"
-                               type="checkbox"
-                               value="${c.city_name}"
-                               onchange="toggleCity(this)">
-                        <label class="form-check-label">${c.city_name}</label>
-                    </div>`;
-                    });
-
-                } else {
-
-                    html = `<p class="text-danger">No city found</p>`;
-
-                }
-
-                $("#cityList").html(html);
-
-            }
-
-        });
-
-    }
-
-    let timer;
-
-    // ✅ Store selected amenities globally
-    let selectedAmenities = new Set();
-
-    $('#amenitySearch').on('keyup', function() {
-
-        clearTimeout(timer);
-
-        let search = $(this).val();
-
-        timer = setTimeout(function() {
-
-            // ✅ If empty → clear accordion
-            if (search.length < 1) {
-                $('#amenityAccordion').html('');
-                return;
-            }
-
-            // ✅ Show loader
-            $('#amenityAccordion').html('<p class="text-muted">Searching...</p>');
-
-            $.ajax({
-                url: '/admin/search-amenities',
-                type: 'GET',
-                data: {
-                    search: search
-                },
-
-                success: function(res) {
-
-                    let html = '';
-
-                    // ✅ Empty state
-                    if (res.length === 0) {
-                        $('#amenityAccordion').html('<p class="text-muted">No amenities found</p>');
-                        return;
-                    }
-
-                    // ✅ Build accordion
-                    res.forEach(function(category, index) {
-
-                        let collapseId = `cat${category.id}_${index}`;
-
-                        html += `
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#${collapseId}">
-                                    ${category.category_name}
-                                </button>
-                            </h2>
-
-                            <input type="hidden" name="category_id[]" value="${category.id}">
-
-                            <div id="${collapseId}" class="accordion-collapse collapse show">
-                                <div class="accordion-body">
-                                    <div class="row g-1">
-                        `;
-
-                        category.amenities.forEach(function(amenity) {
-
-                            let checked = selectedAmenities.has(String(amenity.id)) ? 'checked' : '';
-
-                            html += `
-                                <div class="col-md-3">
-                                    <label class="amenity-chip">
-                                        <input type="checkbox" name="amenities_id[]" value="${amenity.id}" ${checked}>
-                                        <span class="amenity-label">${amenity.amenity_name}</span>
-                                    </label>
-                                </div>
-                            `;
-                        });
-
-                        html += `
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-                    });
-
-                    $('#amenityAccordion').html(html);
-                },
-
-                error: function() {
-                    $('#amenityAccordion').html('<p class="text-danger">Something went wrong</p>');
-                }
-            });
-
-        }, 300);
-
-    });
-
-
-    // ✅ Track selections (VERY IMPORTANT)
-    $(document).on('change', '.amenity-chip input', function() {
-
-        let val = $(this).val();
-
-        if ($(this).is(':checked')) {
-            selectedAmenities.add(val);
-        } else {
-            selectedAmenities.delete(val);
-        }
-    });
-
     $('#slab').on('change', function() {
 
         let slabId = $(this).val();
@@ -721,6 +498,190 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 $('#slabDetails').show();
             }
         });
+    });
+
+    let timer;
+
+    // ✅ Load from localStorage
+    let selAmenities = JSON.parse(localStorage.getItem('selAmenities')) || [];
+
+    // ✅ Fast lookup set
+    let selectedAmenities = new Set(selAmenities.map(item => item[0]));
+
+    const selectedContainer = document.getElementById("selectedAmenities");
+
+
+    // =========================
+    // 🔍 SEARCH + ACCORDION
+    // =========================
+    $('#amenitySearch').on('keyup', function() {
+
+        clearTimeout(timer);
+
+        let search = $(this).val();
+
+        timer = setTimeout(function() {
+
+            // ✅ FIX: don't return, allow empty search
+            if (search.length < 1) {
+                search = ''; // send empty to backend
+            }
+
+            $('#amenityAccordion').html('<p class="text-muted">Searching...</p>');
+
+            $.ajax({
+                url: '/admin/search-amenities',
+                type: 'GET',
+                data: {
+                    search: search
+                },
+
+                success: function(res) {
+
+                    let html = '';
+
+                    if (res.length === 0) {
+                        $('#amenityAccordion').html('<p class="text-muted">No amenities found</p>');
+                        return;
+                    }
+
+                    res.forEach(function(category, index) {
+
+                        let collapseId = `cat${category.id}_${index}`;
+
+                        html += `
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#${collapseId}">
+                                ${category.category_name}
+                            </button>
+                        </h2>
+
+                        <div id="${collapseId}" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <div class="row g-1">
+                    `;
+
+                        category.amenities.forEach(function(amenity) {
+
+                            let checked = selectedAmenities.has(String(amenity.id)) ? 'checked' : '';
+
+                            html += `
+                            <div class="col-md-3">
+                                <label class="amenity-chip">
+                                    <input type="checkbox" class="amenity-checkbox"
+                                        value="${amenity.id}" ${checked}>
+                                    <span class="amenity-label">${amenity.amenity_name}</span>
+                                </label>
+                            </div>
+                        `;
+                        });
+
+                        html += `
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    });
+
+                    $('#amenityAccordion').html(html);
+                },
+
+                error: function() {
+                    $('#amenityAccordion').html('<p class="text-danger">Something went wrong</p>');
+                }
+            });
+
+        }, 300);
+    });
+
+    // =========================
+    // ✅ CHECKBOX CHANGE
+    // =========================
+    $(document).on('change', '.amenity-checkbox', function() {
+
+        let id = $(this).val();
+        let name = $(this).siblings('.amenity-label').text().trim();
+
+        if ($(this).is(':checked')) {
+
+            selectedAmenities.add(id);
+
+            if (!selAmenities.some(item => item[0] == id)) {
+                selAmenities.push([id, name]);
+            }
+
+        } else {
+
+            selectedAmenities.delete(id);
+            selAmenities = selAmenities.filter(item => item[0] != id);
+        }
+
+        // 💾 Save
+        localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
+
+        // 🎯 Update tags
+        renderSelected();
+    });
+
+
+    // =========================
+    // 🏷️ RENDER TAGS
+    // =========================
+    function renderSelected() {
+
+        selectedContainer.innerHTML = '';
+
+        selAmenities.forEach(item => {
+
+            let tag = document.createElement('div');
+            tag.className = 'tag';
+
+            tag.innerHTML = `
+            ${item[1]}
+            <span data-value="${item[0]}" class="remove-tag">&times;</span>
+        `;
+
+            selectedContainer.appendChild(tag);
+        });
+    }
+
+
+    // =========================
+    // ❌ REMOVE TAG
+    // =========================
+    document.addEventListener('click', function(e) {
+
+        if (e.target.classList.contains('remove-tag')) {
+
+            let value = e.target.getAttribute('data-value');
+
+            // Remove from memory
+            selectedAmenities.delete(value);
+            selAmenities = selAmenities.filter(item => item[0] != value);
+
+            // Uncheck checkbox if present
+            document.querySelectorAll('.amenity-checkbox').forEach(cb => {
+                if (cb.value == value) {
+                    cb.checked = false;
+                }
+            });
+
+            // Save again
+            localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
+
+            renderSelected();
+        }
+    });
+
+
+    // =========================
+    // 🚀 INIT (PAGE LOAD)
+    // =========================
+    $(document).ready(function() {
+        renderSelected();
     });
 </script>
 @endpush

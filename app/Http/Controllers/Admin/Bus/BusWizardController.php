@@ -74,7 +74,7 @@ class BusWizardController extends Controller
 
         foreach ($amenities_ids as $i => $amenities_id) {
 
-            if (!isset($category_ids[$i])) continue;
+            if (!isset($category_ids[$i])) { continue; }
 
             $amenitiesData[] = [
                 'bus_id' => $bus_id,
