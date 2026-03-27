@@ -314,7 +314,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <input type="date" name="end_date" class="form-control form-control-sm">
                                         </div>
 
-
                                         <div class="col-md-6"></div>
 
                                         <!-- ROW 2 → EXCLUDE DATES -->
@@ -441,7 +440,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-bold">
                                                     Auto Apply: <span class="text-danger">*</span>
                                                 </label>
+
                                                 <div class="d-flex gap-3">
+
                                                     <label class="radio-box">
                                                         <input type="radio" name="auto_apply_module" value="1">
                                                         <div class="box">Yes</div>
@@ -451,14 +452,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         <input type="radio" name="auto_apply_module" value="0" checked>
                                                         <div class="box">No</div>
                                                     </label>
+
                                                 </div>
                                             </div>
+
                                             <!-- Apply Once/User -->
                                             <div class="col-md-2 mb-3">
                                                 <label class="form-label fw-bold">
                                                     Apply Once/User: <span class="text-danger">*</span>
                                                 </label>
+
                                                 <div class="d-flex gap-3">
+
                                                     <label class="radio-box">
                                                         <input type="radio" name="irctc_module" value="1">
                                                         <div class="box">Yes</div>
@@ -468,11 +473,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         <input type="radio" name="irctc_module" value="0" checked>
                                                         <div class="box">No</div>
                                                     </label>
+
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-12 mb-12 mt-4">
-                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Submit</button>
+
                                         </div>
                                     </div>
                                 </div>
@@ -488,14 +492,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @endsection
 @push('scripts')
 
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 <script type="module">
-    let startDate = new Date($('#start_date').val());
-    let endDate = new Date($('#end_date').val());
-
-    if (endDate < startDate) {
-        commonAjax.viewAlert('End Date must be greater than or equal to Start Date');
-        return false;
-    }
     const container = document.getElementById("offerValuesContainer");
     const offerInput = document.querySelector('input[name="offer_value"]') || document.querySelector('input[type="text"]');
 
@@ -653,9 +651,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         });
     };
 
-    document.addEventListener('DOMContentLoaded', function() {
-        initCkEditor('#content');
-    });
+
 
     document.querySelectorAll('[name="coupon_type"]').forEach(el => {
         el.addEventListener('change', function() {
@@ -729,15 +725,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if (!validator.blankCheck('offer_value', 'Offer Value is required'))
             return false;
 
+        // ✅ Numeric check (manual)
         if (!isNumeric($('#offer_value').val())) {
             commonAjax.viewAlert('Offer Value must be numeric');
             return false;
         }
-        if (!validator.blankCheck('start_date', 'Start Date is required'))
-            return false;
-
-        if (!validator.blankCheck('end_date', 'End Date is required'))
-            return false;
 
         // Optional numeric
         if ($('#min_ticket_value').val() !== '') {
@@ -832,8 +824,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
+    window.addEventListener('DOMContentLoaded', function() {
+
+        if (window.CKEDITOR && document.getElementById('content')) {}
+
+    });
+
     function isNumeric(value) {
         return /^[0-9]+(\.[0-9]+)?$/.test(value);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        if (document.getElementById('content')) {
+            CKEDITOR.replace('content', {
+                height: 400
+            });
+        }
+
+    });
 </script>
 @endpush
