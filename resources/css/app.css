@@ -1652,8 +1652,13 @@ svg.svg-inline--fa.fa-file-export {
   background: #f8f9fa;
 }
 
-.amenity-chip input:checked + span,
+/* .amenity-chip input:checked + span,
 .amenity-chip input:checked {
+  background: #ffc107;
+  color: #000;
+} */
+
+label.amenity-chip:has(input:checked) {
   background: #ffc107;
   color: #000;
 }
