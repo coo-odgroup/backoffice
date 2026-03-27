@@ -823,7 +823,7 @@ class CommonController extends Controller
                 ->select('id', 'annexture_name')
                 ->where('annexture_type_id', $type->id)
                 ->where('active_status', 1)
-                ->orderBy('annexture_name', 'asc')
+                ->orderBy('annexture_value', 'asc')
                 ->get();
 
             return response()->json([

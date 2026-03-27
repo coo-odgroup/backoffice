@@ -223,7 +223,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                     <div class="col-md-2 mb-3">
                                         <label>Offer Value</label>
-                                        <input type="text" name="offer_value" class="form-control form-control-sm">
+                                        <input type="text" name="offer_value" class="form-control form-control-sm" placeholder="Offer Value">
                                     </div>
 
                                     <div class="col-md-2 mb-3">
@@ -298,31 +298,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                     </div>
 
-
-
                                     <!-- Start Date -->
                                     <div class="row">
 
-                                        <!-- ROW 1 → DATE RANGE -->
+                                        <!-- Date Range Radio -->
                                         <div class="col-md-2 mb-3">
-                                            <label class="form-label fw-bold">Start Date</label>
-                                            <input type="date" name="start_date" class="form-control form-control-sm">
+                                            <label class="radio-box">
+                                                <input type="radio" name="coupon_type" value="DATE_RANGE" id="dateRangeRadio">
+                                                <div class="box">Date Range</div>
+                                            </label>
                                         </div>
 
-                                        <div class="col-md-2 mb-3">
-                                            <label class="form-label fw-bold">End Date</label>
-                                            <input type="date" name="end_date" class="form-control form-control-sm">
+                                        <!-- TOGGLE SECTION -->
+                                        <div id="dateRangeSection" class="row d-none">
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">Start Date</label>
+                                                <input type="date" name="start_date" class="form-control form-control-sm">
+                                            </div>
+
+                                            <div class="col-md-2 mb-3">
+                                                <label class="form-label fw-bold">End Date</label>
+                                                <input type="date" name="end_date" class="form-control form-control-sm">
+                                            </div>
+
                                         </div>
 
-                                        <div class="col-md-6"></div>
-
-                                        <!-- ROW 2 → EXCLUDE DATES -->
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label>Exclude Dates</label>
                                             <input type="date" id="excludeDate" class="form-control form-control-sm">
                                             <div id="excludeList" class="mt-2"></div>
                                         </div>
-
                                     </div>
 
                                     <!-- Active Days -->
@@ -381,7 +389,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6">
                                                         <label>Coupon Title</label>
-                                                        <input type="text" name="offer_value" class="form-control form-control-sm">
+                                                        <input type="text" name="offer_value" class="form-control form-control-sm"placeholder = "Enter Coupon Type" >
                                                     </div>
 
                                                     <div class="col-md-6">
@@ -405,7 +413,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-12">
                                                         <label>Max Users</label>
-                                                        <input type="text" name="extra_input" class="form-control form-control-sm">
+                                                        <input type="text" name="extra_input" class="form-control form-control-sm" placeholder = "Enter Max Users" >
                                                     </div>
 
                                                     <div class="col-md-12">
@@ -514,7 +522,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 if (response.status && response.data.length > 0) {
 
-                    response.data.forEach(item => {
+                    response.data.forEach((item, index) => {
 
                         let label = document.createElement('label');
                         label.className = (type === 'checkbox') ? 'day-box' : 'radio-box';
@@ -530,6 +538,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         }
 
                         input.value = item.annexture_name;
+                        if (index === 0) {
+                            input.checked = true;
+                        }
 
                         let div = document.createElement('div');
                         div.className = 'box';
@@ -552,7 +563,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         });
     };
+    let dateRangeVisible = false;
 
+    document.getElementById('dateRangeRadio').addEventListener('click', function() {
+
+        const section = document.getElementById('dateRangeSection');
+
+        // toggle
+        dateRangeVisible = !dateRangeVisible;
+
+        if (dateRangeVisible) {
+            section.classList.remove('d-none');
+        } else {
+            section.classList.add('d-none');
+
+            // OPTIONAL: clear values when hiding
+            document.querySelector('[name="start_date"]').value = '';
+            document.querySelector('[name="end_date"]').value = '';
+        }
+    });
 
     window.loadDropdownOptions = function(annexture_type, elementId) {
 
@@ -584,6 +613,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     // Handle Offer Type Change
     document.querySelectorAll('[name="offer_type"]').forEach(el => {
         el.addEventListener('change', function() {
+
+            //  CLEAR OLD VALUE
+            document.querySelector('[name="offer_value"]').value = '';
+
+            //  CLEAR ACTIVE CHIPS
+            document.querySelectorAll('.offer-chip').forEach(c => {
+                c.classList.remove('active');
+            });
 
             let type = this.value;
 
@@ -638,7 +675,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                             div.classList.add('active');
 
-                            document.querySelector('[name="offer_value"]').value = item.annexture_name;
+                            let value = item.annexture_name;
+
+                            if (type === 'PERCENTAGE') {
+                                value = value.replace('%', '').trim();
+                            }
+
+                            document.querySelector('[name="offer_value"]').value = value;
                         };
 
                         container.appendChild(div);
