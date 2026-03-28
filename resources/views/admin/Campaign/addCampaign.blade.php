@@ -290,24 +290,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div id="validityContainer" class="d-flex gap-2 flex-wrap"></div>
                                     </div>
 
-                                    <!-- Date Range -->
-                                    <div id="dateRange" class="row d-none mb-3">
-                                        <div class="col-12 mb-3">
-                                            <label class="form-label fw-bold">Active Days</label>
-                                            <div id="activeDaysContainer" class="d-flex flex-wrap gap-2"></div>
-                                        </div>
-                                    </div>
+
 
                                     <!-- Start Date -->
                                     <div class="row">
 
                                         <!-- Date Range Radio -->
-                                        <div class="col-md-2 mb-3">
+                                        <!-- <div class="col-md-2 mb-3">
                                             <label class="radio-box">
                                                 <input type="radio" name="coupon_type" value="DATE_RANGE" id="dateRangeRadio">
                                                 <div class="box">Date Range</div>
                                             </label>
-                                        </div>
+                                        </div> -->
 
                                         <!-- TOGGLE SECTION -->
                                         <div id="dateRangeSection" class="row d-none">
@@ -389,7 +383,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6">
                                                         <label>Coupon Title</label>
-                                                        <input type="text" name="offer_value" class="form-control form-control-sm"placeholder = "Enter Coupon Type" >
+                                                        <input type="text" name="offer_value" class="form-control form-control-sm" placeholder="Enter Coupon Type">
                                                     </div>
 
                                                     <div class="col-md-6">
@@ -413,7 +407,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-12">
                                                         <label>Max Users</label>
-                                                        <input type="text" name="extra_input" class="form-control form-control-sm" placeholder = "Enter Max Users" >
+                                                        <input type="text" name="extra_input" class="form-control form-control-sm" placeholder="Enter Max Users">
                                                     </div>
 
                                                     <div class="col-md-12">
@@ -555,7 +549,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         label.appendChild(div);
 
                         container.appendChild(label);
+                        //  ADD DATE RANGE AT END (same row)
+
+
                     });
+                    if (type !== 'checkbox') {
+
+                        let label = document.createElement('label');
+                        label.className = 'radio-box';
+
+                        let input = document.createElement('input');
+                        input.type = 'radio';
+                        input.name = 'validity';
+                        input.value = 'DATE';
+
+                        let div = document.createElement('div');
+                        div.className = 'box';
+                        div.innerText = 'Date Range';
+
+                        label.appendChild(input);
+                        label.appendChild(div);
+
+                        container.appendChild(label);
+                    }
 
                 } else {
                     container.innerHTML = '<p>No Data Found</p>';
@@ -563,25 +579,44 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         });
     };
-    let dateRangeVisible = false;
 
-    document.getElementById('dateRangeRadio').addEventListener('click', function() {
 
-        const section = document.getElementById('dateRangeSection');
+    let selectedValidity = null;
 
-        // toggle
-        dateRangeVisible = !dateRangeVisible;
+    document.addEventListener('click', function(e) {
 
-        if (dateRangeVisible) {
-            section.classList.remove('d-none');
-        } else {
-            section.classList.add('d-none');
+        if (e.target.name === 'validity') {
 
-            // OPTIONAL: clear values when hiding
-            document.querySelector('[name="start_date"]').value = '';
-            document.querySelector('[name="end_date"]').value = '';
+            let val = e.target.value;
+            let section = document.getElementById('dateRangeSection');
+
+            // remove active from all
+            document.querySelectorAll('#validityContainer .box')
+                .forEach(b => b.classList.remove('active'));
+
+            //  TOGGLE LOGIC
+            if (selectedValidity === val && val === 'DATE') {
+                // same clicked again → hide
+                section.classList.add('d-none');
+                selectedValidity = null;
+
+                e.target.checked = false; // unselect radio
+                return;
+            }
+
+            // mark selected
+            selectedValidity = val;
+            e.target.nextElementSibling.classList.add('active');
+
+            // show only for DATE
+            if (val === 'DATE') {
+                section.classList.remove('d-none');
+            } else {
+                section.classList.add('d-none');
+            }
         }
     });
+
 
     window.loadDropdownOptions = function(annexture_type, elementId) {
 
@@ -728,12 +763,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     // Exclude Dates
     document.getElementById('excludeDate').addEventListener('change', function() {
+
         let val = this.value;
+        if (!val) return;
+
         let tag = document.createElement('span');
-        tag.className = 'badge bg-warning text-dark me-1';
-        tag.innerHTML = val;
+        tag.className = 'badge bg-warning text-dark me-2 d-inline-flex align-items-center mb-2';
+
+        // date text
+        let text = document.createElement('span');
+        text.innerText = val;
+
+        //  remove button
+        let removeBtn = document.createElement('span');
+        removeBtn.innerHTML = '&times;';
+        removeBtn.style.cursor = 'pointer';
+        removeBtn.style.marginLeft = '8px';
+        removeBtn.style.fontWeight = 'bold';
+
+        // remove action
+        removeBtn.onclick = function() {
+            tag.remove();
+        };
+
+        tag.appendChild(text);
+        tag.appendChild(removeBtn);
+
         document.getElementById('excludeList').appendChild(tag);
+
+        // clear input after selection
+        this.value = '';
     });
+
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
