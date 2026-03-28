@@ -1440,7 +1440,7 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
     });
 }
 
-function loadAnnextureList(annexture_type = '', type = '') {
+function getLoadAnnextureList(annexture_type = '', type = '') {
 
     let container = document.getElementById("offerValuesContainer");
     container.innerHTML = '';
@@ -1482,6 +1482,42 @@ function loadAnnextureList(annexture_type = '', type = '') {
                 container.innerHTML = '<p>No Data Found</p>';
             }
         }
+    });
+}
+
+export function loadAnnextureList(annexture_type = '', selected_id = 0) {
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-annexture-list",
+        data: {
+            annexture_type: annexture_type,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+
+            let options = '<option value="">Select Option</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                $.each(response.data, function (index, item) {
+
+                    let selected = (selected_id == item.id) ? "selected" : "";
+
+                    options += `<option value="${item.id}" ${selected}>
+                                        ${item.annexture_name}
+                                    </option>`;
+                });
+            }
+
+            $(".annexture").html(options);
+        },
+
+        error: function () {
+            console.log("Error loading annexture list");
+        },
     });
 }
 

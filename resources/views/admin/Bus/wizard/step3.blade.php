@@ -149,7 +149,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             html += `
         <div class="row align-items-center border-bottom pb-1 pt-1">
             <div class="col-md-4 fw-bold">${index + 1}. ${cityName}</div>
-            <input type="hidden" name="city_name[${cityId}]" value="${cityName}">
+            <input type="hidden" name="cities[${cityId}]" value="${cityName}">
 
             <div class="col-md-3 text-center align-middle">
                 <div class="checkbox">

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Bus\Bus;
 use App\Models\Bus\BusAmenity;
 use App\Models\Bus\BusRoutes;
+use App\Models\Bus\BusRoutesStops;
+use App\Models\Bus\BusRoutesMap;
 use App\Models\Master\Amenity;
 use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
@@ -132,6 +134,8 @@ class BusWizardController extends Controller
 
     public function postStep2(Request $request)
     {
+        session()->flash('level', 'success');
+        session()->flash('message', 'Cities selected and sorted successfully.');
         $enc_bus_id = (!empty($request->bus_id)) ? Crypt::encryptString($request->bus_id) : 0;
         return redirect()->route('bus.step3', ['encId' => $enc_bus_id]);
     }
@@ -149,32 +153,66 @@ class BusWizardController extends Controller
 
     public function postStep3(Request $request)
     {
-        // return $request;
         $data = request()->all();
 
-        $cityNames = $data['city_name'] ?? [];
+        $cities = $data['cities'] ?? [];
         $boarding = $data['boarding'] ?? [];
         $dropping = $data['dropping'] ?? [];
-        // $times = $data['time'] ?? [];
+        $listing_time = $data['time'] ?? [];
         $bus_id = $data['bus_id'];
 
-        $insertData = [];
+        $keys = array_keys($cities);
+        $boarding_city_id = $keys[0];
+        $dropping_city_id = end($keys);
+        $route_name = $cities[$boarding_city_id] . ' - ' . $cities[$dropping_city_id];
+        $route_signature_string = implode('-', $keys);
+        $route_signature = md5($route_signature_string);
 
-        foreach ($cityNames as $cityId => $cityName) {
+        // Route Section Starts Here
+        $route = new BusRoutes();
+        $route->route_name = $route_name;
+        $route->boarding_city_id = $boarding_city_id;
+        $route->dropping_city_id = $dropping_city_id;
+        $route->route_signature = $route_signature;
+        $route->active_status = 1;
+        $route->created_by = 1;
+        $route->save();
+        // Route Section Ends Here
 
-            $insertData[] = [
-                'route_name' => $cityName,
-                'boarding_city_id' => isset($boarding[$cityId]) ? $cityId : null,
-                'dropping_city_id' => isset($dropping[$cityId]) ? $cityId : null,
-                'route_signature' => "null",
-                'active_status' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+        $route_id = $route->id;
+
+        // BusRoutesMap Section Starts Here
+        $routeMap = new BusRoutesMap();
+        $routeMap->bus_id = $bus_id;
+        $routeMap->bus_route_id = $route_id;
+        $routeMap->created_by = 1;
+        $routeMap->save();
+        // BusRoutesMap Section Ends Here
+
+        // BusRoutesStops Section Starts Here
+        $routeStops = [];
+        $stop_order = 1;
+        foreach ($cities as $cityId => $cityName) {
+
+            $routeStops[] = [
+                'bus_route_id' => $route_id,
+                'bus_id' => $bus_id,
+                'city_id' => $cityId,
+                'stop_order' => $stop_order,
+                'is_boarding' => isset($boarding[$cityId]) ? 1 : 0,
+                'is_dropping' => isset($dropping[$cityId]) ? 1 : 0,
+                'listing_time' => isset($listing_time[$cityId]) ? $listing_time[$cityId] : null,
+                'created_by' => 1
             ];
+
+            $stop_order++;
         }
 
-        // Insert into DB
-        BusRoutes::insert($insertData);
+        BusRoutesStops::insert($routeStops);
+        // BusRoutesStops Section Ends Here
+
+        session()->flash('level', 'success');
+        session()->flash('message', 'Boarding & Dropping Manage successfully.');
 
         $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
         return redirect()->route('bus.step4', ['encId' => $enc_bus_id]);
