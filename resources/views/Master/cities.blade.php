@@ -145,6 +145,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </th>
                             <th>Sl No</th>
                             <th>State/District Name</th>
+                            <th>District Name</th>
                             <th>City Name</th>
                             <th>Alias</th>
                             <th>Synonymn</th>
@@ -285,6 +286,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'state_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'district_name',
                 defaultContent: "--"
             },
             {

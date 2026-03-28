@@ -660,9 +660,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             let type = this.value;
 
             if (type === 'PERCENTAGE') {
-                loadAnnextureList('CAMPAIGN_PERCENTAGE', 'PERCENTAGE');
+                getLoadAnnextureList('CAMPAIGN_PERCENTAGE', 'PERCENTAGE');
             } else if (type === 'FLAT') {
-                loadAnnextureList('CAMPAIGN_FLAT', 'FLAT');
+                getLoadAnnextureList('CAMPAIGN_FLAT', 'FLAT');
             }
 
         });
@@ -676,7 +676,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         loadDropdownOptions('CAMPAIGN_USER_TYPE', 'userType');
     });
 
-    window.loadAnnextureList = function(annexture_type = '', type = '') {
+    window.getLoadAnnextureList = function(annexture_type = '', type = '') {
 
 
 

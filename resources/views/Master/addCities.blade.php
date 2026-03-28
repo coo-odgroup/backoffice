@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -61,91 +61,116 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- FILTER FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-1">
-                                        <div class="col-md-6 mb-1">
+                                        <div class="col-md-4 mb-1">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control form-control-sm"
-                                                               id="txtCity"
-                                                               name="txtCity"
-                                                               value="{{ $data['row']->city_name ?? '' }}"
-                                                               placeholder="Enter City Name"
-                                                               maxlength="100">
+                                                id="txtCity"
+                                                name="txtCity"
+                                                value="{{ $data['row']->city_name ?? '' }}"
+                                                placeholder="Enter City Name"
+                                                maxlength="100">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
 
-                                        <div class="col-md-6 mb-1">
+                                        <div class="col-md-4 mb-1">
                                             <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control form-control-sm" id="txtCityAlias"
-                                                   name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}"
-                                                   placeholder="Enter Alias"
-                                                   oninput="this.value = this.value.toLowerCase();"
-                                                   maxlength="100">
+                                                name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}"
+                                                placeholder="Enter Alias"
+                                                oninput="this.value = this.value.toLowerCase();"
+                                                maxlength="100">
+                                            <small class="text-muted char-counter float-end"></small>
+                                        </div>
+
+                                        <div class="col-md-4 mb-1">
+                                            <label for="latitude">Latitude</label>
+                                            <input type="text"
+                                                class="form-control form-control-sm latitude"
+                                                id="latitude"
+                                                name="latitude"
+                                                placeholder="Enter Latitude"
+                                                maxlength="10"
+                                                value="{{ $data['row']->latitude ?? '' }}"
+                                                oninput="this.value = this.value.replace(/[^0-9.-]/g, '')">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                     </div>
                                     <div class="row mb-1">
-                                        <div class="col-md-6 mb-1">
+                                        <div class="col-md-4 mb-1">
                                             <label for="selState">State<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm" id="selState" name="selState">
                                                 <option value="0">Select State</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-6 mb-1">
+                                        <div class="col-md-4 mb-1">
                                             <label for="selDistrict">District</label>
                                             <select class="form-select form-select-sm" id="selDistrict" name="selDistrict">
                                                 <option value="0">Select District</option>
                                             </select>
                                         </div>
+                                        <div class="col-md-4 mb-1">
+                                            <label for="longitude">Longitude</label>
+                                            <input type="text"
+                                                class="form-control form-control-sm longitude"
+                                                id="longitude"
+                                                name="longitude"
+                                                placeholder="Enter Longitude"
+                                                maxlength="10"
+                                                value="{{ $data['row']->longitude ?? '' }}"
+                                                oninput="this.value = this.value.replace(/[^0-9.-]/g, '')">
+                                            <small class="text-muted char-counter float-end"></small>
+                                        </div>
                                     </div>
                                     <div id="synonymContainer">
                                         @if($data['strPage']=="Edit")
-                                            @if(!empty($data['synonyms']))
-                                                @foreach($data['synonyms'] ?? [] as $index => $synonym)
-                                                <div class="row mb-1 align-items-center synonym-row">
-                                                    <div class="col-md-1">
-                                                        <label for="txtSynonym" class="mb-0">
-                                                            @if ($index==0)
-                                                            Synonyms
-                                                            @else
-                                                            &nbsp;
-                                                            @endif
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="col-md-5">
-                                                        <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
-                                                        <small class="text-muted char-counter float-end"></small>
-                                                    </div>
-
-                                                    <div class="col-md-1">
-                                                        @if ($index==0)
-                                                        <button type="button" class="btn btn-outline-primary btn-add">
-                                                            <i class="fa fa-plus"></i>
-                                                        </button>
-                                                        @else
-                                                        <button type="button" class="btn btn-outline-danger btn-remove">
-                                                            <i class="fa fa-minus"></i>
-                                                        </button>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                @endforeach
-                                            @else
-                                            <div class="row mb-1 align-items-center synonym-row">
-                                                <div class="col-md-1">
-                                                    <label for="txtSynonym" class="mb-0">Synonyms</label>
-                                                </div>
-
-                                                <div class="col-md-5">
-                                                    <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
-                                                </div>
-
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-outline-primary btn-add btn-sm">
-                                                        <i class="fa fa-plus"></i>
-                                                    </button>
-                                                </div>
+                                        @if(!empty($data['synonyms']))
+                                        @foreach($data['synonyms'] ?? [] as $index => $synonym)
+                                        <div class="row mb-1 align-items-center synonym-row">
+                                            <div class="col-md-1">
+                                                <label for="txtSynonym" class="mb-0">
+                                                    @if ($index==0)
+                                                    Synonyms
+                                                    @else
+                                                    &nbsp;
+                                                    @endif
+                                                </label>
                                             </div>
-                                            @endif
+
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
+                                                <small class="text-muted char-counter float-end"></small>
+                                            </div>
+
+                                            <div class="col-md-1">
+                                                @if ($index==0)
+                                                <button type="button" class="btn btn-outline-primary btn-add">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                                @else
+                                                <button type="button" class="btn btn-outline-danger btn-remove">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @endforeach
+                                        @else
+                                        <div class="row mb-1 align-items-center synonym-row">
+                                            <div class="col-md-1">
+                                                <label for="txtSynonym" class="mb-0">Synonyms</label>
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
+                                            </div>
+
+                                            <div class="col-md-1">
+                                                <button type="button" class="btn btn-outline-primary btn-add btn-sm">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        @endif
                                         @else
                                         <div class="row mb-1 align-items-center synonym-row">
                                             <div class="col-md-1">
@@ -198,7 +223,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-
     document.getElementById('txtCity').addEventListener('input', function() {
 
         this.value = this.value.replace(/\s+/g, ' ').trimStart();
@@ -215,15 +239,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById('txtCityAlias').value = alias;
     });
 
-    document.getElementById('txtCityAlias').addEventListener('input', function () {
+    document.getElementById('txtCityAlias').addEventListener('input', function() {
 
         this.value = this.value
             .toLowerCase()
-            .replace(/[^a-z0-9-]/g, '')   // allow only a-z, 0-9, -
-            .replace(/-+/g, '-')      // remove duplicate -
-            .replace(/^-+$/g, '');     // remove hyphen from start & end
+            .replace(/[^a-z0-9-]/g, '') // allow only a-z, 0-9, -
+            .replace(/-+/g, '-') // remove duplicate -
+            .replace(/^-+$/g, ''); // remove hyphen from start & end
 
     });
+
+    function isValidLatLng(value, type) {
+        let num = parseFloat(value);
+
+        if (isNaN(num)) return false;
+
+        if (type === 'lat') {
+            return num >= -90 && num <= 90;
+        }
+
+        if (type === 'lng') {
+            return num >= -180 && num <= 180;
+        }
+
+        return false;
+    }
 
 
     $(document).ready(function() {
@@ -231,18 +271,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
 
-        let state_id = <?=$data['row'] -> state_id ?? 0 ?>;
-        let district_id = <?=$data['row'] -> district_id ?? 0 ?>;
+        let state_id = <?= $data['row']->state_id ?? 0 ?>;
+        let district_id = <?= $data['row']->district_id ?? 0 ?>;
 
         commonAjax.loadStateList(state_id);
         commonAjax.getDistrictList(state_id, district_id);
-        commonAjax.initCharCounter(['txtCity','txtCityAlias']);
+        commonAjax.initCharCounter(['txtCity', 'txtCityAlias']);
 
         $('#resetBtn').click(function() {
 
             $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
             $('.form-select').val(0);
-          
+
         });
     });
 
@@ -260,31 +300,43 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
+        let lat = $('#latitude').val();
+        let lng = $('#longitude').val();
 
-        if (!validator.blankCheck('txtCity', 'City Name cannot be left blank')){
-            return false;
-        }
-            
-        if (!validator.maxLength('txtCity', 100, 'City Name')){
-            return false;
-        }
-
-        if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank')){
+        if (!validator.blankCheck('txtCity', 'City Name cannot be left blank')) {
             return false;
         }
 
-        if (!validator.maxLength('txtCityAlias', 100, 'City Alias')){
+        if (!validator.maxLength('txtCity', 100, 'City Name')) {
             return false;
         }
 
-        if (!validator.selectDropdown('selState', 'Select State')){
+        if (!validator.blankCheck('txtCityAlias', 'City Alias cannot be left blank')) {
             return false;
         }
 
-        if (!validator.checkAlias('txtCityAlias', 'City Alias')){
+        if (!validator.maxLength('txtCityAlias', 100, 'City Alias')) {
             return false;
         }
 
+        if (!validator.selectDropdown('selState', 'Select State')) {
+            return false;
+        }
+
+        if (!validator.checkAlias('txtCityAlias', 'City Alias')) {
+            return false;
+        }
+
+        if (lat && !isValidLatLng(lat, 'lat')) {
+            commonAjax.viewAlert('Invalid Latitude (-90 to 90)');
+            return false;
+        }
+
+
+        if (lng && !isValidLatLng(lng, 'lng')) {
+            commonAjax.viewAlert('Invalid Longitude (-180 to 180)');
+            return false;
+        }
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -293,11 +345,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
 
         const container = document.getElementById('synonymContainer');
 
-        container.addEventListener('click', function (e) {
+        container.addEventListener('click', function(e) {
 
             // Add synonym Field
             if (e.target.closest('.btn-add')) {
@@ -335,4 +387,3 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 </script>
 
 @endpush
-
