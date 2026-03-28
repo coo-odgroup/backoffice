@@ -70,145 +70,27 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                     <div id="step3">
 
                                         <div class="row fw-bold border-bottom pb-1">
-                                            <div class="col-md-3">City Name</div>
-                                            <div class="col-md-3 text-center">Is Source</div>
-                                            <div class="col-md-3 text-center">Is Destination</div>
-                                            <div class="col-md-3">Listing Timings</div>
+                                            <div class="col-md-4">City Name</div>
+                                            <div class="col-md-3 text-center">Is Boarding</div>
+                                            <div class="col-md-3 text-center">Is Dropping</div>
+                                            <div class="col-md-2">Listing Timings</div>
                                         </div>
 
                                         <!-- City Row -->
-                                        <div class="row align-items-center border-bottom">
-                                            <div class="col-md-3 fw-bold">1. Baripada</div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                    </label>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-1 text-center">
-                                                <input type="time" class="form-control form-control-sm" value="00:00">
-                                            </div>
-                                        </div>
-
-                                        <div class="row align-items-center border-bottom">
-                                            <div class="col-md-3 fw-bold">2. Balasore</div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1 text-center">
-                                                <input type="time" class="form-control form-control-sm" value="00:00">
-                                            </div>
-                                        </div>
-
-                                        <div class="row align-items-center border-bottom">
-                                            <div class="col-md-3 fw-bold">3. Soro</div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1 text-center">
-                                                <input type="time" class="form-control form-control-sm" value="00:00">
-                                            </div>
-                                        </div>
-
-                                        <div class="row align-items-center border-bottom">
-                                            <div class="col-md-3 fw-bold">4. Bhadrak</div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1 text-center">
-                                                <input type="time" class="form-control form-control-sm" value="00:00">
-                                            </div>
-                                        </div>
-
-                                        <div class="row align-items-center border-bottom">
-                                            <div class="col-md-3 fw-bold">5. Cuttack</div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-3 text-center align-middle">
-                                                <div class="checkbox">
-                                                    <input type="checkbox">
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1 text-center">
-                                                <input type="time" class="form-control form-control-sm" value="00:00">
-                                            </div>
-                                        </div>
+                                        <div id="cityContainer"></div>
 
                                         <!-- Buttons -->
                                         <div class="text-center mt-5">
 
+                                            <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
+
                                             <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep2()">
                                                 ← Back
                                             </button>
-
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">
-                                                Next →
-                                            </button>
+                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- BUTTONS -->
-                                <!-- <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('amenities.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
-                                    </div>
-                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -218,45 +100,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     </div>
     </div>
 </form>
-
-<script>
-    function backStep() {
-        document.getElementById("step1").style.display = "block";
-        document.getElementById("step2").style.display = "none";
-    }
-
-    function nextStep() {
-        window.location.href = "/admin/bus/create/step4";
-    }
-
-    document.addEventListener("click", function(e) {
-
-        if (e.target.classList.contains("addRow")) {
-
-            let row = e.target.closest(".stationRow");
-
-            let newRow = row.cloneNode(true);
-
-            newRow.querySelector(".addRow").innerHTML = "−";
-
-            newRow.querySelector(".addRow").classList.remove("btn-primary");
-            newRow.querySelector(".addRow").classList.add("btn-danger");
-            newRow.querySelector(".addRow").classList.remove("addRow");
-            newRow.querySelector(".addRow").classList.add("removeRow");
-
-            row.parentNode.appendChild(newRow);
-
-        }
-
-        if (e.target.classList.contains("removeRow")) {
-
-            e.target.closest(".stationRow").remove();
-
-        }
-
-    });
-</script>
-
 @endsection
 @push('scripts')
 
@@ -271,17 +114,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('amenityCategory', 'Select Amenity Category'))
-            return false;
-
-        if (!validator.blankCheck('amenity_name', 'Amenity Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('amenity_name', 100, 'Amenity Name'))
-            return false;
-
-        if (!validator.blankCheck('icon', 'Icon Class cannot be left blank'))
-            return false;
-
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -290,11 +122,55 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     });
 
+    function backStep() {
+        document.getElementById("step1").style.display = "block";
+        document.getElementById("step2").style.display = "none";
+    }
+
+    function nextStep() {
+        window.location.href = "/admin/bus/create/step4";
+    }
+
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
+    $(document).ready(function() {
 
-  
+        let cities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
+
+        let html = "";
+
+        cities.forEach(function(city, index) {
+
+            let cityId = city[0];
+            let cityName = city[1];
+
+            html += `
+        <div class="row align-items-center border-bottom pb-1 pt-1">
+            <div class="col-md-4 fw-bold">${index + 1}. ${cityName}</div>
+            <input type="hidden" name="cities[${cityId}]" value="${cityName}">
+
+            <div class="col-md-3 text-center align-middle">
+                <div class="checkbox">
+                    <input type="checkbox" name="boarding[${cityId}]">
+                </div>
+            </div>
+
+            <div class="col-md-3 text-center align-middle">
+                <div class="checkbox">
+                    <input type="checkbox" name="dropping[${cityId}]">
+                </div>
+            </div>
+
+            <div class="col-md-2 text-center">
+                <input type="time" name="time[${cityId}]" class="form-control form-control-sm" value="">
+            </div>
+        </div>
+        `;
+        });
+
+        $("#cityContainer").html(html);
+    });
 </script>
 @endpush

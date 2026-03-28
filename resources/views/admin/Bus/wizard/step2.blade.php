@@ -3,7 +3,7 @@
 @section('content')
 
 <style>
-  
+
 </style>
 
 <?php
@@ -67,29 +67,30 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                     <!-- ================= STEP 2 ================= -->
 
                                     <div id="step2">
-                                            <div class="row">
-                                                <!-- LEFT SIDE -->
-                                                <div class="col-md-6">
-                                                    <div class="d-flex mb-1">
-                                                        <input type="text" id="citySearch" class="form-control form-control-sm clearable" placeholder="Search By City Name">
-                                                    </div>
-                                                    <div id="cityList" class="city-scroll"></div>
+                                        <div class="row">
+                                            <!-- LEFT SIDE -->
+                                            <div class="col-md-6">
+                                                <div class="d-flex mb-1">
+                                                    <input type="text" id="citySearch" class="form-control form-control-sm clearable" placeholder="Search By City Name">
                                                 </div>
-
-
-                                                <!-- RIGHT SIDE -->
-                                                <div class="col-md-6">
-                                                    <h6 class="mb-3">Preview</h6>
-                                                    <div id="previewList"></div>
-                                                </div>
+                                                <div id="cityList" class="city-scroll"></div>
                                             </div>
 
 
-                                            <!-- STEP 2 BUTTONS -->
-                                            <div class="text-center mt-4">
-                                                <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
-                                                <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
+                                            <!-- RIGHT SIDE -->
+                                            <div class="col-md-6">
+                                                <h6 class="mb-3">Preview</h6>
+                                                <div id="previewList"></div>
                                             </div>
+                                        </div>
+
+
+                                        <!-- STEP 2 BUTTONS -->
+                                        <div class="text-center mt-4">
+                                            <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
+                                            <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
+                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -105,8 +106,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 @push('scripts')
 
 <script type="module">
-
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
 
         updatePreview();
         syncCheckboxes();
@@ -128,7 +128,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         return shimmer;
     }
 
-    $(document).on('change', '.cityCheck', function () {
+    $(document).on('change', '.cityCheck', function() {
         toggleCity(this);
     });
 
@@ -142,25 +142,25 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         window.location.href = "/admin/bus/create/step3";
     }
 
-   let selectedCities = new Map(
+    let selectedCities = new Map(
         JSON.parse(localStorage.getItem("selectedCities") || "[]")
     );
 
-   function saveToLocalStorage() {
+    function saveToLocalStorage() {
         localStorage.setItem(
             "selectedCities",
             JSON.stringify([...selectedCities])
         );
     }
 
-    
-     function toggleCity(checkbox) {
+
+    function toggleCity(checkbox) {
 
         let cityId = checkbox.value;
         let cityName = $(checkbox).data('name');
 
         if (checkbox.checked) {
-            selectedCities.set(cityId, cityName); // ✅ store id + name
+            selectedCities.set(cityId, cityName);
         } else {
             selectedCities.delete(cityId);
         }
@@ -171,8 +171,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     function updateCityIndex() {
 
-        $('#previewList .city-index').each(function (index) {
+        $('#previewList .city-index').each(function(index) {
             $(this).text(index + 1 + '.');
+        });
+
+    }
+
+    function updateOrderIndex() {
+
+        $('#previewList .order-index').each(function(index) {
+            $(this).val(index + 1);
         });
 
     }
@@ -219,13 +227,13 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 <span class="me-2 city-index fw-bold"></span>
                 <span class="form-control form-control-sm flex-grow-1 me-2">${cityName}</span>
                 <input type="hidden" name="cities[${index}][id]" value="${cityId}">
-                <input type="hidden" name="cities[${index}][order]" value="${index}">
+                <input type="hidden" name="cities[${index}][order]" value="${index}" class="order-index">
                 <button class="btn btn-danger btn-sm" type="button">
                     <i class="fa fa-trash"></i>
                 </button>
             `;
 
-            div.querySelector("button").addEventListener("click", function () {
+            div.querySelector("button").addEventListener("click", function() {
                 removeCity(cityId);
             });
 
@@ -234,11 +242,12 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         });
 
         updateCityIndex();
+        updateOrderIndex();
     }
 
     function syncCheckboxes() {
 
-        $('.cityCheck').each(function () {
+        $('.cityCheck').each(function() {
 
             let city = $(this).val();
 
@@ -248,20 +257,20 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
 
     // DRAG SORT FUNCTION
-   let dragItem = null;
+    let dragItem = null;
 
     function addDragEvents(element) {
 
-        element.addEventListener("dragstart", function () {
+        element.addEventListener("dragstart", function() {
             dragItem = element;
             element.classList.add("dragging");
         });
 
-        element.addEventListener("dragover", function (e) {
-            e.preventDefault(); // ✅ REQUIRED
+        element.addEventListener("dragover", function(e) {
+            e.preventDefault();
         });
 
-        element.addEventListener("drop", function (e) {
+        element.addEventListener("drop", function(e) {
             e.preventDefault();
 
             if (dragItem !== element) {
@@ -279,15 +288,35 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 }
 
                 updateCityIndex();
+                updateOrderIndex();
+                updateLocalStorageOrder(dragIndex, dropIndex);
             }
         });
 
-        element.addEventListener("dragend", function () {
+        element.addEventListener("dragend", function() {
             dragItem = null;
             element.classList.remove("dragging");
         });
     }
 
+    function updateLocalStorageOrder(fromIndex, toIndex) {
+
+        let stored = JSON.parse(localStorage.getItem('selectedCities')) || [];
+
+        if (stored.length === 0) return;
+
+        // ✅ Move item
+        let movedItem = stored.splice(fromIndex, 1)[0];
+        stored.splice(toIndex, 0, movedItem);
+
+        // ✅ Save updated order
+        localStorage.setItem('selectedCities', JSON.stringify(stored));
+
+        // 🔥 VERY IMPORTANT: Sync Map with new order
+        selectedCities = new Map(stored);
+
+        console.log("Updated localStorage:", stored);
+    }
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -311,17 +340,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('amenityCategory', 'Select Amenity Category'))
-            return false;
-
-        if (!validator.blankCheck('amenity_name', 'Amenity Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('amenity_name', 100, 'Amenity Name'))
-            return false;
-
-        if (!validator.blankCheck('icon', 'Icon Class cannot be left blank'))
-            return false;
-
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -332,8 +350,8 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-         updatePreview();     // restore preview
-         syncCheckboxes();    // restore checkbox state
+        updatePreview(); // restore preview
+        syncCheckboxes(); // restore checkbox state
     });
 
     $('#citySearch').on('keyup', function() {
@@ -348,7 +366,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     });
 
     function searchCity(city = "") {
-  
+
         $("#cityList").html(getShimmerHTML(6));
         $.ajax({
             type: "POST",
@@ -372,8 +390,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                             <input type="checkbox"
                                 class="cityCheck"
                                 value="${c.id}"
-                                data-name="${c.city_name}"
-                                name="city[]">
+                                data-name="${c.city_name}">
                             ${c.city_name}
                         </div>`;
                     });
@@ -392,6 +409,5 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             }
         });
     }
-   
 </script>
 @endpush
