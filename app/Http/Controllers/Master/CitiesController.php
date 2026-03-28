@@ -38,7 +38,7 @@ class CitiesController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = Cities::select('id', 'state_id', 'district_id', 'city_name', 'alias')
+                $dataResQry = Cities::select('id', 'state_id', 'district_id', 'city_name', 'alias', 'longitude', 'latitude')
                     ->where('id', $id)
                     ->first();
 
@@ -53,7 +53,6 @@ class CitiesController extends Controller
                     ->where('active_status', 1)
                     ->pluck('synonym')
                     ->toArray();
-
             } else {
                 $redirectPage = "admin/cities";
             }
@@ -76,6 +75,8 @@ class CitiesController extends Controller
                 $txtCityAlias  = htmlEncode(Purifier::clean(request('txtCityAlias')));
                 $selState      = (int) Purifier::clean(request('selState'));
                 $selDistrict   = (int) Purifier::clean(request('selDistrict'));
+                $latitude  = Purifier::clean(request('latitude'));
+                $longitude = Purifier::clean(request('longitude'));
 
                 $duplicate = Cities::where([
                     'city_name' => $txtCity,
@@ -102,6 +103,8 @@ class CitiesController extends Controller
                         'district_id' => $selDistrict ?: null,
                         'city_name'   => $txtCity,
                         'alias'       => $txtCityAlias,
+                        'latitude'    => $latitude ?: null,
+                        'longitude'   => $longitude ?: null,
                     ];
 
                     $oldChanged = [];
@@ -131,16 +134,15 @@ class CitiesController extends Controller
                     $oldData->save();
 
                     $cityId = $id;
-                }
-
-
-                else {
+                } else {
 
                     $row = [
                         'state_id'      => $selState,
                         'district_id'   => $selDistrict ?: null,
                         'city_name'     => $txtCity,
                         'alias'         => $txtCityAlias,
+                        'latitude'      => $latitude ?: null,
+                        'longitude'     => $longitude ?: null,
                         'created_by'    => 1,
                         'active_status' => 1,
                         'created_at'    => now()
@@ -196,7 +198,6 @@ class CitiesController extends Controller
 
                 return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();
@@ -240,6 +241,7 @@ class CitiesController extends Controller
                     'c.city_name',
                     'c.alias',
                     DB::raw('(SELECT state_name FROM mst_states as s WHERE s.id = c.state_id LIMIT 1) as state_name'),
+                    DB::raw('(SELECT district_name FROM mst_districts as s WHERE s.id = c.district_id LIMIT 1) as district_name'),
                     'c.created_at',
                     'c.created_by',
                     'c.updated_at',
@@ -299,12 +301,13 @@ class CitiesController extends Controller
 
                 $columns = [
                     2 => 'state_name',
-                    3 => 'c.city_name',
-                    4 => 'c.alias',
-                    5 => 'synonyms',
-                    6 => 'c.created_by',
-                    7 => 'c.created_at',
-                    8 => 'c.active_status'
+                    3 => 'district_name',
+                    4 => 'c.city_name',
+                    5 => 'c.alias',
+                    6 => 'synonyms',
+                    7 => 'c.created_by',
+                    8 => 'c.created_at',
+                    9 => 'c.active_status'
                 ];
 
 

@@ -12,6 +12,8 @@ class Cities extends Model
         'district_id',
         'city_name',
         'alias',
+        'latitude',
+        'longitude',
         'active_status'
     ];
 
