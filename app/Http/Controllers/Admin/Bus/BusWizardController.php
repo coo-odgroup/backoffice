@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Bus;
 use App\Http\Controllers\Controller;
 use App\Models\Bus\Bus;
 use App\Models\Bus\BusAmenity;
+use App\Models\Bus\BusRoutes;
 use App\Models\Master\Amenity;
 use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
@@ -118,34 +119,65 @@ class BusWizardController extends Controller
         return redirect()->route('bus.step2', ['encId' => $enc_bus_id]);
     }
 
-    public function step2()
+    public function step2($bus_id = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
+        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['bus_id'] = $bus_id;
         return view('admin.bus.wizard.step2', compact('data'));
     }
 
     public function postStep2(Request $request)
     {
-        session(['bus.step2' => $request->cities]);
-        return redirect()->route('bus.step3');
+        $enc_bus_id = (!empty($request->bus_id)) ? Crypt::encryptString($request->bus_id) : 0;
+        return redirect()->route('bus.step3', ['encId' => $enc_bus_id]);
     }
 
-    public function step3()
+    public function step3($bus_id = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
+        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['bus_id'] = $bus_id;
         return view('admin.bus.wizard.step3', compact('data'));
     }
 
     public function postStep3(Request $request)
     {
-        session(['bus.step3' => $request->all()]);
-        return redirect()->route('bus.step4');
+        // return $request;
+        $data = request()->all();
+
+        $cityNames = $data['city_name'] ?? [];
+        $boarding = $data['boarding'] ?? [];
+        $dropping = $data['dropping'] ?? [];
+        // $times = $data['time'] ?? [];
+        $bus_id = $data['bus_id'];
+
+        $insertData = [];
+
+        foreach ($cityNames as $cityId => $cityName) {
+
+            $insertData[] = [
+                'route_name' => $cityName,
+                'boarding_city_id' => isset($boarding[$cityId]) ? $cityId : null,
+                'dropping_city_id' => isset($dropping[$cityId]) ? $cityId : null,
+                'route_signature' => "null",
+                'active_status' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        // Insert into DB
+        BusRoutes::insert($insertData);
+
+        $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
+        return redirect()->route('bus.step4', ['encId' => $enc_bus_id]);
     }
 
     public function step4()
