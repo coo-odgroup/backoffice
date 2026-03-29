@@ -71,177 +71,15 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                         <!-- <h3 class="fw-bold mb-4 border-bottom pb-2">Add Station</h3> -->
 
                                         <div class="accordion" id="stationAccordion">
-
-                                            <!-- Station 1 -->
-                                            <div class="accordion-item">
-
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#station1">
-                                                        1. Baripada
-                                                    </button>
-                                                </h2>
-
-                                                <div id="station1" class="accordion-collapse collapse show" data-bs-parent="#stationAccordion">
-
-                                                    <div class="accordion-body">
-
-                                                        <div class="stationRows">
-
-                                                            <div class="row stationRow align-items-center">
-
-                                                                <div class="col-md-1">
-                                                                    <div class="checkbox">
-                                                                        <input type="checkbox">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-1">
-                                                                    <select class="form-select form-select-sm">
-                                                                        <option value="">Select</option>
-                                                                        <option value="">Boarding</option>
-                                                                        <option value="">Dropping</option>
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="col-md-4">
-                                                                    <select class="form-select form-select-sm">
-                                                                        <option>Select Station</option>
-                                                                        <option>Balasore</option>
-                                                                        <option>Soro</option>
-                                                                        <option>Bhadrak</option>
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="col-md-1">
-                                                                    <input type="time" class="form-control form-control-sm" value="00:00">
-                                                                </div>
-
-                                                                <div class="col-md-2">
-                                                                    <button class="btn btn-primary btn-sm addRow">+</button>
-                                                                </div>
-
-                                                            </div>
-
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-
-                                            <!-- Station 2 -->
-                                            <div class="accordion-item">
-
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#station2">
-                                                        2. Soro
-                                                    </button>
-                                                </h2>
-
-                                                <div id="station2" class="accordion-collapse collapse" data-bs-parent="#stationAccordion">
-
-                                                    <div class="accordion-body">
-
-                                                        <div class="stationRows">
-
-                                                            <div class="row align-items-center stationRow">
-
-                                                                <div class="col-md-1">
-                                                                    <div class="checkbox">
-                                                                        <input type="checkbox">
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-md-1">
-                                                                    <select class="form-select form-select-sm">
-                                                                        <option value="">Select</option>
-                                                                        <option value="">Boarding</option>
-                                                                        <option value="">Dropping</option>
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="col-md-4">
-                                                                    <select class="form-select form-select-sm">
-                                                                        <option>Select Station</option>
-                                                                        <option>Balasore</option>
-                                                                        <option>Soro</option>
-                                                                        <option>Bhadrak</option>
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="col-md-1">
-                                                                    <input type="time" class="form-control form-control-sm" value="00:00">
-                                                                </div>
-
-                                                                <div class="col-md-2">
-                                                                    <button class="btn btn-primary btn-sm addRow">+</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-
-                                            <!-- Station 3 -->
-                                            <div class="accordion-item">
-
-                                                <h2 class="accordion-header">
-                                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#station3">
-                                                        3. Balasore
-                                                    </button>
-                                                </h2>
-
-                                                <div id="station3" class="accordion-collapse collapse" data-bs-parent="#stationAccordion">
-
-                                                    <div class="accordion-body">
-
-                                                        <div class="stationRows">
-                                                            <div class="row align-items-center stationRow">
-                                                                <div class="col-md-1">
-                                                                    <div class="checkbox">
-                                                                        <input type="checkbox">
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="col-md-1">
-                                                                    <select class="form-select form-select-sm">
-                                                                        <option value="">Select</option>
-                                                                        <option value="">Boarding</option>
-                                                                        <option value="">Dropping</option>
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="col-md-4">
-                                                                    <select class="form-select form-select-sm">
-                                                                        <option>Select Station</option>
-                                                                        <option>Balasore</option>
-                                                                        <option>Soro</option>
-                                                                        <option>Bhadrak</option>
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="col-md-1">
-                                                                    <input type="time" class="form-control form-control-sm" value="00:00">
-                                                                </div>
-
-                                                                <div class="col-md-2">
-                                                                    <button class="btn btn-primary btn-sm addRow">+</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </div>
 
                                         <div class="text-center mt-5">
                                             <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button>
+                                            <!-- <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button> -->
+                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>
                                 </div>
-
 
                             </div>
                         </div>
@@ -261,91 +99,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     function nextStep() {
         window.location.href = "/admin/bus/create/step5";
     }
-
-    // ADD / REMOVE CITY
-    function toggleCity(checkbox) {
-
-        let city = checkbox.value;
-        let preview = document.getElementById("previewList");
-        let cityId = "city_" + city.replace(/\s/g, '');
-
-        if (checkbox.checked) {
-
-            let div = document.createElement("div");
-            div.className = "d-flex mb-2";
-            div.id = cityId;
-            div.draggable = true;
-
-            div.innerHTML = `
-            <input type="text" class="form-control me-2" value="${city}" readonly>
-            <button class="btn btn-danger" onclick="removeCity('${city}')">
-                <i class="fa fa-trash"></i>
-            </button>
-        `;
-
-            addDragEvents(div);
-
-            preview.appendChild(div);
-
-        } else {
-
-            let removeDiv = document.getElementById(cityId);
-            if (removeDiv) {
-                removeDiv.remove();
-            }
-
-        }
-
-    }
-
-
-    // REMOVE CITY BUTTON
-    function removeCity(city) {
-
-        let cityId = "city_" + city.replace(/\s/g, '');
-        let div = document.getElementById(cityId);
-
-        if (div) {
-            div.remove();
-        }
-
-        let checkboxes = document.querySelectorAll(".cityCheck");
-
-        checkboxes.forEach(function(cb) {
-            if (cb.value === city) {
-                cb.checked = false;
-            }
-        });
-
-    }
-
-
-    document.addEventListener("click", function(e) {
-
-        if (e.target.classList.contains("addRow")) {
-
-            let row = e.target.closest(".stationRow");
-
-            let newRow = row.cloneNode(true);
-
-            newRow.querySelector(".addRow").innerHTML = "−";
-
-            newRow.querySelector(".addRow").classList.remove("btn-primary");
-            newRow.querySelector(".addRow").classList.add("btn-danger");
-            newRow.querySelector(".addRow").classList.remove("addRow");
-            newRow.querySelector(".addRow").classList.add("removeRow");
-
-            row.parentNode.appendChild(newRow);
-
-        }
-
-        if (e.target.classList.contains("removeRow")) {
-
-            e.target.closest(".stationRow").remove();
-
-        }
-
-    });
 </script>
 
 @endsection
@@ -363,17 +116,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('amenityCategory', 'Select Amenity Category'))
-            return false;
-
-        if (!validator.blankCheck('amenity_name', 'Amenity Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('amenity_name', 100, 'Amenity Name'))
-            return false;
-
-        if (!validator.blankCheck('icon', 'Icon Class cannot be left blank'))
-            return false;
-
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -386,50 +128,146 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
+    // ✅ Generate dropdown options
+    function generateOptions(data) {
+        let options = '';
+        data.forEach(item => {
+            options += `<option value="${item[0]}">${item[1]}</option>`;
+        });
+        return options;
+    }
 
-    function searchCity() {
+    // ✅ Render Accordion
+    function renderStations(data) {
 
-        let city = document.getElementById("citySearch").value;
+        if (!data.length) {
+            $("#stationAccordion").html('<div class="alert alert-warning">No stations found in localStorage</div>');
+            return;
+        }
 
-        $.ajax({
-            type: "POST",
-            url: ajaxUrl + "get-city-search",
-            data: {
-                city: city,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            dataType: "json",
+        let html = '';
 
-            success: function(response) {
+        data.forEach((station, index) => {
 
-                let html = "";
+            let id = station[0];
+            let name = station[1];
+            let collapseId = 'station' + (index + 1);
 
-                if (response.status && response.data.length > 0) {
+            html += `
+            <div class="accordion-item">
 
-                    $.each(response.data, function(index, c) {
+                <h2 class="accordion-header">
+                    <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#${collapseId}">
+                        ${index + 1}. ${name}
+                    </button>
+                </h2>
 
-                        html += `
-                    <div class="form-check mb-2">
-                        <input class="form-check-input cityCheck"
-                               type="checkbox"
-                               value="${c.city_name}"
-                               onchange="toggleCity(this)">
-                        <label class="form-check-label">${c.city_name}</label>
-                    </div>`;
-                    });
+                <div id="${collapseId}" 
+                    class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
+                    data-bs-parent="#stationAccordion">
 
-                } else {
+                    <div class="accordion-body">
 
-                    html = `<p class="text-danger">No city found</p>`;
+                        <div class="stationRows">
 
-                }
+                            <div class="row stationRow align-items-center mb-2">
 
-                $("#cityList").html(html);
+                                <div class="col-md-1">
+                                    <input type="checkbox" class="form-check-input">
+                                </div>
 
-            }
+                                <div class="col-md-2">
+                                    <select class="form-select form-select-sm">
+                                        <option value="">Select</option>
+                                        <option value="boarding">Boarding</option>
+                                        <option value="dropping">Dropping</option>
+                                    </select>
+                                </div>
 
+                                <div class="col-md-4">
+                                    <select class="form-select form-select-sm">
+                                        <option>Select Station</option>
+                                        ${generateOptions(data)}
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <input type="time" class="form-control form-control-sm" value="00:00">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary btn-sm addRow">+</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            `;
         });
 
+        $("#stationAccordion").html(html);
     }
+
+    // ✅ Add Row
+    $(document).on("click", ".addRow", function() {
+
+        let container = $(this).closest(".stationRows");
+        let data = JSON.parse(localStorage.getItem("selectedCities") || "[]");
+
+        let newRow = `
+        <div class="row stationRow align-items-center mb-2">
+
+            <div class="col-md-1">
+                <input type="checkbox" class="form-check-input">
+            </div>
+
+            <div class="col-md-2">
+                <select class="form-select form-select-sm">
+                    <option value="">Select</option>
+                    <option value="boarding">Boarding</option>
+                    <option value="dropping">Dropping</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <select class="form-select form-select-sm">
+                    <option>Select Station</option>
+                    ${generateOptions(data)}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <input type="time" class="form-control form-control-sm" value="00:00">
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-danger btn-sm removeRow">-</button>
+            </div>
+
+        </div>
+        `;
+
+        container.append(newRow);
+    });
+
+    // ✅ Remove Row
+    $(document).on("click", ".removeRow", function() {
+        $(this).closest(".stationRow").remove();
+    });
+
+    // ✅ Load from localStorage ONLY
+    $(document).ready(function() {
+
+        let selectedCities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
+
+        renderStations(selectedCities);
+    });
 </script>
 @endpush
