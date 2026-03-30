@@ -262,8 +262,20 @@ class BusWizardController extends Controller
 
     public function postStep4(Request $request)
     {
+        return $request;
         session(['bus.step4' => $request->stations]);
         return redirect()->route('bus.step5');
+    }
+
+    public function getBoardingDropping(Request $request)
+    {
+        $type = $request->type;
+
+        $data = DB::table('mst_boarding_droping')
+            ->where('type', $type)
+            ->get(['id', 'brd_drp_point']);
+
+        return response()->json($data);
     }
 
     public function step5()

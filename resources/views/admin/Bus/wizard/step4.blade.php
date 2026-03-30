@@ -130,11 +130,13 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     // ✅ Generate dropdown options
     function generateOptions(data) {
-        let options = '';
-        data.forEach(item => {
-            options += `<option value="${item[0]}">${item[1]}</option>`;
+        let html = '';
+
+        data.forEach(function (item) {
+            html += `<option value="${item.id}">${item.brd_drp_point}</option>`;
         });
-        return options;
+
+        return html;
     }
 
     // ✅ Render Accordion
@@ -149,7 +151,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         data.forEach((station, index) => {
 
-            let id = station[0];
+            let id = station[0]; // station id
             let name = station[1];
             let collapseId = 'station' + (index + 1);
 
@@ -176,30 +178,29 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                             <div class="row stationRow align-items-center mb-2">
 
                                 <div class="col-md-1">
-                                    <input type="checkbox" class="form-check-input">
+                                    <input type="checkbox" name="stations[${id}][0][checked]">
                                 </div>
 
                                 <div class="col-md-2">
-                                    <select class="form-select form-select-sm">
-                                        <option value="">Select</option>
-                                        <option value="boarding">Boarding</option>
-                                        <option value="dropping">Dropping</option>
+                                    <select class="form-select form-select-sm typeSelect" name="stations[${id}][0][type]">
+                                        <option value="">Select Type</option>
+                                        <option value="1">Boarding</option>
+                                        <option value="2">Dropping</option>
                                     </select>
                                 </div>
 
                                 <div class="col-md-4">
-                                    <select class="form-select form-select-sm">
+                                    <select class="form-select form-select-sm stationSelect" name="stations[${id}][0][station]">
                                         <option>Select Station</option>
-                                        ${generateOptions(data)}
                                     </select>
                                 </div>
 
                                 <div class="col-md-2">
-                                    <input type="time" class="form-control form-control-sm" value="00:00">
+                                    <input type="time" name="stations[${id}][0][time]" class="form-control form-control-sm">
                                 </div>
 
                                 <div class="col-md-2">
-                                    <button type="button" class="btn btn-primary btn-sm addRow">+</button>
+                                    <button class="btn btn-primary btn-sm addRow" data-station="${id}" type="button">+</button>
                                 </div>
 
                             </div>
@@ -219,36 +220,38 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $(document).on("click", ".addRow", function() {
 
         let container = $(this).closest(".stationRows");
+        let stationId = $(this).data("station");
+
+        let rowIndex = container.find(".stationRow").length;
         let data = JSON.parse(localStorage.getItem("selectedCities") || "[]");
 
         let newRow = `
         <div class="row stationRow align-items-center mb-2">
 
             <div class="col-md-1">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" name="stations[${stationId}][${rowIndex}][checked]">
             </div>
 
             <div class="col-md-2">
-                <select class="form-select form-select-sm">
-                    <option value="">Select</option>
-                    <option value="boarding">Boarding</option>
-                    <option value="dropping">Dropping</option>
+                <select class="form-select form-select-sm typeSelect" name="stations[${stationId}][${rowIndex}][type]">
+                    <option value="">Select Type</option>
+                    <option value="1">Boarding</option>
+                    <option value="2">Dropping</option>
                 </select>
             </div>
 
             <div class="col-md-4">
-                <select class="form-select form-select-sm">
+                <select class="form-select form-select-sm stationSelect" name="stations[${stationId}][${rowIndex}][station]">
                     <option>Select Station</option>
-                    ${generateOptions(data)}
                 </select>
             </div>
 
             <div class="col-md-2">
-                <input type="time" class="form-control form-control-sm" value="00:00">
+                <input type="time" name="stations[${stationId}][${rowIndex}][time]" class="form-control form-control-sm">
             </div>
 
             <div class="col-md-2">
-                <button class="btn btn-danger btn-sm removeRow">-</button>
+                <button class="btn btn-danger btn-sm removeRow" type="button">-</button>
             </div>
 
         </div>
@@ -268,6 +271,53 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         let selectedCities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
 
         renderStations(selectedCities);
+    });
+
+    $(document).on("change", ".typeSelect", function() {
+
+        let type = $(this).val();
+
+        let row = $(this).closest(".stationRow");
+        let checkbox = row.find('input[type="checkbox"]');
+        let stationDropdown = row.find(".stationSelect");
+
+        // ✅ Checkbox logic
+        if (type === "1" || type === "2") {
+            checkbox.prop("checked", true);
+        } else {
+            checkbox.prop("checked", false);
+        }
+
+        // ✅ Reset dropdown
+        stationDropdown.html('<option value="">Select Station</option>');
+
+        // ✅ If valid type, load data
+        if (type !== "") {
+
+            stationDropdown.html('<option value="">Loading...</option>');
+
+            $.ajax({
+                url: '/admin/get-boarding-dropping', // your route
+                type: 'GET',
+                data: {
+                    type: type
+                },
+
+                success: function(response) {
+
+                    console.log(response);
+
+                    let options = '<option value="">Select Station</option>';
+                    options += generateOptions(response);
+
+                    stationDropdown.html(options);
+                },
+
+                error: function() {
+                    stationDropdown.html('<option value="">Error loading data</option>');
+                }
+            });
+        }
     });
 </script>
 @endpush
