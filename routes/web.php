@@ -144,6 +144,8 @@ Route::prefix('admin')->group(function () {
     Route::get('search-amenities', [CommonController::class, 'searchAmenities']);
     Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
 
+    Route::post('/admin/master-log-list', [MasterLogController::class, 'logDataTableView']);
+
     //Subhasis
     //___________________________________________________________________________________________________________________________________________________
 
