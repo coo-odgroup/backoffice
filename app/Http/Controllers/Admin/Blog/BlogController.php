@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Blog;
 
 use App\Http\Controllers\Controller;
 use App\Models\blogs\Blog;
@@ -304,10 +304,15 @@ class BlogController extends Controller
                     $blog = Blog::create($row);
                     $blogId = $blog->id;
                 }
-                // 🔥 GET BLOG ID
-                $blogId = ($id > 0) ? $id : DB::getPdo()->lastInsertId();
+                //  GET BLOG ID
+                if ($id > 0) {
+                    $blogId = $id;
+                } else {
+                    $blog = Blog::create($row);
+                    $blogId = $blog->id;
+                }
 
-                // 🔥 DELETE OLD ATTRIBUTES (for edit case)
+                //  DELETE OLD ATTRIBUTES (for edit case)
                 DB::connection('mysql_dev')->table('blog_attributes')->where('blog_id', $blogId)->delete();
 
 
@@ -443,9 +448,19 @@ class BlogController extends Controller
             ->select('a.*')
             ->get();
 
+        $blogAttributes = [];
+
+        if ($id > 0) {
+            $blogAttributes = DB::connection('mysql_dev')
+                ->table('blog_attributes')
+                ->where('blog_id', $id)
+                ->get()
+                ->groupBy('attribute_type');
+        }
 
 
-        return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData'));
+
+        return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData',  'blogAttributes'));
     }
 
 

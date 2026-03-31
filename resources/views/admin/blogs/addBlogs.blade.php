@@ -278,46 +278,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-4 mb-3">
-                                                            <div class="mb-3">
-                                                                <label for="og_image">Og Image</label>
-                                                                <input type="file" class="form-control form-select-sm" id="img_3" name="og_image" accept="image/*">
-                                                                <small class="text-muted text-md-end mt-2">
-                                                                    Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1200×630px
-                                                                </small>
-                                                            </div>
 
-                                                            <div id="previewContainer_3" class="{{ empty($data['row']->og_image) ? 'd-none' : '' }}">
-
-                                                                <div class="mb-3">
-                                                                    <img id="prv_3"
-                                                                        src="{{ !empty($data['row']->og_image) ? asset('storage/uploads/blog/'.$data['row']->og_image) : '#' }}"
-                                                                        alt="Preview"
-                                                                        class="img-fluid border p-1 {{ empty($data['row']->og_image) ? 'd-none' : '' }}">
-                                                                </div>
-
-                                                                <div class="mb-1">
-                                                                    @if($data['strPage']=='Add')
-                                                                    <button type="button"
-                                                                        id="removeImageBtn_3"
-                                                                        class="btn btn-danger btn-sm">
-                                                                        Remove Image
-                                                                    </button>
-                                                                    @else
-                                                                    <button type="button"
-                                                                        class="btn btn-danger btn-sm remove-image"
-                                                                        data-id="{{ $data['row']->id }}"
-                                                                        data-table="odbusdev.blogs"
-                                                                        data-column="og_image"
-                                                                        data-path="uploads/blog"
-                                                                        data-container="previewContainer_3">
-                                                                        Remove Image
-                                                                    </button>
-                                                                    @endif
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -377,9 +338,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                 <!-- Input -->
                                                                 <div class="col-md-9">
 
+                                                                    @php
+                                                                    $value = '';
+                                                                    $image = '';
+
+                                                                    if(isset($blogAttributes[1])) {
+                                                                    foreach($blogAttributes[1] as $attr){
+                                                                    if($attr->attribute_id == $row->id){
+                                                                    $value = $attr->attribute_value;
+                                                                    $image = $attr->attribute_image ?? '';
+                                                                    break;
+                                                                    }
+                                                                    }
+                                                                    }
+                                                                    @endphp
+
                                                                     @if(strtolower($row->annexture_name) == 'image')
 
-                                                                    <!-- FILE INPUT -->
+                                                                    <!-- IMAGE INPUT -->
                                                                     <input type="file"
                                                                         class="form-control form-select-sm og-image-input"
                                                                         id="og_img_{{ $row->id }}"
@@ -388,12 +364,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                                     <small class="text-muted">Allowed: JPG, JPEG, PNG | Max: 2MB</small>
 
-                                                                    <!-- PREVIEW -->
-                                                                    <div id="previewContainer_og_{{ $row->id }}" class="d-none mt-2">
-                                                                        <img id="prv_og_{{ $row->id }}"
-                                                                            src="#"
-                                                                            class="img-fluid border p-1">
+                                                                    <!-- IMAGE PREVIEW -->
+                                                                    @if(!empty($image))
+                                                                    <div class="mt-2">
+                                                                        <img src="{{ asset('storage/blogs/'.$image) }}" width="120" class="border p-1">
                                                                     </div>
+                                                                    @endif
 
                                                                     @else
 
@@ -401,6 +377,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                     <input type="text"
                                                                         class="form-control form-select-sm"
                                                                         name="open_graph[{{ $row->id }}]"
+                                                                        value="{{ $value }}"
                                                                         placeholder="Enter Value">
 
                                                                     @endif
@@ -480,10 +457,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                                 <!-- Input -->
                                                                 <div class="col-md-9">
+
+                                                                    @php
+                                                                    $value = '';
+
+                                                                    if(isset($blogAttributes[2])) {
+                                                                    foreach($blogAttributes[2] as $attr){
+                                                                    if($attr->attribute_id == $row->id){
+                                                                    $value = $attr->attribute_value;
+                                                                    break;
+                                                                    }
+                                                                    }
+                                                                    }
+                                                                    @endphp
+
                                                                     <input type="text"
                                                                         class="form-control form-select-sm"
                                                                         name="twitter[{{ $row->id }}]"
+                                                                        value="{{ $value }}"
                                                                         placeholder="Enter Value">
+
                                                                 </div>
 
                                                             </div>
@@ -543,9 +536,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             </div>
 
                                                             <div class="col-md-9">
+                                                                @php
+                                                                $published = isset($data['row']->published_at)
+                                                                ? date('Y-m-d\TH:i', strtotime($data['row']->published_at))
+                                                                : '';
+                                                                @endphp
+
                                                                 <input type="datetime-local"
                                                                     class="form-control form-select-sm"
-                                                                    name="article[{{ $row->id }}]">
+                                                                    name="article[{{ $row->id }}]"
+                                                                    value="{{ $published }}">
                                                             </div>
                                                         </div>
 
@@ -599,12 +599,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             </div>
 
                                                             <div class="col-md-9">
+                                                                @php
+                                                                $value = '';
+
+                                                                if(isset($blogAttributes[3])) {
+                                                                foreach($blogAttributes[3] as $attr){
+                                                                if($attr->attribute_id == $row->id){
+                                                                $value = $attr->attribute_value;
+                                                                break;
+                                                                }
+                                                                }
+                                                                }
+                                                                @endphp
+
                                                                 <textarea
                                                                     class="form-control form-select-sm"
                                                                     name="schema[{{ $row->id }}]"
                                                                     rows="3"
                                                                     style="resize: vertical;"
-                                                                    placeholder="Enter Value"></textarea>
+                                                                    placeholder="Enter Value">{{ $value }}</textarea>
                                                             </div>
                                                         </div>
 

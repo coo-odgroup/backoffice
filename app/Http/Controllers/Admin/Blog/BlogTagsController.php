@@ -1,22 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Blog;
 
 use App\Http\Controllers\Controller;
-use App\Models\blogs\BlogTagMap;
+use App\Models\blogs\BlogRoutes;
+use App\Models\blogs\BlogTags;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\CommonController;
 
 
-class BlogTagMapController extends Controller
+class BlogTagsController extends Controller
 {
     public function index()
     {
-        return view('admin.blogs.blogTagMap');
+        return view('admin.blogs.blogTags');
     }
 
     public function dataTableView()
@@ -29,30 +30,27 @@ class BlogTagMapController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
 
-            $dataQuery = DB::table('odbusdev.blog_tag_map as btm')
+            $dataQuery = DB::table('odbusdev.blog_tags as bt')
                 ->select(
-                    'btm.id as tag_map_id',
-                    'btm.blog_id',
-                    'btm.tag_id',
-                    'btm.created_at',
-                    'btm.created_by',
-                    'btm.updated_at',
-                    'btm.updated_by',
-                    DB::raw('(SELECT b.title FROM odbusdev.blogs b WHERE b.id = btm.blog_id) as title'),
-                    DB::raw('(SELECT tag_name FROM odbusdev.blog_tags bt WHERE bt.id = btm.tag_id) as tag_name'),
-                    DB::raw('(SELECT u.name FROM odbusmaster.users u WHERE u.id = btm.created_by) as created_by_name'),
-                    DB::raw('(SELECT u.name FROM odbusmaster.users u WHERE u.id = btm.updated_by) as updated_by_name')
+                    'bt.id as blog_tags_id',
+                    'bt.tag_name',
+                    'bt.slug',
+                    'bt.created_at',
+                    'bt.created_by',
+                    'bt.updated_at',
+                    'bt.updated_by',
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bt.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bt.updated_by LIMIT 1) as updated_by_name')
                 );
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->whereRaw("(SELECT b.title FROM odbusdev.blogs b WHERE b.id = btm.blog_id) LIKE ?", ["%{$txtSearch}%"])
-                        ->orWhereRaw("(SELECT bt.tag_name FROM odbusdev.blog_tags bt WHERE bt.id = btm.tag_id) LIKE ?", ["%{$txtSearch}%"]);
+                    $q->where('bt.tag_name', 'like', "%{$txtSearch}%");
                 });
             }
 
-            $count = $dataQuery->count('btm.id');
+            $count = $dataQuery->count('bt.id');
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -63,18 +61,13 @@ class BlogTagMapController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [
-                    2 => DB::raw('(SELECT b.title FROM odbusdev.blogs b WHERE b.id = btm.blog_id)'),
-                    3 => DB::raw('(SELECT bt.tag_name FROM odbusdev.blog_tags bt WHERE bt.id = btm.tag_id)'),
-                    4 => 'btm.created_at',
-                    5 => 'btm.created_by'
-                ];
+                $columns = [2 => 'bt.tag_name', 3 => 'bt.created_at', 4 => 'bt.created_by'];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'title';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'bt.tag_name';
                 $orderType = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'title';
+                $orderColumn = 'bt.tag_name';
                 $orderType = 'asc';
             }
 
@@ -88,14 +81,13 @@ class BlogTagMapController extends Controller
                     ->offset($start)
                     ->get();
             }
-
             // Format Data
             if (count($arrRes) > 0) {
 
                 foreach ($arrRes as $val) {
                     $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
-                    $val->enc_tag_map_id = Crypt::encryptString($val->tag_map_id);
+                    $val->enc_blog_tags_id = Crypt::encryptString($val->blog_tags_id);
                 }
             }
 
@@ -104,7 +96,7 @@ class BlogTagMapController extends Controller
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in BlogTagMapController@dataTableView", [
+            Log::info("Exception occurred in BlogTagsController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -112,7 +104,7 @@ class BlogTagMapController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'BlogTagMapController',
+                'Controller' => 'BlogTagsController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -129,7 +121,7 @@ class BlogTagMapController extends Controller
         ]);
     }
 
-   public function add($encId = null)
+    public function add($encId = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
@@ -142,31 +134,31 @@ class BlogTagMapController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/blog-tag-map/edit/" . $encId;
+                $redirectPage = "admin/blog-tags/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = BlogTagMap::select('id', 'blog_id', 'tag_id')
+                $dataResQry = BlogTags::select('id', 'tag_name', 'slug')
                     ->where('id', $id)
                     ->first();
 
                 if (empty($dataResQry)) {
-                    return redirect("blog-tag-map");
+                    return redirect("blog-tags");
                 }
 
                 $data['row'] = $dataResQry;
 
             } else {
                 $id = 0;
-                $redirectPage = "admin/blog-tag-map";
+                $redirectPage = "admin/blog-tags";
             }
 
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'blog_id' => 'bail|required',
-                    'tag_id'  => 'bail|required'
+                    'tag_name' => 'bail|required',
+                    'slug'     => 'bail|required'
                 ]);
 
                 if ($validator->fails()) {
@@ -175,16 +167,16 @@ class BlogTagMapController extends Controller
 
                 DB::beginTransaction();
 
-                $blog_id = request('blog_id');
-                $tag_id  = request('tag_id');
+                $tag_name = htmlEncode(request('tag_name'));
+                $slug     = htmlEncode(request('slug'));
 
                 if ($id != 0) {
 
-                    $oldData = BlogTagMap::find($id);
+                    $oldData = BlogTags::find($id);
 
                     $newData = [
-                        'blog_id' => $blog_id,
-                        'tag_id'  => $tag_id,
+                        'tag_name' => $tag_name,
+                        'slug'     => $slug,
                     ];
 
                     $oldChanged = [];
@@ -201,7 +193,7 @@ class BlogTagMapController extends Controller
 
                     if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
-                            'mst_blog_tag_map',
+                            'mst_blog_tags',
                             $id,
                             'UPDATE',
                             $oldChanged,
@@ -217,27 +209,27 @@ class BlogTagMapController extends Controller
                 } else {
 
                     $row = [
-                        'blog_id'    => $blog_id,
-                        'tag_id'     => $tag_id,
+                        'tag_name'   => $tag_name,
+                        'slug'       => $slug,
                         'created_by' => 1,
                         'created_at' => now(),
                     ];
 
                     app(CommonController::class)->auditLog(
-                        'mst_blog_tag_map',
+                        'mst_blog_tags',
                         null,
                         'INSERT',
                         [],
                         $row
                     );
 
-                    BlogTagMap::create($row);
+                    BlogTags::create($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level', 'success');
-                session()->flash('message', 'Blog Tag Map ' . ($id ? 'updated' : 'created') . ' successfully.');
+                session()->flash('message', 'Blog Tags ' . ($id ? 'updated' : 'created') . ' successfully.');
 
                 return redirect($redirectPage);
             }
@@ -247,7 +239,7 @@ class BlogTagMapController extends Controller
             DB::rollBack();
 
             Log::error("Error", [
-                'Controller' => 'BlogTagMapController',
+                'Controller' => 'BlogTagsController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
@@ -258,8 +250,9 @@ class BlogTagMapController extends Controller
             ])->withInput();
         }
 
-        return view('admin.blogs.addBlogTagMap', compact('data'));
+        return view('admin.blogs.addBlogTags', compact('data'));
     }
+
     public function edit($encId)
     {
         return $this->add($encId);
