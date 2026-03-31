@@ -412,6 +412,7 @@ Route::prefix('admin')->group(function () {
     // Bus info module
     Route::get('/businfo', [BusInfoController::class, 'businfo'])->name('businfo.index');
     Route::get('/businfo/preview', [BusInfoController::class, 'preview'])->name('businfo.preview');
+    Route::get('/businfo/blog-preview', [BusInfoController::class, 'blogPreview'])->name('businfo.blogPreview');
     Route::match(['get', 'post'], 'businfo/add', [BusInfoController::class, 'add'])->name('businfo.add');
     Route::post('get-city-search',[BusInfoController::class, "getcity"]);
 
