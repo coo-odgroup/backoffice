@@ -8,6 +8,9 @@ use App\Models\Bus\BusAmenity;
 use App\Models\Bus\BusRoutes;
 use App\Models\Bus\BusRoutesStops;
 use App\Models\Bus\BusRoutesMap;
+use App\Models\Bus\BusBoardingDropping;
+use App\Models\Bus\BusRouteFares;
+use App\Models\Bus\BusContacts;
 use App\Models\Master\Amenity;
 use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
@@ -251,314 +254,243 @@ class BusWizardController extends Controller
         }
     }
 
-    public function step4()
+    public function step4($bus_id = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
+        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['bus_id'] = $bus_id;
         return view('admin.bus.wizard.step4', compact('data'));
     }
 
     public function postStep4(Request $request)
     {
-        return $request;
-        session(['bus.step4' => $request->stations]);
-        return redirect()->route('bus.step5');
+        $busId = $request->bus_id;
+        $stations = $request->stations ?? [];
+
+        $insertData = [];
+
+        foreach ($stations as $cityId => $stops) {
+
+            foreach ($stops as $stop) {
+
+                // Only insert if checked
+                if (!isset($stop['checked'])) {
+                    continue;
+                }
+
+                $insertData[] = [
+                    'bus_id' => $busId,
+                    'type' => (int) $stop['type'],
+                    'city_id' => (int) $cityId,
+                    'stop_id' => (int) $stop['stop_id'],
+                    'timing' => $stop['time'],
+                    'active_status' => 1,
+                    'created_by' => 1,
+                ];
+            }
+        }
+
+        // Insert in batch
+        if (!empty($insertData)) {
+            BusBoardingDropping::insert($insertData);
+        }
+
+        session()->flash('level', 'success');
+        session()->flash('message', 'Stoppage added successfully.');
+
+        $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
+        return redirect()->route('bus.step5', ['encId' => $enc_bus_id]);
     }
 
-    public function getBoardingDropping(Request $request)
-    {
-        $type = $request->type;
-
-        $data = DB::table('mst_boarding_droping')
-            ->where('type', $type)
-            ->get(['id', 'brd_drp_point']);
-
-        return response()->json($data);
-    }
-
-    public function step5()
+    public function step5($bus_id = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
+
+        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+
+        $res = BusRoutesStops::with([
+            'bus:id,name',
+            'route:id,route_name',
+            'city:id,city_name'
+        ])
+            ->where('bus_id', $bus_id)
+            ->get();
+
+        $resCollect = collect($res); // your JSON data
+
+        // Get boarding cities
+        $boardingCities = $resCollect->where('is_boarding', 1);
+
+        // Get dropping cities
+        $droppingCities = $resCollect->where('is_dropping', 1);
+
+        $result = [];
+
+        foreach ($boardingCities as $board) {
+            foreach ($droppingCities as $drop) {
+
+                if ($board['stop_order'] < $drop['stop_order']) {
+
+                    $result[] = [
+                        'source' => $board['city']['city_name'],
+                        'source_id' => $board['city']['id'],
+                        'destination' => $drop['city']['city_name'],
+                        'destination_id' => $drop['city']['id'],
+                        'city_id' => $board['city']['id']
+                    ];
+                }
+            }
+        }
+
+        // return $result;
+
+        $data['schedule_data'] = $result;
+        $data['bus_id'] = $bus_id;
         return view('admin.bus.wizard.step5', compact('data'));
     }
 
     public function postStep5(Request $request)
     {
-        session(['bus.step5' => $request->schedule]);
-        return redirect()->route('bus.step6');
+        try {
+            $data = [];
+            $count = count($request->from_stop_id);
+            $busId = $request->bus_id;
+
+            $busData = BusRoutesMap::where('bus_id', $busId)->first();
+            $bus_route_id = $busData ? $busData->bus_route_id : null;
+
+            for ($i = 0; $i < $count; $i++) {
+
+                $data[] = [
+                    'bus_id' => $request->bus_id,
+                    'bus_route_id' => $bus_route_id,
+                    'from_stop_id' => $request->from_stop_id[$i],
+                    'from_journey_day' => $request->from_journey_day[$i] ?? 1,
+                    'to_stop_id' => $request->to_stop_id[$i],
+                    'to_journey_day' => $request->to_journey_day[$i] ?? 1,
+                    'seat_fare' => $request->seat_fare[$i],
+                    'upper_sleeper_fare' => $request->upper_sleeper_fare[$i],
+                    'lower_sleeper_fare' => $request->lower_sleeper_fare[$i],
+                    'seize_time' => $request->seize_time[$i],
+                    'close_time' => $request->close_time[$i],
+                    'active_status' => $request->active_status[$i] ?? 0,
+                    'created_at' => now(),
+                    'created_by' => 1,
+                ];
+            }
+
+            BusRouteFares::insert($data);
+
+            session()->flash('level', 'success');
+            session()->flash('message', 'Routes added successfully.');
+        } catch (\Exception $e) {
+
+            Log::error('Batch insert error', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ]);
+
+            session()->flash('level', 'success');
+            session()->flash('message', 'Failed to save routes. Please try again.');
+        }
+
+        $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
+        return redirect()->route('bus.step6', ['encId' => $enc_bus_id]);
     }
 
-    public function step6()
+    public function step6($bus_id = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
+
+        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $busData = Bus::where('id', $bus_id)->first();
+
+        $data['bus_number'] = $busData ? $busData->bus_number : null;
+        $data['bus_id'] = $bus_id;
         return view('admin.bus.wizard.step6', compact('data'));
     }
 
-    public function businfo()
+    public function finish(Request $request)
     {
-        return view('master.amenities');
-    }
-
-    public function dataTableView()
-    {
-        $recordsTotal     = 0;
-        $recordsFiltered  = 0;
-        $data             = [];
-
         try {
+            $contacts = $request->contacts ?? [];
+            $busId = $request->bus_id;
 
-            $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $amenityCategory = (request('amenityCategory') !== null && request('amenityCategory') !== '') ? (int)request('amenityCategory') : '';
+            $insertData = [];
 
-            $dataQuery = DB::table('mst_amenities as a')
-                ->select(
-                    'a.id as amenity_id',
-                    'a.category_id',
-                    'a.amenity_name',
-                    'a.description',
-                    'a.icon',
-                    'a.is_paid',
-                    'a.is_seat_specific',
-                    'a.sequence_no',
-                    'a.created_at',
-                    'a.created_by',
-                    'a.updated_at',
-                    'a.updated_by',
-                    'a.active_status',
-                    DB::raw('(SELECT category_name FROM mst_amenity_categories WHERE id = a.category_id LIMIT 1) as category_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = a.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = a.updated_by LIMIT 1) as updated_by_name')
-                );
-
-            // Filters
-            if (!empty($txtSearch)) {
-                $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('a.amenity_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('a.description', 'like', "%{$txtSearch}%");
-                });
+            foreach ($contacts as $contact) {
+                $insertData[] = [
+                    'bus_id' => $busId,
+                    'type' => 1,
+                    'phone' => $contact['phone'] ?? null,
+                    'booking_sms_send' => isset($contact['booking_sms_send']) ? 1 : 0,
+                    'cancel_sms_send' => isset($contact['cancel_sms_send']) ? 1 : 0,
+                    'booking_wp_send' => isset($contact['booking_wp_send']) ? 1 : 0,
+                    'cancel_wp_send' => isset($contact['cancel_wp_send']) ? 1 : 0,
+                ];
             }
 
-            if (isset($amenityCategory) && $amenityCategory != '') {
-                $dataQuery->where('a.category_id', $amenityCategory);
-            }
+            BusContacts::insert($insertData);
 
-            if (isset($selStatus) && $selStatus != '') {
-                $dataQuery->where('a.active_status', $selStatus);
-            }
+            session()->flash('level', 'success');
+            session()->flash('message', 'Bus Contacts added successfully.');
+        } catch (\Exception $e) {
 
-            $count = $dataQuery->count('a.id');
-
-            $start  = request()->input('start', 0);
-            $length = request()->input('length', 10);
-
-            $start  = is_numeric($start) ? (int)$start : 0;
-            $length = is_numeric($length) ? (int)$length : 10;
-
-            // Ordering
-            if (!empty(request('order'))) {
-
-                $columns = [2 => 'a.amenity_name', 3 => 'ac.category_name', 4 => 'a.description', 5 => 'a.icon', 6 => 'a.is_paid', 7 => 'a.is_seat_specific', 8 => 'a.created_by', 9 => 'a.active_status'];
-
-                $orderBy       = request('order');
-                $orderColumn   = $columns[$orderBy[0]['column']] ?? 'a.amenity_name';
-                $orderType     = $orderBy[0]['dir'];
-            } else {
-                $orderColumn = 'a.amenity_name';
-                $orderType   = 'asc';
-            }
-
-            $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
-
-            // Pagination
-            if ($length == -1) {
-                $arrRes = $dataQuery->get();
-            } else {
-                $arrRes = $dataQuery->limit($length)
-                    ->offset($start)
-                    ->get();
-            }
-            // Format Data
-            if (count($arrRes) > 0) {
-
-                foreach ($arrRes as $val) {
-                    $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
-                    $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
-                    $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_amenity_id   = Crypt::encryptString($val->amenity_id);
-                }
-            }
-
-            $recordsTotal     = $count;
-            $recordsFiltered  = $count;
-            $data             = $arrRes;
-        } catch (\Throwable $t) {
-
-            Log::info("Exception occurred in AmenitiesController@dataTableView", [
-                'error_message' => $t->getMessage(),
-                'trace' => $t->getTraceAsString()
+            Log::error('Batch insert error', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
             ]);
 
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
-            Log::error("Error", [
-                'Controller' => 'AmenitiesController',
-                'Method'     => 'dataTableView',
-                'Error'      => $errorMsg
-            ]);
-
-            $recordsTotal     = 0;
-            $recordsFiltered  = 0;
-            $data            = [];
+            session()->flash('level', 'success');
+            session()->flash('message', 'Failed to save contacts. Please try again.');
         }
 
-        return response()->json([
-            'recordsTotal'    => $recordsTotal,
-            'recordsFiltered' => $recordsFiltered,
-            'data'            => $data,
-        ]);
+        $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
+        return redirect()->route('bus.preview', ['encId' => $enc_bus_id]);
     }
 
-    public function add($encId = null)
+    public function preview($bus_id = null)
     {
-
         $data = [];
         $data['strPage'] = $method = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
 
-        try {
-
-            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
-
-            if ($id > 0) {
-
-                $redirectPage = "admin/amenities/edit/" . $encId;
-                $data['strPage'] = $method = 'Edit';
-                $data['strSubmit'] = 'Update';
-                $data['strReset'] = 'Cancel';
-
-                $dataResQry = Amenity::select('id', 'category_id', 'amenity_name', 'description', 'icon', 'is_paid', 'is_seat_specific');
-
-                $dataResQry = $dataResQry->where('id', $id)->first();
-
-                if (empty($dataResQry)) {
-                    return redirect("amenities");
-                }
-                $data['row'] = $dataResQry;
-            } else {
-                $id = 0;
-                $redirectPage = "admin/amenities";
-            }
-
-            if (request()->isMethod('post')) {
-
-                request()->replace(request()->all());
-
-                $validator = Validator::make(request()->all(), [
-                    'amenityCategory' => 'bail|required',
-                    'amenity_name' => 'bail|required',
-                    'icon' => 'bail|required'
-                ], [
-                    'amenityCategory.required' => 'Amenity Category cannot be left blank.',
-                    'amenity_name.required' => 'Amenity Name cannot be left blank.',
-                    'icon.required' => 'Amenity Icon cannot be left blank.'
-                ]);
-
-                if ($validator->fails()) {
-                    return back()->withErrors($validator)->withInput();
-                } else {
-                    DB::beginTransaction();
-
-                    $category_id = (int)request('amenityCategory');
-                    $amenity_name = htmlEncode(request('amenity_name'));
-                    $icon = htmlEncode(request('icon'));
-                    $is_paid = (int)request('is_paid');
-                    $is_seat_specific = (int)request('is_seat_specific');
-                    $description = htmlEncode(request('description'));
-
-                    $duplicate = Amenity::select('id')->where(['amenity_name' => $amenity_name]);
-
-                    if ($id != 0) {
-                        $duplicate->where('id', '!=', $id);
-                    }
-
-                    if ($duplicate->exists()) {
-                        return back()->with([
-                            'level'     => 'danger',
-                            'message'   => 'Amenity already exist'
-                        ])->withInput();
-                    } else {
-                        $obj = ($id != 0) ? Amenity::find($id) : new Amenity();
-                        $obj->category_id = $category_id;
-                        $obj->amenity_name = $amenity_name;
-                        $obj->icon = $icon;
-                        $obj->is_paid = $is_paid;
-                        $obj->is_seat_specific = $is_seat_specific;
-                        $obj->description = $description;
-                        $obj->created_by = 1;
-                        $obj->active_status = 1;
-
-                        if ($id != 0) {
-                            $obj->updated_by = 1;
-                        }
-
-                        $obj->save();
-
-                        session()->flash('level', 'success');
-                        session()->flash('message', 'Amenity ' . (($id != 0) ? 'updated' : 'created') . ' successfully.');
-                    }
-
-                    DB::commit();
-                    return redirect($redirectPage);
-                }
-            }
-        } catch (\Throwable $t) {
-            Log::error("Error", [
-                'Controller' => 'AmenitiesController',
-                'Method'     => $method,
-                'Error'      => $t->getMessage()
-            ]);
-
-            DB::rollBack();
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
-            return back()->with([
-                'level'     => 'danger',
-                'message'   => $errorMsg
-            ])->withInput();
-        }
-        return view('Master.addBusinfo', compact('data'));
+        return view('admin.bus.wizard.preview', compact('data'));
     }
 
-    public function edit($encId)
+    public function getBoardingDropping(Request $request)
     {
-        return $this->add($encId);
+        $type = $request->type;
+        $city_id = $request->city_id;
+
+        $data = DB::table('mst_boarding_droping')
+            ->where('type', $type)
+            ->where('cities_id', $city_id)
+            ->get(['id', 'brd_drp_point']);
+
+        return response()->json($data);
     }
 
-
-    public function getcity(Request $request)
+    public function getListingTime(Request $request)
     {
-        $city = $request->city;
+        $city_id = (int) $request->city_id;
 
-        $cities = DB::table('mst_cities')
-            ->when($city, function ($query, $city) {
-                return $query->where('city_name', 'LIKE', '%' . $city . '%');
-            })
-            ->get();
+        $data = BusRoutesStops::where('city_id', $city_id)
+            ->select('listing_time')
+            ->first();
 
         return response()->json([
-            'status' => true,
-            'data' => $cities
+            'listing_time' => $data->listing_time ?? null
         ]);
     }
 }

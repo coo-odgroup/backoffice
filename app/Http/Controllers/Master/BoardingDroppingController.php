@@ -94,6 +94,7 @@ class BoardingDroppingController extends Controller
                         'latitude'      => $latitudes[$i] ?? null,
                         'longitude'     => $longitudes[$i] ?? null,
                         'sequence_no'   => $sequences[$i] ?? null,
+                        'created_by'    => 1,
                     ];
                 }
 
@@ -103,7 +104,7 @@ class BoardingDroppingController extends Controller
                         ->where('id', $id)
                         ->first();
 
-                    $newData = $insertData[0]; 
+                    $newData = $insertData[0];
 
                     $oldChanged = [];
                     $newChanged = [];

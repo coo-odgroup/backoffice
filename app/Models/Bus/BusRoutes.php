@@ -14,4 +14,9 @@ class BusRoutes extends Model
         'route_signature',
         'active_status'
     ];
+
+    public function stops()
+    {
+        return $this->hasMany(BusRoutesStops::class, 'bus_route_id');
+    }
 }

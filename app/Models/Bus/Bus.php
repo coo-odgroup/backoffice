@@ -32,4 +32,9 @@ class Bus extends Model
         'is_irctc_model',
         'active_status'
     ];
+
+    public function stops()
+    {
+        return $this->hasMany(BusRoutesStops::class, 'bus_id');
+    }
 }
