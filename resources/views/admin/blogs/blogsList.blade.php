@@ -134,7 +134,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Sl No</th>
                             <th>Category Name</th>
                             <th>Title</th>
-                            <th>Description</th>
+                            <th width="450">Description</th>
                             <th>Author</th>
                             <th>Published Date</th>
                             <th>Last Modified</th>
@@ -250,7 +250,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'short_description',
-                defaultContent: "--"
+                render: function(data, type, row) {
+
+                    if (!data) return "--";
+
+                    let text = data.toString();
+
+                    if (text.length > 100) {
+                        return `
+                <div style="
+                    max-height: 80px;
+                    overflow-y: auto;
+                    white-space: normal;
+                    word-break: break-word;
+                    padding-right: 5px;
+                ">
+                    ${text}
+                </div>
+            `;
+                    }
+
+                    return text;
+                }
             },
             {
                 data: 'author_name',
