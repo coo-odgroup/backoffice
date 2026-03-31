@@ -5,791 +5,242 @@
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Master</li>
-        <li class="breadcrumb-item active">Preview</li>
+        <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="#">Home</a></li>
+        <li class="breadcrumb-item"><i class="bi bi-folder"></i> Master</li>
+        <li class="breadcrumb-item active"><i class="bi bi-eye"></i> Preview</li>
     </ol>
 </nav>
 
-<!-- ================= HEADER (COMMENTED AS REQUESTED) ================= -->
+<!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center">
-    <h5 class="bpv-title">Bus Preview</h5>
-    <button onclick="window.print()" class="btn btn-success btn-sm">Print</button>
+    <h5 class="bpv-title">
+        <i class="bi bi-file-earmark-text"></i> Blog Preview
+    </h5>
+    <button onclick="window.print()" class="btn btn-success btn-sm">
+        <i class="bi bi-printer"></i> Print
+    </button>
 </div>
 
-<div class="bpv-main-box">
-    <div class="bpv-wrapper">
+<div class="blogv-main-box">
+    <div class="blogv-wrapper">
 
-        <!-- ================= BUS INFO ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-bus-front-fill bpv-icon"></i> Bus Info
+        <!-- BLOG INFO -->
+        <div class="blogv-card">
+            <h6 class="blogv-heading">
+                <i class="bi bi-info-circle"></i> Blog Info
             </h6>
 
-            <div class="bpv-grid">
-                <div><span>Operator</span>
-                    <p>ABC Travel</p>
+            <div class="blogv-grid-2">
+                <div>
+                    <span><b><i class="bi bi-type"></i> Blog Title</b></span>
+                    <p>Lorem ipssum gosym</p>
                 </div>
-                <div><span>Bus Name/No</span>
-                    <p>Dildar Bus / OD02 AV 2545</p>
+
+                <div>
+                    <span><b><i class="bi bi-link-45deg"></i> Blog Alias</b></span>
+                    <p>lorem-ipsum-gypsum</p>
                 </div>
-                <div><span>Via</span>
-                    <p>Balasore, Soro, Bhadhrak</p>
+            </div>
+
+            <div class="blogv-grid-2 mt-2">
+                <div>
+                    <span><b><i class="bi bi-tag"></i> Category</b></span>
+                    <p>-</p>
                 </div>
-                <div><span>Max Seat</span>
-                    <p>6</p>
-                </div>
-                <div><span>Bus Type</span>
-                    <p>Scania Lift Axle AC Seater 1+2</p>
-                </div>
-                <div><span>IRCTC Model</span>
+
+                <div>
+                    <span><b><i class="bi bi-star"></i> Is Featured</b></span>
                     <p>No</p>
                 </div>
             </div>
         </div>
 
-        <!-- ================= AMENITIES ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-stars bpv-icon"></i> Amenities
+        <!-- SHORT DESCRIPTION -->
+        <div class="blogv-card">
+            <h6 class="blogv-heading">
+                <i class="bi bi-chat-left-text"></i> Short Description
             </h6>
 
-            <div class="bpv-amenities">
+            <p>
+                Before we get into the Indian Railways quota system, it is important to understand why it exists. Demand for train travel is dynamic, often peaking on certain routes and at certain times, such as during festivals and school holidays. During these times,
+            </p>
+        </div>
 
-                <div class="bpv-amenity-col">
-                    <h6>Seating & Comfort</h6>
+        <!-- LONG DESCRIPTION -->
+        <div class="blogv-card">
+            <h6 class="blogv-heading">
+                <i class="bi bi-file-text"></i> Long Description
+            </h6>
 
-                    <div class="bpv-amenity-item">
-                        <i class="bi bi-easel-fill"></i>
-                        Pushback Seats
-                    </div>
+            <div class="blogv-content">
 
-                    <div class="bpv-amenity-item">
-                        <i class="bi bi-layout-sidebar-inset"></i>
-                        Window Curtains
-                    </div>
-                </div>
+                <p>
+                    Booking train tickets in advance gives passengers predictability regarding travel dates and times, and the majority of tickets are now booked online. However, in the past, tickets could be booked up to 120 days before travel; this window is currently only 60 days, making it even more imperative that passengers know how to get train ticket confirmation, especially on busy routes and during peak travel times such as holidays, festive periods, and long weekends.
+                </p>
 
-                <div class="bpv-amenity-col">
-                    <h6>Climate Control</h6>
+                <p>
+                    Read on to learn all about how you can get a train ticket confirmation in India and the quotas that you can use to ensure your ticket gets confirmed.
+                </p>
 
-                    <div class="bpv-amenity-item">
-                        <i class="bi bi-snow2"></i>
-                        Air Conditioning (AC)
-                    </div>
+                <h6><i class="bi bi-diagram-3"></i> Indian Railways Quota System</h6>
 
-                    <div class="bpv-amenity-item">
-                        <i class="bi bi-wind"></i>
-                        Individual Air Vents
-                    </div>
-                </div>
+                <p>
+                    Before we get into the Indian Railways quota system, it is important to understand why it exists. Demand for train travel is dynamic, often peaking on certain routes and at certain times, such as during festivals and school holidays. During these times, tickets are frequently sold out in advance, making it difficult for passengers to reliably plan for emergencies or last-minute travel.
+                </p>
+
+                <p>
+                    Also, given the sheer volume of passengers who use trains daily, there may be instances when certain categories of travellers (such as senior citizens, pregnant women, or defence personnel) cannot secure a train ticket confirmation in time for their journey. These problems mean many travellers have to face the question: “Will my train ticket get confirmed?”
+                </p>
+
+                <p>
+                    To address these issues, the Indian Railways uses a quota-based allocation system to distribute seats and berths across different passenger categories. This system can ensure that passengers have the option to explore various booking categories if they meet the qualifying criteria, increasing the odds of them getting a confirmed ticket. The quotas available include:
+                </p>
+
+                <ul>
+                    <li><i class="bi bi-check-circle"></i> <b>General quota:</b> This is the standard booking category and is available to all citizens.</li>
+                    <li><i class="bi bi-lightning"></i> <b>Tatkal quota:</b> Tatkal is meant for urgent travel. It opens one day before the journey from the originating station.</li>
+                    <li><i class="bi bi-currency-rupee"></i> <b>Premium Tatkal quota:</b> Offers confirmed tickets only with dynamic pricing.</li>
+                    <li><i class="bi bi-person-heart"></i> <b>Ladies quota:</b> For women travelling alone or with children.</li>
+                    <li><i class="bi bi-person-badge"></i> <b>Lower berth quota:</b> For senior citizens and pregnant women.</li>
+                </ul>
+
+                <p>
+                    Understanding the quota system is important because a train that looks unavailable in one quota may still show options in another valid category, helping you get a confirmed ticket.
+                </p>
+
+                <h6><i class="bi bi-lightbulb"></i> Tips & Tricks to Secure a Confirmed Train Ticket</h6>
+
+                <p>
+                    While understanding the quota system is one way to increase your odds of a train ticket confirmation, there are other strategies that you could employ as well.
+                </p>
+
+                <h6><i class="bi bi-clock"></i> Book as soon as the reservation window opens</h6>
+
+                <p>
+                    You can book train tickets starting from up to 60 days before the journey date. Delaying beyond this date reduces your chances of getting a confirmed ticket, as seats may sell out. Even if you’re unsure about your travel plans, booking via redRail with the Free Cancellation service lets you cancel your train ticket for free and receive a 100% refund within 5-8 working days.
+                </p>
 
             </div>
         </div>
 
-        <!-- ================= CANCELLATION ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-x-circle-fill bpv-icon text-danger"></i> Cancellation Slab
+        <!-- IMAGES -->
+        <div class="blogv-card">
+            <h6 class="blogv-heading">
+                <i class="bi bi-images"></i> Images
             </h6>
 
-            <table class="table bpv-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Hours Before Departure</th>
-                        <th>Cancellation Charges (%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>12-24</td>
-                        <td>25%</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>12-35</td>
-                        <td>30%</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ================= CITY ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-geo-alt-fill bpv-icon text-danger"></i> City Selection
-            </h6>
-
-            <table class="table bpv-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>City Name</th>
-                        <th>Boarding</th>
-                        <th>Dropping</th>
-                        <th>Timing</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Bhubaneswar</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>20:30</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Cuttack</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Jajpur</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Bhadhrak</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Soro</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ================= STATIONS ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-signpost-2-fill bpv-icon"></i> Stations
-            </h6>
-
-            <table class="table bpv-table">
-                <thead>
-                    <tr>
-                        <th>City</th>
-                        <th>Type</th>
-                        <th>Location</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Bhubaneswar</td>
-                        <td>Boarding</td>
-                        <td>BSBT</td>
-                        <td>20:30</td>
-                    </tr>
-                    <tr>
-                        <td>Bhubaneswar</td>
-                        <td>Boarding</td>
-                        <td>CRP Square</td>
-                        <td>20:40</td>
-                    </tr>
-                    <tr>
-                        <td>Cuttack</td>
-                        <td>Boarding</td>
-                        <td>Link Road</td>
-                        <td>20:50</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ================= SCHEDULE ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-calendar-check bpv-icon text-primary"></i> Schedule
-            </h6>
-
-            <table class="table bpv-table">
-                <thead>
-                    <tr>
-                        <th>Source</th>
-                        <th>Day</th>
-                        <th>Destination</th>
-                        <th>Day</th>
-                        <th>Seat Fare</th>
-                        <th>Upper Sleeper</th>
-                        <th>Lower Sleeper</th>
-                        <th>Seize Time</th>
-                        <th>Close Time</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Bhubaneswar</td>
-                        <td>1</td>
-                        <td>Rourkela</td>
-                        <td>2</td>
-                        <td>480</td>
-                        <td>560</td>
-                        <td>-</td>
-                        <td>255</td>
-                        <td>16:00</td>
-                        <td><span class="bpv-badge">Active</span></td>
-                    </tr>
-                    <tr>
-                        <td>Cuttack</td>
-                        <td>1</td>
-                        <td>Rourkela</td>
-                        <td>2</td>
-                        <td>480</td>
-                        <td>560</td>
-                        <td>-</td>
-                        <td>255</td>
-                        <td>16:00</td>
-                        <td><span class="bpv-badge">Active</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ================= CONTACT ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-telephone-fill bpv-icon text-success"></i> Contact
-            </h6>
-
-            <div class="bpv-grid">
-                <div><span>Conductor</span>
-                    <p>9887744412</p>
-                </div>
-                <div><span>SMS On Ticket</span>
-                    <p>Yes</p>
-                </div>
-                <div><span>SMS On Cancel</span>
-                    <p>Yes</p>
-                </div>
-                <div><span>WhatsApp Ticket</span>
-                    <p>Yes</p>
-                </div>
-                <div><span>WhatsApp Cancel</span>
-                    <p>Yes</p>
+            <!-- Thumb -->
+            <div class="blogv-image-block">
+                <span><b><i class="bi bi-image"></i> Thumb Image</b> (300x220)</span>
+                <div class="blogv-img-box thumb hover-box">
+                    <img src="{{ asset('assets/img/thumb_image.jpg') }}" alt="Thumb Image">
+                    <span class="blogv-hover-text">Thumb Image</span>
                 </div>
             </div>
-        </div>
 
-        <!-- ================= SEAT LAYOUT ================= -->
-        <div class="bpv-card">
-            <h6 class="bpv-heading">
-                <i class="bi bi-grid-3x3-gap-fill bpv-icon"></i> Seat Layout
-            </h6>
-
-            <div class="bpv-seat-box">
-                <div class="seat-left">
-                    <div class="bus-layout">
-
-                        <!-- UPPER BERTH -->
-                        <div class="berth-row berth-section active" id="upper-berth-box">
-                            <div class="berth-label">Upper Berth</div>
-
-                            <div class="layout-box">
-                                <!-- Row 1 -->
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U1">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U1</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U2">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U2</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U3">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U3</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U4">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U4</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U5">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U5</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U6">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U6</span>
-                                </label>
-
-                                <!-- Row 2 -->
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U7">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U7</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U8">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U8</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U9">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U9</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U10">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U10</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U11">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U11</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U12">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U12</span>
-                                </label>
-
-                                <!-- Empty Row -->
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-
-                                <!-- Row 3 -->
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U13">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U13</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U14">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U14</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U15">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U15</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U16">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U16</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U17">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U17</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U18">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U18</span>
-                                </label>
-
-                                <!-- Row 4 -->
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U19">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U19</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U20">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U20</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U21">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U21</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U22">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U22</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U23">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U23</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U24">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U24</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- LOWER BERTH -->
-                        <div class="berth-row berth-section" id="lower-berth-box">
-                            <div class="berth-label">Lower Berth</div>
-
-                            <div class="layout-box">
-                                <!-- Row 1 -->
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L1">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L1</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L2">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L2</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L3">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L3</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L4">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L4</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L5">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L5</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L6">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L6</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L7">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L7</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L8">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L8</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L9">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L9</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L10">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L10</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L11">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L11</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L12">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L12</span>
-                                </label>
-
-                                <!-- Row 2 -->
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L13">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L13</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L14">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L14</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L15">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L15</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L16">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L16</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L17">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L17</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L18">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L18</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L19">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L19</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L20">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L20</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L21">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L21</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L22">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L22</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L23">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L23</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L24">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L24</span>
-                                </label>
-
-                                <!-- Empty Row -->
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-                                <div class="empty"></div>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L25">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L25</span>
-                                </label>
-
-                                <!-- Row 3 -->
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L26">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L26</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L27">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L27</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L28">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L28</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L29">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L29</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L30">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L30</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L31">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L31</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L32">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L32</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L33">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L33</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L34">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L34</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L35">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L35</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L36">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L36</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L37">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L37</span>
-                                </label>
-
-                                <!-- Row 4 -->
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L38">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L38</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L39">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L39</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L40">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L40</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L41">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L41</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L42">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L42</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L43">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L43</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L44">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L44</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L45">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L45</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L46">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L46</span>
-                                </label>
-
-                                <label class="seat-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="L47">
-                                    <span class="bus-seat" data-type="seat"></span>
-                                    <span class="seat-number">L47</span>
-                                </label>
-
-                                <label class="seat-wrap sleeper-wrap">
-                                    <input type="checkbox" class="seat-checkbox" name="seat_no[]" value="U12">
-                                    <span class="bus-sleeper" data-type="sleeper"></span>
-                                    <span class="seat-number">U18</span>
-                                </label>
-                            </div>
-                        </div>
-
+            <!-- Feature -->
+            <div class="blogv-image-block mt-3">
+                <span><b><i class="bi bi-image-fill"></i> Feature Image</b> (9600x420)</span>
+
+                <div class="blogv-img-box feature hover-box">
+                    <img src="{{ asset('assets/img/feature_image.jpg') }}" alt="Feature Image">
+                    <span class="blogv-hover-text">Feature Image</span>
+                </div>
+            </div>
+
+            <!-- 🔥 META INFO -->
+            <div class="blogv-meta-inline mt-3">
+
+                <div class="meta-left">
+                    <i class="bi bi-calendar-check"></i>
+                    <b>Published On:</b>
+                    <div class="mt-3">
+                        <span>24-Apr-2026 10:22:00</span>
                     </div>
                 </div>
+
+                <div class="meta-right">
+                    <i class="bi bi-tags"></i>
+                    <b>Tags:</b>
+
+                    <div class="blogv-tags">
+                        <span>Travel</span>
+                        <span>Booking</span>
+                        <span>Refund</span>
+                        <span>Refund</span>
+                        <span>Refund</span>
+                        <span>Refund</span>
+                        <span>Refund</span>
+                        <span>Refund</span>
+                        <span>Refund</span>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="bpv-seat-info">
-                <div><span>Window Seats:</span>
-                    <p>20</p>
+        </div>
+
+        <!-- SEO SECTION -->
+        <div class="blogv-card">
+            <h6 class="blogv-heading">
+                <i class="bi bi-code-slash"></i> SEO / Head Section
+            </h6>
+
+            <div class="blogv-code-box">
+
+                <!-- HEADER -->
+                <div class="blogv-code-header">
+                    <span><i class="bi bi-file-earmark-code"></i> HTML Head Code</span>
+                    <span class="code-badge"><i class="bi bi-graph-up"></i> SEO</span>
                 </div>
-                <div><span>Female Seats:</span>
-                    <p>10</p>
-                </div>
-                <div><span>VIP Seats:</span>
-                    <p>5</p>
-                </div>
+
+                <!-- CODE (ESCAPED) -->
+                <pre class="blogv-code-content">
+&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0"&gt;
+  &lt;title&gt;DreamsTour - Travel and Tour Booking Angular 19 template&lt;/title&gt;
+  &lt;meta name="description" content="DreamsTour - A premium Angular 19 template crafted for travel and tour booking. Tailored for travel agencies and booking platforms, it features flight, hotel, and tour reservations, and holiday packages."&gt;
+  &lt;meta name="keywords" content="travel booking template, tour booking, Angular 19 travel template, DreamsTour, hotel booking, flights booking, holiday packages, tour agency website, travel agency template, travel HTML template, booking system, responsive travel template, Bootstrap travel website"&gt;
+  &lt;link rel="canonical" href="https://www.example.com/page-url/" /&gt;
+
+  &lt;!-- Open Graph --&gt;
+  &lt;meta property="og:locale" content="en_US" /&gt;
+  &lt;meta property="og:type" content="article" /&gt;
+  &lt;meta property="og:title" content="Central Railway Announces 2,012 Summer Special Train Services to Tackle Peak Season Rush - redBus Blog" /&gt;
+  &lt;meta property="og:description" content="To tackle surge of demand during summer, Central railways has announced 2012 special trains. Passengers can start booking tickets through redRail to beat the rush." /&gt;
+  &lt;meta property="og:url" content="https://www.redbus.in/blog/central-railway-announces-2012-summer-special-train-services-to-tackle-peak-season-rush/" /&gt;
+  &lt;meta property="og:site_name" content="redBus Blog" /&gt;
+  &lt;meta property="article:published_time" content="2026-03-25T10:27:48+00:00" /&gt;
+  &lt;meta property="og:image" content="http://blog.redbus.in/wp-content/uploads/2026/03/Summer-Trains.png" /&gt;
+  &lt;meta property="og:image:width" content="640" /&gt;
+  &lt;meta property="og:image:height" content="360" /&gt;
+  &lt;meta property="og:image:type" content="image/png" /&gt;
+  &lt;meta name="author" content="Veda Sree" /&gt;
+
+  &lt;!-- For Twitter --&gt;
+  &lt;meta name="twitter:card" content="summary_large_image" /&gt;
+  &lt;meta name="twitter:label1" content="Written by" /&gt;
+  &lt;meta name="twitter:data1" content="Veda Sree" /&gt;
+  &lt;meta name="twitter:label2" content="Est. reading time" /&gt;
+  &lt;meta name="twitter:data2" content="2 minutes" /&gt;
+
+  &lt;!-- Schema --&gt;
+  &lt;script type="application/ld+json"&gt;
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Example Page",
+    "url": "https://example.com/page"
+  }
+  &lt;/script&gt;
+
+&lt;/head&gt;
+</pre>
+
             </div>
         </div>
 
@@ -799,7 +250,7 @@
 <!-- BACK BUTTON -->
 <div class="text-center mt-4">
     <a href="{{ url()->previous() }}" class="bpv-back-btn">
-        ← Back
+        <i class="bi bi-arrow-left"></i> Back
     </a>
 </div>
 

@@ -1631,25 +1631,25 @@ svg.svg-inline--fa.fa-file-export {
     }
 }
 
-
-
 /* End Preview Section */
+
+
 .amenity-chip {
-  display: block;
-  border: 1px solid #aaa9a9;
-  padding: 5px 5px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-  text-align: center;
+    display: block;
+    border: 1px solid #aaa9a9;
+    padding: 5px 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
 }
 
 .amenity-chip input {
-  display: none;
+    display: none;
 }
 
 .amenity-chip:hover {
-  background: #f8f9fa;
+    background: #f8f9fa;
 }
 
 /* .amenity-chip input:checked + span,
@@ -1659,101 +1659,373 @@ svg.svg-inline--fa.fa-file-export {
 } */
 
 label.amenity-chip:has(input:checked) {
-  background: #ffc107;
-  color: #000;
+    background: #ffc107;
+    color: #000;
 }
 
-.amenity-chip input:checked ~ * {
-  font-weight: 600;
+.amenity-chip input:checked~* {
+    font-weight: 600;
 }
 
 .tag {
-  background: #ffc107;
-  padding: 5px 10px;
-  border-radius: 15px;
-  font-size: 13px;
+    background: #ffc107;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 13px;
 }
 
 .tag span {
-  margin-left: 5px;
-  cursor: pointer;
+    margin-left: 5px;
+    cursor: pointer;
 }
 
 .radio-box {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .radio-box input {
-  display: none;
+    display: none;
 }
 
 .radio-box .box {
-  padding: 10px;
-  border: 1px solid #726c6c;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: 0.2s;
-  text-align: center;
-  min-width: 80px;
+    padding: 10px;
+    border: 1px solid #726c6c;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.2s;
+    text-align: center;
+    min-width: 80px;
 }
 
 /* Hover */
 .radio-box .box:hover {
-  background: #f8f9fa;
+    background: #f8f9fa;
 }
 
 /* Active (Checked) */
-.radio-box input:checked + .box {
-  border-color: #ffc107;
-  background: #ffc107;
-  color: #000;
-  font-weight: 600;
+.radio-box input:checked+.box {
+    border-color: #ffc107;
+    background: #ffc107;
+    color: #000;
+    font-weight: 600;
 }
 
-.radio-box input, .day-box input {
-  display: none;
+.radio-box input,
+.day-box input {
+    display: none;
 }
 
-.radio-box .box, .day-box div {
-  padding: 8px;
-  border: 1px solid #929292;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-  min-width: 90px;
-  text-align: center;
+.radio-box .box,
+.day-box div {
+    padding: 8px;
+    border: 1px solid #929292;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    min-width: 90px;
+    text-align: center;
 }
 
-.radio-box input:checked + .box,
-.day-box input:checked + div {
-  background: #ffc107;
-  border-color: #ffc107;
-  font-weight: 600;
+.radio-box input:checked+.box,
+.day-box input:checked+div {
+    background: #ffc107;
+    border-color: #ffc107;
+    font-weight: 600;
 }
 
 .radio-box .box:hover,
 .day-box div:hover {
-  background: #f8f9fa;
+    background: #f8f9fa;
 }
 
 .offer-chip {
-  padding: 8px 14px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-  font-weight: 500;
+    padding: 8px 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: 500;
 }
 
 .offer-chip:hover {
-  background: #f8f9fa;
+    background: #f8f9fa;
 }
 
 .offer-chip.active {
-  background: #ff5b5b;
-  color: #fff;
-  border-color: #ff5b5b;
+    background: #ff5b5b;
+    color: #fff;
+    border-color: #ff5b5b;
 }
-.border{
+
+.border {
     border-color: #aeb2b5 !important;
+}
+
+
+/* ===============================
+   BLOG PREVIEW SECTION
+=============================== */
+
+/* ===============================
+   MAIN LAYOUT
+=============================== */
+.blogv-main-box {
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.blogv-wrapper {
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* ===============================
+   CARD
+=============================== */
+.blogv-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px 22px;
+    margin-bottom: 5px;
+    border: 1px solid #d2d2d2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.blogv-heading {
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding: 12px 14px; 
+    border-radius: 6px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #8d8d8d;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ===============================
+   GRID
+=============================== */
+.blogv-grid,
+.blogv-grid-2 {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.blogv-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.blogv-grid-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.blogv-grid span {
+    font-size: 12px;
+    color: #777;
+}
+
+.blogv-grid p {
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* ===============================
+   CONTENT
+=============================== */
+.blogv-content p {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.blogv-content h6 {
+    font-weight: 600;
+    margin-top: 12px;
+}
+
+.blogv-content ul li {
+    font-size: 13px;
+}
+
+/* ===============================
+   TAGS
+=============================== */
+.blogv-tags {
+    margin-top: 11px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.blogv-tags span {
+    background: #eef2ff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    transition: 0.3s;
+}
+
+.blogv-tags span:hover {
+    background: #4a6cf7;
+    color: #fff;
+}
+
+/* ===============================
+   IMAGE SECTION (FIXED SIZE)
+=============================== */
+
+.blogv-image-block {
+    margin-bottom: 16px;
+}
+
+.blogv-image-block span {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* IMAGE BOX */
+.blogv-img-box {
+    border: 1px dashed #ccc;
+    padding: 8px;
+    border-radius: 8px;
+    background: #fafafa;
+    position: relative;
+    display: inline-block;
+}
+
+/* THUMB FIX */
+.blogv-img-box.thumb {
+    width: 320px;
+}
+
+.blogv-img-box.thumb img {
+    width: 300px;
+    height: 220px;
+    object-fit: cover;
+}
+
+/* FEATURE FIX */
+.blogv-img-box.feature {
+    width: 980px;
+}
+
+.blogv-img-box.feature img {
+    width: 100%;
+    max-width: 960px;
+    height: 420px;
+    object-fit: cover;
+}
+
+
+/* ===============================
+   SIMPLE HOVER TEXT
+=============================== */
+.blogv-hover-text {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 7px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.blogv-img-box:hover .blogv-hover-text {
+    opacity: 1;
+}
+
+/* ===============================
+   META (INSIDE IMAGE)
+=============================== */
+.blogv-meta-inline {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed #ccc;
+    font-size: 13px;
+}
+
+/* ===============================
+   SEO CODE
+=============================== */
+.blogv-code-box {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #d2d2d2;
+}
+
+.blogv-code-header {
+    background: #f1f3f5;
+    color: #000;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.code-badge {
+    background: #4a6cf7;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+}
+
+.blogv-code-content {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 16px;
+    font-size: 12px;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.6;
+}
+
+/* ===============================
+   ICON COLOR
+=============================== */
+.blogv-heading i,
+.blogv-grid span i,
+.blogv-image-block span i {
+    color: #4a6cf7;
+}
+
+/* ===============================
+   MOBILE
+=============================== */
+@media (max-width: 768px) {
+
+    .blogv-grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .blogv-img-box.thumb,
+    .blogv-img-box.thumb img {
+        width: 100%;
+        height: auto;
+    }
+
+    .blogv-img-box.feature img {
+        height: auto;
+    }
+
+    .blogv-img-box.feature{
+        width: 100%;
+    }
+
+    .meta-left{
+        margin-bottom: 8px;
+    }
 }
