@@ -263,9 +263,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'type',
                 render: function(data, type, row) {
                     if (data == 1) {
-                        return 'BOARDING';
+                        return 'Boarding';
                     } else if (data == 2) {
-                        return 'DROPPING';
+                        return 'Dropping';
                     } else {
                         return '--';
                     }

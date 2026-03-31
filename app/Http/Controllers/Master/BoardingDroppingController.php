@@ -308,4 +308,49 @@ class BoardingDroppingController extends Controller
             'exists' => $exists
         ]);
     }
+
+    public function getBoardingDroppingByCityId(Request $request)
+    {
+        $cityId = $request->cityId;
+        $typeId = $request->typeId;
+
+        $data = DB::table('mst_boarding_droping')
+            ->where('cities_id', $cityId)
+            ->when($typeId == 1 || $typeId == 2, function ($query) use ($typeId) {
+                return $query->where('type', $typeId);
+              })
+            ->get(['id', 'brd_drp_point' ,'type','sequence_no','active_status','created_at']);
+
+        if(isset($data) && !empty($data)){
+            $i = 1;
+            $str = '';
+            foreach($data as $v) {
+                 $str.= '<tr>';
+                 $type = 'Baording';
+                 
+                 if($v->type == 2){
+                    $type = 'Dropping';
+                 }
+
+                 $status = 'Active';
+                 $class = 'badge bg-success';
+
+                 if($v->active_status == 0){
+                     $class = 'badge bg-danger';
+                     $status = 'Inactive';
+                 }
+                 
+                 $str.= '<td>'.$i.'</td>';
+                 $str.= '<td>'.$type.'</td>';
+                 $str.= '<td>'.$v->brd_drp_point.'</td>';
+                 $str.= '<td>'.$v->sequence_no.'</td>';
+                 $str.= '<td><span class="'.$class.'">'.$status.'</span></td>';
+                 $str.= '<td>'.date('d-M-Y H:i:s',strtotime($v->created_at)).'</td>';
+                 $str.= '</tr>';
+                 $i++;
+
+            }
+        }
+        return $str;
+    }
 }

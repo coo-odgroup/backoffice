@@ -124,6 +124,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-annexture-list', [CommonController::class, 'getAnnextureList']);
     Route::get('get-boarding-dropping',[BusWizardController::class,'getBoardingDropping']);
     Route::post('get-listing-time', [BusWizardController::class, 'getListingTime']);
+     Route::post('get-boarding-dropping-by-cityId',[BoardingDroppingController::class,'getBoardingDroppingByCityId']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);

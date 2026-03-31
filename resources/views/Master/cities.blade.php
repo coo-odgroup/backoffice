@@ -144,11 +144,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>State/District Name</th>
-                            <th>District Name</th>
-                            <th>City Name</th>
+                            <th>State</th>
+                            <th>District</th>
+                            <th>City</th>
                             <th>Alias</th>
-                            <th>Synonymn</th>
+                            <th>Suggested Name</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
