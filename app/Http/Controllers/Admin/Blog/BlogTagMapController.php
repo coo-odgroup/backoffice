@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Blog;
 
 use App\Http\Controllers\Controller;
-use App\Models\blogs\Blog;
-use App\Models\blogs\BlogRoutes;
+use App\Models\blogs\BlogTagMap;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CommonController;
+use Illuminate\Support\Facades\Validator;
 
-class BlogRoutesController extends Controller
+
+class BlogTagMapController extends Controller
 {
     public function index()
     {
-        return view('admin.blogs.blogRoutes');
+        return view('admin.blogs.blogTagMap');
     }
 
     public function dataTableView()
@@ -29,34 +29,30 @@ class BlogRoutesController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
 
-            $dataQuery = DB::table('odbusdev.blog_routes as br')
+            $dataQuery = DB::table('odbusdev.blog_tag_map as btm')
                 ->select(
-                    'br.id as blog_routes_id',
-                    'br.blog_id',
-                    'br.from_city_id',
-                    'br.to_city_id',
-                    'br.route_slug',
-                    'br.created_at',
-                    'br.created_by',
-                    'br.updated_at',
-                    'br.updated_by',
-                    DB::raw('(SELECT title FROM odbusdev.blogs WHERE id = br.blog_id LIMIT 1) as blog_title'),
-                    DB::raw('(SELECT city_name FROM odbusmaster.mst_cities WHERE id = br.from_city_id LIMIT 1) as from_city_name'),
-                    DB::raw('(SELECT city_name FROM odbusmaster.mst_cities WHERE id = br.to_city_id LIMIT 1) as to_city_name'),
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = br.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = br.updated_by LIMIT 1) as updated_by_name')
+                    'btm.id as tag_map_id',
+                    'btm.blog_id',
+                    'btm.tag_id',
+                    'btm.created_at',
+                    'btm.created_by',
+                    'btm.updated_at',
+                    'btm.updated_by',
+                    DB::raw('(SELECT b.title FROM odbusdev.blogs b WHERE b.id = btm.blog_id) as title'),
+                    DB::raw('(SELECT tag_name FROM odbusdev.blog_tags bt WHERE bt.id = btm.tag_id) as tag_name'),
+                    DB::raw('(SELECT u.name FROM odbusmaster.users u WHERE u.id = btm.created_by) as created_by_name'),
+                    DB::raw('(SELECT u.name FROM odbusmaster.users u WHERE u.id = btm.updated_by) as updated_by_name')
                 );
-
-            // return $dataQuery->get();
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('br.route_slug', 'like', "%{$txtSearch}%");
+                    $q->whereRaw("(SELECT b.title FROM odbusdev.blogs b WHERE b.id = btm.blog_id) LIKE ?", ["%{$txtSearch}%"])
+                        ->orWhereRaw("(SELECT bt.tag_name FROM odbusdev.blog_tags bt WHERE bt.id = btm.tag_id) LIKE ?", ["%{$txtSearch}%"]);
                 });
             }
 
-            $count = $dataQuery->count('br.id');
+            $count = $dataQuery->count('btm.id');
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -67,13 +63,18 @@ class BlogRoutesController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'br.route_slug', 3 => 'br.created_at', 4 => 'br.created_by'];
+                $columns = [
+                    2 => DB::raw('(SELECT b.title FROM odbusdev.blogs b WHERE b.id = btm.blog_id)'),
+                    3 => DB::raw('(SELECT bt.tag_name FROM odbusdev.blog_tags bt WHERE bt.id = btm.tag_id)'),
+                    4 => 'btm.created_at',
+                    5 => 'btm.created_by'
+                ];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'br.route_slug';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'title';
                 $orderType = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'br.route_slug';
+                $orderColumn = 'title';
                 $orderType = 'asc';
             }
 
@@ -87,14 +88,14 @@ class BlogRoutesController extends Controller
                     ->offset($start)
                     ->get();
             }
+
             // Format Data
             if (count($arrRes) > 0) {
 
                 foreach ($arrRes as $val) {
                     $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
-                    // $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_blog_routes_id = Crypt::encryptString($val->blog_routes_id);
+                    $val->enc_tag_map_id = Crypt::encryptString($val->tag_map_id);
                 }
             }
 
@@ -103,7 +104,7 @@ class BlogRoutesController extends Controller
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in BlogRoutesController@dataTableView", [
+            Log::info("Exception occurred in BlogTagMapController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -111,7 +112,7 @@ class BlogRoutesController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'BlogRoutesController',
+                'Controller' => 'BlogTagMapController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -127,7 +128,8 @@ class BlogRoutesController extends Controller
             'data' => $data,
         ]);
     }
-    public function add($encId = null)
+
+   public function add($encId = null)
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
@@ -140,33 +142,31 @@ class BlogRoutesController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/blog-routes/edit/" . $encId;
+                $redirectPage = "admin/blog-tag-map/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = BlogRoutes::select('id', 'blog_id', 'from_city_id', 'to_city_id', 'route_slug')
+                $dataResQry = BlogTagMap::select('id', 'blog_id', 'tag_id')
                     ->where('id', $id)
                     ->first();
 
                 if (empty($dataResQry)) {
-                    return redirect("blog-routes");
+                    return redirect("blog-tag-map");
                 }
 
                 $data['row'] = $dataResQry;
 
             } else {
                 $id = 0;
-                $redirectPage = "admin/blog-routes";
+                $redirectPage = "admin/blog-tag-map";
             }
 
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'blog_id'       => 'bail|required',
-                    'from_city_id'  => 'bail|required',
-                    'to_city_id'    => 'bail|required',
-                    'route_slug'    => 'bail|required'
+                    'blog_id' => 'bail|required',
+                    'tag_id'  => 'bail|required'
                 ]);
 
                 if ($validator->fails()) {
@@ -175,20 +175,16 @@ class BlogRoutesController extends Controller
 
                 DB::beginTransaction();
 
-                $blog_id       = request('blog_id');
-                $from_city_id  = request('from_city_id');
-                $to_city_id    = request('to_city_id');
-                $route_slug    = htmlEncode(request('route_slug'));
+                $blog_id = request('blog_id');
+                $tag_id  = request('tag_id');
 
                 if ($id != 0) {
 
-                    $oldData = BlogRoutes::find($id);
+                    $oldData = BlogTagMap::find($id);
 
                     $newData = [
-                        'blog_id'      => $blog_id,
-                        'from_city_id' => $from_city_id,
-                        'to_city_id'   => $to_city_id,
-                        'route_slug'   => $route_slug,
+                        'blog_id' => $blog_id,
+                        'tag_id'  => $tag_id,
                     ];
 
                     $oldChanged = [];
@@ -202,9 +198,10 @@ class BlogRoutesController extends Controller
                             $newChanged[$key] = $value;
                         }
                     }
+
                     if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
-                            'mst_blog_routes',
+                            'mst_blog_tag_map',
                             $id,
                             'UPDATE',
                             $oldChanged,
@@ -220,29 +217,27 @@ class BlogRoutesController extends Controller
                 } else {
 
                     $row = [
-                        'blog_id'      => $blog_id,
-                        'from_city_id' => $from_city_id,
-                        'to_city_id'   => $to_city_id,
-                        'route_slug'   => $route_slug,
-                        'created_by'   => 1,
-                        'created_at'   => now(),
+                        'blog_id'    => $blog_id,
+                        'tag_id'     => $tag_id,
+                        'created_by' => 1,
+                        'created_at' => now(),
                     ];
 
                     app(CommonController::class)->auditLog(
-                        'mst_blog_routes',
+                        'mst_blog_tag_map',
                         null,
                         'INSERT',
                         [],
                         $row
                     );
 
-                    BlogRoutes::create($row);
+                    BlogTagMap::create($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level', 'success');
-                session()->flash('message', 'Blog Routes ' . ($id ? 'updated' : 'created') . ' successfully.');
+                session()->flash('message', 'Blog Tag Map ' . ($id ? 'updated' : 'created') . ' successfully.');
 
                 return redirect($redirectPage);
             }
@@ -252,7 +247,7 @@ class BlogRoutesController extends Controller
             DB::rollBack();
 
             Log::error("Error", [
-                'Controller' => 'BlogRoutesController',
+                'Controller' => 'BlogTagMapController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
@@ -263,9 +258,8 @@ class BlogRoutesController extends Controller
             ])->withInput();
         }
 
-        return view('admin.blogs.addBlogRoutes', compact('data'));
+        return view('admin.blogs.addBlogTagMap', compact('data'));
     }
-
     public function edit($encId)
     {
         return $this->add($encId);

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Blog;
 
 use App\Http\Controllers\Controller;
+use App\Models\blogs\Blog;
 use App\Models\blogs\BlogRoutes;
-use App\Models\blogs\BlogTags;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -12,12 +12,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CommonController;
 
-
-class BlogTagsController extends Controller
+class BlogRoutesController extends Controller
 {
     public function index()
     {
-        return view('admin.blogs.blogTags');
+        return view('admin.blogs.blogRoutes');
     }
 
     public function dataTableView()
@@ -30,27 +29,34 @@ class BlogTagsController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
 
-            $dataQuery = DB::table('odbusdev.blog_tags as bt')
+            $dataQuery = DB::table('odbusdev.blog_routes as br')
                 ->select(
-                    'bt.id as blog_tags_id',
-                    'bt.tag_name',
-                    'bt.slug',
-                    'bt.created_at',
-                    'bt.created_by',
-                    'bt.updated_at',
-                    'bt.updated_by',
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bt.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bt.updated_by LIMIT 1) as updated_by_name')
+                    'br.id as blog_routes_id',
+                    'br.blog_id',
+                    'br.from_city_id',
+                    'br.to_city_id',
+                    'br.route_slug',
+                    'br.created_at',
+                    'br.created_by',
+                    'br.updated_at',
+                    'br.updated_by',
+                    DB::raw('(SELECT title FROM odbusdev.blogs WHERE id = br.blog_id LIMIT 1) as blog_title'),
+                    DB::raw('(SELECT city_name FROM odbusmaster.mst_cities WHERE id = br.from_city_id LIMIT 1) as from_city_name'),
+                    DB::raw('(SELECT city_name FROM odbusmaster.mst_cities WHERE id = br.to_city_id LIMIT 1) as to_city_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = br.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = br.updated_by LIMIT 1) as updated_by_name')
                 );
+
+            // return $dataQuery->get();
 
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('bt.tag_name', 'like', "%{$txtSearch}%");
+                    $q->where('br.route_slug', 'like', "%{$txtSearch}%");
                 });
             }
 
-            $count = $dataQuery->count('bt.id');
+            $count = $dataQuery->count('br.id');
 
             $start = request()->input('start', 0);
             $length = request()->input('length', 10);
@@ -61,13 +67,13 @@ class BlogTagsController extends Controller
             // Ordering
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'bt.tag_name', 3 => 'bt.created_at', 4 => 'bt.created_by'];
+                $columns = [2 => 'br.route_slug', 3 => 'br.created_at', 4 => 'br.created_by'];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'bt.tag_name';
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'br.route_slug';
                 $orderType = $orderBy[0]['dir'];
             } else {
-                $orderColumn = 'bt.tag_name';
+                $orderColumn = 'br.route_slug';
                 $orderType = 'asc';
             }
 
@@ -87,7 +93,8 @@ class BlogTagsController extends Controller
                 foreach ($arrRes as $val) {
                     $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
-                    $val->enc_blog_tags_id = Crypt::encryptString($val->blog_tags_id);
+                    // $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
+                    $val->enc_blog_routes_id = Crypt::encryptString($val->blog_routes_id);
                 }
             }
 
@@ -96,7 +103,7 @@ class BlogTagsController extends Controller
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in BlogTagsController@dataTableView", [
+            Log::info("Exception occurred in BlogRoutesController@dataTableView", [
                 'error_message' => $t->getMessage(),
                 'trace' => $t->getTraceAsString()
             ]);
@@ -104,7 +111,7 @@ class BlogTagsController extends Controller
             $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
 
             Log::error("Error", [
-                'Controller' => 'BlogTagsController',
+                'Controller' => 'BlogRoutesController',
                 'Method'     => 'dataTableView',
                 'Error'      => $errorMsg
             ]);
@@ -120,7 +127,6 @@ class BlogTagsController extends Controller
             'data' => $data,
         ]);
     }
-
     public function add($encId = null)
     {
         $data = [];
@@ -134,31 +140,33 @@ class BlogTagsController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/blog-tags/edit/" . $encId;
+                $redirectPage = "admin/blog-routes/edit/" . $encId;
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                $dataResQry = BlogTags::select('id', 'tag_name', 'slug')
+                $dataResQry = BlogRoutes::select('id', 'blog_id', 'from_city_id', 'to_city_id', 'route_slug')
                     ->where('id', $id)
                     ->first();
 
                 if (empty($dataResQry)) {
-                    return redirect("blog-tags");
+                    return redirect("blog-routes");
                 }
 
                 $data['row'] = $dataResQry;
 
             } else {
                 $id = 0;
-                $redirectPage = "admin/blog-tags";
+                $redirectPage = "admin/blog-routes";
             }
 
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'tag_name' => 'bail|required',
-                    'slug'     => 'bail|required'
+                    'blog_id'       => 'bail|required',
+                    'from_city_id'  => 'bail|required',
+                    'to_city_id'    => 'bail|required',
+                    'route_slug'    => 'bail|required'
                 ]);
 
                 if ($validator->fails()) {
@@ -167,16 +175,20 @@ class BlogTagsController extends Controller
 
                 DB::beginTransaction();
 
-                $tag_name = htmlEncode(request('tag_name'));
-                $slug     = htmlEncode(request('slug'));
+                $blog_id       = request('blog_id');
+                $from_city_id  = request('from_city_id');
+                $to_city_id    = request('to_city_id');
+                $route_slug    = htmlEncode(request('route_slug'));
 
                 if ($id != 0) {
 
-                    $oldData = BlogTags::find($id);
+                    $oldData = BlogRoutes::find($id);
 
                     $newData = [
-                        'tag_name' => $tag_name,
-                        'slug'     => $slug,
+                        'blog_id'      => $blog_id,
+                        'from_city_id' => $from_city_id,
+                        'to_city_id'   => $to_city_id,
+                        'route_slug'   => $route_slug,
                     ];
 
                     $oldChanged = [];
@@ -190,10 +202,9 @@ class BlogTagsController extends Controller
                             $newChanged[$key] = $value;
                         }
                     }
-
                     if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
-                            'mst_blog_tags',
+                            'mst_blog_routes',
                             $id,
                             'UPDATE',
                             $oldChanged,
@@ -209,27 +220,29 @@ class BlogTagsController extends Controller
                 } else {
 
                     $row = [
-                        'tag_name'   => $tag_name,
-                        'slug'       => $slug,
-                        'created_by' => 1,
-                        'created_at' => now(),
+                        'blog_id'      => $blog_id,
+                        'from_city_id' => $from_city_id,
+                        'to_city_id'   => $to_city_id,
+                        'route_slug'   => $route_slug,
+                        'created_by'   => 1,
+                        'created_at'   => now(),
                     ];
 
                     app(CommonController::class)->auditLog(
-                        'mst_blog_tags',
+                        'mst_blog_routes',
                         null,
                         'INSERT',
                         [],
                         $row
                     );
 
-                    BlogTags::create($row);
+                    BlogRoutes::create($row);
                 }
 
                 DB::commit();
 
                 session()->flash('level', 'success');
-                session()->flash('message', 'Blog Tags ' . ($id ? 'updated' : 'created') . ' successfully.');
+                session()->flash('message', 'Blog Routes ' . ($id ? 'updated' : 'created') . ' successfully.');
 
                 return redirect($redirectPage);
             }
@@ -239,7 +252,7 @@ class BlogTagsController extends Controller
             DB::rollBack();
 
             Log::error("Error", [
-                'Controller' => 'BlogTagsController',
+                'Controller' => 'BlogRoutesController',
                 'Method' => $method,
                 'Error' => $t->getMessage()
             ]);
@@ -250,7 +263,7 @@ class BlogTagsController extends Controller
             ])->withInput();
         }
 
-        return view('admin.blogs.addBlogTags', compact('data'));
+        return view('admin.blogs.addBlogRoutes', compact('data'));
     }
 
     public function edit($encId)
