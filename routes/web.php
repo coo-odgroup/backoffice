@@ -21,8 +21,8 @@ use App\Http\Controllers\Master\SeatLayoutController;
 use App\Http\Controllers\Master\CityApisController;
 use App\Http\Controllers\Master\FaqCategoryController;
 use App\Http\Controllers\Master\FaqController;
-use App\Http\Controllers\Admin\BlogCategoryController;
-use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\Blog\BlogCategoryController;
+use App\Http\Controllers\Admin\Blog\BlogController;
 use App\Http\Controllers\Admin\Ad\VendorController;
 use App\Http\Controllers\Admin\Ad\AdPlacementController;
 use App\Http\Controllers\Admin\Ad\AdCampaignController;
@@ -30,10 +30,10 @@ use App\Http\Controllers\Admin\Ad\PricingPlanController;
 use App\Http\Controllers\Master\BrandController;
 use App\Http\Controllers\Master\BusModelController;
 use App\Http\Controllers\Admin\Ad\AdsController;
-use App\Http\Controllers\Admin\BlogImagesController;
-use App\Http\Controllers\Admin\BlogRoutesController;
-use App\Http\Controllers\Admin\BlogTagMapController;
-use App\Http\Controllers\Admin\BlogTagsController;
+use App\Http\Controllers\Admin\Blog\BlogImagesController;
+use App\Http\Controllers\Admin\Blog\BlogRoutesController;
+use App\Http\Controllers\Admin\Blog\BlogTagMapController;
+use App\Http\Controllers\Admin\Blog\BlogTagsController;
 use App\Http\Controllers\Admin\Bus\BusAmenitiesController;
 use App\Http\Controllers\Admin\Bus\BusSeatLayoutController;
 use App\Http\Controllers\Admin\Campaign\CampaignMasterController;
@@ -146,6 +146,8 @@ Route::prefix('admin')->group(function () {
 
     Route::get('search-amenities', [CommonController::class, 'searchAmenities']);
     Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
+
+    Route::post('/admin/master-log-list', [MasterLogController::class, 'logDataTableView']);
 
     //Subhasis
     //___________________________________________________________________________________________________________________________________________________
@@ -415,6 +417,7 @@ Route::prefix('admin')->group(function () {
     // Bus info module
     Route::get('/businfo', [BusInfoController::class, 'businfo'])->name('businfo.index');
     Route::get('/businfo/preview', [BusInfoController::class, 'preview'])->name('businfo.preview');
+    Route::get('/businfo/blog-preview', [BusInfoController::class, 'blogPreview'])->name('businfo.blogPreview');
     Route::match(['get', 'post'], 'businfo/add', [BusInfoController::class, 'add'])->name('businfo.add');
     Route::post('get-city-search',[BusInfoController::class, "getcity"]);
 

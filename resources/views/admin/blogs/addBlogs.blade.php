@@ -278,46 +278,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-4 mb-3">
-                                                            <div class="mb-3">
-                                                                <label for="og_image">Og Image</label>
-                                                                <input type="file" class="form-control form-select-sm" id="img_3" name="og_image" accept="image/*">
-                                                                <small class="text-muted text-md-end mt-2">
-                                                                    Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1200×630px
-                                                                </small>
-                                                            </div>
 
-                                                            <div id="previewContainer_3" class="{{ empty($data['row']->og_image) ? 'd-none' : '' }}">
-
-                                                                <div class="mb-3">
-                                                                    <img id="prv_3"
-                                                                        src="{{ !empty($data['row']->og_image) ? asset('storage/uploads/blog/'.$data['row']->og_image) : '#' }}"
-                                                                        alt="Preview"
-                                                                        class="img-fluid border p-1 {{ empty($data['row']->og_image) ? 'd-none' : '' }}">
-                                                                </div>
-
-                                                                <div class="mb-1">
-                                                                    @if($data['strPage']=='Add')
-                                                                    <button type="button"
-                                                                        id="removeImageBtn_3"
-                                                                        class="btn btn-danger btn-sm">
-                                                                        Remove Image
-                                                                    </button>
-                                                                    @else
-                                                                    <button type="button"
-                                                                        class="btn btn-danger btn-sm remove-image"
-                                                                        data-id="{{ $data['row']->id }}"
-                                                                        data-table="odbusdev.blogs"
-                                                                        data-column="og_image"
-                                                                        data-path="uploads/blog"
-                                                                        data-container="previewContainer_3">
-                                                                        Remove Image
-                                                                    </button>
-                                                                    @endif
-                                                                </div>
-
-                                                            </div>
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -325,29 +286,381 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     </div>
                                 </div>
 
-                                <!-- BUTTONS -->
-                                <div class="row mt-4">
-                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                        <button class="btn btn-primary btn-sm" type="submit">
-                                            {{ $data['strSubmit'] }}
-                                        </button>
-                                        @if($data['strReset'] == 'Cancel')
-                                        <a href="{{ route('blogs.index') }}" class="btn btn-secondary btn-sm">
-                                            {{ $data['strReset'] }}
-                                        </a>
-                                        @else
-                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                            {{ $data['strReset'] }}
-                                        </button>
-                                        @endif
+                                <div class="col-12">
+                                    <div class="accordion mt-3" id="metaSection2">
+
+                                        <div class="accordion-item">
+
+                                            <!-- HEADER (CLICKABLE BUTTON) -->
+                                            <h2 class="accordion-header" id="seoHeading2">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#seoSection2"
+                                                    aria-expanded="false"
+                                                    aria-controls="seoSection2">
+                                                    Open Graph - OG
+                                                </button>
+                                            </h2>
+
+                                            <!-- BODY -->
+                                            <div id="seoSection2"
+                                                class="accordion-collapse collapse"
+                                                aria-labelledby="seoHeading2"
+                                                data-bs-parent="#metaSection2">
+
+                                                <div class="accordion-body">
+                                                    <div class="row mb-3">
+
+                                                        <div class="col-md-8 mb-3">
+
+                                                            @if(!empty($openGraphData) && count($openGraphData) > 0)
+
+                                                            <div class="row mb-2">
+                                                                <div class="col-md-3">
+                                                                    <label class="fw-bold">Attribute</label>
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    <label class="fw-bold">Value</label>
+                                                                </div>
+                                                            </div>
+
+                                                            @foreach($openGraphData as $row)
+
+                                                            <div class="row align-items-center mb-2">
+
+                                                                <!-- Attribute -->
+                                                                <div class="col-md-3">
+                                                                    <div class="fw-semibold">
+                                                                        {{ $row->annexture_name ?? 'N/A' }}
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Input -->
+                                                                <div class="col-md-9">
+
+                                                                    @php
+                                                                    $value = '';
+                                                                    $image = '';
+
+                                                                    if(isset($blogAttributes[1])) {
+                                                                    foreach($blogAttributes[1] as $attr){
+                                                                    if($attr->attribute_id == $row->id){
+                                                                    $value = $attr->attribute_value;
+                                                                    $image = $attr->attribute_image ?? '';
+                                                                    break;
+                                                                    }
+                                                                    }
+                                                                    }
+                                                                    @endphp
+
+                                                                    @if(strtolower($row->annexture_name) == 'image')
+
+                                                                    <!-- IMAGE INPUT -->
+                                                                    <input type="file"
+                                                                        class="form-control form-select-sm og-image-input"
+                                                                        id="og_img_{{ $row->id }}"
+                                                                        name="open_graph_image[{{ $row->id }}]"
+                                                                        accept="image/*">
+
+                                                                    <small class="text-muted">Allowed: JPG, JPEG, PNG | Max: 2MB</small>
+
+                                                                    <!-- IMAGE PREVIEW -->
+                                                                    @if(!empty($image))
+                                                                    <div class="mt-2">
+                                                                        <img src="{{ asset('storage/blogs/'.$image) }}" width="120" class="border p-1">
+                                                                    </div>
+                                                                    @endif
+
+                                                                    @else
+
+                                                                    <!-- TEXT INPUT -->
+                                                                    <input type="text"
+                                                                        class="form-control form-select-sm"
+                                                                        name="open_graph[{{ $row->id }}]"
+                                                                        value="{{ $value }}"
+                                                                        placeholder="Enter Value">
+
+                                                                    @endif
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            @endforeach
+
+                                                            @else
+
+                                                            <div class="text-danger">
+                                                                No Open Graph Data Found
+                                                            </div>
+
+                                                            @endif
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
+
+                                <div class="col-12">
+                                    <div class="accordion mt-3" id="metaSection3">
+                                        <div class="accordion-item">
+
+                                            <h2 class="accordion-header" id="seoHeading3">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#seoSection3"
+                                                    aria-expanded="false"
+                                                    aria-controls="seoSection3">
+                                                    Twitter
+                                                </button>
+                                            </h2>
+
+                                            <div id="seoSection3"
+                                                class="accordion-collapse collapse"
+                                                aria-labelledby="seoHeading3"
+                                                data-bs-parent="#metaSection3">
+
+                                                <div class="accordion-body">
+                                                    <div class="row mb-3">
+
+                                                        <div class="col-md-8 mb-3">
+
+                                                            @if(!empty($twitterData) && count($twitterData) > 0)
+
+                                                            <!-- HEADER -->
+                                                            <div class="row mb-2 border-bottom pb-1">
+                                                                <div class="col-md-3">
+                                                                    <label class="fw-bold">Attribute</label>
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    <label class="fw-bold">Value</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- LOOP -->
+                                                            @foreach($twitterData as $row)
+
+                                                            <div class="row align-items-center mb-2">
+
+                                                                <!-- Attribute -->
+                                                                <div class="col-md-3">
+                                                                    <div class="fw-semibold">
+                                                                        {{ $row->annexture_name ?? 'N/A' }}
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Input -->
+                                                                <div class="col-md-9">
+
+                                                                    @php
+                                                                    $value = '';
+
+                                                                    if(isset($blogAttributes[2])) {
+                                                                    foreach($blogAttributes[2] as $attr){
+                                                                    if($attr->attribute_id == $row->id){
+                                                                    $value = $attr->attribute_value;
+                                                                    break;
+                                                                    }
+                                                                    }
+                                                                    }
+                                                                    @endphp
+
+                                                                    <input type="text"
+                                                                        class="form-control form-select-sm"
+                                                                        name="twitter[{{ $row->id }}]"
+                                                                        value="{{ $value }}"
+                                                                        placeholder="Enter Value">
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            @endforeach
+
+                                                            @else
+
+                                                            <div class="text-danger">
+                                                                No Twitter Data Found
+                                                            </div>
+
+                                                            @endif
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="accordion mt-3" id="metaSection4">
+                                        <div class="accordion-item">
+
+                                            <h2 class="accordion-header" id="seoHeading4">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#seoSection4">
+                                                    Article
+                                                </button>
+                                            </h2>
+
+                                            <div id="seoSection4" class="accordion-collapse collapse">
+                                                <div class="accordion-body">
+
+                                                    <div class="col-md-8">
+
+                                                        @if(!empty($articleData) && count($articleData) > 0)
+
+                                                        <!-- HEADER -->
+                                                        <div class="row mb-2 border-bottom pb-1">
+                                                            <div class="col-md-3 fw-bold">Attribute</div>
+                                                            <div class="col-md-9 fw-bold">Value</div>
+                                                        </div>
+
+                                                        <!-- LOOP -->
+                                                        @foreach($articleData as $row)
+
+                                                        <div class="row mb-2 align-items-center">
+                                                            <div class="col-md-3">
+                                                                {{ $row->annexture_name }}
+                                                            </div>
+
+                                                            <div class="col-md-9">
+                                                                @php
+                                                                $published = isset($data['row']->published_at)
+                                                                ? date('Y-m-d\TH:i', strtotime($data['row']->published_at))
+                                                                : '';
+                                                                @endphp
+
+                                                                <input type="datetime-local"
+                                                                    class="form-control form-select-sm"
+                                                                    name="article[{{ $row->id }}]"
+                                                                    value="{{ $published }}">
+                                                            </div>
+                                                        </div>
+
+                                                        @endforeach
+
+                                                        @else
+                                                        <div class="text-danger">No Article Data Found</div>
+                                                        @endif
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-12">
+                                    <div class="accordion mt-3" id="metaSection5">
+                                        <div class="accordion-item">
+
+                                            <h2 class="accordion-header" id="seoHeading5">
+                                                <button class="accordion-button collapsed" type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#seoSection5">
+                                                    Schema
+                                                </button>
+                                            </h2>
+
+                                            <div id="seoSection5" class="accordion-collapse collapse">
+                                                <div class="accordion-body">
+
+                                                    <div class="col-md-8">
+
+                                                        @if(!empty($schemaData) && count($schemaData) > 0)
+
+                                                        <!-- HEADER -->
+                                                        <div class="row mb-2 border-bottom pb-1">
+                                                            <div class="col-md-3 fw-bold">Attribute</div>
+                                                            <div class="col-md-9 fw-bold">Value</div>
+                                                        </div>
+
+                                                        <!-- LOOP -->
+                                                        @foreach($schemaData as $row)
+
+                                                        <div class="row mb-2 align-items-center">
+                                                            <div class="col-md-3">
+                                                                {{ $row->annexture_name }}
+                                                            </div>
+
+                                                            <div class="col-md-9">
+                                                                @php
+                                                                $value = '';
+
+                                                                if(isset($blogAttributes[3])) {
+                                                                foreach($blogAttributes[3] as $attr){
+                                                                if($attr->attribute_id == $row->id){
+                                                                $value = $attr->attribute_value;
+                                                                break;
+                                                                }
+                                                                }
+                                                                }
+                                                                @endphp
+
+                                                                <textarea
+                                                                    class="form-control form-select-sm"
+                                                                    name="schema[{{ $row->id }}]"
+                                                                    rows="3"
+                                                                    style="resize: vertical;"
+                                                                    placeholder="Enter Value">{{ $value }}</textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        @endforeach
+
+                                                        @else
+                                                        <div class="text-danger">No Schema Data Found</div>
+                                                        @endif
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- BUTTONS -->
+                        <div class="row mt-4">
+                            <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
+                                <button class="btn btn-primary btn-sm" type="submit">
+                                    {{ $data['strSubmit'] }}
+                                </button>
+                                @if($data['strReset'] == 'Cancel')
+                                <a href="{{ route('blogs.index') }}" class="btn btn-secondary btn-sm">
+                                    {{ $data['strReset'] }}
+                                </a>
+                                @else
+                                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                    {{ $data['strReset'] }}
+                                </button>
+                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    </div>
     </div>
 </form>
 

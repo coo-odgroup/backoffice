@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Blog;
 
 use App\Http\Controllers\Controller;
 use App\Models\blogs\Blog;
@@ -165,7 +165,6 @@ class BlogController extends Controller
                 }
 
                 $data['row'] = $dataResQry;
-
             } else {
                 $id = 0;
                 $redirectPage = "admin/blogs";
@@ -275,32 +274,9 @@ class BlogController extends Controller
                         'og_image' => $newOg ?: $oldData->og_image,
                     ];
 
-                    $oldChanged = [];
-                    $newChanged = [];
-
-                    foreach ($newData as $key => $value) {
-                        $oldValue = $oldData->$key ?? null;
-
-                        if (trim((string)$oldValue) !== trim((string)$value)) {
-                            $oldChanged[$key] = $oldValue;
-                            $newChanged[$key] = $value;
-                        }
-                    }
-
-                    if (!empty($newChanged)) {
-                        app(CommonController::class)->auditLog(
-                            'mst_blog',
-                            $id,
-                            'UPDATE',
-                            $oldChanged,
-                            $newChanged
-                        );
-                    }
-
                     $oldData->fill($newData);
                     $oldData->updated_by = 1;
                     $oldData->save();
-
                 } else {
 
                     $row = [
@@ -325,25 +301,100 @@ class BlogController extends Controller
                         'created_at' => now()
                     ];
 
-                    app(CommonController::class)->auditLog(
-                        'mst_blog',
-                        null,
-                        'INSERT',
-                        [],
-                        $row
-                    );
-
-                    Blog::create($row);
+                    $blog = Blog::create($row);
+                    $blogId = $blog->id;
+                }
+                //  GET BLOG ID
+                if ($id > 0) {
+                    $blogId = $id;
+                } else {
+                    $blog = Blog::create($row);
+                    $blogId = $blog->id;
                 }
 
+                //  DELETE OLD ATTRIBUTES (for edit case)
+                DB::connection('mysql_dev')->table('blog_attributes')->where('blog_id', $blogId)->delete();
+
+
+                // ================== OPEN GRAPH (TYPE = 1) ==================
+                if (request()->has('open_graph')) {
+                    foreach (request('open_graph') as $attrId => $value) {
+
+                        if (!empty($value)) {
+                            DB::connection('mysql_dev')->table('blog_attributes')->insert([
+                                'blog_id' => $blogId,
+                                'attribute_type' => 1,
+                                'attribute_id' => $attrId,
+                                'attribute_value' => $value,
+                                'active_status' => 1,
+                                'created_by' => 1,
+                                'created_at' => now()
+                            ]);
+                        }
+                    }
+                }
+
+
+                // ================== TWITTER (TYPE = 2) ==================
+                if (request()->has('twitter')) {
+                    foreach (request('twitter') as $attrId => $value) {
+
+                        if (!empty($value)) {
+                            DB::connection('mysql_dev')->table('blog_attributes')->insert([
+                                'blog_id' => $blogId,
+                                'attribute_type' => 2,
+                                'attribute_id' => $attrId,
+                                'attribute_value' => $value,
+                                'active_status' => 1,
+                                'created_by' => 1,
+                                'created_at' => now()
+                            ]);
+                        }
+                    }
+                }
+
+
+                // ================== SCHEMA (TYPE = 3) ==================
+                if (request()->has('schema')) {
+                    foreach (request('schema') as $attrId => $value) {
+
+                        if (!empty($value)) {
+                            DB::connection('mysql_dev')->table('blog_attributes')->insert([
+                                'blog_id' => $blogId,
+                                'attribute_type' => 3,
+                                'attribute_id' => $attrId,
+                                'attribute_value' => $value,
+                                'active_status' => 1,
+                                'created_by' => 1,
+                                'created_at' => now()
+                            ]);
+                        }
+                    }
+                }
+
+
+                // ================== ARTICLE → BLOG TABLE ==================
+                if (request()->has('article')) {
+                    foreach (request('article') as $attrId => $value) {
+
+                        if (!empty($value)) {
+                            DB::connection('mysql_dev')->table('blogs')
+                                ->where('id', $blogId)
+                                ->update([
+                                    'published_at' => $value,
+                                    'updated_at' => now()
+                                ]);
+                        }
+                    }
+                }
                 DB::commit();
+
 
                 session()->flash('level', 'success');
                 session()->flash('message', 'Blog ' . ($id ? 'updated' : 'created') . ' successfully.');
 
                 return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();
@@ -360,8 +411,58 @@ class BlogController extends Controller
             ])->withInput();
         }
 
-        return view('admin.blogs.addBlogs', compact('data'));
+        $openGraphData = [];
+
+        $openGraphData = DB::table('mst_annexture as a')
+            ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
+            ->where('t.annexture_type', 'OPEN_GRAPH')
+            ->orderBy('a.id')
+            ->select('a.*')
+            ->get();
+
+        $twitterDat = [];
+
+        $twitterData = DB::table('mst_annexture as a')
+            ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
+            ->where('t.annexture_type', 'TWITTER')
+            ->orderBy('a.id')
+            ->select('a.*')
+            ->get();
+
+        $articleData = [];
+
+        $articleData = DB::table('mst_annexture as a')
+            ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
+            ->where('t.annexture_type', 'ARTICLE')
+            ->orderBy('a.id')
+            ->select('a.*')
+            ->get();
+
+
+        $schemaData = [];
+
+        $schemaData = DB::table('mst_annexture as a')
+            ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
+            ->where('t.annexture_type', 'SCHEMA')
+            ->orderBy('a.id')
+            ->select('a.*')
+            ->get();
+
+        $blogAttributes = [];
+
+        if ($id > 0) {
+            $blogAttributes = DB::connection('mysql_dev')
+                ->table('blog_attributes')
+                ->where('blog_id', $id)
+                ->get()
+                ->groupBy('attribute_type');
+        }
+
+
+
+        return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData',  'blogAttributes'));
     }
+
 
     public function edit($encId)
     {

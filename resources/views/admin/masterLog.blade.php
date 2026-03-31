@@ -1,10 +1,10 @@
 @extends('admin.layouts.master')
 @section('page_title', 'Cities')
-
 @section('content')
 
 <?php $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y']; ?>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb">
@@ -30,9 +30,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </div>
 
         <button class="log-track-btn d-flex align-items-center gap-2">
-    <i class="fa-regular fa-clipboard"></i>
-    Tracking 19 events
-</button>
+            <i class="fa-regular fa-clipboard"></i>
+            Tracking 19 events
+        </button>
 
     </div>
 
@@ -42,22 +42,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         <div class="log-stat-card">
             <div class="log-stat-title">TOTAL CHANGES</div>
-            <div class="log-stat-number">19</div>
+            <div class="log-stat-number total-count">0</div>
         </div>
 
         <div class="log-stat-card green">
             <div class="log-stat-title">CREATES</div>
-            <div class="log-stat-number">0</div>
+            <div class="log-stat-number create-count">0</div>
         </div>
 
         <div class="log-stat-card blue">
             <div class="log-stat-title">UPDATES</div>
-            <div class="log-stat-number">19</div>
+            <div class="log-stat-number update-count">0</div>
+
         </div>
 
         <div class="log-stat-card red">
             <div class="log-stat-title">DELETES</div>
-            <div class="log-stat-number">0</div>
+            <div class="log-stat-number delete-count">0</div>
         </div>
 
     </div>
@@ -66,12 +67,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <!-- SEARCH -->
     <div class="log-search-box">
 
-        <input type="text" placeholder="Search by product ID, user, app, or field name...">
+        <input type="text" id="txtSearch" placeholder="Search by product ID, user, app, or field name...">
 
-        <button class="log-search-btn">
+        <button class="log-search-btn" id="btnSearch">
             Search
         </button>
-
         <div class="log-quick-filter">
             <span>Last 24h</span>
             <span>7 days</span>
@@ -84,22 +84,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <!-- FILTERS -->
     <div class="log-filters">
 
-        <select>
-            <option>All types</option>
+        <select id="action">
+            <option value="">All events</option>
+            <option value="INSERT">Create</option>
+            <option value="UPDATE">Update</option>
+            <option value="DELETE">Delete</option>
+            <option value="SOFT_DELETE">Soft Delete</option>
+            <option value="STATUS_CHANGE">Status Change</option>
         </select>
 
-        <select>
-            <option>All events</option>
-        </select>
 
         <select>
             <option>All users</option>
         </select>
 
-        <input type="date">
-        <input type="date">
+        <input type="date" id="from_date">
+        <input type="date" id="to_date">
 
-        <button class="log-clear-btn">
+        <button class="log-clear-btn" id="btnReset">
             Clear All
         </button>
 
@@ -124,7 +126,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </div>
 
 
-        <table class="log-table">
+        <table class="log-table"  id="logTable">
 
             <thead>
                 <tr>
@@ -171,3 +173,65 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 </div>
 @endsection
+
+<script>
+let table;
+
+$(document).ready(function() {
+
+    table = $('#logTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: '/admin/master-log-list',
+            type: 'POST',
+            data: function(d) {
+                d.txtSearch = $('#txtSearch').val();
+                d.from_date = $('#from_date').val();
+                d.to_date   = $('#to_date').val();
+                d.action    = $('#action').val();
+                d._token    = $('meta[name="csrf-token"]').attr('content');
+            },
+            dataSrc: function(res) {
+
+                // 🔢 COUNTS
+                $('.total-count').text(res.counts.total);
+                $('.create-count').text(res.counts.creates);
+                $('.update-count').text(res.counts.updates);
+                $('.delete-count').text(res.counts.deletes);
+
+                return res.data;
+            }
+        },
+
+        columns: [
+            { data: 'table_name' },
+            { data: 'record_id' },
+            { data: 'action_badge', orderable: false },
+            { data: 'created_by_name', defaultContent: 'System' },
+            { data: 'created_date' },
+            {
+                data: 'id',
+                orderable: false,
+                render: function(data) {
+                    return `<button class="fa fa-eye view_btn" onclick="viewLog(${data})"></button>`;
+                }
+            }
+        ]
+    });
+
+    // 🔍 SEARCH
+    $('#btnSearch').click(function() {
+        table.ajax.reload();
+    });
+
+    // 🔄 RESET
+    $('#btnReset').click(function() {
+        $('#txtSearch').val('');
+        $('#from_date').val('');
+        $('#to_date').val('');
+        $('#action').val('');
+        table.ajax.reload();
+    });
+
+});
