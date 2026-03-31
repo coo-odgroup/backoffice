@@ -36,89 +36,105 @@ class BusWizardController extends Controller
 
     public function postStep1(Request $request)
     {
-        // return $request;
-        $request->validate([
-            'name' => 'required',
-            'bus_number' => 'required',
-            'bus_operator_id' => 'required',
-            'slab' => 'required',
-        ]);
+        try {
 
-        $bus_operator_id = (int)request('bus_operator_id');
-        $cancellationslabs_id = (int)request('slab');
-        $name = htmlEncode(request('name'));
-        $bus_number = htmlEncode(request('bus_number'));
-        $via = htmlEncode(request('via'));
-        $max_seat_book = htmlEncode(request('max_seat_book'));
+            DB::beginTransaction();
 
-        $gen_bus_type = request('gen_bus_type');
-        $gen_bus_type = preg_replace('/\s+/', ' ', $gen_bus_type);
-        $gen_bus_type = trim($gen_bus_type);
+            $request->validate([
+                'name' => 'required',
+                'bus_number' => 'required',
+                'bus_operator_id' => 'required',
+                'slab' => 'required',
+            ]);
 
-        $is_irctc_model = (int)request('is_irctc_model');
-        $brand_id = (int)request('brand_id');
-        $axle_type_id = (int)request('axle_type_id');
-        $model_id = (int)request('model_id');
-        $service_id = (int)request('service_id');
-        $ac_type_id = (int)request('ac_type_id');
-        $seat_type_id = (int)request('seat_type_id');
-        $seat_layout_type_id = (int)request('seat_layout_type_id');
+            $bus_operator_id = (int)request('bus_operator_id');
+            $cancellationslabs_id = (int)request('slab');
+            $name = htmlEncode(request('name'));
+            $bus_number = htmlEncode(request('bus_number'));
+            $via = htmlEncode(request('via'));
+            $max_seat_book = htmlEncode(request('max_seat_book'));
 
-        $obj = new Bus();
-        $obj->bus_operator_id = $bus_operator_id;
-        $obj->cancellationslabs_id = $cancellationslabs_id;
-        $obj->name = $name;
-        $obj->bus_number = $bus_number;
-        $obj->via = $via;
-        $obj->max_seat_book = $max_seat_book;
-        $obj->gen_bus_type = $gen_bus_type;
-        $obj->is_irctc_model = $is_irctc_model;
-        $obj->brand_id = $brand_id;
-        $obj->axle_type_id = $axle_type_id;
-        $obj->model_id = $model_id;
-        $obj->service_id = $service_id;
-        $obj->ac_type_id = $ac_type_id;
-        $obj->seat_type_id = $seat_type_id;
-        $obj->seat_layout_type_id = $seat_layout_type_id;
-        $obj->active_status = 1;
+            $gen_bus_type = request('gen_bus_type');
+            $gen_bus_type = preg_replace('/\s+/', ' ', $gen_bus_type);
+            $gen_bus_type = trim($gen_bus_type);
 
-        $obj->save();
+            $is_irctc_model = (int)request('is_irctc_model');
+            $brand_id = (int)request('brand_id');
+            $axle_type_id = (int)request('axle_type_id');
+            $model_id = (int)request('model_id');
+            $service_id = (int)request('service_id');
+            $ac_type_id = (int)request('ac_type_id');
+            $seat_type_id = (int)request('seat_type_id');
+            $seat_layout_type_id = (int)request('seat_layout_type_id');
 
-        $bus_id = $obj->id;
+            // Bus Save
+            $obj = new Bus();
+            $obj->bus_operator_id = $bus_operator_id;
+            $obj->cancellationslabs_id = $cancellationslabs_id;
+            $obj->name = $name;
+            $obj->bus_number = $bus_number;
+            $obj->via = $via;
+            $obj->max_seat_book = $max_seat_book;
+            $obj->gen_bus_type = $gen_bus_type;
+            $obj->is_irctc_model = $is_irctc_model;
+            $obj->brand_id = $brand_id;
+            $obj->axle_type_id = $axle_type_id;
+            $obj->model_id = $model_id;
+            $obj->service_id = $service_id;
+            $obj->ac_type_id = $ac_type_id;
+            $obj->seat_type_id = $seat_type_id;
+            $obj->seat_layout_type_id = $seat_layout_type_id;
+            $obj->active_status = 1;
+            $obj->save();
 
-        $amenities_ids = request('amenities_id', []);
+            $bus_id = $obj->id;
 
-        $category_ids = Amenity::whereIn('id', $amenities_ids)
-            ->pluck('category_id')
-            ->unique();
+            // Amenities Section
+            $amenities_ids = request('amenities_id', []);
 
-        $amenitiesData = [];
+            $category_map = Amenity::whereIn('id', $amenities_ids)
+                ->pluck('category_id', 'id'); // key = amenity_id
 
-        foreach ($amenities_ids as $i => $amenities_id) {
+            $amenitiesData = [];
 
-            if (!isset($category_ids[$i])) {
-                continue;
+            foreach ($amenities_ids as $amenities_id) {
+
+                if (!isset($category_map[$amenities_id])) {
+                    continue;
+                }
+
+                $amenitiesData[] = [
+                    'bus_id' => $bus_id,
+                    'category_id' => $category_map[$amenities_id],
+                    'amenities_id' => $amenities_id,
+                    'active_status' => 1,
+                    'created_at' => now(),
+                    'created_by' => 1
+                ];
             }
 
-            $amenitiesData[] = [
-                'bus_id' => $bus_id,
-                'category_id' => $category_ids[$i],
-                'amenities_id' => $amenities_id,
-                'active_status' => 1,
-                'created_at' => now(),
-                'created_by' => 1
-            ];
+            if (!empty($amenitiesData)) {
+                BusAmenity::insert($amenitiesData);
+            }
+
+            DB::commit();
+
+            session()->flash('level', 'success');
+            session()->flash('message', 'Bus info created successfully.');
+
+            $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
+            return redirect()->route('bus.step2', ['encId' => $enc_bus_id]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            Log::error('Bus creation failed: ' . $e->getMessage());
+
+            session()->flash('level', 'error');
+            session()->flash('message', 'Something went wrong! Please try again.');
+
+            return redirect()->back()->withInput();
         }
-
-        if (!empty($amenitiesData)) {
-            BusAmenity::insert($amenitiesData);
-        }
-
-        session()->flash('level', 'success');
-        session()->flash('message', 'Bus Info Created successfully.');
-
-        $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
-        return redirect()->route('bus.step2', ['encId' => $enc_bus_id]);
     }
 
     public function step2($bus_id = null)
@@ -153,69 +169,86 @@ class BusWizardController extends Controller
 
     public function postStep3(Request $request)
     {
-        $data = request()->all();
+        try {
 
-        $cities = $data['cities'] ?? [];
-        $boarding = $data['boarding'] ?? [];
-        $dropping = $data['dropping'] ?? [];
-        $listing_time = $data['time'] ?? [];
-        $bus_id = $data['bus_id'];
+            DB::beginTransaction();
 
-        $keys = array_keys($cities);
-        $boarding_city_id = $keys[0];
-        $dropping_city_id = end($keys);
-        $route_name = $cities[$boarding_city_id] . ' - ' . $cities[$dropping_city_id];
-        $route_signature_string = implode('-', $keys);
-        $route_signature = md5($route_signature_string);
+            $cities = $request->cities ?? [];
+            $boarding = $request->boarding ?? [];
+            $dropping = $request->dropping ?? [];
+            $listing_time = $request->time ?? [];
+            $bus_id = $request->bus_id;
 
-        // Route Section Starts Here
-        $route = new BusRoutes();
-        $route->route_name = $route_name;
-        $route->boarding_city_id = $boarding_city_id;
-        $route->dropping_city_id = $dropping_city_id;
-        $route->route_signature = $route_signature;
-        $route->active_status = 1;
-        $route->created_by = 1;
-        $route->save();
-        // Route Section Ends Here
+            if (empty($cities)) {
+                throw new \Exception("Cities data is missing.");
+            }
 
-        $route_id = $route->id;
+            $keys = array_keys($cities);
+            $boarding_city_id = $keys[0];
+            $dropping_city_id = end($keys);
 
-        // BusRoutesMap Section Starts Here
-        $routeMap = new BusRoutesMap();
-        $routeMap->bus_id = $bus_id;
-        $routeMap->bus_route_id = $route_id;
-        $routeMap->created_by = 1;
-        $routeMap->save();
-        // BusRoutesMap Section Ends Here
+            $route_name = $cities[$boarding_city_id] . ' - ' . $cities[$dropping_city_id];
+            $route_signature_string = implode('-', $keys);
+            $route_signature = md5($route_signature_string);
 
-        // BusRoutesStops Section Starts Here
-        $routeStops = [];
-        $stop_order = 1;
-        foreach ($cities as $cityId => $cityName) {
+            // Route Section
+            $route = new BusRoutes();
+            $route->route_name = $route_name;
+            $route->boarding_city_id = $boarding_city_id;
+            $route->dropping_city_id = $dropping_city_id;
+            $route->route_signature = $route_signature;
+            $route->active_status = 1;
+            $route->created_by = 1;
+            $route->save();
 
-            $routeStops[] = [
-                'bus_route_id' => $route_id,
-                'bus_id' => $bus_id,
-                'city_id' => $cityId,
-                'stop_order' => $stop_order,
-                'is_boarding' => isset($boarding[$cityId]) ? 1 : 0,
-                'is_dropping' => isset($dropping[$cityId]) ? 1 : 0,
-                'listing_time' => isset($listing_time[$cityId]) ? $listing_time[$cityId] : null,
-                'created_by' => 1
-            ];
+            $route_id = $route->id;
 
-            $stop_order++;
+            // BusRoutesMap Section
+            $routeMap = new BusRoutesMap();
+            $routeMap->bus_id = $bus_id;
+            $routeMap->bus_route_id = $route_id;
+            $routeMap->created_by = 1;
+            $routeMap->save();
+
+            // BusRoutesStops Section
+            $routeStops = [];
+            $stop_order = 1;
+
+            foreach ($cities as $cityId => $cityName) {
+                $routeStops[] = [
+                    'bus_route_id' => $route_id,
+                    'bus_id' => $bus_id,
+                    'city_id' => $cityId,
+                    'stop_order' => $stop_order,
+                    'is_boarding' => isset($boarding[$cityId]) ? 1 : 0,
+                    'is_dropping' => isset($dropping[$cityId]) ? 1 : 0,
+                    'listing_time' => $listing_time[$cityId] ?? null,
+                    'created_by' => 1
+                ];
+                $stop_order++;
+            }
+
+            BusRoutesStops::insert($routeStops);
+
+            DB::commit();
+
+            session()->flash('level', 'success');
+            session()->flash('message', 'Boarding & Dropping managed successfully.');
+
+            $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
+            return redirect()->route('bus.step4', ['encId' => $enc_bus_id]);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            // Optional: log error
+            Log::error('Route creation failed: ' . $e->getMessage());
+
+            session()->flash('level', 'error');
+            session()->flash('message', 'Something went wrong! Please try again.');
+
+            return redirect()->back()->withInput();
         }
-
-        BusRoutesStops::insert($routeStops);
-        // BusRoutesStops Section Ends Here
-
-        session()->flash('level', 'success');
-        session()->flash('message', 'Boarding & Dropping Manage successfully.');
-
-        $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
-        return redirect()->route('bus.step4', ['encId' => $enc_bus_id]);
     }
 
     public function step4()
@@ -229,8 +262,20 @@ class BusWizardController extends Controller
 
     public function postStep4(Request $request)
     {
+        return $request;
         session(['bus.step4' => $request->stations]);
         return redirect()->route('bus.step5');
+    }
+
+    public function getBoardingDropping(Request $request)
+    {
+        $type = $request->type;
+
+        $data = DB::table('mst_boarding_droping')
+            ->where('type', $type)
+            ->get(['id', 'brd_drp_point']);
+
+        return response()->json($data);
     }
 
     public function step5()

@@ -81,14 +81,13 @@ Route::prefix('admin/bus/create')->group(function () {
     Route::get('/step4/{encId}', [BusWizardController::class, 'step4'])->name('bus.step4');
     Route::post('/step4/{encId}', [BusWizardController::class, 'postStep4']);
 
-    Route::get('/step5', [BusWizardController::class, 'step5'])->name('bus.step5');
-    Route::post('/step5', [BusWizardController::class, 'postStep5']);
+    Route::get('/step5/{encId}', [BusWizardController::class, 'step5'])->name('bus.step5');
+    Route::post('/step5/{encId}', [BusWizardController::class, 'postStep5']);
 
     Route::get('/step6', [BusWizardController::class, 'step6'])->name('bus.step6');
     Route::post('/finish', [BusWizardController::class, 'finish'])->name('bus.finish');
 
 });
-
 
 Route::prefix('admin')->group(function () {
 
@@ -121,6 +120,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-campaign-master-list', [CommonController::class, 'getCampaignMasterList']);
     Route::post('get-busoperator-list', [CommonController::class, 'getBusOperatorList']);
     Route::post('get-annexture-list', [CommonController::class, 'getAnnextureList']);
+    Route::get('get-boarding-dropping',[BusWizardController::class,'getBoardingDropping']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -414,6 +414,7 @@ Route::prefix('admin')->group(function () {
     // Bus info module
     Route::get('/businfo', [BusInfoController::class, 'businfo'])->name('businfo.index');
     Route::get('/businfo/preview', [BusInfoController::class, 'preview'])->name('businfo.preview');
+    Route::get('/businfo/blog-preview', [BusInfoController::class, 'blogPreview'])->name('businfo.blogPreview');
     Route::match(['get', 'post'], 'businfo/add', [BusInfoController::class, 'add'])->name('businfo.add');
     Route::post('get-city-search',[BusInfoController::class, "getcity"]);
 
