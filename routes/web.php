@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\Blog\BlogImagesController;
 use App\Http\Controllers\Admin\Blog\BlogRoutesController;
 use App\Http\Controllers\Admin\Blog\BlogTagMapController;
 use App\Http\Controllers\Admin\Blog\BlogTagsController;
+use App\Http\Controllers\Admin\Blog\BlogPreviewController;
 use App\Http\Controllers\Admin\Bus\BusAmenitiesController;
 use App\Http\Controllers\Admin\Bus\BusSeatLayoutController;
 use App\Http\Controllers\Admin\Campaign\CampaignMasterController;
@@ -84,9 +85,10 @@ Route::prefix('admin/bus/create')->group(function () {
     Route::get('/step5/{encId}', [BusWizardController::class, 'step5'])->name('bus.step5');
     Route::post('/step5/{encId}', [BusWizardController::class, 'postStep5']);
 
-    Route::get('/step6', [BusWizardController::class, 'step6'])->name('bus.step6');
-    Route::post('/finish', [BusWizardController::class, 'finish'])->name('bus.finish');
+    Route::get('/step6/{encId}', [BusWizardController::class, 'step6'])->name('bus.step6');
+    Route::post('/step6/{encId}', [BusWizardController::class, 'finish']);
 
+    Route::get('/preview/{encId}', [BusWizardController::class, 'preview'])->name('bus.preview');
 });
 
 Route::prefix('admin')->group(function () {
@@ -109,8 +111,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/remove-image', [CommonController::class, 'removeImage'])->name('remove.image');
     Route::post('/get-blog-list', [CommonController::class, 'getBlogList'])->name('getbloglist');
     Route::post('get-placement-list', [CommonController::class, 'getPlacementList']);
-    Route::post('get-vendor-list',[CommonController::class,'getVendorList']);
-    Route::post('get-pricing-plan-list',[CommonController::class,'getPricingPlanList']);
+    Route::post('get-vendor-list', [CommonController::class, 'getVendorList']);
+    Route::post('get-pricing-plan-list', [CommonController::class, 'getPricingPlanList']);
     Route::post('get-campaign-list', [CommonController::class, 'getCampaignList']);
     Route::post('get-country-list', [CommonController::class, 'getCountryList']);
     Route::post('get-brand-list', [CommonController::class, 'getBrandList'])->name('common.getBrandList');
@@ -120,8 +122,9 @@ Route::prefix('admin')->group(function () {
     Route::post('get-campaign-master-list', [CommonController::class, 'getCampaignMasterList']);
     Route::post('get-busoperator-list', [CommonController::class, 'getBusOperatorList']);
     Route::post('get-annexture-list', [CommonController::class, 'getAnnextureList']);
-    Route::get('get-boarding-dropping',[BusWizardController::class,'getBoardingDropping']);
-    Route::post('upload-image', [CommonController::class, 'uploadImage']);
+    Route::get('get-boarding-dropping', [BusWizardController::class, 'getBoardingDropping']);
+    Route::post('get-listing-time', [BusWizardController::class, 'getListingTime']);
+    Route::post('get-boarding-dropping-by-cityId', [BoardingDroppingController::class, 'getBoardingDroppingByCityId']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -217,7 +220,7 @@ Route::prefix('admin')->group(function () {
     Route::post('pricing-plan/dataTableView', [PricingPlanController::class, 'dataTableView'])->name('pricingPlan.dataTableView');
     Route::match(['get', 'post'], 'pricing-plan/edit/{encId}', [PricingPlanController::class, 'edit'])->name('pricingPlan.edit');
     Route::post('admin/pricing-plan/check-exists', [PricingPlanController::class, 'checkExists'])->name('pricingPlan.checkExists');
-    
+
     //Ad Campaign
     Route::get('/ad-campaign', [AdCampaignController::class, 'index'])->name('AdCampaign.index');
     Route::match(['get', 'post'], 'ad-campaign/add', [AdCampaignController::class, 'add'])->name('AdCampaign.add');
@@ -249,13 +252,13 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'axle-type/add', [AxleTypeController::class, 'add'])->name('axleType.add');
     Route::post('axle-type/dataTableView', [AxleTypeController::class, 'dataTableView'])->name('axleType.dataTableView');
     Route::match(['get', 'post'], 'axle-type/edit/{encId}', [AxleTypeController::class, 'edit'])->name('axleType.edit');
-    
+
     //Bus Service
     Route::get('/bus-service', [BusServiceController::class, 'busService'])->name('busService.index');
     Route::match(['get', 'post'], 'bus-service/add', [BusServiceController::class, 'add'])->name('busService.add');
     Route::post('bus-service/dataTableView', [BusServiceController::class, 'dataTableView'])->name('busService.dataTableView');
     Route::match(['get', 'post'], 'bus-service/edit/{encId}', [BusServiceController::class, 'edit'])->name('busService.edit');
-    
+
     //Seat Layout
     Route::get('/mst-seatlayout', [MstSeatLayoutController::class, 'mstSeatLayout'])->name('mstSeatLayout.index');
     Route::match(['get', 'post'], 'mst-seatlayout/add', [MstSeatLayoutController::class, 'add'])->name('mstSeatLayout.add');
@@ -276,11 +279,12 @@ Route::prefix('admin')->group(function () {
     Route::post('admin/annexture/check-exists', [AnnextureController::class, 'checkExists'])->name('annexture.checkExists');
     Route::get('annexture/get-by-type', [AnnextureController::class, 'getByType'])->name('annexture.getByType');
 
-    
-    
-    
-    
-    
+    // Blogs Preview
+    Route::get('/blogs-preview', [BlogPreviewController::class, 'index'])->name('blogs-preview.index');
+
+
+
+
     // Jagan
     // ---------------------------------------------------------------------------------------------------------------
     // State
@@ -337,6 +341,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blogs/add', [BlogController::class, 'add'])->name('blogs.add');
     Route::post('blogs/dataTableView', [BlogController::class, 'dataTableView'])->name('blogs.dataTableView');
     Route::match(['get', 'post'], 'blogs/edit/{encId}', [BlogController::class, 'edit'])->name('blogs.edit');
+    Route::post('/admin/blogs/publish', [BlogController::class, 'publish'])->name('blogs.publish');
 
     // Blog Images
     Route::get('/blog-images', [BlogImagesController::class, 'index'])->name('blog-images.index');
@@ -416,9 +421,8 @@ Route::prefix('admin')->group(function () {
     // Bus info module
     Route::get('/businfo', [BusInfoController::class, 'businfo'])->name('businfo.index');
     Route::get('/businfo/preview', [BusInfoController::class, 'preview'])->name('businfo.preview');
-    Route::get('/businfo/blog-preview', [BusInfoController::class, 'blogPreview'])->name('businfo.blogPreview');
     Route::match(['get', 'post'], 'businfo/add', [BusInfoController::class, 'add'])->name('businfo.add');
-    Route::post('get-city-search',[BusInfoController::class, "getcity"]);
+    Route::post('get-city-search', [BusInfoController::class, "getcity"]);
 
     //Review Catagory
     Route::get('/reviewcategory', [ReviewCategoryController::class, 'reviewCategory'])->name('reviewcategory.index');
@@ -434,7 +438,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seat-layout/edit/{encId}', [SeatLayoutController::class, 'edit'])->name('seat-layout.edit');
 
     //View Bus Seat Layout
-    Route::get('/bus-seat-layout/{id}',[BusSeatLayoutController::class,"index"])->name('buslayout.index');
+    Route::get('/bus-seat-layout/{id}', [BusSeatLayoutController::class, "index"])->name('buslayout.index');
 
     //--------------------------------------------------------------------------------------------------------------------
 

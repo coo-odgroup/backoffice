@@ -65,17 +65,13 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <!-- ================= STEP 2 ================= -->
                                     <div id="step4">
 
-                                        <!-- <h3 class="fw-bold mb-4 border-bottom pb-2">Add Station</h3> -->
-
-                                        <div class="accordion" id="stationAccordion">
-                                        </div>
+                                        <div class="accordion" id="stationAccordion"></div>
 
                                         <div class="text-center mt-5">
+                                            <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                             <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
-                                            <!-- <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">Next →</button> -->
                                             <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>
@@ -190,7 +186,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                 </div>
 
                                 <div class="col-md-4">
-                                    <select class="form-select form-select-sm stationSelect" name="stations[${id}][0][station]">
+                                    <select class="form-select form-select-sm stationSelect" name="stations[${id}][0][stop_id]">
                                         <option>Select Station</option>
                                     </select>
                                 </div>
@@ -200,6 +196,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                 </div>
 
                                 <div class="col-md-2">
+                                    <input type="hidden" value="${id}" class="cityId">
                                     <button class="btn btn-primary btn-sm addRow" data-station="${id}" type="button">+</button>
                                 </div>
 
@@ -241,7 +238,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             </div>
 
             <div class="col-md-4">
-                <select class="form-select form-select-sm stationSelect" name="stations[${stationId}][${rowIndex}][station]">
+                <select class="form-select form-select-sm stationSelect" name="stations[${stationId}][${rowIndex}][stop_id]">
                     <option>Select Station</option>
                 </select>
             </div>
@@ -251,6 +248,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             </div>
 
             <div class="col-md-2">
+                <input type="hidden" value="${stationId}" class="cityId">
                 <button class="btn btn-danger btn-sm removeRow" type="button">-</button>
             </div>
 
@@ -280,6 +278,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         let row = $(this).closest(".stationRow");
         let checkbox = row.find('input[type="checkbox"]');
         let stationDropdown = row.find(".stationSelect");
+        let city_id = row.find(".cityId").val();
 
         // ✅ Checkbox logic
         if (type === "1" || type === "2") {
@@ -300,12 +299,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 url: '/admin/get-boarding-dropping', // your route
                 type: 'GET',
                 data: {
-                    type: type
+                    type: type,
+                    city_id: city_id
                 },
 
                 success: function(response) {
-
-                    console.log(response);
 
                     let options = '<option value="">Select Station</option>';
                     options += generateOptions(response);

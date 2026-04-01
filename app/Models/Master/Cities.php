@@ -2,6 +2,7 @@
 
 namespace App\Models\Master;
 
+use App\Models\Bus\BusRoutesStops;
 use Illuminate\Database\Eloquent\Model;
 
 class Cities extends Model
@@ -33,5 +34,10 @@ class Cities extends Model
     public function synonyms()
     {
         return $this->hasMany(CitySynonym::class);
+    }
+
+    public function stops()
+    {
+        return $this->hasMany(BusRoutesStops::class, 'city_id');
     }
 }

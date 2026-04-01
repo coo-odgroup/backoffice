@@ -78,146 +78,21 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                 <thead class="border-bottom">
                                                     <tr class="text-left">
-                                                        <th></th>
+                                                        <th>#</th>
                                                         <th>Source</th>
                                                         <th>Days</th>
-                                                        <th>To</th>
+                                                        <th>Destination</th>
                                                         <th>Days</th>
                                                         <th>Seat Fare</th>
                                                         <th>U-Sleeper</th>
                                                         <th>L-Sleeper</th>
-                                                        <th>Seize Time</th>
                                                         <th>Close Time</th>
+                                                        <th>Seize Time</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
 
-                                                <tbody>
-
-                                                    <!-- Row 1 -->
-                                                    <tr class="text-center">
-
-                                                        <td>1.</td>
-
-                                                        <td>
-                                                            <input type="text" class="form-control form-control-sm" value="Baripada">
-                                                        </td>
-
-                                                        <td>
-                                                            <select class="form-select form-select-s,">
-                                                                <option>0</option>
-                                                                <option>1</option>
-                                                                <option>2</option>
-                                                            </select>
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="text" class="form-control form-select-sm" value="Baripada">
-                                                        </td>
-
-                                                        <td>
-                                                            <select class="form-select form-select-sm">
-                                                                <option>0</option>
-                                                                <option>1</option>
-                                                                <option>2</option>
-                                                            </select>
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="650.00">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="750.00">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="750.00">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="255">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="time" class="form-control form-control-sm" value="16:00">
-                                                        </td>
-
-                                                        <td>
-                                                            <div class="d-flex justify-content-center gap-2">
-                                                                <div class="form-check form-switch">
-                                                                    <input class="form-check-input" type="checkbox">
-                                                                </div>
-                                                                <button class="btn btn-outline-danger btn-sm">
-                                                                    ✕
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-
-
-                                                    <!-- Row 2 -->
-                                                    <tr class="text-center">
-
-                                                        <td>2.</td>
-
-                                                        <td>
-                                                            <input type="text" class="form-control form-control-sm" value="Baripada">
-                                                        </td>
-
-                                                        <td>
-                                                            <select class="form-select form-select-s">
-                                                                <option value="1">1</option>
-                                                                <option value="2">2</option>
-                                                                <option value="3">3</option>
-                                                                <option value="4">4</option>
-                                                            </select>
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="text" class="form-control form-select-sm" value="Baripada">
-                                                        </td>
-
-                                                        <td>
-                                                            <select class="form-select form-select-sm">
-                                                                <option value="1">1</option>
-                                                                <option value="2">2</option>
-                                                                <option value="3">3</option>
-                                                                <option value="4">4</option>
-                                                            </select>
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="650.00">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="750.00">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="750.00">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="number" class="form-control form-control-sm" value="255">
-                                                        </td>
-
-                                                        <td>
-                                                            <input type="time" class="form-control form-control-sm" value="16:00">
-                                                        </td>
-
-                                                        <td>
-                                                            <div class="d-flex justify-content-center gap-2">
-                                                                <div class="form-check form-switch">
-                                                                    <input class="form-check-input" type="checkbox">
-                                                                </div>
-                                                                <button class="btn btn-outline-danger btn-sm">
-                                                                    ✕
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                <tbody id="routeTableBody">
                                                 </tbody>
                                             </table>
                                         </div>
@@ -225,12 +100,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                         <!-- Buttons -->
                                         <div class="text-center mt-1">
+                                            <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                             <button type="button" class="btn btn-warning px-5 rounded-pill me-4" onclick="backStep()">
                                                 Back
                                             </button>
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill" onclick="nextStep()">
-                                                Next
-                                            </button>
+                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>
                                 </div>
@@ -243,142 +117,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     </div>
     </div>
 </form>
-
-<script>
-
-    function backStep() {
-        document.getElementById("step1").style.display = "block";
-        document.getElementById("step2").style.display = "none";
-    }
-
-    function nextStep() {
-        window.location.href = "/admin/bus/create/step6";
-    }
-
-
-    // ADD / REMOVE CITY
-    function toggleCity(checkbox) {
-
-        let city = checkbox.value;
-        let preview = document.getElementById("previewList");
-        let cityId = "city_" + city.replace(/\s/g, '');
-
-        if (checkbox.checked) {
-
-            let div = document.createElement("div");
-            div.className = "d-flex mb-2";
-            div.id = cityId;
-            div.draggable = true;
-
-            div.innerHTML = `
-            <input type="text" class="form-control me-2" value="${city}" readonly>
-            <button class="btn btn-danger" onclick="removeCity('${city}')">
-                <i class="fa fa-trash"></i>
-            </button>`;
-
-            addDragEvents(div);
-
-            preview.appendChild(div);
-
-        } else {
-
-            let removeDiv = document.getElementById(cityId);
-            if (removeDiv) {
-                removeDiv.remove();
-            }
-
-        }
-
-    }
-
-
-    // REMOVE CITY BUTTON
-    function removeCity(city) {
-
-        let cityId = "city_" + city.replace(/\s/g, '');
-        let div = document.getElementById(cityId);
-
-        if (div) {
-            div.remove();
-        }
-
-        let checkboxes = document.querySelectorAll(".cityCheck");
-
-        checkboxes.forEach(function(cb) {
-            if (cb.value === city) {
-                cb.checked = false;
-            }
-        });
-
-    }
-
-
-    // DRAG SORT FUNCTION
-    let dragItem = null;
-
-    function addDragEvents(element) {
-
-        element.addEventListener("dragstart", function() {
-            dragItem = element;
-        });
-
-        element.addEventListener("dragover", function(e) {
-            e.preventDefault();
-        });
-
-        element.addEventListener("drop", function(e) {
-            e.preventDefault();
-
-            if (dragItem !== element) {
-
-                let parent = element.parentNode;
-
-                let items = [...parent.children];
-                let dragIndex = items.indexOf(dragItem);
-                let dropIndex = items.indexOf(element);
-
-                if (dragIndex < dropIndex) {
-                    parent.insertBefore(dragItem, element.nextSibling);
-                } else {
-                    parent.insertBefore(dragItem, element);
-                }
-            }
-        });
-
-    }
-
-    document.addEventListener("click", function(e) {
-
-        if (e.target.classList.contains("addRow")) {
-
-            let row = e.target.closest(".stationRow");
-
-            let newRow = row.cloneNode(true);
-
-            newRow.querySelector(".addRow").innerHTML = "−";
-
-            newRow.querySelector(".addRow").classList.remove("btn-primary");
-            newRow.querySelector(".addRow").classList.add("btn-danger");
-            newRow.querySelector(".addRow").classList.remove("addRow");
-            newRow.querySelector(".addRow").classList.add("removeRow");
-
-            row.parentNode.appendChild(newRow);
-
-        }
-
-        if (e.target.classList.contains("removeRow")) {
-
-            e.target.closest(".stationRow").remove();
-
-        }
-
-    });
-</script>
-
 @endsection
 @push('scripts')
 
 <script type="module">
+    function backStep() {
+        document.getElementById("step1").style.display = "block";
+        document.getElementById("step2").style.display = "none";
+    }
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -386,57 +132,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         $('.form-select').val('').trigger('change');
     });
 
-    $('.onSelect').on('change', function() {
-        generateBusName();
-    });
-
-    function generateBusName() {
-
-        const brandVal = $('#brand').val();
-        const modelVal = $('#busModel').val();
-        const axleVal = $('#axleType').val();
-        const serviceVal = $('#busService').val();
-        const acVal = $('.annexture').val();
-        const seatVal = $('#seatType').val();
-        // const layoutVal   = $('#seatLayout').val();
-
-        // Check ALL selected
-        // if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal && layoutVal) {
-        if (brandVal && modelVal && axleVal && serviceVal && acVal && seatVal) {
-
-            const brand = $('#brand option:selected').text();
-            const model = $('#busModel option:selected').text();
-            const axle = $('#axleType option:selected').text();
-            const service = $('#busService option:selected').text();
-            const ac = $('.annexture option:selected').text();
-            const seatType = $('#seatType option:selected').text();
-            const layout = $('#seatLayout option:selected').text();
-
-            // const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType} ${layout}`;
-            const fullName = `${brand} ${model} ${axle} ${service} ${ac} ${seatType}`;
-
-            $('#busType').html(fullName);
-
-        } else {
-            // Clear if not all selected
-            $('#busType').html('');
-        }
-    }
-
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
-
-        if (!validator.selectDropdown('amenityCategory', 'Select Amenity Category'))
-            return false;
-
-        if (!validator.blankCheck('amenity_name', 'Amenity Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('amenity_name', 100, 'Amenity Name'))
-            return false;
-
-        if (!validator.blankCheck('icon', 'Icon Class cannot be left blank'))
-            return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
@@ -449,5 +147,150 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
+
+    let tbody = $("#routeTableBody"); // your tbody id
+    tbody.empty();
+
+    let routes = <?= json_encode($data['schedule_data']) ?>;
+
+    routes.forEach((item, index) => {
+
+        let row = `
+            <tr class="text-center">
+                <td>${index + 1}</td>
+
+                <td>
+                    <input type="hidden" value="${item.source_id}" name="from_stop_id[]" />
+                    <input type="text" class="form-control form-control-sm" value="${item.source}" disabled />
+                </td>
+
+                <td>
+                    <select class="form-select form-select-sm" name="from_journey_day[]">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </td>
+
+                <td>
+                    <input type="hidden" value="${item.destination_id}" name="to_stop_id[]" />
+                    <input type="text" class="form-control form-control-sm" value="${item.destination}" disabled />
+                </td>
+
+                <td>
+                    <select class="form-select form-select-sm" name="to_journey_day[]">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </td>
+
+                <td>
+                    <input type="number" class="form-control form-control-sm" name="seat_fare[]" placeholder="Enter Seat Fare">
+                </td>
+
+                <td>
+                    <input type="number" class="form-control form-control-sm" name="upper_sleeper_fare[]" placeholder="Enter U-Sleeper Fare">
+                </td>
+
+                <td>
+                    <input type="number" class="form-control form-control-sm" name="lower_sleeper_fare[]" placeholder="Enter L-Sleeper Fare">
+                </td>
+
+                <td class="closeTimeRow">
+                    <input type="hidden" value="${item.city_id}" class="city_id" />
+                    <input type="time" class="form-control form-control-sm close_time" name="close_time[]">
+                </td>
+
+                <td>
+                    <input type="number" class="form-control form-control-sm seize_time" name="seize_time[]" placeholder="Enter Seize Time">
+                </td>
+
+                <td>
+                    <div class="d-flex justify-content-center gap-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="active_status[]" value="1">
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm removeRow">
+                            ✕
+                        </button>
+                    </div>
+                </td>
+
+            </tr>
+        `;
+
+        tbody.append(row);
+    });
+
+    $(document).on("click", ".removeRow", function() {
+        $(this).closest("tr").remove();
+    });
+
+    $(document).on("change", ".close_time", function() {
+
+        let closeRow = $(this).closest(".closeTimeRow");
+        let closestTr = $(this).closest("tr");
+
+        let city_id = closeRow.find(".city_id").val();
+        let close_time = $(this).val(); // HH:MM
+
+        $.ajax({
+            url: "/admin/get-listing-time",
+            type: "POST",
+            data: {
+                city_id: city_id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(res) {
+
+                let listing_time = res.listing_time; // HH:MM:SS
+
+                if (!listing_time) return;
+
+                // Convert to minutes
+                let closeMinutes = timeToMinutes(close_time);
+                let listingMinutes = timeToMinutes(listing_time);
+
+                if (closeMinutes > listingMinutes) {
+
+                    // format listing_time (HH:MM:SS → HH:MM)
+                    let formattedListingTime = listing_time.substring(0, 5);
+
+                    commonAjax.viewAlert(
+                        "Close time cannot be greater than listing time (" + formattedListingTime + ")"
+                    );
+
+                    return;
+                }
+
+                // ✅ Calculate seizeTime
+                let seizeMinutes = listingMinutes - closeMinutes;
+                // let seizeTime = minutesToTime(seizeMinutes);
+                closestTr.find(".seize_time").val(seizeMinutes);
+
+                console.log("Seize Time:", seizeMinutes);
+            }
+        });
+
+    });
+
+    function timeToMinutes(time) {
+        let parts = time.split(":");
+        let hours = parseInt(parts[0]);
+        let minutes = parseInt(parts[1]);
+        return (hours * 60) + minutes;
+    }
+
+    function minutesToTime(minutes) {
+        let h = Math.floor(minutes / 60);
+        let m = minutes % 60;
+
+        return String(h).padStart(2, '0') + ":" + String(m).padStart(2, '0');
+    }
 </script>
 @endpush
