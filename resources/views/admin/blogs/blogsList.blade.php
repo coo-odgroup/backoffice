@@ -134,7 +134,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Sl No</th>
                             <th>Category Name</th>
                             <th>Title</th>
-                            <th width="450">Description</th>
+                            <th width="450">Allias</th>
                             <th>Author</th>
                             <th>Published Date</th>
                             <th>Last Modified</th>
@@ -246,32 +246,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'title',
-                defaultContent: "--"
-            },
-            {
-                data: 'short_description',
                 render: function(data, type, row) {
-
                     if (!data) return "--";
 
-                    let text = data.toString();
-
-                    if (text.length > 100) {
-                        return `
-                <div style="
-                    max-height: 80px;
-                    overflow-y: auto;
-                    white-space: normal;
-                    word-break: break-word;
-                    padding-right: 5px;
-                ">
-                    ${text}
-                </div>
-            `;
-                    }
-
-                    return text;
+                    return data.length > 30 ?
+                        data.substring(0, 30) + '...' :
+                        data;
                 }
+            },
+            {
+                data: 'slug',
+                render: function(data, type, row) {
+                    if (!data) return "--";
+
+                    return data.length > 30 ?
+                        data.substring(0, 30) + '...' :
+                        data;
+                },
+                className: 'slug-column'
             },
             {
                 data: 'author_name',
@@ -279,7 +271,40 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'published_at',
-                defaultContent: "--"
+                render: function(data, type, row) {
+
+                    if (!data) return "--";
+
+                    let dateObj = new Date(data);
+
+                    let formattedDate = dateObj.toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    let createdBy = row.created_by_name ?? '--';
+                    let updatedBy = row.updated_by_name ?? '--';
+
+                    return `
+            <span
+                class="text-decoration-underline fw-semibold"
+                data-bs-toggle="tooltip"
+                data-bs-html="true"
+                title="
+                    <div class='audit-box'>
+                        <div><strong>Published On:</strong> ${formattedDate}</div>
+                        <hr class='my-1'>
+                        <div><strong>Created By:</strong> ${createdBy}</div>
+                        <div><strong>Updated By:</strong> ${updatedBy}</div>
+                    </div>
+                ">
+                ${formattedDate}
+            </span>
+        `;
+                }
             },
             {
                 data: null,

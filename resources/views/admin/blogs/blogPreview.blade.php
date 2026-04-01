@@ -165,22 +165,18 @@
   &lt;!-- Open Graph --&gt;
   @if(isset($blogAttributes[1]))
     @foreach($blogAttributes[1] as $attr)
-      &lt;meta property="og:{{ strtolower($attr->attribute_id ?? '') }}"
-            content="{{ $attr->attribute_value }}" /&gt;
+      &lt;meta property="og:{{ strtolower($attr->attribute_id ?? '') }}"content="{{ $attr->attribute_value }}" /&gt;
     @endforeach
   @endif
 
-  &lt;meta property="article:published_time" 
-        content="{{ $blog->published_at ? date('c', strtotime($blog->published_at)) : '' }}" /&gt;
+  &lt;meta property="article:published_time"content="{{ $blog->published_at ? date('c', strtotime($blog->published_at)) : '' }}" /&gt;
 
-  &lt;meta property="og:image" 
-        content="{{ asset('storage/uploads/blog/'.$blog->featured_image) }}" /&gt;
+  &lt;meta property="og:image"content="{{ asset('storage/uploads/blog/'.$blog->featured_image) }}" /&gt;
 
   &lt;!-- Twitter --&gt;
   @if(isset($blogAttributes[2]))
     @foreach($blogAttributes[2] as $attr)
-      &lt;meta name="twitter:{{ strtolower($attr->attribute_id ?? '') }}"
-            content="{{ $attr->attribute_value }}" /&gt;
+      &lt;meta name="twitter:{{ strtolower($attr->attribute_id ?? '') }}"content="{{ $attr->attribute_value }}" /&gt;
     @endforeach
   @endif
 
@@ -202,30 +198,33 @@
     </div>
 </div>
 
-<!-- BACK BUTTON -->
-<div class="d-flex justify-content-between align-items-center mt-4">
+<!-- BACK BUTTON --><div class="mt-4" style="width:67%; margin: 0 auto;">
 
-    <!-- LEFT: BACK -->
-    <div>
-        <a href="{{ url()->previous() }}" class="bpv-back-btn">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
-    </div>
+    <div class="d-flex justify-content-between align-items-center">
 
-    <!-- RIGHT: ACTION BUTTONS -->
-    <div>
-        <form method="POST" action="{{ route('blogs.updateStatus') }}" class="d-flex gap-2">
-            @csrf
-            <input type="hidden" name="blog_id" value="{{ Crypt::encryptString($blog->id) }}">
+        <!-- LEFT: BACK -->
+        <div>
+            <a href="{{ url()->previous() }}" class="bpv-back-btn">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+        </div>
 
-            <button type="submit" name="status" value="0" class="btn btn-secondary btn-sm">
-                Save as Draft
-            </button>
+        <!-- RIGHT: ACTION BUTTONS -->
+        <div>
+            <form method="POST" action="{{ route('blogs.updateStatus') }}" class="d-flex gap-2">
+                @csrf
+                <input type="hidden" name="blog_id" value="{{ Crypt::encryptString($blog->id) }}">
 
-            <button type="submit" name="status" value="1" class="btn btn-success btn-sm">
-                Publish
-            </button>
-        </form>
+                <button type="submit" name="status" value="0" class="bpv-back-btn bg-secondary text-white border-0">
+                    Save as Draft
+                </button>
+
+                <button type="submit" name="status" value="1" class="bpv-back-btn bg-success text-white border-0">
+                    Publish
+                </button>
+            </form>
+        </div>
+
     </div>
 
 </div>

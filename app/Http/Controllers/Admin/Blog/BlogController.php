@@ -350,14 +350,10 @@ class BlogController extends Controller
                     }
                 }
 
-
-                // ================== SCHEMA (TYPE = 3) ==================
                 if (request()->has('schema')) {
                     foreach (request('schema') as $attrId => $value) {
 
                         if (!empty($value)) {
-
-                            // 🔥 DO NOT htmlEncode schema
                             $cleanValue = $value;
 
                             // OPTIONAL: remove script wrapper
@@ -371,7 +367,7 @@ class BlogController extends Controller
                                 'blog_id' => $blogId,
                                 'attribute_type' => 3,
                                 'attribute_id' => $attrId,
-                                'attribute_value' => $cleanValue, // ✅ RAW VALUE
+                                'attribute_value' => $cleanValue, //  RAW VALUE
                                 'active_status' => 1,
                                 'created_by' => 1,
                                 'created_at' => now()
