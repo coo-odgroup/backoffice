@@ -996,5 +996,18 @@ class CommonController extends Controller
         return response()->json($data);
     }
 
-    
+    public function uploadImage(Request $request)
+    {
+        return $request;
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $path = $file->store('uploads', 'public');
+
+            return response()->json([
+                'url' => asset('storage/' . $path)
+            ]);
+        }
+
+        return response()->json(['error' => 'Upload failed'], 400);
+    }
 }

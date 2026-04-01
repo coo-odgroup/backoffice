@@ -63,7 +63,7 @@ class BoardingDroppingController extends Controller
 
                 $validator = Validator::make(request()->all(), [
                     'selCity'         => 'required',
-                    'type'            => 'required|array',
+                    'type'            => 'required',
                     'brd_drp_point'   => 'required|array',
                 ]);
 
@@ -74,35 +74,32 @@ class BoardingDroppingController extends Controller
                 DB::beginTransaction();
 
                 $cityId     = (int) Purifier::clean(request('selCity'));
-
-                $types      = request('type', []);
+                $types      = request('type');
                 $points     = request('brd_drp_point', []);
                 $landmarks  = request('landmark', []);
                 $latitudes  = request('latitude', []);
                 $longitudes = request('longitude', []);
-                $sequences  = request('sequence_no', []);
 
                 $insertData = [];
 
-                foreach ($types as $i => $type) {
+                foreach ($points as $i => $point) {
 
                     $insertData[] = [
                         'cities_id'     => $cityId,
-                        'type'          => (int) $type,
-                        'brd_drp_point' => htmlEncode(trim($points[$i] ?? '')),
+                        'type'          => (int) $types,
+                        'brd_drp_point' => htmlEncode(trim($point ?? '')),
                         'landmark'      => htmlEncode(trim($landmarks[$i] ?? '')),
                         'latitude'      => $latitudes[$i] ?? null,
                         'longitude'     => $longitudes[$i] ?? null,
-                        'sequence_no'   => $sequences[$i] ?? null,
                         'created_by'    => 1,
                     ];
                 }
-
+                             
                 if ($id > 0) {
 
                     $oldData = DB::table('mst_boarding_droping')
-                        ->where('id', $id)
-                        ->first();
+                                   ->where('id', $id)
+                                   ->first();
 
                     $newData = $insertData[0];
 

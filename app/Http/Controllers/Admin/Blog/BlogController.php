@@ -188,7 +188,7 @@ class BlogController extends Controller
                 $title = htmlEncode(request('title'));
                 $slug = htmlEncode(request('slug'));
                 $short_description = htmlEncode(request('short_description'));
-                $content = htmlEncode(request('content'));
+                $content = request('content');
                 $category_id = request('category_id');
                 $is_featured = request('is_featured');
 
@@ -296,13 +296,10 @@ class BlogController extends Controller
                         'featured_image' => $newFeature,
                         'og_image' => $newOg,
                         'created_by' => 1,
-                        'active_status' => 1,
-                        'published_at' => now(),
+                        'active_status' => 0, // default draft
+                        'published_at' => null,
                         'created_at' => now()
                     ];
-
-                    $blog = Blog::create($row);
-                    $blogId = $blog->id;
                 }
                 //  GET BLOG ID
                 if ($id > 0) {
@@ -359,11 +356,22 @@ class BlogController extends Controller
                     foreach (request('schema') as $attrId => $value) {
 
                         if (!empty($value)) {
+
+                            // 🔥 DO NOT htmlEncode schema
+                            $cleanValue = $value;
+
+                            // OPTIONAL: remove script wrapper
+                            $cleanValue = str_replace(
+                                ['<script type="application/ld+json">', '</script>'],
+                                '',
+                                $cleanValue
+                            );
+
                             DB::connection('mysql_dev')->table('blog_attributes')->insert([
                                 'blog_id' => $blogId,
                                 'attribute_type' => 3,
                                 'attribute_id' => $attrId,
-                                'attribute_value' => $value,
+                                'attribute_value' => $cleanValue, // ✅ RAW VALUE
                                 'active_status' => 1,
                                 'created_by' => 1,
                                 'created_at' => now()
@@ -393,7 +401,7 @@ class BlogController extends Controller
                 session()->flash('level', 'success');
                 session()->flash('message', 'Blog ' . ($id ? 'updated' : 'created') . ' successfully.');
 
-                return redirect($redirectPage);
+                return redirect()->route('blogs.preview', Crypt::encryptString($blogId));
             }
         } catch (\Throwable $t) {
 
@@ -463,9 +471,26 @@ class BlogController extends Controller
         return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData',  'blogAttributes'));
     }
 
-
     public function edit($encId)
     {
         return $this->add($encId);
+    }
+
+    public function uploadEditorImage(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+
+            $file = $request->file('upload');
+
+            $name = time() . '.' . $file->getClientOriginalExtension();
+
+            $file->move(public_path('uploads/editor'), $name);
+
+            return response()->json([
+                'url' => asset('uploads/editor/' . $name)
+            ]);
+        }
+
+        return response()->json(['error' => 'No file uploaded'], 400);
     }
 }

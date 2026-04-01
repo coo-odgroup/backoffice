@@ -43,7 +43,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
 
                         <!-- Search -->
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-2 col-md-6">
                             <label for="txtSearch">Search By City Name/Alias</label>
                             <input type="text" class="form-control form-control-sm"
                                 id="txtSearch" name="txtSearch"
@@ -75,9 +75,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <option value="0">Inactive</option>
                             </select>
                         </div>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="selStatus">Is Featured</label>
+                            <select class="form-select form-select-sm " id="selFeatued" name="selFeatued">
+                                <option value="">Select Status</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-3 d-flex justify-content-end flex-wrap action-btns gap-2 mt-2">
+                        <div class="col-lg-2 d-flex justify-content-end flex-wrap action-btns gap-2 mt-2">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-check me-1"></i>Submit
                             </button>
@@ -100,9 +108,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
+                        <!-- <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
+                        </button> -->
+                         <button type="button" id="btnFeature" class="btn btn-info btn-sm" onclick="actionRec('F');">
+                            <i class="fa-solid fa-star me-1"></i>
+                            Is Featured
                         </button>
                         <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
@@ -150,6 +162,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Alias</th>
                             <th>Suggested Name</th>
                             <th>Last Modified</th>
+                            <th>Is Featured</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
                         </tr>
@@ -267,7 +280,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             txtsearch: $('#txtSearch').val() || '',
             selstatus: $('#selStatus').val() || '',
             selstate: $('#selState').val() || 0,
-            seldistrict: $('#selDistrict').val() || 0
+            seldistrict: $('#selDistrict').val() || 0,
+            selFeature: $('#selFeatued').val() || ''
         };
 
         let tableId = 'datatable';
@@ -351,6 +365,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </span>
                     `;
                 }
+            },
+            {
+                data: 'is_featured',
+                className: "text-center",
+                render: d =>
+                    `<span class="badge ${d === 'Yes' ? 'bg-success' : 'bg-danger'}">${d}</span>`
             },
             {
                 data: 'is_active',
