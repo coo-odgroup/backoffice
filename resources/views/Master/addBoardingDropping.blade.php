@@ -70,7 +70,7 @@
 
                                            <div class="col-md-2">
                                                <label for="type">Type<span class="text-danger important">*</span></label>
-                                               <select class="form-select form-select-sm type" id="type" name="type[]">
+                                               <select class="form-select form-select-sm type" id="type" name="type">
                                                    <option selected>Select Type</option>
                                                    <option value="1"
                                                        {{ (isset($data['row']) && $data['row']->type == 1) ? 'selected' : '' }}>
@@ -210,20 +210,21 @@
 
            let isValid = true;
 
+           let type = $(this).find('select[name="type"]');
+
+            if (!type.val() || type.val() === 'Select Type') {
+                commonAjax.confirmAlert(
+                    'Please select Type'
+                );
+                type.focus();
+                isValid = false;
+                return false;
+            }
+
            // Loop through each boarding / dropping row 
            $('#boardingDroppingWrapper .row').each(function(index) {
 
-               let type = $(this).find('select[name="type[]"]');
                let point = $(this).find('input[name="brd_drp_point[]"]');
-
-               if (!type.val() || type.val() === 'Select Type') {
-                   commonAjax.confirmAlert(
-                       'Please select Type in row ' + (index + 1)
-                   );
-                   type.focus();
-                   isValid = false;
-                   return false;
-               }
 
                if ($.trim(point.val()) === '') {
                    commonAjax.confirmAlert(
