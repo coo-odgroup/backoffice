@@ -924,14 +924,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if (!validator.blankCheck('title', 'Category Name cannot be left blank')) {
             return false;
         }
-        if (!validator.maxLength('title', 50, 'Category Name')) {
+        if (!validator.maxLength('title', 256, 'Category Name')) {
             return false;
         }
 
         if (!validator.blankCheck('blogAlias', 'Category Alias cannot be left blank')) {
             return false;
         }
-        if (!validator.maxLength('blogAlias', 50, 'Category Alias')) {
+        if (!validator.maxLength('blogAlias', 256, 'Category Alias')) {
             return false;
         }
 

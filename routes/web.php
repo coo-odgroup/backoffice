@@ -280,7 +280,10 @@ Route::prefix('admin')->group(function () {
     Route::get('annexture/get-by-type', [AnnextureController::class, 'getByType'])->name('annexture.getByType');
 
     // Blogs Preview
-    Route::get('/blogs-preview', [BlogPreviewController::class, 'index'])->name('blogs-preview.index');
+    Route::get('/blogs-preview', [BlogPreviewController::class, 'blogPreview'])->name('blogs-preview.index');
+    Route::get('/businfo/blog-preview', [BusInfoController::class, 'blogPreview'])->name('businfo.blogPreview');
+    Route::get('/admin/blogs-preview/{id}', [BlogPreviewController::class, 'blogPreview'])->name('blogs.preview');
+    Route::post('/blogs/update-status', [BlogPreviewController::class, 'updateStatus'])->name('blogs.updateStatus');
 
 
 

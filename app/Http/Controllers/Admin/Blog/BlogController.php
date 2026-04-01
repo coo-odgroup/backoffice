@@ -296,11 +296,10 @@ class BlogController extends Controller
                         'featured_image' => $newFeature,
                         'og_image' => $newOg,
                         'created_by' => 1,
-                        'active_status' => 1,
-                        'published_at' => now(),
+                        'active_status' => 0, // default draft
+                        'published_at' => null,
                         'created_at' => now()
                     ];
-
                 }
                 //  GET BLOG ID
                 if ($id > 0) {
@@ -402,7 +401,7 @@ class BlogController extends Controller
                 session()->flash('level', 'success');
                 session()->flash('message', 'Blog ' . ($id ? 'updated' : 'created') . ' successfully.');
 
-                return redirect($redirectPage);
+                return redirect()->route('blogs.preview', Crypt::encryptString($blogId));
             }
         } catch (\Throwable $t) {
 
@@ -451,10 +450,10 @@ class BlogController extends Controller
         $schemaData = [];
 
         $schemaData = DB::table('mst_annexture as a')
-                ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
-                ->where('t.annexture_type', 'SCHEMA')
-                ->orderBy('a.id')
-                ->select('a.*')
+            ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
+            ->where('t.annexture_type', 'SCHEMA')
+            ->orderBy('a.id')
+            ->select('a.*')
             ->get();
 
         $blogAttributes = [];
@@ -494,5 +493,4 @@ class BlogController extends Controller
 
         return response()->json(['error' => 'No file uploaded'], 400);
     }
-    
 }
