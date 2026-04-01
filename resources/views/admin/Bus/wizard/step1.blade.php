@@ -80,25 +80,21 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busName">Bus Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="name" id="busName">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="name" id="busName" maxlength="100">
+                                                            <small class="text-muted char-counter float-end"></small>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busNumber">Bus Number <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="bus_number" id="busNumber">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="bus_number" id="busNumber" maxlength="20">
+                                                            <small class="text-muted char-counter float-end"></small>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="via">Via</label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Via" name="via" id="via">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Via" name="via" id="via" maxlength="50">
+                                                            <small class="text-muted char-counter float-end"></small>
                                                         </div>
-
-                                                        <!-- <div class="col-md-6 mb-2">
-                                                            <label for="selAmenity">Amenities <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm" name="amenities_id[]" id="selAmenity" multiple>
-                                                                <option>Select Amenities</option>
-                                                            </select>
-                                                        </div> -->
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="maxSeat">Max Seat Booked <span class="text-danger">*</span></label>
@@ -309,12 +305,10 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 @push('scripts')
 
 <script type="module">
-    function nextStep() {
-        window.location.href = "/admin/bus/create/step2";
-    }
-
     $(document).ready(function() {
-        commonAjax.initClearableInputs();
+        // commonAjax.initClearableInputs();
+        commonAjax.initCharCounter(['busName', 'busNumber', 'via']);
+        commonAjax.makeUpperCase(['busName', 'busNumber']); // Ids
     });
 
     $('#btnReset').click(function() {
@@ -377,12 +371,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
         commonAjax.initSelect2('#selAmenity', 'Select Amenity');
 
-        // commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
-
-        // let category_id = <?= $data['row']->category_id ?? '0' ?>
-
-        // commonAjax.loadAmenityCategory(category_id);
-
         let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
         commonAjax.loadBrandList(selectedBrand);
 
@@ -443,11 +431,33 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         if (!validator.blankCheck('busNumber', 'bus Number cannot be left blank'))
             return false;
-        if (!validator.maxLength('busNumber', 100, 'bus Number'))
+        if (!validator.maxLength('busNumber', 20, 'bus Number'))
             return false;
 
         if (!validator.selectDropdown('slab', 'Select Cancellation slab'))
             return false;
+
+        if (!validator.selectDropdown('acType', 'Select Ac Type'))
+            return false;
+
+        if (!validator.selectDropdown('seatType', 'Select Seat Type'))
+            return false;
+
+        if (!validator.selectDropdown('seatLayout', 'Select Seat Layout'))
+            return false;
+
+        let selAmenities = [];
+
+        try {
+            selAmenities = JSON.parse(localStorage.getItem('selAmenities')) || [];
+        } catch (e) {
+            selAmenities = [];
+        }
+
+        if (selAmenities.length == 0) {
+            commonAjax.viewAlert("Please select at least 1 amenities");
+            return false;
+        }
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
@@ -455,10 +465,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             e.currentTarget.submit();
         });
 
-    });
-
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
     $('#slab').on('change', function() {

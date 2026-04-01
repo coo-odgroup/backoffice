@@ -234,12 +234,14 @@ class CitiesController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
             $selState = (int) request('selState');
             $selDistrict = (int) request('selDistrict');
+            $selFeature = (request('selFeatued') !== null && request('selFeatued') !== '') ? (int)request('selFeatued') : '';
 
             $dataQuery = DB::table('mst_cities as c')
                 ->select(
                     'c.id as city_id',
                     'c.city_name',
                     'c.alias',
+                    'c.is_featured',
                     DB::raw('(SELECT state_name FROM mst_states as s WHERE s.id = c.state_id LIMIT 1) as state_name'),
                     DB::raw('(SELECT district_name FROM mst_districts as s WHERE s.id = c.district_id LIMIT 1) as district_name'),
                     'c.created_at',
@@ -259,6 +261,7 @@ class CitiesController extends Controller
 
             // Filters
             if (!empty($txtSearch)) {
+                log::info($txtSearch);
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
                         ->orWhere('c.alias', 'like', "%{$txtSearch}%");
@@ -277,6 +280,10 @@ class CitiesController extends Controller
 
             if (isset($selStatus) && $selStatus != '') {
                 $dataQuery->where('c.active_status', $selStatus);
+            }
+
+            if (isset($selFeature) && $selFeature != '') {
+                $dataQuery->where('c.is_featured', $selFeature);
             }
 
             if ($selState > 0) {
@@ -307,7 +314,7 @@ class CitiesController extends Controller
                     6 => 'synonyms',
                     7 => 'c.created_by',
                     8 => 'c.created_at',
-                    9 => 'c.active_status'
+                    10 => 'c.active_status'
                 ];
 
 
@@ -339,6 +346,7 @@ class CitiesController extends Controller
                     $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
                     $val->updated_date  = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
                     $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
+                    $val->is_featured     = ($val->is_featured == 1) ? 'Yes' : 'No';
                     $val->enc_city_id   = Crypt::encryptString($val->city_id);
 
                     $val->synonym = !empty($val->synonyms)

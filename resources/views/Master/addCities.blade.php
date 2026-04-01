@@ -63,7 +63,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-1">
                                         <div class="col-md-4 mb-1">
                                             <label for="txtCity">City Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="text" class="form-control form-control-sm clearable"
                                                 id="txtCity"
                                                 name="txtCity"
                                                 value="{{ $data['row']->city_name ?? '' }}"
@@ -74,7 +74,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-4 mb-1">
                                             <label for="txtAlias">Alias<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="txtCityAlias"
+                                            <input type="text" class="form-control form-control-sm clearable" id="txtCityAlias"
                                                 name="txtCityAlias" value="{{ $data['row']->alias ?? '' }}"
                                                 placeholder="Enter Alias"
                                                 oninput="this.value = this.value.toLowerCase();"
@@ -85,7 +85,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="col-md-4 mb-1">
                                             <label for="latitude">Latitude</label>
                                             <input type="text"
-                                                class="form-control form-control-sm latitude"
+                                                class="form-control form-control-sm latitude clearable"
                                                 id="latitude"
                                                 name="latitude"
                                                 placeholder="Enter Latitude"
@@ -111,7 +111,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="col-md-4 mb-1">
                                             <label for="longitude">Longitude</label>
                                             <input type="text"
-                                                class="form-control form-control-sm longitude"
+                                                class="form-control form-control-sm longitude clearable"
                                                 id="longitude"
                                                 name="longitude"
                                                 placeholder="Enter Longitude"
@@ -137,7 +137,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
+                                                <input type="text" class="form-control form-control-sm synonym-input clearable" name="txtSynonym[]" placeholder="Enter City Synonym" value="{{$synonym}}" maxlength="50">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
 
@@ -161,7 +161,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
+                                                <input type="text" class="form-control form-control-sm synonym-input clearable" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
                                             </div>
 
                                             <div class="col-md-1">
@@ -178,7 +178,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </div>
 
                                             <div class="col-md-5">
-                                                <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym">
+                                                <input type="text" class="form-control form-control-sm synonym-input clearable" name="txtSynonym[]" placeholder="Enter City Synonym">
                                             </div>
 
                                             <div class="col-md-1">
@@ -268,6 +268,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('#selState', 'Select State');
         commonAjax.initSelect2('#selDistrict', 'Select District');
 
@@ -361,7 +362,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                      &nbsp;
                     </div>
                     <div class="col-md-5">
-                        <input type="text" class="form-control form-control-sm synonym-input" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
+                        <input type="text" class="form-control form-control-sm synonym-input clearable" name="txtSynonym[]" placeholder="Enter City Synonym" maxlength="50">
                     </div>
                     <div class="col-md-1">
                         <button type="button" class="btn btn-outline-danger btn-sm btn-remove">
