@@ -240,7 +240,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('.form-select').val('').trigger('change');
     });
 
-
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
@@ -251,10 +250,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             e.currentTarget.submit();
         });
 
-    });
-
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 </script>
 @endpush

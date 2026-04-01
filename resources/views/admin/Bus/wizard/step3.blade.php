@@ -114,25 +114,43 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         e.preventDefault();
 
+        let isValid = true;
+        let city = "";
+
+        $('#cityContainer > .row').each(function() {
+
+            let $row = $(this);
+
+            let boardingChecked = $row.find('.boarding').is(':checked');
+            let droppingChecked = $row.find('.dropping').is(':checked');
+            let $time = $row.find('.city-time');
+            let cityName = $row.find('.cityName').val();
+
+            if (!boardingChecked && !droppingChecked) {
+                isValid = false;
+                city = cityName;
+                return false;
+            }
+
+            if (!$time.val()) {
+                isValid = false;
+                city = cityName;
+                return false;
+            }
+
+        });
+
+        if (!isValid) {
+            commonAjax.viewAlert('Boarding / Dropping and time for ' + city + ' cannot be left blank');
+            return;
+        }
+
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
             e.currentTarget.submit();
         });
 
-    });
-
-    function backStep() {
-        document.getElementById("step1").style.display = "block";
-        document.getElementById("step2").style.display = "none";
-    }
-
-    function nextStep() {
-        window.location.href = "/admin/bus/create/step4";
-    }
-
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
     $(document).ready(function() {
@@ -147,27 +165,27 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             let cityName = city[1];
 
             html += `
-        <div class="row align-items-center border-bottom pb-1 pt-1">
-            <div class="col-md-4 fw-bold">${index + 1}. ${cityName}</div>
-            <input type="hidden" name="cities[${cityId}]" value="${cityName}">
+            <div class="row align-items-center border-bottom pb-1 pt-1">
+                <div class="col-md-4 fw-bold">${index + 1}. ${cityName}</div>
+                <input type="hidden" name="cities[${cityId}]" value="${cityName}" class="cityName">
 
-            <div class="col-md-3 text-center align-middle">
-                <div class="checkbox">
-                    <input type="checkbox" name="boarding[${cityId}]">
+                <div class="col-md-3 text-center align-middle">
+                    <div class="checkbox">
+                        <input type="checkbox" name="boarding[${cityId}]" class="boarding">
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-center align-middle">
+                    <div class="checkbox">
+                        <input type="checkbox" name="dropping[${cityId}]" class="dropping">
+                    </div>
+                </div>
+
+                <div class="col-md-2 text-center">
+                    <input type="time" name="time[${cityId}]" class="form-control form-control-sm city-time" value="">
                 </div>
             </div>
-
-            <div class="col-md-3 text-center align-middle">
-                <div class="checkbox">
-                    <input type="checkbox" name="dropping[${cityId}]">
-                </div>
-            </div>
-
-            <div class="col-md-2 text-center">
-                <input type="time" name="time[${cityId}]" class="form-control form-control-sm" value="">
-            </div>
-        </div>
-        `;
+            `;
         });
 
         $("#cityContainer").html(html);

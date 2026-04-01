@@ -1659,3 +1659,11 @@ export function loadBusOperatorList(bus_operator_id = 0) {
         },
     });
 }
+
+export function makeUpperCase(ids) {
+    ids.forEach(function(id) {
+        $(document).on("input", "#" + id, function() {
+            $(this).val($(this).val().toUpperCase());
+        });
+    });
+}
