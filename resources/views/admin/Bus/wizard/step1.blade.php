@@ -467,10 +467,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     });
 
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-    });
-
     $('#slab').on('change', function() {
 
         let slabId = $(this).val();

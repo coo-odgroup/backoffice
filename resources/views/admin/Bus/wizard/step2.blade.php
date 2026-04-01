@@ -361,12 +361,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     });
 
-    document.getElementById("menu-toggle").addEventListener("click", function() {
-        document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
-        updatePreview(); // restore preview
-        syncCheckboxes(); // restore checkbox state
-    });
-
     $('#citySearch').on('keyup', function() {
 
         let city = $(this).val();
