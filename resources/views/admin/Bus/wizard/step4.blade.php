@@ -155,17 +155,12 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             <div class="accordion-item">
 
                 <h2 class="accordion-header">
-                    <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#${collapseId}">
+                    <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
                         ${index + 1}. ${name}
                     </button>
                 </h2>
 
-                <div id="${collapseId}" 
-                    class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
-                    data-bs-parent="#stationAccordion">
+                <div id="${collapseId}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" data-bs-parent="#stationAccordion">
 
                     <div class="accordion-body">
 

@@ -129,6 +129,7 @@ window.commonAjax = commonAjax;
 window.initTooltips = commonAjax.initTooltips;
 window.actionRec = commonAjax.actionRec;
 window.initCharCounter = commonAjax.initCharCounter;
+window.makeUpperCase = commonAjax.makeUpperCase;
 
 $(document).on('click', '.btn-view-log', function() {
 

@@ -225,7 +225,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
             div.innerHTML = `
                 <span class="me-2 city-index fw-bold"></span>
-                <span class="form-control form-control-sm flex-grow-1 me-2">${cityName}</span>
+                <span class="form-control form-control-sm flex-grow-1 me-2 city_validation">${cityName}</span>
                 <input type="hidden" name="cities[${index}][id]" value="${cityId}">
                 <input type="hidden" name="cities[${index}][order]" value="${index}" class="order-index">
                 <button class="btn btn-danger btn-sm" type="button">
@@ -339,6 +339,19 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
+
+        let selectedCities = [];
+
+        try {
+            selectedCities = JSON.parse(localStorage.getItem('selectedCities')) || [];
+        } catch (e) {
+            selectedCities = [];
+        }
+
+        if (selectedCities.length < 3) {
+            commonAjax.viewAlert("Please select at least 3 cities");
+            return false;
+        }
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
