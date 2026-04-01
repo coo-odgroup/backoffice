@@ -121,6 +121,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-busoperator-list', [CommonController::class, 'getBusOperatorList']);
     Route::post('get-annexture-list', [CommonController::class, 'getAnnextureList']);
     Route::get('get-boarding-dropping',[BusWizardController::class,'getBoardingDropping']);
+    Route::post('upload-image', [CommonController::class, 'uploadImage']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -145,6 +146,7 @@ Route::prefix('admin')->group(function () {
     Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
 
     Route::post('/admin/master-log-list', [MasterLogController::class, 'logDataTableView']);
+    Route::post('/admin/upload-editor-image', [BlogController::class, 'uploadEditorImage']);
 
     //Subhasis
     //___________________________________________________________________________________________________________________________________________________

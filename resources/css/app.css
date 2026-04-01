@@ -1757,3 +1757,18 @@ label.amenity-chip:has(input:checked) {
 .border{
     border-color: #aeb2b5 !important;
 }
+
+.ck-fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #fff;
+    padding: 20px;
+}
+
+.ck-fullscreen .ck-editor__editable {
+    height: calc(100vh - 100px) !important;
+}

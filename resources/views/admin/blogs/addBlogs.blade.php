@@ -100,7 +100,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             class="form-control form-select-sm"
                                                             id="content"
                                                             name="content"
-                                                            maxlength="512">{{ strip_tags(html_entity_decode($data['row']->content ?? '')) }}</textarea>
+                                                            maxlength="512">{!! strip_tags(
+                                                            html_entity_decode($data['row']->content ?? ''),
+                                                            '<p><br><b><strong><i><ul><ol><li><a><img>'
+                                                        ) !!}</textarea>
                                                         <small class="text-muted char-counter float-end"></small>
                                                     </div>
 
@@ -615,18 +618,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                 <textarea
                                                                     class="form-control form-select-sm"
                                                                     name="schema[{{ $row->id }}]"
-                                                                    rows="3"
+                                                                    rows="5"
                                                                     style="resize: vertical;"
-                                                                    placeholder="Enter Value">{{ $value }}</textarea>
+                                                                    placeholder="Enter Value">{!! $value !!}</textarea>
                                                             </div>
                                                         </div>
-
                                                         @endforeach
-
                                                         @else
                                                         <div class="text-danger">No Schema Data Found</div>
                                                         @endif
-
                                                     </div>
 
                                                 </div>
