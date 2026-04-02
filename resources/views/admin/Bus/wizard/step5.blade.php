@@ -136,6 +136,44 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         e.preventDefault();
 
+        let isValid = true;
+
+        $('#routeTableBody .text-center').each(function() {
+            let $row = $(this);
+
+            let seatFare = $row.find('.seatFare').val();
+            let upperFare = $row.find('.upperSleeperFare').val();
+            let lowerFare = $row.find('.lowerSleeperFare').val();
+            let close_time = $row.find('.close_time').val();
+            let seize_time = $row.find('.seize_time').val();
+
+            if (seatFare === "" && upperFare === "" && lowerFare === "") {
+                isValid = false;
+
+                commonAjax.viewAlert('Please enter at least one fare in each row');
+
+                return false;
+            }
+
+            if (close_time === "") {
+                isValid = false;
+
+                commonAjax.viewAlert('Close Time cannot be left blank');
+
+                return false;
+            }
+
+            if (seize_time === "") {
+                isValid = false;
+
+                commonAjax.viewAlert('Seize Time cannot be left blank');
+
+                return false;
+            }
+        });
+
+        if (!isValid) return false;
+
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -144,7 +182,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     });
 
-    let tbody = $("#routeTableBody"); // your tbody id
+    let tbody = $("#routeTableBody");
     tbody.empty();
 
     let routes = <?= json_encode($data['schedule_data']) ?>;
@@ -186,15 +224,15 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 </td>
 
                 <td>
-                    <input type="number" class="form-control form-control-sm" name="seat_fare[]" placeholder="Enter Seat Fare">
+                    <input type="number" class="form-control form-control-sm seatFare" name="seat_fare[]" placeholder="Enter Seat Fare">
                 </td>
 
                 <td>
-                    <input type="number" class="form-control form-control-sm" name="upper_sleeper_fare[]" placeholder="Enter U-Sleeper Fare">
+                    <input type="number" class="form-control form-control-sm upperSleeperFare" name="upper_sleeper_fare[]" placeholder="Enter U-Sleeper Fare">
                 </td>
 
                 <td>
-                    <input type="number" class="form-control form-control-sm" name="lower_sleeper_fare[]" placeholder="Enter L-Sleeper Fare">
+                    <input type="number" class="form-control form-control-sm lowerSleeperFare" name="lower_sleeper_fare[]" placeholder="Enter L-Sleeper Fare">
                 </td>
 
                 <td class="closeTimeRow">
@@ -254,8 +292,17 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                 if (closeMinutes > listingMinutes) {
 
-                    // format listing_time (HH:MM:SS → HH:MM)
-                    let formattedListingTime = listing_time.substring(0, 5);
+                    let timeParts = listing_time.split(':');
+
+                    let hours = parseInt(timeParts[0]);
+                    let minutes = timeParts[1];
+
+                    let ampm = hours >= 12 ? 'PM' : 'AM';
+
+                    hours = hours % 12;
+                    hours = hours ? hours : 12;
+
+                    let formattedListingTime = hours + '.' + minutes + ' ' + ampm;
 
                     commonAjax.viewAlert(
                         "Close time cannot be greater than listing time (" + formattedListingTime + ")"
