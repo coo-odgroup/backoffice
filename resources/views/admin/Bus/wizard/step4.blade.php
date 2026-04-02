@@ -112,6 +112,38 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         e.preventDefault();
 
+        let isValid = true;
+
+        // Type validation
+        $('.typeSelect').each(function() {
+            if (!$(this).val()) {
+                commonAjax.viewAlert('Type cannot be left blank');
+                isValid = false;
+                return false;
+            }
+        });
+        if (!isValid) return false;
+
+        // Station validation
+        $('.stationSelect').each(function() {
+            if (!$(this).val()) {
+                commonAjax.viewAlert('Station cannot be left blank');
+                isValid = false;
+                return false;
+            }
+        });
+        if (!isValid) return false;
+
+        // Time validation
+        $('.time').each(function() {
+            if (!$(this).val()) {
+                commonAjax.viewAlert('Time cannot be left blank');
+                isValid = false;
+                return false;
+            }
+        });
+        if (!isValid) return false;
+
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -124,7 +156,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     function generateOptions(data) {
         let html = '';
 
-        data.forEach(function (item) {
+        data.forEach(function(item) {
             html += `<option value="${item.id}">${item.brd_drp_point}</option>`;
         });
 
@@ -183,7 +215,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                 </div>
 
                                 <div class="col-md-2">
-                                    <input type="time" name="stations[${id}][0][time]" class="form-control form-control-sm">
+                                    <input type="time" name="stations[${id}][0][time]" class="form-control form-control-sm time">
                                 </div>
 
                                 <div class="col-md-2">
@@ -235,7 +267,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             </div>
 
             <div class="col-md-2">
-                <input type="time" name="stations[${stationId}][${rowIndex}][time]" class="form-control form-control-sm">
+                <input type="time" name="stations[${stationId}][${rowIndex}][time]" class="form-control form-control-sm time">
             </div>
 
             <div class="col-md-2">
@@ -287,7 +319,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             stationDropdown.html('<option value="">Loading...</option>');
 
             $.ajax({
-                url: '/admin/get-boarding-dropping', // your route
+                url: '/admin/get-boarding-dropping',
                 type: 'GET',
                 data: {
                     type: type,
