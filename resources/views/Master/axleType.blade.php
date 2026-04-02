@@ -44,7 +44,7 @@
                             <!-- Search -->
                             <div class="col-lg-3 col-md-6">
                                 <label for="txtSearch">Search By Axle Type</label>
-                                <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                     placeholder="Axle Type">
                             </div>
 
@@ -142,7 +142,7 @@
                         <div id="customTableInfo"></div>
                         <div id="customPagination"></div>
                     </div>
-                  </div>
+                </div>
             </div>
         </div>
         </div>
@@ -160,6 +160,7 @@
 
         $(document).ready(function() {
 
+            commonAjax.initClearableInputs();
             commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
             getDataTableView();
         });

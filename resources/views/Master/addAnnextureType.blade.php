@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="col-md-6 ">
                                             <label for="annextureType">Annexture Type<span class="text-danger important">*</span></label>
                                             <input type="text"
-                                                class="form-control form-control-sm"
+                                                class="form-control form-control-sm clearable"
                                                 id="annextureType"
                                                 name="annextureType"
                                                 maxlength="100"
@@ -131,6 +131,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initCharCounter(['annextureType']);
+        commonAjax.initClearableInputs();
 
           $('#annextureType').on('keyup', function() {
 

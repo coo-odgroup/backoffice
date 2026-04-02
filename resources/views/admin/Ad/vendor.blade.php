@@ -44,7 +44,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- Search -->
                         <div class="col-lg-4 col-md-6 mb-2">
                             <label for="txtSearch">Search By Company Name</label>
-                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                            <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Company Name">
                         </div>
 
@@ -59,7 +59,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- BUTTONS (LEFT SIDE) -->
-                         <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -166,6 +166,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initClearableInputs();
         getDataTableView();
     });
 

@@ -88,17 +88,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                         <div class="col-md-6 mb-3">
                                                             <label for="busName">Bus Name<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Bus Name" name="busName" id="busName">
+                                                            <input type="text" class="form-control clearable" placeholder="Bus Name" name="busName" id="busName">
                                                         </div>
 
                                                         <div class="col-md-6 mb-3">
                                                             <label for="busNumber">Bus Number<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Bus Number" name="busNumber" id="busNumber">
+                                                            <input type="text" class="form-control clearable" placeholder="Bus Number" name="busNumber" id="busNumber">
                                                         </div>
 
                                                         <div class="col-md-6 mb-3">
                                                             <label for="via">Via<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Via" name="via" id="via">
+                                                            <input type="text" class="form-control clearable" placeholder="Via" name="via" id="via">
                                                         </div>
 
                                                         <div class="col-md-6 mb-3">
@@ -110,7 +110,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                         <div class="col-md-6 mb-3">
                                                             <label for="maxSeat">Max Seat Booked<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" placeholder="Max Seat" name="maxSeat" id="maxSeat">
+                                                            <input type="text" class="form-control clearable" placeholder="Max Seat" name="maxSeat" id="maxSeat">
                                                         </div>
 
                                                     </div>
@@ -1020,6 +1020,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('.annexture', 'Select AC Type');
         commonAjax.initSelect2('#seatType', 'Select Seat Type');
         commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
+        commonAjax.initClearableInputs();
 
         // commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
 

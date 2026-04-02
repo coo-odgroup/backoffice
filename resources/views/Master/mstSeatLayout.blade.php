@@ -45,7 +45,7 @@
                                 <div class="row">
                                     <div class="col-6 col-sm-6 col-md-6  col-lg-2 ">
                                         <label for="txtSearch">Search By Seat Layout Type</label>
-                                        <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                        <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                             placeholder="Bus Seat layoutType">
                                     </div>
                                     <div class="col-6 col-sm-6 col-md-4 col-lg-2 ">
@@ -161,6 +161,7 @@
         $(document).ready(function() {
 
             commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+            commonAjax.initClearableInputs();
             getDataTableView();
         });
 

@@ -42,7 +42,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
                         <div class="col-lg-7 col-md-7 mb-2">
                             <label for="txtSearch">Search By Category Name</label>
-                            <input type="text" class="form-control form-select-sm" id="txtSearch" name="txtSearch"
+                            <input type="text" class="form-control clearable form-select-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Category Name">
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
@@ -112,7 +112,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('reviewcategory.dataTableView') }}"
                     data-edit-url="{{ route('reviewcategory.edit', 'ID') }}">
-                    <thead class="table-secondary"s>
+                    <thead class="table-secondary" s>
                         <tr>
                             <th class="noPrint no-sort">
                                 <div class="checkbox">
@@ -157,6 +157,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initClearableInputs();
         getDataTableView();
     });
 

@@ -89,23 +89,23 @@
 
                                                <div class="col-md-4 mb-1">
                                                    <label for="brd_drp_point">Boarding / Dropping Point<span class="text-danger important">*</span></label>
-                                                   <input type="text" class="form-control form-control-sm brd_drp_point border" data-check-url="{{ route('boardingDropping.checkExists') }}"
+                                                   <input type="text" class="form-control form-control-sm brd_drp_point border clearable" data-check-url="{{ route('boardingDropping.checkExists') }}"
                                                        placeholder="Enter Boarding / Dropping Point" id="brd_drp_point" name="brd_drp_point[]" maxlength="100" value="{{ $data['row']->brd_drp_point ?? '' }}">
                                                    <!-- <small class="text-muted char-counter float-end"></small> -->
                                                </div>
                                                <div class="col-md-3 mb-1">
                                                    <label for="landmark">Landmark</label>
-                                                   <input type="text" class="form-control form-control-sm form-control border" placeholder="Enter Landmark" id="landmark" name="landmark[]" maxlength="100" value="{{ $data['row']->landmark ?? '' }}">
+                                                   <input type="text" class="form-control form-control-sm form-control border clearable" placeholder="Enter Landmark" id="landmark" name="landmark[]" maxlength="100" value="{{ $data['row']->landmark ?? '' }}">
                                                    <!-- <small class="text-muted char-counter float-end"></small> -->
                                                </div>
                                                <div class="col-md-2 mb-1">
                                                    <label for="latitude">Latitude</label>
-                                                   <input type="text" class="form-control form-control-sm latitude border" placeholder="Enter Latitude" id="latitude" name="latitude[]" maxlength="7" value="{{ $data['row']->latitude ?? '' }}">
+                                                   <input type="text" class="form-control form-control-sm latitude border clearable" placeholder="Enter Latitude" id="latitude" name="latitude[]" maxlength="7" value="{{ $data['row']->latitude ?? '' }}">
                                                    <!-- <small class="text-muted char-counter float-end"></small> -->
                                                </div>
                                                <div class="col-md-2 mb-1">
                                                    <label for="longitude">Longitude</label>
-                                                   <input type="text" class="form-control form-control-sm longitude border" placeholder="Enter Longitude" id="longitude" name="longitude[]" maxlength="7" value="{{ $data['row']->longitude ?? '' }}">
+                                                   <input type="text" class="form-control form-control-sm longitude border clearable" placeholder="Enter Longitude" id="longitude" name="longitude[]" maxlength="7" value="{{ $data['row']->longitude ?? '' }}">
                                                    <!-- <small class="text-muted char-counter float-end"></small> -->
                                                </div>
                                                <!-- <div class="col-md-3 mb-3">
@@ -122,35 +122,35 @@
                                            </div>
                                        </div>
                                    </div>
-                                    <div class="row mt-2 d-none"  id="boardingPreviewCard">
-                                           <div class="col-12">
-                                                <div class="card shadow-sm border-0">
+                                   <div class="row mt-2 d-none" id="boardingPreviewCard">
+                                       <div class="col-12">
+                                           <div class="card shadow-sm border-0">
 
-                                                    <div class="card-header bg-primary text-white py-2 px-3">
-                                                        <strong>Existing Boarding/Dropping Points</strong>
-                                                    </div>
+                                               <div class="card-header bg-primary text-white py-2 px-3">
+                                                   <strong>Existing Boarding/Dropping Points</strong>
+                                               </div>
 
-                                                    <div class="card-body p-2">
-                                                        <div class="table-responsive">
-                                                            <table class="table table-sm table-striped table-hover align-middle table-condensed">
-                                                                <thead class="table-light">
-                                                                    <tr>
-                                                                        <th>#</th>
-                                                                        <th>Type</th>
-                                                                        <th>Baording/Dropping Name</th>
-                                                                        <th>Sequence</th>
-                                                                        <th>Status</th>
-                                                                        <th>Created On</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="boardingPreviewBody">
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                               <div class="card-body p-2">
+                                                   <div class="table-responsive">
+                                                       <table class="table table-sm table-striped table-hover align-middle table-condensed">
+                                                           <thead class="table-light">
+                                                               <tr>
+                                                                   <th>#</th>
+                                                                   <th>Type</th>
+                                                                   <th>Baording/Dropping Name</th>
+                                                                   <th>Sequence</th>
+                                                                   <th>Status</th>
+                                                                   <th>Created On</th>
+                                                               </tr>
+                                                           </thead>
+                                                           <tbody id="boardingPreviewBody">
+                                                           </tbody>
+                                                       </table>
+                                                   </div>
+                                               </div>
                                            </div>
                                        </div>
+                                   </div>
 
                                    <!-- BUTTONS -->
                                    <div class="row mt-2">
@@ -183,7 +183,7 @@
    @push('scripts')
 
    <script type="module">
-       $('#btnReset').click(function() {
+       $('#btnReset').click(function() {    
            $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
            $('.form-select').val(0);
            $('.form-select').val('').trigger('change');
@@ -193,6 +193,8 @@
 
            commonAjax.initCharCounter(['brd_drp_point', 'landmark', 'sequence_no', 'latitude', 'longitude', '']);
            commonAjax.initSelect2('.selCity', 'Select City');
+           commonAjax.initClearableInputs();
+
 
            let cities_id = <?= $data['row']->cities_id ?? '0' ?>
 
@@ -212,14 +214,14 @@
 
            let type = $(this).find('select[name="type"]');
 
-            if (!type.val() || type.val() === 'Select Type') {
-                commonAjax.confirmAlert(
-                    'Please select Type'
-                );
-                type.focus();
-                isValid = false;
-                return false;
-            }
+           if (!type.val() || type.val() === 'Select Type') {
+               commonAjax.confirmAlert(
+                   'Please select Type'
+               );
+               type.focus();
+               isValid = false;
+               return false;
+           }
 
            // Loop through each boarding / dropping row 
            $('#boardingDroppingWrapper .row').each(function(index) {
@@ -276,28 +278,28 @@
                     <div class="col-md-4">
                         <input type="text" maxlength="100"
                         placeholder="Enter Boarding/Dropping Point"
-                        class="form-control form-control-sm brd_drp_point border"
+                        class="form-control form-control-sm brd_drp_point border clearable"
                         data-check-url="{{ route('boardingDropping.checkExists') }}"
                         name="brd_drp_point[]">
                     </div>
 
                     <div class="col-md-3">
                         <input type="text" maxlength="100"
-                        class="form-control form-control-sm landmark border"
+                        class="form-control form-control-sm landmark border clearable"
                         placeholder="Enter Landmark"
                         name="landmark[]">
                     </div>
 
                     <div class="col-md-2">
                         <input type="text" maxlength="7"
-                        class="form-control form-control-sm latitude border"
+                        class="form-control form-control-sm latitude border clearable"
                         placeholder="Enter Latitude"
                         name="latitude[]">
                     </div>
 
                     <div class="col-md-2">
                         <input type="text" maxlength="7"
-                        class="form-control form-control-sm longitude border"
+                        class="form-control form-control-sm longitude border clearable"
                         placeholder="Enter Longitude"
                         name="longitude[]">
                     </div>
@@ -321,6 +323,7 @@
                    '.longitude',
                    '.sequence_no'
                ]);
+               commonAjax.initClearableInputs();
 
            });
 
@@ -363,38 +366,38 @@
            });
        });
 
-      $(document).on('change', '#selCity, #type', function () {
+       $(document).on('change', '#selCity, #type', function() {
 
-        let cityId = $('#selCity').val();
-        let typeId = $('#type').val();
+           let cityId = $('#selCity').val();
+           let typeId = $('#type').val();
 
-        if (!cityId || cityId == 0) {
-            $('#boardingPreviewCard').addClass('d-none');
-            return;
-        }
+           if (!cityId || cityId == 0) {
+               $('#boardingPreviewCard').addClass('d-none');
+               return;
+           }
 
-        $.ajax({
-            url: '/admin/get-boarding-dropping-by-cityId',
-            type: "POST",
-            data: {
-                cityId: cityId,
-                typeId: typeId,
-               _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(res) {
-                $('#boardingPreviewBody').html('');
-                if (res) {
+           $.ajax({
+               url: '/admin/get-boarding-dropping-by-cityId',
+               type: "POST",
+               data: {
+                   cityId: cityId,
+                   typeId: typeId,
+                   _token: $('meta[name="csrf-token"]').attr('content')
+               },
+               success: function(res) {
+                   $('#boardingPreviewBody').html('');
+                   if (res) {
 
-                    $('#boardingPreviewBody').html(res);
-                    $('#boardingPreviewCard').removeClass('d-none');
+                       $('#boardingPreviewBody').html(res);
+                       $('#boardingPreviewCard').removeClass('d-none');
 
-                } else {
+                   } else {
 
-                    $('#boardingPreviewCard').addClass('d-none');
-                    $('#boardingPreviewBody').html('');
-                }
-            }
-        });
-    });
+                       $('#boardingPreviewCard').addClass('d-none');
+                       $('#boardingPreviewBody').html('');
+                   }
+               }
+           });
+       });
    </script>
    @endpush

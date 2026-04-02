@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Add Reason')
+@section('page_title', 'Add Festive Day')
 @section('content')
 
 <?php
@@ -22,8 +22,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a href="{{ route('reason.index') }}" class="btn btn-success btn-sm">
-            View Reasons
+        <a href="{{ route('festiveDays.index') }}" class="btn btn-success btn-sm">
+            View Festive Days
         </a>
     </div>
 </div>
@@ -62,10 +62,55 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row">
-                                        <div class="col-md-4 ">
-                                            <label for="reason">Reason<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control clearable form-control-sm" id="reason" placeholder="Reason" name="reason" maxlength="100" value="{{ $data['row']->reason ?? '' }}">
-                                            <small class="text-muted char-counter float-end"></small>
+                                        <div class="row">
+
+                                            <!-- ✅ Festive Name -->
+                                            <div class="col-md-3 mb-3">
+                                                <label for="festive_name">Festive Name <span class="text-danger">*</span></label>
+                                                <input type="text"
+                                                    class="form-control clearable form-control-sm"
+                                                    id="festive_name"
+                                                    name="festive_name"
+                                                    placeholder="Enter Festive Name"
+                                                    maxlength="100"
+                                                    value="{{ $data['row']->short_desc ?? '' }}">
+                                            </div>
+
+                                            <div class="col-md-3 mb-3">
+                                                <label for="year">Year <span class="text-danger">*</span></label>
+                                                <select class="form-select clearable form-select-sm" id="year" name="year">
+                                                    <option value="">Select Year</option>
+
+                                                    @for($y = date('Y'); $y <= date('Y') + 5; $y++)
+                                                        <option value="{{ $y }}"
+                                                        {{ (isset($data['row']->year) && $data['row']->year == $y) ? 'selected' : '' }}>
+                                                        {{ $y }}
+                                                        </option>
+                                                        @endfor
+                                                </select>
+                                            </div>
+                                            <!-- ✅ Festive Date -->
+                                            <div class="col-md-3 mb-3">
+                                                <label for="festive_date">Festive Date <span class="text-danger">*</span></label>
+                                                <input type="date"
+                                                    class="form-control clearable form-control-sm"
+                                                    id="festive_date"
+                                                    name="festive_date"
+                                                    value="{{ $data['row']->festive_date ?? '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <!--    Description -->
+                                            <div class="col-md-9 mb-3">
+                                                <label for="short_desc">Description</label>
+                                                <textarea
+                                                    class="form-control clearable form-control-sm"
+                                                    id="short_desc"
+                                                    name="short_desc"
+                                                    rows="2"
+                                                    placeholder="Enter Description">{{ $data['row']->short_desc ?? '' }}</textarea>
+                                            </div>
+
                                         </div>
 
                                     </div>
@@ -78,7 +123,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </button>
 
                                             @if($data['strReset'] == 'Cancel')
-                                            <a href="{{ route('reason.index') }}" class="btn btn-secondary btn-sm">
+                                            <a href="{{ route('festiveDays.index') }}" class="btn btn-secondary btn-sm">
                                                 {{ $data['strReset'] }}
                                             </a>
                                             @else
@@ -112,26 +157,30 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.blankCheck('reason', 'Reason cannot be left blank'))
-            return false;
-        if (!validator.maxLength('reason', 100, 'Role Code'))
-            return false;
+        if (!validator.blankCheck('festive_name', 'Festive Name cannot be blank')) return false;
+        if (!validator.maxLength('festive_name', 100, 'Festive Name')) return false;
+
+        if (!validator.blankCheck('festive_date', 'Festive Date cannot be blank')) return false;
+
+        if (!validator.blankCheck('year', 'Year cannot be blank')) return false;
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
             e.currentTarget.submit();
         });
-
     });
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
-
+    document.getElementById('festive_date').addEventListener('change', function() {
+        let year = new Date(this.value).getFullYear();
+        document.getElementById('year').value = year;
+    });
     $(document).ready(function() {
         commonAjax.initClearableInputs();
-        commonAjax.initCharCounter(['reason']);
+        commonAjax.initCharCounter(['festiveDays']);
 
     });
 </script>

@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Amenities')
+@section('page_title', 'Festive Days')
 @section('content')
 
 <?php
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('amenities.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('festiveDays.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -41,33 +41,46 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div class="card-body">
                     <div class="row align-items-end">
 
-                        <!-- Search -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-2">
-                            <label for="txtSearch">Search By Amenity</label>
-                            <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Enter Amenity Name">
+                        <!-- FILTER FIELDS -->
+                        <div class="col-lg-8">
+                            <div class="row">
+
+                                <div class="col-6 col-md-4 col-lg-3 mb-2">
+                                    <label for="txtSearch">Festival Name</label>
+                                    <input type="text"
+                                        class="form-control clearable form-control-sm"
+                                        id="txtSearch"
+                                        name="txtSearch"
+                                        placeholder="Search festival name">
+                                </div>
+
+                                <div class="col-6 col-md-4 col-lg-3 mb-2">
+                                    <label for="selYear">Year</label>
+                                    <select class="form-select form-select-sm" id="selYear" name="selYear">
+                                        <option value="">All Years</option>
+
+                                        @for($y = date('Y') - 2; $y <= date('Y') + 3; $y++)
+                                            <option value="{{ $y }}">{{ $y }}</option>
+                                            @endfor
+
+                                    </select>
+                                </div>
+
+                                <!--  Status -->
+                                <div class="col-6 col-md-4 col-lg-3 mb-2">
+                                    <label for="selStatus">Status</label>
+                                    <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                        <option value="">All Status</option>
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+
+                            </div>
                         </div>
 
-                        <!-- Category -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-2">
-                            <label for="amenityCategory">Category</label>
-                            <select class="form-select form-select-sm" id="amenityCategory" name="amenityCategory">
-                                <option value="">Select Category</option>
-                            </select>
-                        </div>
-
-                        <!-- Status -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="selStatus">Status</label>
-                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                                <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <!-- BUTTONS -->
+                        <div class="col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -90,7 +103,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
@@ -123,8 +136,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('amenities.dataTableView') }}"
-                    data-edit-url="{{ route('amenities.edit', 'ID') }}">
+                    data-url="{{ route('festiveDays.dataTableView') }}"
+                    data-edit-url="{{ route('festiveDays.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -133,10 +146,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Amenity Name</th>
-                            <th>Category Name</th>
-                            <th class="no-sort">Amenity Icon</th>
-                            <th style="width: 50px;">Sequence</th>
+                            <th>Festival Name</th>
+                            <th>Festival Date</th>
+                            <th>Year</th>
+                            <th>Description</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -144,16 +157,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     </thead>
                     <tbody></tbody>
                 </table>
-            </div>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-            {{csrf_field()}}
-            <input name="hdn_ids" id="hdn_ids" type="hidden">
-            <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Amenity">
+                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+                {{csrf_field()}}
+                <input name="hdn_ids" id="hdn_ids" type="hidden">
+                <input name="hdn_qs" id="hdn_qs" type="hidden">
+                <input type="hidden" id="hdn_model" value="FestiveDays">
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <div id="customTableInfo"></div>
+                    <div id="customPagination"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -184,6 +197,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         getDataTableView(true);
     });
 
+    $('#txtSearch').on('keyup', function() {
+        getDataTableView();
+    });
+
+    $('#selYear, #selStatus').on('change', function() {
+        getDataTableView();
+    });
+
     window.getDataTableView = function(reset = true) {
 
         //  If table already initialized
@@ -203,28 +224,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         }
 
         $('#pageSizeDatatable').val(10);
-        let txtSearch = '';
-        let selStatus = '';
-
-        if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
-        }
-        if ($('#selStatus').val() != '') {
-            selStatus = $('#selStatus').val();
-        }
+        let txtSearch = $('#txtSearch').val();
+        let selStatus = $('#selStatus').val();
+        let selYear = $('#selYear').val();
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+            txtSearch: txtSearch,
+            selStatus: selStatus,
+            selYear: selYear
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<div class="checkbox"><input class="chkItem" type="checkbox" id="check' + row.amenity_id +
-                        '" name="chkStd' + row.amenity_id + '" value="' + row.amenity_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.festive_day_id +
+                        '" name="chkStd' + row.festive_day_id + '" value="' + row.festive_day_id +
                         '" ></div>';
                 },
                 className: "noPrint text-center"
@@ -237,37 +253,30 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'amenity_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'category_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'icon',
+                data: 'festival_name',
                 defaultContent: "--",
-                render: function(data, type, row) {
-                    if (data) {
-                        return data + ' <i class="fa ' + data + '"></i>';
-                    }
-                    return "--";
-                }
+                className: "text-center"
             },
             {
-                data: 'sequence_no',
-                render: function(data, type, row) {
-                    return `<input type="text"
-                            value="${data ?? ''}"
-                            minlength="1"
-                            maxlength="3"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                            class="form-control form-control-sm order-input text-center"
-                            data-id="${row.enc_amenity_id}"
-                            data-table="mst_amenities"
-                            data-column="sequence_no">`;
-                },
+                data: 'festiveDays',
                 defaultContent: "--"
+            },
+            {
+                data: 'year',
+                defaultContent: "--",
+                className: "text-center"
+            },
+
+            {
+                data: 'short_desc',
+                defaultContent: "--",
+                render: function(data) {
+                    if (!data) return "--";
+
+                    return data.length > 50 ?
+                        data.substring(0, 50) + '...' :
+                        data;
+                }
             },
             {
                 data: null,
@@ -284,7 +293,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <span
-                            class="text-decoration-underline fw-semibold"
+                            class="fw-semibold text-decoration-underline cursor-pointer"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -320,17 +329,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_amenity_id)}">
+                        href="${editUrl.replace('ID', row.enc_festiveDays_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_amenities"
-                            data-id="${row.enc_amenity_id}">
+                            data-table="mst_festive_days"
+                            data-id="${row.enc_festiveDays_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
-
                     `;
                 },
                 className: "noPrint text-center"
@@ -339,12 +347,5 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
-
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
-
-        commonAjax.loadAmenityCategory(0);
-    });
 </script>
 @endpush

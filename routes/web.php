@@ -16,6 +16,7 @@ use App\Http\Controllers\Master\ApiAppsController;
 use App\Http\Controllers\Master\ApikeysController;
 use App\Http\Controllers\Master\RolesController;
 use App\Http\Controllers\Master\ReasonController;
+use App\Http\Controllers\Master\FestiveDaysController;
 use App\Http\Controllers\Master\ModulesController;
 use App\Http\Controllers\Master\SeatLayoutController;
 use App\Http\Controllers\Master\CityApisController;
@@ -285,7 +286,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/admin/blogs-preview/{id}', [BlogPreviewController::class, 'blogPreview'])->name('blogs.preview');
     Route::post('/blogs/update-status', [BlogPreviewController::class, 'updateStatus'])->name('blogs.updateStatus');
 
-
+    Route::get('/festive-days', [FestiveDaysController::class, 'festiveDays'])->name('festiveDays.index');
+    Route::match(['get', 'post'], 'festive-days/add', [FestiveDaysController::class, 'add'])->name('festiveDays.add');
+    Route::post('festive-days/dataTableView', [FestiveDaysController::class, 'dataTableView'])->name('festiveDays.dataTableView');
+    Route::match(['get', 'post'], 'festive-days/edit/{encId}', [FestiveDaysController::class, 'edit'])->name('festiveDays.edit');
+    Route::post('admin/festive-days/check-exists', [FestiveDaysController::class, 'checkExists'])->name('festiveDays.checkExists');
 
 
     // Jagan

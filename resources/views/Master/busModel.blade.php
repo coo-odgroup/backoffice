@@ -44,7 +44,7 @@
                             <!-- Search -->
                             <div class="col-lg-3 col-md-6">
                                 <label for="txtSearch">Search By Brand</label>
-                                <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                     placeholder="Brand">
                             </div>
 
@@ -171,6 +171,7 @@
         $(document).ready(function() {
 
             commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+            commonAjax.initClearableInputs();
             commonAjax.initSelect2('#brandSearch', 'Select Brand');
 
             commonAjax.loadBrandList();

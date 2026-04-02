@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -64,11 +64,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="app_name">App Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-select-sm" id="app_name" name="app_name" placeholder="Enter App Name" value="{{ $data['row']->app_name ?? '' }}">
+                                            <input type="text" class="form-control form-select-sm clearable" id="app_name " name="app_name" placeholder="Enter App Name" value="{{ $data['row']->app_name ?? '' }}">
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="app_code">App Code<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-select-sm" id="app_code" name="app_code" placeholder="Enter App Code" value="{{ $data['row']->app_code ?? '' }}">
+                                            <input type="text" class="form-control form-select-sm clearable" id="app_code" name="app_code" placeholder="Enter App Code" value="{{ $data['row']->app_code ?? '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -134,6 +134,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+    $(document).ready(function() {
+        commonAjax.initClearableInputs();
     });
 </script>
 @endpush

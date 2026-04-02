@@ -70,13 +70,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-12 mb-3=1">
                                             <label for="faq_name">Title<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter Title" maxlength="100">
+                                            <input type="text" class="form-control form-control-sm clearable" id="faq_name" name="faq_name" value="{{ $data['row']->title ?? '' }}" placeholder="Enter Title" maxlength="100">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="description">Content</label>
                                             <textarea
-                                                class="form-control form-control-sm"
+                                                class="form-control form-control-sm clearable"
                                                 id="content"
                                                 name="content">{{ htmlDecode($data['row']->content ?? '') }}</textarea>
                                         </div>
@@ -126,6 +126,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['faq_name']);
         commonAjax.initSelect2('#faqCategory', 'Select FAQ Category');
 

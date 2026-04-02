@@ -64,28 +64,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row ">
                                         <div class="col-md-4 mb-3">
                                             <label for="companyName">Company Name</label>
-                                            <input type="text" class="form-control form-select-sm" id="companyName" placeholder="Company Name" name="companyName" maxlength="50" value="{{ $data['row']->company_name ?? '' }}">
+                                            <input type="text" class="form-control clearable form-control-sm" id="companyName" placeholder="Company Name" name="companyName" maxlength="50" value="{{ $data['row']->company_name ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="personName">Person Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-select-sm" id="personName" placeholder="Person Name" name="personName" onkeypress="return validator.isOnlyCharSpace(event)" maxlength="100" value="{{ $data['row']->contact_person ?? '' }}">
+                                            <input type="text" class="form-control clearable form-control-sm" id="personName" placeholder="Person Name" name="personName" onkeypress="return validator.isOnlyCharSpace(event)" maxlength="100" value="{{ $data['row']->contact_person ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="email">Email Id<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-select-sm" id="email" placeholder="Email Id" name="email" maxlength="100" value="{{ $data['row']->email ?? '' }}">
+                                            <input type="text" class="form-control clearable form-control-sm" id="email" placeholder="Email Id" name="email" maxlength="100" value="{{ $data['row']->email ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="phone">Phone Number<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-select-sm" id="phone" placeholder="Phone Number" name="phone" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" value="{{ $data['row']->phone ?? '' }}">
+                                            <input type="text" class="form-control clearable form-control-sm" id="phone" placeholder="Phone Number" name="phone" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'')" value="{{ $data['row']->phone ?? '' }}">
 
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="gst">GST Number<span class="text-danger important">*</span></label>
                                             <input type="text"
-                                                class="form-control form-select-sm"
+                                                class="form-control clearable form-control-sm"
                                                 id="gst"
                                                 placeholder="GST Number"
                                                 name="gst"
@@ -181,6 +181,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['companyName', 'personName', 'email', 'phone', 'gst']);
 
     });

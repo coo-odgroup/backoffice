@@ -37,51 +37,51 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-           <div class="mb-2 border-bottom d-none" id="filterBox">
-    <div class="card-body">
-        <div class="row align-items-end g-2">
+            <div class="mb-2 border-bottom d-none" id="filterBox">
+                <div class="card-body">
+                    <div class="row align-items-end g-2">
 
-            <!-- Search -->
-            <div class="col-lg-3 col-md-6">
-                <label class="form-label">Search By Bus Type</label>
-                <input type="text" class="form-control form-control-sm"
-                    id="txtSearch" name="txtSearch"
-                    placeholder="Bus Type">
+                        <!-- Search -->
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label">Search By Bus Type</label>
+                            <input type="text" class="form-control clearable form-control-sm"
+                                id="txtSearch" name="txtSearch"
+                                placeholder="Bus Type">
+                        </div>
+
+                        <!-- Class -->
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Class</label>
+                            <select class="form-select form-select-sm" id="classSearch" name="classSearch">
+                                <option value="">Select Class</option>
+                                <option value="1">AC</option>
+                                <option value="2">NON AC</option>
+                            </select>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-lg-5 d-flex justify-content-end flex-wrap action-btns gap-1">
+                            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
+                                <i class="fa-solid fa-search me-1"></i>Search
+                            </button>
+                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                <i class="fa-solid fa-rotate-left me-1"></i>Reset
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-
-            <!-- Class -->
-            <div class="col-lg-2 col-md-6">
-                <label class="form-label">Class</label>
-                <select class="form-select form-select-sm" id="classSearch" name="classSearch">
-                    <option value="">Select Class</option>
-                    <option value="1">AC</option>
-                    <option value="2">NON AC</option>
-                </select>
-            </div>
-
-            <!-- Status -->
-            <div class="col-lg-2 col-md-6">
-                <label class="form-label">Status</label>
-                <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                    <option value="">Select Status</option>
-                    <option value="1">Active</option>
-                    <option value="0">Inactive</option>
-                </select>
-            </div>
-
-            <!-- Buttons -->
-            <div class="col-lg-5 d-flex justify-content-end flex-wrap action-btns gap-1">
-                <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                    <i class="fa-solid fa-search me-1"></i>Search
-                </button>
-                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                    <i class="fa-solid fa-rotate-left me-1"></i>Reset
-                </button>
-            </div>
-
-        </div>
-    </div>
-</div>
             <!-- Table start -->
             <div id="tableActions">
                 <div class="d-flex justify-content-between mb-2">
@@ -173,6 +173,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initClearableInputs();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
     });
@@ -254,7 +255,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     }
                 }
             },
-             {
+            {
                 data: null,
                 render: function(data, type, row) {
 

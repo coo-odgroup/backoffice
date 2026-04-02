@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -63,7 +63,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-12">
                                             <label for="txtSeatType">Seat Type<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="txtSeatType" name="txtSeatType" value="{{ $data['row']->seat_type ?? '' }}" placeholder="Enter Seat Type">
+                                            <input type="text" class="form-control form-control-sm clearable" id="txtSeatType" name="txtSeatType" value="{{ $data['row']->seat_type ?? '' }}" placeholder="Enter Seat Type">
                                         </div>
                                     </div>
 
@@ -126,6 +126,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+    $(document).ready(function() {
+        commonAjax.initClearableInputs();
     });
 </script>
 @endpush

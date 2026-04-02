@@ -105,7 +105,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-4">
                                             <label for="planName">Plan Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="text" class="form-control clearable form-control-sm"
                                                 id="planName"
                                                 name="planName"
                                                 value="{{ $data['row']->plan_name ?? '' }}"
@@ -118,7 +118,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="Price">Price<span class="text-danger important">*</span></label>
 
                                             <input type="text"
-                                                class="form-control form-control-sm"
+                                                class="form-control clearable form-control-sm"
                                                 id="Price"
                                                 name="Price"
                                                 value="{{ $data['row']->price ?? '' }}"
@@ -139,7 +139,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="duration">Time Duration (Days)<span class="text-danger important">*</span></label>
 
                                             <input type="text"
-                                                class="form-control form-control-sm"
+                                                class="form-control clearable form-control-sm"
                                                 id="duration"
                                                 name="duration"
                                                 value="{{ $data['row']->duration_days ?? '' }}"
@@ -257,6 +257,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['planName', 'Price']);
 
         commonAjax.initSelect2('#placement', 'Select Placement');

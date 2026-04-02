@@ -85,7 +85,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             Redirect URL <span class="text-danger">*</span>
                                                         </label>
                                                         <input type="text"
-                                                            class="form-control form-control-sm"
+                                                            class="form-control clearable form-control-sm"
                                                             id="redirectUrl"
                                                             name="redirectUrl"
                                                             value="{{ $data['row']->redirect_url ?? '' }}"
@@ -106,7 +106,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-md-12 mb-3">
                                                         <label for="alt_text">Alt Text</label>
                                                         <input type="text"
-                                                            class="form-control form-control-sm"
+                                                            class="form-control clearable form-control-sm"
                                                             id="alt_text"
                                                             name="alt_text"
                                                             value="{{ $data['row']->alt_text ?? '' }}"
@@ -118,7 +118,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-md-12 mb-3">
                                                         <label for="ad_image">Ad Image</label>
                                                         <input type="file"
-                                                            class="form-control form-control-sm"
+                                                            class="form-control clearable form-control-sm"
                                                             id="adImageInput"
                                                             name="ad_image"
                                                             accept="image/*">
@@ -273,13 +273,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('.form-select').val('').trigger('change');
     });
 
-    $(document).ready(function () {
+    $(document).ready(function() {
 
-    commonAjax.initSelect2('#campaign', 'Select Campaign');
+        commonAjax.initClearableInputs();
+        commonAjax.initSelect2('#campaign', 'Select Campaign');
 
-    commonAjax.loadCampaignList("{{ $data['row']->campaign_id ?? 0 }}");
+        commonAjax.loadCampaignList("{{ $data['row']->campaign_id ?? 0 }}");
 
-});
+    });
 
     $('#backoffice-form').on('submit', function(e) {
 

@@ -65,7 +65,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="col-md-6 ">
                                             <label for="mstSeatLayout">Seat Layout<span class="text-danger important">*</span></label>
                                             <input type="text"
-                                                class="form-control form-control-sm"
+                                                class="form-control clearable form-control-sm"
                                                 id="mstSeatLayout"
                                                 name="mstSeatLayout"
                                                 maxlength="100"
@@ -133,6 +133,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['mstSeatLayout']);
 
     });

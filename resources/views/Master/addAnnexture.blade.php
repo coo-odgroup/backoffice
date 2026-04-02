@@ -72,13 +72,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="row mb-1">
                                             <div class="col-md-3">
                                                 <label for="annexture_name">Annexture Name <span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm annexture_name" data-check-url="{{ route('annexture.checkExists') }}"
+                                                <input type="text" class="form-control form-control-sm annexture_name clearable" data-check-url="{{ route('annexture.checkExists') }}"
                                                     placeholder="Enter Annexture Name" id="annexture_name" name="annexture_name[]" maxlength="100" value="{{ $data['row']->annexture_name ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <div class="col-md-1">
                                                 <label for="annexture_value">Value <span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm text-center" placeholder="Enter Value" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="annexture_value" name="annexture_value[]" maxlength="3" value="{{ $data['row']->annexture_value ?? '' }}">
+                                                <input type="text" class="form-control form-control-sm text-center clearable" placeholder="Enter Value" oninput="this.value = this.value.replace(/[^0-9]/g, '')" id="annexture_value" name="annexture_value[]" maxlength="3" value="{{ $data['row']->annexture_value ?? '' }}">
                                                 <small class="text-muted char-counter float-end"></small>
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
@@ -169,6 +169,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initCharCounter(['annexture_name', 'annexture_value']);
         commonAjax.initSelect2('.selAnnexureType', 'Select Annexure Type');
+        commonAjax.initClearableInputs();
 
         let annexure_type_id = <?= $data['row']->annexture_type_id ?? '0' ?>;
 

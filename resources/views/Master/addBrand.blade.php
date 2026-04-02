@@ -142,7 +142,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.loadCountryList(selectedCountry);
 
-         commonAjax.initClearableInputs();
+        commonAjax.initClearableInputs();
+        commonAjax.initClearableInputs();
 
     });
 </script>

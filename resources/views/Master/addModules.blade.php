@@ -63,7 +63,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="selParent">Parent Module</label>
-                                            <select class="form-select form-select-sm selParent" id="selParent" name="selParent">
+                                            <select class="form-select clearable form-select-sm selParent" id="selParent" name="selParent">
                                                 <option value="0">Select Parent Module</option>
                                             </select>
                                         </div>
@@ -72,15 +72,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="row mb-3">
                                             <div class="col-md-4 mb-1">
                                                 <label for="moduleCode">Module Code<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm moduleCode" placeholder="Enter Module Code" id="moduleCode" name="moduleCode[]" value="{{ $data['row']->code ?? '' }}">
+                                                <input type="text" class="form-control clearable form-control-sm moduleCode" placeholder="Enter Module Code" id="moduleCode" name="moduleCode[]" value="{{ $data['row']->code ?? '' }}">
                                             </div>
                                             <div class="col-md-4 mb-1">
                                                 <label for="moduleName">Module Name<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm moduleName" placeholder="Enter Module Name" id="moduleName" name="moduleName[]" value="{{ $data['row']->name ?? '' }}">
+                                                <input type="text" class="form-control clearable form-control-sm moduleName" placeholder="Enter Module Name" id="moduleName" name="moduleName[]" value="{{ $data['row']->name ?? '' }}">
                                             </div>
                                             <div class="col-md-3 mb-1">
                                                 <label for="sequence_no">Sequence No</label>
-                                                <input type="text" class="form-control form-control-sm" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" value="{{ $data['row']->sequence_no ?? '1' }}">
+                                                <input type="text" class="form-control clearable form-control-sm" id="sequence_no" placeholder="Enter Sequence No" name="sequence_no[]" value="{{ $data['row']->sequence_no ?? '1' }}">
                                             </div>
                                             <?php $isEdit = isset($data['row']->id) ? 'd-none' : ''; ?>
                                             <div class="col-md-1 d-flex align-items-end mb-1 <?= $isEdit ?>">
@@ -132,6 +132,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('.selParent', 'Select Parent Module');
 
         let parent_id = <?= $data['row']->parent_id ?? '0' ?>;
@@ -140,7 +141,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
 
-    
+
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
@@ -224,16 +225,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-      $('.moduleCode').on('keyup', function() {
+        $('.moduleCode').on('keyup', function() {
 
-        let val = $(this).val();
-        val = val.toUpperCase();
-        val = val.replace(/\s+/g, '_');
-        val = val.replace(/[0-9]/g, '');
-        val = val.replace(/[^A-Z_]/g, '');
+            let val = $(this).val();
+            val = val.toUpperCase();
+            val = val.replace(/\s+/g, '_');
+            val = val.replace(/[0-9]/g, '');
+            val = val.replace(/[^A-Z_]/g, '');
 
-        $(this).val(val);
-    });
+            $(this).val(val);
+        });
 
 
 
@@ -259,19 +260,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 "<div class='col-md-4 mb-1'>" +
                 "<label>Module Code<span class='text-danger important'>*</span></label>" +
-                "<input type='text' class='form-control form-control-sm moduleCode' " +
+                "<input type='text' class='form-control clearable form-control-sm moduleCode' " +
                 "placeholder='Enter Module Code' id='moduleCode" + moduleRowCount + "' name='moduleCode[]'>" +
                 "</div>" +
 
                 "<div class='col-md-4 mb-1'>" +
                 "<label>Module Name<span class='text-danger important'>*</span></label>" +
-                "<input type='text' class='form-control form-control-sm moduleName' " +
+                "<input type='text' class='form-control clearable form-control-sm moduleName' " +
                 "placeholder='Enter Module Name' name='moduleName[]'>" +
                 "</div>" +
 
                 "<div class='col-md-3 mb-1'>" +
                 "<label>Sequence No</label>" +
-                "<input type='text' class='form-control form-control-sm' " +
+                "<input type='text' class='form-control clearable form-control-sm' " +
                 "name='sequence_no[]' value='" + moduleRowCount + "'>" +
                 "</div>" +
 
@@ -286,16 +287,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 "<hr>" +
                 "</div>"
             );
+
+            commonAjax.initClearableInputs();
+
             $('.moduleCode').on('keyup', function() {
 
-        let val = $(this).val();
-        val = val.toUpperCase();
-        val = val.replace(/\s+/g, '_');
-        val = val.replace(/[0-9]/g, '');
-        val = val.replace(/[^A-Z_]/g, '');
+                let val = $(this).val();
+                val = val.toUpperCase();
+                val = val.replace(/\s+/g, '_');
+                val = val.replace(/[0-9]/g, '');
+                val = val.replace(/[^A-Z_]/g, '');
 
-        $(this).val(val);
-    });
+                $(this).val(val);
+            });
         });
 
         /* REMOVE MODULE ROW */

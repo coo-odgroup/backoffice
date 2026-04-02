@@ -74,7 +74,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <option value="">Select Vendor</option>
                                             </select>
                                         </div>
-                                        
+
                                         <div class="col-md-4">
                                             <label for="placement">Placement<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm" id="placement" name="placement">
@@ -96,7 +96,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                         <div class="col-md-6">
                                             <label for="title">Title<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm"
+                                            <input type="text" class="form-control clearable form-control-sm"
                                                 id="title"
                                                 name="title"
                                                 value="{{ $data['row']->title ?? '' }}"
@@ -109,7 +109,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="startDate">Start Date<span class="text-danger important">*</span></label>
 
                                             <input type="date"
-                                                class="form-control form-control-sm"
+                                                class="form-control clearable form-control-sm"
                                                 id="startDate"
                                                 name="startDate"
                                                 value="{{ $data['row']->start_date ?? '' }}">
@@ -120,7 +120,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <label for="endDate">End Date<span class="text-danger important">*</span></label>
 
                                             <input type="date"
-                                                class="form-control form-control-sm"
+                                                class="form-control clearable form-control-sm"
                                                 id="endDate"
                                                 name="endDate"
                                                 value="{{ $data['row']->end_date ?? '' }}">
@@ -256,39 +256,40 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
-   $(document).ready(function() {
+    $(document).ready(function() {
 
-    commonAjax.initCharCounter(['planName', 'Price']);
+        commonAjax.initCharCounter(['planName', 'Price']);
 
-    commonAjax.initSelect2('#placement', 'Select Placement');
-    commonAjax.loadPlacementList();
+        commonAjax.initSelect2('#placement', 'Select Placement');
+        commonAjax.loadPlacementList();
 
-    commonAjax.initSelect2('#vendor', 'Select Vendor');
-    commonAjax.loadVendorList();
+        commonAjax.initSelect2('#vendor', 'Select Vendor');
+        commonAjax.loadVendorList();
 
-    commonAjax.initSelect2('#pricingPlan', 'Select Pricing Plan');
-    commonAjax.loadPricingPlanList();
+        commonAjax.initSelect2('#pricingPlan', 'Select Pricing Plan');
+        commonAjax.loadPricingPlanList();
+        commonAjax.initClearableInputs();
 
-    let selectedPlacement = $('#selectedPlacement').val();
-    let selectedVendor = $('#selectedVendor').val();
-    let selectedPricingPlan = $('#selectedPricingPlan').val();
+        let selectedPlacement = $('#selectedPlacement').val();
+        let selectedVendor = $('#selectedVendor').val();
+        let selectedPricingPlan = $('#selectedPricingPlan').val();
 
-    setTimeout(function(){
+        setTimeout(function() {
 
-        if(selectedVendor){
-            $('#vendor').val(selectedVendor).trigger('change');
-        }
+            if (selectedVendor) {
+                $('#vendor').val(selectedVendor).trigger('change');
+            }
 
-        if(selectedPlacement){
-            $('#placement').val(selectedPlacement).trigger('change');
-        }
+            if (selectedPlacement) {
+                $('#placement').val(selectedPlacement).trigger('change');
+            }
 
-        if(selectedPricingPlan){
-            $('#pricingPlan').val(selectedPricingPlan).trigger('change');
-        }
+            if (selectedPricingPlan) {
+                $('#pricingPlan').val(selectedPricingPlan).trigger('change');
+            }
 
-    },600);
+        }, 600);
 
-});
+    });
 </script>
 @endpush

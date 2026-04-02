@@ -79,7 +79,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label for="duration">
                                                     Duration<span class="text-danger important">*</span>
                                                 </label>
-                                                <input type="text" class="form-control form-select-sm clearable"
+                                                <input type="text" class="form-control form-select-sm clearable clearable"
                                                     name="duration[]"
                                                     value="{{ $row->duration }}"
                                                     placeholder="Enter Duration">
@@ -89,7 +89,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label for="deduction">
                                                     Deduction %<span class="text-danger important">*</span>
                                                 </label>
-                                                <input type="text" class="form-control form-select-sm clearable"
+                                                <input type="text" class="form-control form-select-sm clearable clearable"
                                                     name="deduction[]"
                                                     value="{{ $row->deduction }}"
                                                     placeholder="Enter Deduction %">
@@ -116,14 +116,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="duration">Duration<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-select-sm clearable"
+                                                <input type="text" class="form-control form-select-sm clearable clearable"
                                                     name="duration[]"
                                                     placeholder="Enter Duration">
                                             </div>
 
                                             <div class="col-md-5 mb-3">
                                                 <label for="deduction">Deduction %<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-select-sm clearable"
+                                                <input type="text" class="form-control form-select-sm clearable clearable"
                                                     name="deduction[]"
                                                     placeholder="Enter Deduction %">
                                             </div>
@@ -198,14 +198,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-     $(document).ready(function() {
+    $(document).ready(function() {
 
         commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
+        commonAjax.initClearableInputs();
 
         let slab_id = "{{ $data['row']->slab_id ?? '' }}";
         commonAjax.loadCancellationslabList(slab_id);
 
-         commonAjax.initClearableInputs();
+        commonAjax.initClearableInputs();
 
     });
 
@@ -264,7 +265,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
     });
 
-   
+
 
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -298,7 +299,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 container.appendChild(newRow);
             }
-
+            commonAjax.initClearableInputs();
             // REMOVE ROW
             if (e.target.closest('.btn-remove')) {
 

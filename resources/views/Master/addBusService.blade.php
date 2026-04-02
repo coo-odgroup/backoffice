@@ -65,7 +65,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="col-md-6">
                                         <label for="busService">Bus Service <span class="text-danger important">*</span></label>
                                         <input type="text"
-                                            class="form-control form-control-sm"
+                                            class="form-control form-control-sm clearable"
                                             id="busService"
                                             name="busService"
                                             maxlength="100"
@@ -76,7 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="row">
                                     <div class="col-md-12">
                                         <label for="description">Description</label>
-                                        <textarea class="form-control form-control-sm" id="description" name="description" maxlength="264">{{ $data['row']->description ?? '' }}</textarea>
+                                        <textarea class="form-control form-control-sm clearable" id="description" name="description" maxlength="264">{{ $data['row']->description ?? '' }}</textarea>
                                         <small class="text-muted char-counter float-end"></small>
                                     </div>
                                 </div>
@@ -141,6 +141,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initCharCounter(['busService']);
+        commonAjax.initClearableInputs();
+
 
     });
 </script>

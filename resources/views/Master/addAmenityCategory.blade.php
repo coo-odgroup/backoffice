@@ -64,11 +64,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label for="category_name">Category Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="category_name" name="category_name" value="{{ $data['row']->category_name ?? '' }}" placeholder="Enter Category Name">
+                                            <input type="text" class="form-control form-control-sm clearable" id="category_name" name="category_name" value="{{ $data['row']->category_name ?? '' }}" placeholder="Enter Category Name">
                                         </div>
                                         <div class="col-md-6">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control form-control-sm" id="description" name="description" placeholder="Enter short description">{{ $data['row']->description ?? '' }}</textarea>
+                                            <textarea class="form-control form-control-sm clearable" id="description" name="description" placeholder="Enter short description">{{ $data['row']->description ?? '' }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -129,6 +129,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+     $(document).ready(function() {
+
+        commonAjax.initClearableInputs();
+
     });
 </script>
 @endpush

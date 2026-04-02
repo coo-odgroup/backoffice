@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="txtDistrict">District Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="txtDistrict" name="txtDistrict" value="{{ $data['row']->district_name ?? '' }}" placeholder="Enter District">
+                                            <input type="text" class="form-control form-control-sm clearable" id="txtDistrict" name="txtDistrict" value="{{ $data['row']->district_name ?? '' }}" placeholder="Enter District">
                                         </div>
                                     </div>
 
@@ -123,6 +123,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('#selState', 'Select State');
 
         let state_id = <?= $data['row']->state_id ?? '0' ?>

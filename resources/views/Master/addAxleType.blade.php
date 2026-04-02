@@ -65,7 +65,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="col-md-6">
                                             <label for="axleType">Axle Type<span class="text-danger important">*</span></label>
                                             <input type="text"
-                                                class="form-control form-control-sm"
+                                                class="form-control form-control-sm clearable"
                                                 id="axleType"
                                                 name="axleType"
                                                 maxlength="100"
@@ -134,6 +134,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initCharCounter(['axleType']);
+        commonAjax.initClearableInputs();
 
     });
 </script>

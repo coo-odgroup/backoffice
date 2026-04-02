@@ -66,7 +66,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <div class="row mb-3">
                                             <div class="col-md-6 mb-3">
                                                 <label for="placement">Placement<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm"
+                                                <input type="text" class="form-control clearable form-control-sm"
                                                     id="placement"
                                                     name="placement"
                                                     value="{{ $data['row']->name ?? '' }}"
@@ -77,7 +77,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-6 mb-3">
                                                 <label for="slug">Alias<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm" id="slug"
+                                                <input type="text" class="form-control clearable form-control-sm" id="slug"
                                                     name="slug" value="{{ $data['row']->slug ?? '' }}"
                                                     placeholder="Enter Alias"
                                                     oninput="this.value = this.value.toLowerCase();"
@@ -109,7 +109,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
                                                     <label for="description">Description</label>
-                                                    <textarea class="form-control form-control-sm" id="description" name="description" placeholder="Description" maxlength="500" rows="3">{{ $data['row']->description ?? '' }}</textarea>
+                                                    <textarea class="form-control clearable form-control-sm" id="description" name="description" placeholder="Description" maxlength="500" rows="3">{{ $data['row']->description ?? '' }}</textarea>
                                                     <small class="text-muted char-counter float-end"></small>
                                                 </div>
                                             </div>
@@ -217,6 +217,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['companyName', 'name', 'slug', 'phone', 'gst']);
 
     });

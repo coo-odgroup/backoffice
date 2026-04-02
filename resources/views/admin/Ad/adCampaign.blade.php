@@ -44,7 +44,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- Title -->
                         <div class="col-lg-3 col-md-4 col-6">
                             <label for="txtSearch">Search By Title</label>
-                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                            <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Title">
                         </div>
 
@@ -83,7 +83,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Buttons -->
-                         <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -199,6 +199,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.loadVendorList();
         commonAjax.loadPlacementList();
         commonAjax.loadPricingPlanList();
+        commonAjax.initClearableInputs();
         getDataTableView();
     });
 

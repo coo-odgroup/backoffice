@@ -43,7 +43,7 @@
                             <!-- Search -->
                             <div class="col-6 col-sm-4 col-md-3 col-lg-3">
                                 <label for="txtSearch">Search By Bus Service Type</label>
-                                <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch"
+                                <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                     placeholder="Bus Service Type">
                             </div>
 
@@ -158,6 +158,7 @@
 
         $(document).ready(function() {
 
+            commonAjax.initClearableInputs();
             commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
             getDataTableView();
         });

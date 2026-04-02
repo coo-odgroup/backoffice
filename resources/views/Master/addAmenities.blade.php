@@ -70,11 +70,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-3 mb-2">
                                             <label for="amenity_name">Amenity Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="amenity_name" name="amenity_name" value="{{ $data['row']->amenity_name ?? '' }}" placeholder="Enter Amenity Name">
+                                            <input type="text" class="form-control form-control-sm clearable" id="amenity_name" name="amenity_name" value="{{ $data['row']->amenity_name ?? '' }}" placeholder="Enter Amenity Name">
                                         </div>
                                         <div class="col-md-2 mb-2">
                                             <label for="icon">Icon<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="icon" name="icon" value="{{ $data['row']->icon ?? '' }}" placeholder="Icon Class Name Only">
+                                            <input type="text" class="form-control form-control-sm clearable" id="icon" name="icon" value="{{ $data['row']->icon ?? '' }}" placeholder="Icon Class Name Only">
                                         </div>
                                         <div class="col-md-2 mb-2">
                                             <label for="is_paid">Is Paid</label>
@@ -155,6 +155,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let category_id = <?= $data['row']->category_id ?? '0' ?>
 
         commonAjax.loadAmenityCategory(category_id);
+        commonAjax.initClearableInputs();
     });
 
     $('#backoffice-form').on('submit', function(e) {

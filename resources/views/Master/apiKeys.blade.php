@@ -42,7 +42,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
                         <div class="col-lg-5 col-md-5 mb-2">
                             <label for="txtSearch">Search By Api Key</label>
-                            <input type="search" class="form-control form-select-sm" id="txtSearch" name="txtSearch"
+                            <input type="search" class="form-control clearable form-select-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Api Key">
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
@@ -163,6 +163,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initClearableInputs();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
     });

@@ -45,7 +45,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- Search -->
                         <div class="col-lg-2 col-md-6">
                             <label for="txtSearch">Search By City Name/Alias</label>
-                            <input type="text" class="form-control form-control-sm"
+                            <input type="text" class="form-control clearable form-control-sm"
                                 id="txtSearch" name="txtSearch"
                                 placeholder="City Name/Alias">
                         </div>
@@ -112,7 +112,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button> -->
-                         <button type="button" id="btnFeature" class="btn btn-info btn-sm" onclick="actionRec('F');">
+                        <button type="button" id="btnFeature" class="btn btn-info btn-sm" onclick="actionRec('F');">
                             <i class="fa-solid fa-star me-1"></i>
                             Is Featured
                         </button>
@@ -203,6 +203,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.loadStateList();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         commonAjax.initTooltips();
+        commonAjax.initClearableInputs();
         getDataTableView();
     });
 

@@ -157,6 +157,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
 
         commonAjax.initSelect2('#apiApp', 'Select Api App');
+        commonAjax.initClearableInputs();
 
         let api_app_id = <?= $data['row']->api_app_id ?? '0' ?>
 

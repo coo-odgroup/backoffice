@@ -69,13 +69,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-6 mb-1">
                                             <label for="model">Bus Model Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm clearable" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-1">
                                         <div class="col-md-12 mb-1">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control form-control-sm" id="description" name="description" value="{{ $data['row']->description ?? '' }}"></textarea>
+                                            <textarea class="form-control form-control-sm clearable" id="description" name="description">{{ $data['row']->description ?? '' }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -143,6 +143,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
  
         commonAjax.initSelect2('#brand', 'Select Brand');
+        commonAjax.initClearableInputs();
  
         let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
  

@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -76,7 +76,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-4 mb-3">
                                             <label for="api_city_ids">App City Id<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-select-sm" id="api_city_ids" name="api_city_ids" value="{{ $data['row']->api_city_ids ?? '' }}" placeholder="Enter App City Id">
+                                            <input type="text" class="form-control form-select-sm clearable" id="api_city_ids" name="api_city_ids" value="{{ $data['row']->api_city_ids ?? '' }}" placeholder="Enter App City Id">
                                         </div>
                                     </div>
                                 </div>
@@ -121,6 +121,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
 
         commonAjax.initSelect2('.apiApp', 'Select Api App');
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('.selCity', 'Select City');
 
         let city_id = <?= $data['row']->city_id ?? '0' ?>;
@@ -144,7 +145,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         if (!validator.blankCheck('api_city_ids', 'Api City Ids cannot be left blank'))
             return false;
-        
+
         var apiCityIds = document.getElementById('api_city_ids').value.trim();
 
         if (!/^\d+$/.test(apiCityIds)) {

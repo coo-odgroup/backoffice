@@ -63,12 +63,12 @@ $page_name = 'Add Seat Layout';
                                     <div class="row mb-3">
                                         <div class="col-md-3 mb-3">
                                             <label>Seat Layout Name<span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="layout_name" name="layout_name" placeholder="Seat Layout Name">
+                                            <input type="text" class="form-control clearable form-control-sm" id="layout_name" name="layout_name" placeholder="Seat Layout Name">
                                             <small id="layoutError" class="text-danger"></small>
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="classType">Rows<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="rows" name="rows">
+                                            <select class="form-select clearable" id="rows" name="rows">
                                                 <option value="0">Rows</option>
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
@@ -84,7 +84,7 @@ $page_name = 'Add Seat Layout';
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="classType">Columns<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="cols" name="cols">
+                                            <select class="form-select clearable" id="cols" name="cols">
                                                 <option value="0">Columns</option>
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
@@ -102,7 +102,7 @@ $page_name = 'Add Seat Layout';
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="classType">Bus Tier<span class="text-danger important">*</span></label>
-                                            <select class="form-select" id="busTier" name="busTier">
+                                            <select class="form-select " id="busTier" name="busTier">
                                                 <option value="0">Select Tier</option>
                                                 <option value="1">1 Tier</option>
                                                 <option value="2">2 Tier</option>
@@ -341,6 +341,10 @@ $page_name = 'Add Seat Layout';
             }
         });
 
+    });
+
+    $(document).ready(function() {
+        commonAjax.initClearableInputs();
     });
 </script>
 @endpush

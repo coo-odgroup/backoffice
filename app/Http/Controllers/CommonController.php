@@ -139,6 +139,7 @@ class CommonController extends Controller
             'AdCampaign' => \App\Models\Ad\AdCampaign::class,
             'Ads' => \App\Models\Ad\Ads::class,
             'Reason' => \App\Models\Master\Reason::class,
+            'FestiveDays' => \App\Models\Master\FestiveDays::class,
             'Brand' => \App\Models\Master\Brand::class,
             'BusModel' => \App\Models\Master\BusModel::class,
             'AxleType' => \App\Models\Master\AxleType::class,

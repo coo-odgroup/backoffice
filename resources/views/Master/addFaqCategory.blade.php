@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-3">
                                         <div class="col-md-6">
                                             <label for="category_name">Category Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="category_name" name="category_name" value="{{ $data['row']->category_name ?? '' }}">
+                                            <input type="text" class="form-control clearable form-control-sm" id="category_name" name="category_name" value="{{ $data['row']->category_name ?? '' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -125,6 +125,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+    $(document).ready(function() {
+        commonAjax.initClearableInputs();
     });
 </script>
 @endpush

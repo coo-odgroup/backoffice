@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -80,7 +80,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="busType">Bus Type<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="busType" name="busType" value="{{ $data['row']->bus_type ?? '' }}" placeholder="Enter Bus Type">
+                                            <input type="text" class="form-control form-control-sm  clearable" id="busType" name="busType" value="{{ $data['row']->bus_type ?? '' }}" placeholder="Enter Bus Type">
                                         </div>
                                     </div>
                                 </div>
@@ -143,6 +143,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+    $(document).ready(function() {
+        commonAjax.initClearableInputs();
     });
 </script>
 @endpush
