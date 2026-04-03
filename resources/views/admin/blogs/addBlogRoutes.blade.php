@@ -89,7 +89,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-12 mb-3">
                                                         <label for="route_slug">Route Slug<span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control form-select-sm" id="route_slug" name="route_slug"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="route_slug" name="route_slug"
                                                             value="{{ $data['row']->route_slug ?? '' }}"
                                                             placeholder="Enter Route Slug" readonly maxlength="100">
                                                         <small class="text-muted char-counter float-end"></small>
@@ -131,7 +131,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -139,6 +138,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['route_slug']);
     });
 
@@ -192,7 +192,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.loadCityListSlugVal(to_city_id);
     });
 
-    $(document).on('change', '#from_city_id, #to_city_id', function () {
+    $(document).on('change', '#from_city_id, #to_city_id', function() {
 
         let fromAlias = $('#from_city_id option:selected').data('alias');
         let toAlias = $('#to_city_id option:selected').data('alias');

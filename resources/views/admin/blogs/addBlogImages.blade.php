@@ -70,7 +70,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </label>
 
                                             <input type="file"
-                                                class="form-control form-select-sm"
+                                                class="form-control clearable form-select-sm"
                                                 id="blog_image"
                                                 name="image_name[]"
                                                 accept="image/*"
@@ -117,10 +117,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     </div>
 
                                                     <div class="col-md-5 mt-2">
-                                                        <input type="text" class="form-control form-control-sm" name="alt_text[]" value="{{$image->alt_text}}" placeholder="Alt Tag">
+                                                        <input type="text" class="form-control clearable form-control-sm" name="alt_text[]" value="{{$image->alt_text}}" placeholder="Alt Tag">
                                                     </div>
                                                     <div class="col-md-4 mt-2">
-                                                        <input type="number" class="form-control form-control-sm" name="sort_order[]" value="{{$image->sort_order}}">
+                                                        <input type="number" class="form-control clearable form-control-sm" name="sort_order[]" value="{{$image->sort_order}}">
                                                     </div>
 
                                                     <div class="col-md-3 mt-2">
@@ -290,6 +290,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('#blog', 'Select Blog');
 
         let id = <?= $data['row']->id ?? '0' ?>

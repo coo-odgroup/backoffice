@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="categoryName">Category Name <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control form-select-sm" id="categoryName" name="categoryName"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="categoryName" name="categoryName"
                                                             value="{{ $data['row']->category_name ?? '' }}"
                                                             placeholder="Enter Category Name" maxlength="50">
                                                         <small class="text-muted char-counter float-end"></small>
@@ -77,7 +77,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="alias">Alias <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control form-select-sm" id="categoryAlias" name="categoryAlias"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="categoryAlias" name="categoryAlias"
                                                             value="{{ $data['row']->slug ?? '' }}"
                                                             placeholder="Enter Alias"
                                                             maxlength="50">
@@ -86,7 +86,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="icon">Icon</label>
-                                                        <input type="text" class="form-control form-select-sm" id="icon" name="icon"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="icon" name="icon"
                                                             value="{{ $data['row']->icon ?? '' }}"
                                                             placeholder="Icon Class Name Only">
                                                     </div>
@@ -94,7 +94,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-12 mb-3">
                                                         <label for="description">Content</label>
                                                         <textarea
-                                                            class="form-control form-select-sm"
+                                                            class="form-control clearable form-select-sm"
                                                             id="description"
                                                             name="description"
                                                             maxlength="512">{{ strip_tags(html_entity_decode($data['row']->description ?? '')) }}</textarea>
@@ -110,14 +110,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="mb-3">
                                                 <label for="alt_text">Alt Text</label>
-                                                <input type="text" class="form-control form-select-sm" id="alt_text" name="alt_text"
+                                                <input type="text" class="form-control clearable form-select-sm" id="alt_text" name="alt_text"
                                                     value="{{ $data['row']->alt_text ?? '' }}"
                                                     placeholder="Enter Image Alt Text">
                                             </div>
 
                                             <div class="mb-3">
                                                 <label for="banner_image">Banner Image</label>
-                                                <input type="file" class="form-control form-select-sm" id="bannerImageInput" name="banner_image" accept="image/*">
+                                                <input type="file" class="form-control clearable form-select-sm" id="bannerImageInput" name="banner_image" accept="image/*">
                                                 <small class="text-muted text-md-end mt-2">
                                                     Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
                                                 </small>
@@ -180,19 +180,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             <div class="row">
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="meta_title">Meta Title</label>
-                                                                    <input type="text" class="form-control form-select-sm" id="meta_title" name="meta_title" value="{{ $data['row']->meta_title ?? old('meta_title') }}" placeholder="Enter Meta Title">
+                                                                    <input type="text" class="form-control clearable form-select-sm" id="meta_title" name="meta_title" value="{{ $data['row']->meta_title ?? old('meta_title') }}" placeholder="Enter Meta Title">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="canonical_url">Canonical Url</label>
-                                                                    <input type="text" class="form-control form-select-sm" id="canonical_url" name="canonical_url" value="{{ $data['row']->canonical_url ?? old('canonical_url') }}" placeholder="Enter Canonical Url">
+                                                                    <input type="text" class="form-control clearable form-select-sm" id="canonical_url" name="canonical_url" value="{{ $data['row']->canonical_url ?? old('canonical_url') }}" placeholder="Enter Canonical Url">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="meta_description">Meta Description</label>
-                                                                    <textarea class="form-control form-select-sm" id="meta_description" name="meta_description" placeholder="Enter Meta Description">{{ $data['row']->meta_description ?? old('meta_description') }}</textarea>
+                                                                    <textarea class="form-control clearableform-select-sm" id="meta_description" name="meta_description" placeholder="Enter Meta Description">{{ $data['row']->meta_description ?? old('meta_description') }}</textarea>
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="meta_keywords">Meta Keywords</label>
-                                                                    <textarea class="form-control form-select-sm" id="meta_keywords" name="meta_keywords" placeholder="Enter Meta Keywords">{{ $data['row']->meta_keywords ?? old('meta_keywords') }}</textarea>
+                                                                    <textarea class="form-control clearable form-select-sm" id="meta_keywords" name="meta_keywords" placeholder="Enter Meta Keywords">{{ $data['row']->meta_keywords ?? old('meta_keywords') }}</textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -200,7 +200,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         <div class="col-md-4 mb-3">
                                                             <div class="mb-3">
                                                                 <label for="og_image">Og Image</label>
-                                                                <input type="file" class="form-control form-select-sm" id="img_3" name="og_image" accept="image/*">
+                                                                <input type="file" class="form-control clearable form-select-sm" id="img_3" name="og_image" accept="image/*">
                                                                 <small class="text-muted text-md-end mt-2">
                                                                     Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1200×630px
                                                                 </small>
@@ -452,6 +452,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['categoryName', 'categoryAlias']);
     });
 

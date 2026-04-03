@@ -228,7 +228,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                     <div class="col-md-2 mb-3">
                                         <label>Min Ticket Value</label>
-                                        <input type="text" class="form-control form-control-sm" value="300">
+                                        <input type="text" class="form-control clearable form-control-sm" value="300">
                                     </div>
 
                                     <!-- Coupon Type -->
@@ -308,7 +308,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                             <div class="col-md-2 mb-3">
                                                 <label class="form-label fw-bold">Start Date</label>
-                                                <input type="date" name="start_date" class="form-control form-control-sm">
+                                                <input type="date" name="start_date" class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2 mb-3">
@@ -322,7 +322,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row">
                                         <div class="col-md-4 mb-3">
                                             <label>Exclude Dates</label>
-                                            <input type="date" id="excludeDate" class="form-control form-control-sm">
+                                            <input type="date" id="excludeDate" class="form-control clearable form-control-sm">
                                             <div id="excludeList" class="mt-2"></div>
                                         </div>
                                     </div>
@@ -383,7 +383,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6">
                                                         <label>Coupon Title</label>
-                                                        <input type="text" name="offer_value" class="form-control form-control-sm" placeholder="Enter Coupon Type">
+                                                        <input type="text" name="offer_value" class="form-control clearable form-control-sm" placeholder="Enter Coupon Type">
                                                     </div>
 
                                                     <div class="col-md-6">
@@ -395,7 +395,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-6">
                                                         <label>Coupon Code</label>
-                                                        <input type="text" name="min_ticket_value" class="form-control form-control-sm" value="300">
+                                                        <input type="text" name="min_ticket_value" class="form-control clearable form-control-sm" value="300">
                                                     </div>
 
                                                     <div class="col-md-6">
@@ -407,13 +407,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-12">
                                                         <label>Max Users</label>
-                                                        <input type="text" name="extra_input" class="form-control form-control-sm" placeholder="Enter Max Users">
+                                                        <input type="text" name="extra_input" class="form-control clearable form-control-sm" placeholder="Enter Max Users">
                                                     </div>
 
                                                     <div class="col-md-12">
                                                         <label>Short Description</label>
                                                         <textarea name="short_description"
-                                                            class="form-control form-control-sm"
+                                                            class="form-control clearable form-control-sm"
                                                             rows="12"
                                                             placeholder="Enter short description"></textarea>
                                                     </div>
@@ -428,7 +428,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="border rounded p-3 h-100">
                                                 <h6 class="mb-3">Detailed Description</h6>
                                                 <textarea
-                                                    class="form-control form-select-sm"
+                                                    class="form-control clearable form-select-sm"
                                                     id="content"
                                                     name="content">
                                                 </textarea>
@@ -805,6 +805,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
 
         commonAjax.initSelect2('#campaignMaster', 'Select Campaign Master');
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('.selCity', 'Select Location');
 
         let campaign_master_id = <?= $data['row']->campaign_master_id ?? '0' ?>;

@@ -42,7 +42,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
                         <div class="col-lg-9 col-md-9 mb-2">
                             <label for="txtSearch">Search By Blog Routes</label>
-                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch" placeholder="Blog Routes">
+                            <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch" placeholder="Blog Routes">
                         </div>
 
                         <!-- BUTTONS -->
@@ -150,7 +150,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        getDataTableView();
+        getDataTableView()
+        commonAjax.initClearableInputs();
+
     });
 
     $('#btnReset').click(function() {

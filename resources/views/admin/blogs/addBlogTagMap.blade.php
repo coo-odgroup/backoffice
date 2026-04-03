@@ -116,7 +116,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -150,6 +149,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
 
         commonAjax.initSelect2('#blog', 'Select Blog');
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('#blogTags', 'Select Blog Tags');
 
         let blog_id = <?= $data['row']->blog_id ?? '0' ?>;

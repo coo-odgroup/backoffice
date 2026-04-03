@@ -36,13 +36,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate>
     <div class="card">
         <div class="card-body">
-            <!-- FILTER --> 
+            <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
                         <div class="col-lg-9 col-md-9 mb-2">
                             <label for="txtSearch">Search By Blog Title</label>
-                            <input type="text" class="form-control form-select-sm" id="txtSearch" name="txtSearch"
+                            <input type="text" class="form-control clearable form-select-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Blog Title">
                         </div>
 
@@ -141,6 +141,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+        commonAjax.initClearableInputs();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
     });
