@@ -167,9 +167,31 @@ $page_name = 'Add Seat Layout';
 <script type="module">
 
       $(document).ready(function() {
-        let saveBtn = $('#saveLayout');
-        // Disable initially
-        saveBtn.hide();
+
+        let editRows = <?= $data['row']->rows ?? '0' ?>;
+        let editCols = <?= $data['row']->cols ?? '0' ?>;
+        let ids = <?= $data['row']->id ?? '0' ?>;
+        let seatJson = '<?= $data['seats'] ?? '' ?>';
+
+
+        if(editRows > 0 && editCols > 0){
+            $('#generateBtn').hide();
+            seatAjax.initLayout(editRows, editCols);
+            document.getElementById('seat_layout').style.display = 'block';
+        }
+
+        if(seatJson && ids != 0){
+            seatJson = @json($data['seats']);
+             seatAjax.loadLayoutFromJSON(seatJson);
+             updateValidSeats();
+             document.getElementById('validBtn').style.display = 'block';
+             document.getElementById('tag').style.display = 'block';
+             $('#generateBtn').show();
+        } else {
+             let saveBtn = $('#saveLayout');
+             saveBtn.hide();
+        }
+       
         commonAjax.initClearableInputs();
     });
     
@@ -220,6 +242,7 @@ $page_name = 'Add Seat Layout';
     $('#validBtns').on('click', function() {
         updateValidSeats();
         document.getElementById('tag').style.display = 'block';
+        document.getElementById('seat_layout').style.display = 'block';
     });
 
     $('#tags').on('change', function() {
