@@ -26,24 +26,19 @@ class TicketFareSlabInfoController extends Controller
 
         try {
 
-            // ✅ MATCH BLADE PARAMS
             $txtSearch = htmlEncode(request('txtsearch'));
             $selStatus = request('selstatus');
 
-            $dataQuery = DB::table('mst_ticket_fare_slab_info as t')
-
+            $query = DB::table('mst_ticket_fare_slab_info as t')
                 ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-
                 ->leftJoin('users as u', function ($join) {
                     $join->on('u.id', '=', 't.bus_operator_id')
                         ->where('u.user_role', 9);
                 })
-
                 ->select(
                     't.id',
                     't.slab_id',
                     's.slab_name',
-                    't.bus_operator_id',
                     'u.organization_name as operator_name',
                     't.starting_fare',
                     't.upto_fare',
@@ -57,67 +52,58 @@ class TicketFareSlabInfoController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // 🔍 SEARCH
+
             if (!empty($txtSearch)) {
-                $dataQuery->where(function ($q) use ($txtSearch) {
+                $query->where(function ($q) use ($txtSearch) {
                     $q->where('s.slab_name', 'like', "%{$txtSearch}%")
                         ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
                 });
             }
 
-            // ✅ STATUS FILTER
             if ($selStatus !== null && $selStatus !== '') {
-                $dataQuery->where('t.active_status', $selStatus);
+                $query->where('t.active_status', $selStatus);
             }
 
-            // ✅ COUNT FIX
-            $countQuery = clone $dataQuery;
-            $recordsTotal = $countQuery->count();
+            $rows = $query->orderBy('t.id', 'desc')->get();
 
-            $start  = (int) request()->input('start', 0);
-            $length = (int) request()->input('length', 10);
+            $grouped = [];
 
-            $columns = [
-                2 => 's.slab_name',
-                3 => 'u.organization_name',
-                4 => 't.starting_fare',
-                5 => 't.upto_fare',
-                6 => 't.commision',
-                7 => 't.from_date',
-                8 => 't.to_date',
-                10 => 't.active_status'
-            ];
+            foreach ($rows as $row) {
 
-            if (!empty(request('order'))) {
-                $orderBy     = request('order')[0];
-                $orderColumn = $columns[$orderBy['column']] ?? 't.id';
-                $orderType   = $orderBy['dir'] ?? 'desc';
-            } else {
-                $orderColumn = 't.id';
-                $orderType   = 'desc';
+                $slabId = $row->slab_id;
+
+                if (!isset($grouped[$slabId])) {
+
+                    $grouped[$slabId] = [
+                        'id' => $row->id,
+                        'slab_id' => $row->slab_id,
+                        'slab_name' => $row->slab_name,
+                        'slab_info' => [],
+                        'created_date' => date('d-M-Y H:i:s', strtotime($row->created_at)),
+                        'updated_date' => $row->updated_at
+                            ? date('d-M-Y H:i:s', strtotime($row->updated_at))
+                            : null,
+                        'created_by_name' => $row->created_by_name,
+                        'updated_by_name' => $row->updated_by_name,
+                        'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
+                        'enc_id' => Crypt::encryptString($row->id),
+                    ];
+                }
+
+                $grouped[$slabId]['slab_info'][] = [
+                    'operator_name' => $row->operator_name,
+                    'starting_fare' => $row->starting_fare,
+                    'upto_fare' => $row->upto_fare,
+                    'commision' => $row->commision,
+                    'from_date' => $row->from_date,
+                    'to_date' => $row->to_date,
+                ];
             }
 
-            $dataQuery->orderBy($orderColumn, $orderType);
+            $data = array_values($grouped);
 
-            $arrRes = ($length == -1)
-                ? $dataQuery->get()
-                : $dataQuery->offset($start)->limit($length)->get();
-
-            foreach ($arrRes as $val) {
-
-                $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
-
-                $val->updated_date = $val->updated_at
-                    ? date('d-M-Y H:i:s', strtotime($val->updated_at))
-                    : null;
-
-                $val->is_active = $val->active_status == 1 ? 'Active' : 'Inactive';
-
-                $val->enc_id = Crypt::encryptString($val->id);
-            }
-
+            $recordsTotal = count($data);
             $recordsFiltered = $recordsTotal;
-            $data = $arrRes;
         } catch (\Throwable $t) {
 
             Log::error("TicketFareSlabInfoController Error", [

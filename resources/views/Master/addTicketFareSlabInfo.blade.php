@@ -84,29 +84,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- Slab Rows -->
                                 <div id="slabWrapper">
                                     <div class="row mb-3 mt-3">
-                                        <div class="col-md-2">
-                                            <input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control">
+                                        <div class="col-md-2"> <label for="starting_fare">"From Fare<span class="text-danger important">*</span></label>
+                                            <input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2">
-                                            <input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control">
+                                        <div class="col-md-2"> <label for="upto_fare">To Fare<span class="text-danger important">*</span></label>
+                                            <input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2">
-                                            <input type="number" name="commision[]" placeholder="Commission" class="form-control">
+                                        <div class="col-md-2"> <label for="commision">Commission<span class="text-danger important">*</span></label>
+                                            <input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2">
-                                            <input type="date" name="from_date[]" class="form-control">
+                                        <div class="col-md-2"> <label for="from_date">From Date<span class="text-danger important">*</span></label>
+                                            <input type="date" name="from_date[]" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2">
-                                            <input type="date" name="to_date[]" class="form-control">
+                                        <div class="col-md-2"> <label for="to_date">To Date<span class="text-danger important">*</span></label>
+                                            <input type="date" name="to_date[]" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2 d-flex align-items-center">
+                                        <div class="col-md-2 d-flex align-items-center mt-4">
                                             <button type="button" class="btn btn-outline-primary btn-sm btn-add">+</button>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Tables -->
-                                <div id="operatorTables" class="mt-4"></div>
+                                <div id="operatorTables" class=""></div>
 
                             </div>
 
@@ -132,132 +132,145 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 </form>
 
 <style>
-.selected-tag{display:inline-flex;align-items:center;background:#ffc107;padding:5px 10px;border-radius:20px;margin:3px}
-.selected-tag .remove{margin-left:6px;cursor:pointer}
+    .selected-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #ffc107;
+        padding: 5px 10px;
+        border-radius: 20px;
+        margin: 3px
+    }
+
+    .selected-tag .remove {
+        margin-left: 6px;
+        cursor: pointer
+    }
 </style>
 
 @endsection
 
 @push('scripts')
 <script type="module">
+    let selectedOperators = [];
 
-let selectedOperators = [];
+    $(document).ready(function() {
 
-$(document).ready(function() {
+        commonAjax.initSelect2('#slab', 'Select Ticket Fare Slab');
+        commonAjax.initSelect2('#operator', 'Select Bus Operator');
 
-    commonAjax.initSelect2('#slab','Select Ticket Fare Slab');
-    commonAjax.initSelect2('#operator','Select Bus Operator');
+        commonAjax.loadTicketFareSlabList('#slab');
+        commonAjax.loadBusOperatorList();
 
-    commonAjax.loadTicketFareSlabList('#slab');
-    commonAjax.loadBusOperatorList();
+        $('#operator').on('change', function() {
 
-    $('#operator').on('change', function() {
+            let id = $(this).val();
+            let text = $("#operator option:selected").text();
 
-        let id = $(this).val();
-        let text = $("#operator option:selected").text();
+            if (!id) return;
+            if (selectedOperators.some(op => op.id == id)) return;
 
-        if (!id) return;
-        if (selectedOperators.some(op => op.id == id)) return;
+            let operator = {
+                id,
+                text
+            };
+            selectedOperators.push(operator);
 
-        let operator = { id, text };
-        selectedOperators.push(operator);
+            renderOperators();
+            loadOperatorTable(operator);
 
-        renderOperators();
-        loadOperatorTable(operator);
-
-        $(this).val('').trigger('change');
-    });
-});
-
-function renderOperators() {
-
-    let html = '';
-
-    selectedOperators.forEach((op, index) => {
-        html += `<span class="selected-tag" data-index="${index}">${op.text}<span class="remove">×</span></span>`;
+            $(this).val('').trigger('change');
+        });
     });
 
-    $('#selectedOperators').html(html);
-    $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
+    function renderOperators() {
 
-    $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
-}
+        let html = '';
 
-$(document).on('click', '.remove', function() {
+        selectedOperators.forEach((op, index) => {
+            html += `<span class="selected-tag" data-index="${index}">${op.text}<span class="remove">×</span></span>`;
+        });
 
-    let index = $(this).closest('.selected-tag').data('index');
-    let operator = selectedOperators[index];
+        $('#selectedOperators').html(html);
+        $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
 
-    selectedOperators.splice(index, 1);
-    $(`#table_${operator.id}`).remove();
-
-    renderOperators();
-});
-
-$('#btnReset').click(function() {
-
-    $('#backoffice-form')[0].reset();
-    $('.form-select').val('').trigger('change');
-
-    selectedOperators = [];
-    renderOperators();
-    $('#operatorTables').html('');
-});
-
-$('#backoffice-form').on('submit', function(e) {
-
-    e.preventDefault();
-
-    if (!validator.selectDropdown('slab', 'Select Ticket Fare Slab')) return;
-
-    if (selectedOperators.length === 0) {
-        commonAjax.viewAlert('Please select at least one bus operator');
-        return;
+        $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
     }
 
-    commonAjax.confirmAlert('Are you sure to proceed!');
+    $(document).on('click', '.remove', function() {
 
-    $('#btnConfirmOk').one('click', () => this.submit());
-});
+        let index = $(this).closest('.selected-tag').data('index');
+        let operator = selectedOperators[index];
 
-// add/remove rows
-$(document).on('click', '.btn-add', function() {
-    $('#slabWrapper').append(`
+        selectedOperators.splice(index, 1);
+        $(`#table_${operator.id}`).remove();
+
+        renderOperators();
+    });
+
+    $('#btnReset').click(function() {
+
+        $('#backoffice-form')[0].reset();
+        $('.form-select').val('').trigger('change');
+
+        selectedOperators = [];
+        renderOperators();
+        $('#operatorTables').html('');
+    });
+
+    $('#backoffice-form').on('submit', function(e) {
+
+        e.preventDefault();
+
+        if (!validator.selectDropdown('slab', 'Select Ticket Fare Slab')) return;
+
+        if (selectedOperators.length === 0) {
+            commonAjax.viewAlert('Please select at least one bus operator');
+            return;
+        }
+
+        commonAjax.confirmAlert('Are you sure to proceed!');
+
+        $('#btnConfirmOk').one('click', () => this.submit());
+    });
+
+    // add/remove rows
+    $(document).on('click', '.btn-add', function() {
+        $('#slabWrapper').append(`
         <div class="row mb-3 dynamic-item">
-            <div class="col-md-2"><input type="number" name="starting_fare[]" class="form-control"></div>
-            <div class="col-md-2"><input type="number" name="upto_fare[]" class="form-control"></div>
-            <div class="col-md-2"><input type="number" name="commision[]" class="form-control"></div>
-            <div class="col-md-2"><input type="date" name="from_date[]" class="form-control"></div>
-            <div class="col-md-2"><input type="date" name="to_date[]" class="form-control"></div>
-            <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm btn-remove">-</button></div>
+            <div class="col-md-2"><input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm"></div>
+            <div class="col-md-2"><input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm"></div>
+            <div class="col-md-2"><input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm"></div>
+            <div class="col-md-2"><input type="date" name="from_date[]" class="form-control form-control-sm"></div>
+            <div class="col-md-2"><input type="date" name="to_date[]" class="form-control form-control-sm"></div>
+            <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm btn-remove mt-1">-</button></div>
         </div>
     `);
-});
+    });
 
-$(document).on('click', '.btn-remove', function() {
-    $(this).closest('.dynamic-item').remove();
-});
+    $(document).on('click', '.btn-remove', function() {
+        $(this).closest('.dynamic-item').remove();
+    });
 
-// UPDATED: no table if no data
-function loadOperatorTable(operator) {
+    // UPDATED: no table if no data
+    function loadOperatorTable(operator) {
 
-    $.ajax({
-        url: "/admin/get-operator-slab-data",
-        type: "POST",
-        data: {
-            operator_id: operator.id,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
+        $.ajax({
+            url: "/admin/get-operator-slab-data",
+            type: "POST",
+            data: {
+                operator_id: operator.id,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
 
-        success: function(res) {
+            success: function(res) {
 
-            // ❌ skip if no data
-            if (!res.status || res.data.length === 0) {
-                $(`#table_${operator.id}`).remove();
-                return;
-            }
+                // skip if no data
+                if (!res.status || res.data.length === 0) {
+                    $(`#table_${operator.id}`).remove();
+                    return;
+                }
 
-            let tableHtml = `
+                let tableHtml = `
                 <div class="card mt-3 operator-table" id="table_${operator.id}">
                     <div class="card-header bg-warning">
                         <b>${operator.text}</b>
@@ -277,8 +290,8 @@ function loadOperatorTable(operator) {
                             </thead>
                             <tbody>`;
 
-            res.data.forEach(row => {
-                tableHtml += `
+                res.data.forEach(row => {
+                    tableHtml += `
                     <tr>
                         <td>${row.slab_name}</td>
                         <td>${row.starting_fare}</td>
@@ -287,19 +300,18 @@ function loadOperatorTable(operator) {
                         <td>${row.from_date}</td>
                         <td>${row.to_date}</td>
                     </tr>`;
-            });
+                });
 
-            tableHtml += `
+                tableHtml += `
                             </tbody>
                         </table>
                     </div>
                 </div>`;
 
-            $(`#table_${operator.id}`).remove();
-            $('#operatorTables').append(tableHtml);
-        }
-    });
-}
-
+                $(`#table_${operator.id}`).remove();
+                $('#operatorTables').append(tableHtml);
+            }
+        });
+    }
 </script>
 @endpush

@@ -2046,4 +2046,8 @@ label.amenity-chip:has(input:checked) {
     cursor: pointer;
     font-weight: bold;
 }
+
+.table-sm td {
+    vertical-align: middle;
+}
 }

@@ -127,12 +127,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </th>
                             <th>Sl No</th>
                             <th>Slab Name</th>
-                            <th>Operator Name</th>
-                            <th>From Fare</th>
-                            <th>To Fare</th>
-                            <th>Commission</th>
-                            <th>From Date</th>
-                            <th>To Date</th>
+                            <th>Slab Info</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -156,6 +151,42 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 
+<style>
+    .selected-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #ffc107;
+        color: #000;
+        padding: 5px 10px;
+        border-radius: 20px;
+        margin: 3px;
+        font-size: 13px;
+    }
+
+    .selected-tag .remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 6px;
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        color: #555;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .selected-tag .remove:hover {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* ✅ ADD THIS HERE */
+    .table-sm td {
+        vertical-align: middle;
+    }
+</style>
+
 @endsection
 @push('scripts')
 <script type="module">
@@ -178,6 +209,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('.form-select').val('').trigger('change');
         getDataTableView(true);
     });
+
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '--';
+
+        let date = new Date(dateStr);
+
+        let options = {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        };
+
+        return date.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+    }
+
 
     window.getDataTableView = function(reset = true) {
 
@@ -238,41 +285,58 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
 
-            // ✅ Operator Name (FIXED)
+            //  Operator Name (FIXED)
             {
-                data: 'operator_name',
-                defaultContent: "--"
-            },
+                data: 'slab_info',
+                render: function(data) {
 
-            // From Fare
-            {
-                data: 'starting_fare',
-                className: "text-center"
-            },
+                    if (!data || data.length === 0) return "--";
 
-            // To Fare
-            {
-                data: 'upto_fare',
-                className: "text-center"
-            },
+                    let table = `
+            <div class="slab-info-box">
+                <table class="table table-sm mb-0 slab-inner-table">
+                    <thead>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Fare Range</th>
+                            <th>Commission</th>
+                            <th>Validity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
 
-            // Commission
-            {
-                data: 'commision',
-                render: d => d ? d + '%' : '--',
-                className: "text-center"
-            },
+                    data.forEach(row => {
+                        table += `
+                <tr>
+                    <td class="fw-semibold">${row.operator_name}</td>
+                    <td>
+                        <span class="badge bg-light text-dark border">
+                            ${row.starting_fare} - ${row.upto_fare}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success-subtle text-success">
+                            ${row.commision}%
+                        </span>
+                    </td>
+                    <td>
+                       <small class="text-muted">
+                        ${formatDate(row.from_date)} → ${formatDate(row.to_date)}
+                       </small>
+                    </td>
+                </tr>
+            `;
+                    });
 
-            // From Date
-            {
-                data: 'from_date',
-                className: "text-center"
-            },
+                    table += `
+                    </tbody>
+                </table>
+            </div>
+        `;
 
-            // To Date
-            {
-                data: 'to_date',
-                className: "text-center"
+                    return table;
+                }
             },
 
             // Last Modified
@@ -323,20 +387,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // Action
             {
                 data: '',
+                className: "text-center",
                 render: function(data, type, row) {
+
                     let editUrl = $('#datatable').data('edit-url');
 
                     return `
-                <a class="btn btn-sm btn-info"
-                   href="${editUrl.replace('ID', row.enc_id)}">
-                    Edit
-                </a>
-                <a class="btn btn-sm btn-success btn-view-log"
-                   data-table="mst_ticket_fare_slab_info"
-                   data-id="${row.enc_id}">
-                    Log
-                </a>
-            `;
+            <a class="btn btn-sm btn-info"
+               href="${editUrl.replace('ID', row.enc_id)}">
+                Edit
+            </a>
+            <a class="btn btn-sm btn-success btn-view-log"
+               data-table="mst_ticket_fare_slab_info"
+               data-id="${row.enc_id}">
+                Log
+            </a>
+        `;
                 }
             }
 
