@@ -1440,10 +1440,9 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
     });
 }
 
-function getLoadAnnextureList(annexture_type = '', type = '') {
-
+function getLoadAnnextureList(annexture_type = "", type = "") {
     let container = document.getElementById("offerValuesContainer");
-    container.innerHTML = '';
+    container.innerHTML = "";
 
     $.ajax({
         type: "POST",
@@ -1453,40 +1452,38 @@ function getLoadAnnextureList(annexture_type = '', type = '') {
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         success: function (response) {
-
             if (response.status && response.data.length > 0) {
+                response.data.forEach((item) => {
+                    let div = document.createElement("div");
+                    div.className = "offer-chip";
 
-                response.data.forEach(item => {
-
-                    let div = document.createElement('div');
-                    div.className = 'offer-chip';
-
-                    div.innerText = (type === 'PERCENTAGE')
-                        ? item.annexture_name + '%'
-                        : '₹' + item.annexture_name;
+                    div.innerText =
+                        type === "PERCENTAGE"
+                            ? item.annexture_name + "%"
+                            : "₹" + item.annexture_name;
 
                     div.onclick = function () {
+                        document
+                            .querySelectorAll(".offer-chip")
+                            .forEach((c) => c.classList.remove("active"));
 
-                        document.querySelectorAll('.offer-chip')
-                            .forEach(c => c.classList.remove('active'));
+                        div.classList.add("active");
 
-                        div.classList.add('active');
-
-                        document.querySelector('input[name="offer_value"]').value = item.annexture_name;
+                        document.querySelector(
+                            'input[name="offer_value"]',
+                        ).value = item.annexture_name;
                     };
 
                     container.appendChild(div);
                 });
-
             } else {
-                container.innerHTML = '<p>No Data Found</p>';
+                container.innerHTML = "<p>No Data Found</p>";
             }
-        }
+        },
     });
 }
 
-export function loadAnnextureList(annexture_type = '', selected_id = 0) {
-
+export function loadAnnextureList(annexture_type = "", selected_id = 0) {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-annexture-list",
@@ -1497,14 +1494,11 @@ export function loadAnnextureList(annexture_type = '', selected_id = 0) {
         dataType: "json",
 
         success: function (response) {
-
             let options = '<option value="">Select Option</option>';
 
             if (response.status && response.data.length > 0) {
-
                 $.each(response.data, function (index, item) {
-
-                    let selected = (selected_id == item.id) ? "selected" : "";
+                    let selected = selected_id == item.id ? "selected" : "";
 
                     options += `<option value="${item.id}" ${selected}>
                                         ${item.annexture_name}
@@ -1627,43 +1621,90 @@ export function initClearableInputs() {
         let input = $(this).siblings("input");
         input.val("").trigger("keyup").focus();
     });
+
+
 }
 
-export function loadBusOperatorList(bus_operator_id = 0) {
+
+
+
+
+export function loadBusOperatorList(selected_ids = []) {
+
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-busoperator-list",
         data: {
-            bus_operator_id: bus_operator_id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
+
         success: function (response) {
-            let options = '<option value="">Select Bus Operator</option>';
+
+            let options = `<option value="">Select Bus Operator</option>`;
+
             if (response.status && response.data.length > 0) {
+
                 $.each(response.data, function (index, app) {
-                    let selected =
-                        bus_operator_id > 0 && app.id == bus_operator_id
-                            ? "selected"
-                            : "";
+
+                    let selected = selected_ids.includes(app.id) ? "selected" : "";
+
                     options += `<option value="${app.id}" ${selected}>
-                                    ${app.name}
+                                    ${app.organization_name || app.name}
                                 </option>`;
                 });
             }
 
-            $("#busOperator").html(options);
+            $("#operator").html(options);
+
+            if (selected_ids.length === 0) {
+                $("#operator").val('');
+            }
+
+            $("#operator").trigger("change");
         },
-        error: function (xhr) {
+
+        error: function () {
             console.log("Error loading Bus Operator");
-        },
+        }
     });
 }
 
 export function makeUpperCase(ids) {
-    ids.forEach(function(id) {
-        $(document).on("input", "#" + id, function() {
+    ids.forEach(function (id) {
+        $(document).on("input", "#" + id, function () {
             $(this).val($(this).val().toUpperCase());
         });
+    });
+}
+
+
+
+export function loadTicketFareSlabList(selector, selected = null) {
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "ticket-fare-slab/list",
+        dataType: "json",
+
+        success: function (res) {
+            let html = '<option value="">Select Ticket Fare Slab</option>';
+
+            if (res.status && res.data.length > 0) {
+                $.each(res.data, function (i, item) {
+
+                    let isSelected = selected == item.id ? "selected" : "";
+
+                    html += `<option value="${item.id}" ${isSelected}>
+                                ${item.slab_name}
+                             </option>`;
+                });
+            }
+
+            $(selector).html(html).trigger("change");
+        },
+
+        error: function () {
+            console.log("Error loading Ticket Fare Slab");
+        },
     });
 }

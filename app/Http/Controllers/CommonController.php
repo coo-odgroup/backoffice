@@ -149,6 +149,8 @@ class CommonController extends Controller
             'BlogTags' => \App\Models\blogs\BlogTags::class,
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
             'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
+            'TicketFareSlab' => \App\Models\Master\TicketFareSlab::class,
+            'TicketFareSlabInfo' => \App\Models\Master\TicketFareSlabInfo::class,
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
@@ -964,7 +966,7 @@ class CommonController extends Controller
                 $category->amenities = $category->amenities()
                     ->where('active_status', 1)
                     ->get();
-            }  else {
+            } else {
                 $category->amenities = $category->amenities()
                     ->where('active_status', 1)
                     ->where('amenity_name', 'LIKE', "%$search%")
@@ -1010,5 +1012,29 @@ class CommonController extends Controller
         }
 
         return response()->json(['error' => 'Upload failed'], 400);
+    }
+
+
+    public function getTicketFareSlabList()
+    {
+        try {
+
+            $data = DB::table('mst_ticket_fare_slab')
+                ->where('active_status', 1)
+                ->select('id', 'slab_name')
+                ->orderBy('slab_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => false,
+                'data' => []
+            ]);
+        }
     }
 }

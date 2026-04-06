@@ -2028,4 +2028,22 @@ label.amenity-chip:has(input:checked) {
     .meta-left{
         margin-bottom: 8px;
     }
+
+
+
+.selected-tag {
+    display: inline-block;
+    background: #ffc107;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin: 3px;
+    font-size: 13px;
+}
+
+.selected-tag .remove {
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
 }
