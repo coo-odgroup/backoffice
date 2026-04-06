@@ -93,31 +93,31 @@
                                             <div class="col-md-2">
                                                 <input type="number" name="starting_fare[]"
                                                     value="{{ isset($row['starting_fare']) ? $row['starting_fare'] : '' }}"
-                                                    class="form-control form-control-sm">
+                                                    class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" name="upto_fare[]"
                                                     value="{{ $row['upto_fare'] }}"
-                                                    class="form-control form-control-sm">
+                                                    class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="number" name="commision[]"
                                                     value="{{ $row['commision'] }}"
-                                                    class="form-control form-control-sm">
+                                                    class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="date" name="from_date[]"
                                                     value="{{ $row['from_date'] }}"
-                                                    class="form-control form-control-sm">
+                                                    class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2">
                                                 <input type="date" name="to_date[]"
                                                     value="{{ $row['to_date'] }}"
-                                                    class="form-control form-control-sm">
+                                                    class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2 d-flex align-items-center mt-2">
@@ -138,26 +138,26 @@
                                         <div class="row mb-3 mt-3">
 
                                             <div class="col-md-2"><label for="selStatus">From fare:<span class="text-danger important">*</span></label>
-                                                <input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm">
+                                                <input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2"><label for="selStatus">To fare:<span class="text-danger important">*</span></label>
-                                                <input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm">
+                                                <input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2"><label for="selStatus">Commission:<span class="text-danger important">*</span></label>
-                                                <input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm">
+                                                <input type="number" name="commision[]" placeholder="Commission" class="form-control clearable form-control-sm">
                                             </div>
 
                                             <div class="col-md-2"><label for="selStatus">From date:</label>
                                                 <input type="date" name="from_date[]"
-                                                    class="form-control form-control-sm from-date"
+                                                    class="form-control clearable form-control-sm from-date"
                                                     min="{{ date('Y-m-d') }}">
                                             </div>
 
                                             <div class="col-md-2"><label for="selStatus">To date:</label>
                                                 <input type="date" name="to_date[]"
-                                                    class="form-control form-control-sm to-date"
+                                                    class="form-control form-control-sm clearable to-date"
                                                     min="{{ date('Y-m-d') }}">
                                             </div>
 
@@ -166,7 +166,6 @@
                                             </div>
 
                                         </div>
-
                                         @endif
 
                                     </div>
@@ -227,6 +226,7 @@
             commonAjax.initSelect2('#operator', 'Select Bus Operator');
             commonAjax.loadTicketFareSlabList('#slab', slab_id);
             commonAjax.loadBusOperatorList();
+            commonAjax.initClearableInputs();
 
 
 
