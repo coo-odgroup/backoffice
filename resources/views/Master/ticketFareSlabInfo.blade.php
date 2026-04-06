@@ -127,13 +127,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </th>
                             <th>Sl No</th>
                             <th>Slab Name</th>
+                            <th>Operator Name</th>
                             <th>Slab Info</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody class="table-secondary"></tbody>
                 </table>
             </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
@@ -284,6 +285,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'slab_name',
                 defaultContent: "--"
             },
+            {
+                data: 'operators',
+                render: function(data) {
+
+                    if (!data || data.length === 0) return "--";
+
+                    return data.join('<br>');
+                }
+            },
 
             //  Operator Name (FIXED)
             {
@@ -297,7 +307,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <table class="table table-sm mb-0 slab-inner-table">
                     <thead>
                         <tr>
-                            <th>Operator</th>
                             <th>Fare Range</th>
                             <th>Commission</th>
                             <th>Validity</th>
@@ -309,21 +318,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     data.forEach(row => {
                         table += `
                 <tr>
-                    <td class="fw-semibold">${row.operator_name}</td>
                     <td>
-                        <span class="badge bg-light text-dark border">
                             ${row.starting_fare} - ${row.upto_fare}
-                        </span>
                     </td>
                     <td>
-                        <span class="badge bg-success-subtle text-success">
-                            ${row.commision}%
-                        </span>
+                            ${row.commision}
                     </td>
                     <td>
-                       <small class="text-muted">
                         ${formatDate(row.from_date)} → ${formatDate(row.to_date)}
-                       </small>
                     </td>
                 </tr>
             `;

@@ -52,7 +52,7 @@ class TicketFareSlabInfoController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
                 );
 
-
+            // 🔍 filters
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
                     $q->where('s.slab_name', 'like', "%{$txtSearch}%")
@@ -72,12 +72,14 @@ class TicketFareSlabInfoController extends Controller
 
                 $slabId = $row->slab_id;
 
+                // ✅ ONE ROW PER SLAB
                 if (!isset($grouped[$slabId])) {
 
                     $grouped[$slabId] = [
                         'id' => $row->id,
                         'slab_id' => $row->slab_id,
                         'slab_name' => $row->slab_name,
+                        'operators' => [],
                         'slab_info' => [],
                         'created_date' => date('d-M-Y H:i:s', strtotime($row->created_at)),
                         'updated_date' => $row->updated_at
@@ -90,14 +92,39 @@ class TicketFareSlabInfoController extends Controller
                     ];
                 }
 
-                $grouped[$slabId]['slab_info'][] = [
-                    'operator_name' => $row->operator_name,
-                    'starting_fare' => $row->starting_fare,
-                    'upto_fare' => $row->upto_fare,
-                    'commision' => $row->commision,
-                    'from_date' => $row->from_date,
-                    'to_date' => $row->to_date,
-                ];
+                // ✅ UNIQUE OPERATORS
+                if (
+                    !empty($row->operator_name) &&
+                    !in_array($row->operator_name, $grouped[$slabId]['operators'])
+                ) {
+
+                    $grouped[$slabId]['operators'][] = $row->operator_name;
+                }
+
+                // ✅ UNIQUE SLAB INFO (STRONG KEY)
+                $key = md5(
+                    $row->starting_fare . '|' .
+                        $row->upto_fare . '|' .
+                        $row->commision . '|' .
+                        date('Y-m-d', strtotime($row->from_date)) . '|' .
+                        date('Y-m-d', strtotime($row->to_date))
+                );
+
+                if (!isset($grouped[$slabId]['slab_info'][$key])) {
+
+                    $grouped[$slabId]['slab_info'][$key] = [
+                        'starting_fare' => $row->starting_fare,
+                        'upto_fare' => $row->upto_fare,
+                        'commision' => $row->commision,
+                        'from_date' => $row->from_date,
+                        'to_date' => $row->to_date,
+                    ];
+                }
+            }
+
+            // ✅ MOVE THIS OUTSIDE LOOP (VERY IMPORTANT)
+            foreach ($grouped as &$slab) {
+                $slab['slab_info'] = array_values($slab['slab_info']);
             }
 
             $data = array_values($grouped);

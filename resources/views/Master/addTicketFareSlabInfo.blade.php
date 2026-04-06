@@ -296,7 +296,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <td>${row.slab_name}</td>
                         <td>${row.starting_fare}</td>
                         <td>${row.upto_fare}</td>
-                        <td>${row.commision}%</td>
+                        <td>${row.commision}</td>
                         <td>${row.from_date}</td>
                         <td>${row.to_date}</td>
                     </tr>`;
