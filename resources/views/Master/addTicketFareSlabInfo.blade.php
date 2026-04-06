@@ -61,7 +61,7 @@
                                     <div class="col-12">
                                         <div class="row mb-1">
                                             <div class="col-md-5">
-                                                <label>Ticket Fare Slab *</label>
+                                                <label>Ticket Fare Slab<span class="text-danger important">*</span></label>
                                                 <select class="form-select form-select-sm" id="slab" name="slab_id"></select>
                                             </div>
                                         </div>
@@ -69,7 +69,7 @@
                                         <!-- Operator -->
                                         <div class="row mb-1">
                                             <div class="col-md-5">
-                                                <label>Bus Operator *</label>
+                                                <label>Bus Operator</label>
                                                 <select class="form-select form-select-sm" id="operator"></select>
 
                                                 <div id="selectedOperatorsWrapper" class="mt-2" style="display:none;">
@@ -137,32 +137,32 @@
                                         {{-- ADD MODE --}}
                                         <div class="row mb-3 mt-3">
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2"><label for="selStatus">From fare:<span class="text-danger important">*</span></label>
                                                 <input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm">
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2"><label for="selStatus">To fare:<span class="text-danger important">*</span></label>
                                                 <input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm">
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2"><label for="selStatus">Commission:<span class="text-danger important">*</span></label>
                                                 <input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm">
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2"><label for="selStatus">From date:</label>
                                                 <input type="date" name="from_date[]"
                                                     class="form-control form-control-sm from-date"
                                                     min="{{ date('Y-m-d') }}">
                                             </div>
 
-                                            <div class="col-md-2">
+                                            <div class="col-md-2"><label for="selStatus">To date:</label>
                                                 <input type="date" name="to_date[]"
                                                     class="form-control form-control-sm to-date"
                                                     min="{{ date('Y-m-d') }}">
                                             </div>
 
                                             <div class="col-md-2 d-flex align-items-center">
-                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add">+</button>
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add mt-4">+</button>
                                             </div>
 
                                         </div>

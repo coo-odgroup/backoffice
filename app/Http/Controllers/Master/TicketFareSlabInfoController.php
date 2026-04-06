@@ -241,8 +241,8 @@ class TicketFareSlabInfoController extends Controller
                     'upto_fare.*'     => 'required|numeric',
                     'commision.*'     => 'required|numeric',
 
-                    'from_date.*' => 'required|date',
-                    'to_date.*'   => 'required|date',
+                    'from_date.*' => 'nullable|date',
+                    'to_date.*'   => 'nullable|date',
                 ], [
                     'slab_id.required' => 'Please select slab',
                     'bus_operator_id.required' => 'Please select at least one operator',
