@@ -166,7 +166,7 @@ class TicketFareSlabInfoController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                // ✅ FETCH EXISTING DATA
+
                 $row = DB::table('mst_ticket_fare_slab_info as t')
                     ->leftJoin('users as u', 'u.id', '=', 't.bus_operator_id')
                     ->where('t.slab_id', $id)
@@ -180,7 +180,6 @@ class TicketFareSlabInfoController extends Controller
                     return redirect('ticketfareslab-info');
                 }
 
-                // ✅ group data
                 $operators = [];
                 $slabInfo = [];
 
@@ -192,7 +191,7 @@ class TicketFareSlabInfoController extends Controller
                         'name' => $r->operator_name
                     ];
 
-                    // slab rows (unique)
+                    // slab rows 
                     $key = md5(
                         $r->starting_fare . '|' .
                             $r->upto_fare . '|' .
@@ -212,7 +211,7 @@ class TicketFareSlabInfoController extends Controller
                     }
                 }
 
-                // ✅ THIS LINE WAS MISSING
+
                 $slabInfo = array_values($slabInfo);
 
                 $data['row'] = [
@@ -233,14 +232,14 @@ class TicketFareSlabInfoController extends Controller
 
                 request()->replace(request()->all());
 
-                // ✅ VALIDATION
+
                 $validator = Validator::make(request()->all(), [
                     'slab_id' => 'bail|required|integer',
-                    'bus_operator_id' => 'bail|required',
+                    'bus_operator_id' => 'nullable',
 
                     'starting_fare.*' => 'required|numeric|min:0',
                     'upto_fare.*'     => 'required|numeric',
-                    'commision.*'     => 'required|numeric|min:0|max:100',
+                    'commision.*'     => 'required|numeric',
 
                     'from_date.*' => 'required|date',
                     'to_date.*'   => 'required|date',
@@ -255,13 +254,13 @@ class TicketFareSlabInfoController extends Controller
 
                 DB::beginTransaction();
 
-                // ✅ INPUT CLEANING
+
                 $slab_id = (int) request('slab_id');
                 $bus_operator_id = request('bus_operator_id');
 
                 $operators = !empty($bus_operator_id)
                     ? explode(',', $bus_operator_id)
-                    : [];
+                    : [0];
 
                 $starting_fare = request('starting_fare');
                 $upto_fare     = request('upto_fare');
@@ -269,15 +268,6 @@ class TicketFareSlabInfoController extends Controller
                 $from_date     = request('from_date');
                 $to_date       = request('to_date');
 
-                if (empty($operators)) {
-                    DB::rollBack();
-                    return back()->with([
-                        'level' => 'danger',
-                        'message' => 'Please select at least one operator'
-                    ])->withInput();
-                }
-
-                // ✅ MANUAL VALIDATION (ARRAY COMPARISON)
                 foreach ($starting_fare as $i => $start) {
                     if ($upto_fare[$i] < $start) {
                         DB::rollBack();
@@ -296,14 +286,13 @@ class TicketFareSlabInfoController extends Controller
                     }
                 }
 
-                // ✅ DELETE OLD DATA (EDIT MODE)
                 if ($id > 0) {
                     DB::table('mst_ticket_fare_slab_info')
                         ->where('slab_id', $slab_id)
                         ->delete();
                 }
 
-                // ✅ PREPARE INSERT DATA
+
                 $insertData = [];
 
                 foreach ($operators as $operator) {
