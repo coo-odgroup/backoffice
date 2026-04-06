@@ -83,26 +83,88 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- Slab Rows -->
                                 <div id="slabWrapper">
+
+                                    @if(isset($data['row']['slabInfo']) && count($data['row']['slabInfo']) > 0)
+
+                                    @foreach($data['row']['slabInfo'] as $index => $row)
+
+                                    <div class="row mb-3 mt-3 {{ $index == 0 ? '' : 'dynamic-item' }}">
+
+                                        <div class="col-md-2">
+                                            <input type="number" name="starting_fare[]"
+                                                value="{{ isset($row['starting_fare']) ? $row['starting_fare'] : '' }}"
+                                                class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" name="upto_fare[]"
+                                                value="{{ $row['upto_fare'] }}"
+                                                class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="number" name="commision[]"
+                                                value="{{ $row['commision'] }}"
+                                                class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="date" name="from_date[]"
+                                                value="{{ $row['from_date'] }}"
+                                                class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <input type="date" name="to_date[]"
+                                                value="{{ $row['to_date'] }}"
+                                                class="form-control form-control-sm">
+                                        </div>
+
+                                        <div class="col-md-2 d-flex align-items-center mt-2">
+                                            @if($index == 0)
+                                            <button type="button" class="btn btn-outline-primary btn-sm btn-add">+</button>
+                                            @else
+                                            <button type="button" class="btn btn-danger btn-sm btn-remove">-</button>
+                                            @endif
+                                        </div>
+
+                                    </div>
+
+                                    @endforeach
+
+                                    @else
+
+                                    {{-- ADD MODE --}}
                                     <div class="row mb-3 mt-3">
-                                        <div class="col-md-2"> <label for="starting_fare">"From Fare<span class="text-danger important">*</span></label>
+
+                                        <div class="col-md-2">
                                             <input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2"> <label for="upto_fare">To Fare<span class="text-danger important">*</span></label>
+
+                                        <div class="col-md-2">
                                             <input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2"> <label for="commision">Commission<span class="text-danger important">*</span></label>
+
+                                        <div class="col-md-2">
                                             <input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2"> <label for="from_date">From Date<span class="text-danger important">*</span></label>
+
+                                        <div class="col-md-2">
                                             <input type="date" name="from_date[]" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2"> <label for="to_date">To Date<span class="text-danger important">*</span></label>
+
+                                        <div class="col-md-2">
                                             <input type="date" name="to_date[]" class="form-control form-control-sm">
                                         </div>
-                                        <div class="col-md-2 d-flex align-items-center mt-4">
+
+                                        <div class="col-md-2 d-flex align-items-center mt-2">
                                             <button type="button" class="btn btn-outline-primary btn-sm btn-add">+</button>
                                         </div>
+
                                     </div>
+
+                                    @endif
+
                                 </div>
 
                                 <!-- Tables -->
@@ -158,8 +220,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#slab', 'Select Ticket Fare Slab');
         commonAjax.initSelect2('#operator', 'Select Bus Operator');
 
-        commonAjax.loadTicketFareSlabList('#slab');
+        commonAjax.loadTicketFareSlabList('#slab', slab_id);
         commonAjax.loadBusOperatorList();
+
+
+        let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
+        commonAjax.loadTicketFareSlabList('#slab', slab_id);
 
         $('#operator').on('change', function() {
 
@@ -180,6 +246,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             $(this).val('').trigger('change');
         });
+
+        let existingOperators = @json($data['row']['operators'] ?? []);
+
+        existingOperators.forEach(op => {
+            selectedOperators.push({
+                id: op.id,
+                text: op.name
+            });
+
+            loadOperatorTable({
+                id: op.id,
+                text: op.name
+            });
+        });
+
+        renderOperators();
     });
 
     function renderOperators() {

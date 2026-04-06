@@ -52,7 +52,6 @@ class TicketFareSlabInfoController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // 🔍 filters
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
                     $q->where('s.slab_name', 'like', "%{$txtSearch}%")
@@ -72,7 +71,6 @@ class TicketFareSlabInfoController extends Controller
 
                 $slabId = $row->slab_id;
 
-                // ✅ ONE ROW PER SLAB
                 if (!isset($grouped[$slabId])) {
 
                     $grouped[$slabId] = [
@@ -88,11 +86,10 @@ class TicketFareSlabInfoController extends Controller
                         'created_by_name' => $row->created_by_name,
                         'updated_by_name' => $row->updated_by_name,
                         'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-                        'enc_id' => Crypt::encryptString($row->id),
+                        'enc_id' => Crypt::encryptString($row->slab_id),
                     ];
                 }
 
-                // ✅ UNIQUE OPERATORS
                 if (
                     !empty($row->operator_name) &&
                     !in_array($row->operator_name, $grouped[$slabId]['operators'])
@@ -101,7 +98,6 @@ class TicketFareSlabInfoController extends Controller
                     $grouped[$slabId]['operators'][] = $row->operator_name;
                 }
 
-                // ✅ UNIQUE SLAB INFO (STRONG KEY)
                 $key = md5(
                     $row->starting_fare . '|' .
                         $row->upto_fare . '|' .
@@ -171,15 +167,50 @@ class TicketFareSlabInfoController extends Controller
                 $data['strReset']  = 'Cancel';
 
                 // ✅ FETCH EXISTING DATA
-                $row = DB::table('mst_ticket_fare_slab_info')
-                    ->where('slab_id', $id)
+                $row = DB::table('mst_ticket_fare_slab_info as t')
+                    ->leftJoin('users as u', 'u.id', '=', 't.bus_operator_id')
+                    ->where('t.slab_id', $id)
+                    ->select(
+                        't.*',
+                        'u.organization_name as operator_name'
+                    )
                     ->get();
 
                 if ($row->isEmpty()) {
                     return redirect('ticketfareslab-info');
                 }
 
-                $data['row'] = $row;
+                // ✅ group data
+                $operators = [];
+                $slabInfo = [];
+
+                foreach ($row as $r) {
+
+                    // operators
+                    $operators[$r->bus_operator_id] = [
+                        'id' => $r->bus_operator_id,
+                        'name' => $r->operator_name
+                    ];
+
+                    // slab rows
+                    $slabInfo[] = [
+                        'starting_fare' => (string)$r->starting_fare,
+                        'upto_fare' => (string)$r->upto_fare,
+                        'commision' => (string)$r->commision,
+                        'from_date' => date('Y-m-d', strtotime($r->from_date)),
+                        'to_date' => date('Y-m-d', strtotime($r->to_date)),
+                    ];
+                }
+
+                $data['row'] = [
+                    'slab_id' => $id,
+                    'operators' => array_values($operators),
+                    'slabInfo' => $slabInfo
+                ];
+
+                if ($row->isEmpty()) {
+                    return redirect('ticketfareslab-info');
+                }
             } else {
                 $id = 0;
                 $redirectPage = "admin/ticketfareslab-info";
@@ -317,6 +348,7 @@ class TicketFareSlabInfoController extends Controller
                 'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
+
 
         return view('Master.addTicketFareSlabInfo', compact('data'));
     }
