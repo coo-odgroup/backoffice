@@ -141,6 +141,8 @@ class SeatLayoutController extends Controller
 
              $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
+             $data['seats'] = '';
+
              if ($id > 0) {
 
                 $redirectPage = "admin/seat-layout/edit/" . $encId;
@@ -155,6 +157,14 @@ class SeatLayoutController extends Controller
                 if (empty($dataResQry)) {
                     return redirect("seat-layout");
                 }
+
+                $seats = DB::table('mst_seats')
+                            ->select('seat_class','berth_type','seat_text','seat_code','row_number','col_number','is_window','is_aisle')
+                            ->where('seat_layout_name_id', $id)
+                            ->get();
+                            
+
+                $data['seats'] = $seats;
 
                 $data['row'] = $dataResQry;
 

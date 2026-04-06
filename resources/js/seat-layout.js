@@ -480,3 +480,110 @@ export function generateSeatJSON() {
 
     return seats;
 }
+
+//while edit
+
+export function loadLayoutFromJSON(seatData) {
+
+    // ✅ SHOW LOADER
+    const loader = document.createElement('div');
+    loader.id = 'seatLoader';
+    loader.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+            <div class="spinner-border text-primary"></div>
+            <p>Loading layout...</p>
+        </div>
+    `;
+    document.body.appendChild(loader);
+
+    // ⏳ Small delay so loader is visible
+    setTimeout(() => {
+
+        seatData.forEach(seat => {
+
+            const deck = seat.berth_type == 2 ? 'UPPER' : 'LOWER';
+            const row = seat.row_number;
+            const col = seat.col_number;
+
+            const selector = `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col}"]`;
+            const td = document.querySelector(selector);
+
+            if (!td) return;
+
+            const text = seat.seat_text ?? '';
+
+            // ✅ Fill main cell
+            td.innerText = text;
+
+            const hidden = td.querySelector('input[type="hidden"]');
+            if (hidden) hidden.value = text;
+
+            // =============================
+            // 🔥 APPLY CLASS BASED ON TYPE
+            // =============================
+
+            if (seat.seat_class == 1) {
+                td.classList.add('seater');
+                td.dataset.layout = 'SEATER';
+                td.dataset.type = (text === 'EXIT') ? 'EXIT' : 'NORMAL';
+            }
+
+            else if (seat.seat_class == 2) {
+
+                td.classList.add('sleeper');
+                td.dataset.layout = 'SLEEPER';
+
+                if (text === 'EXIT') td.dataset.type = 'EXIT';
+                else if (text === 'TOILET') td.dataset.type = 'TOILET';
+                else td.dataset.type = 'NORMAL';
+
+                // 👉 RIGHT cell
+                const right = document.querySelector(
+                    `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col + 1}"]`
+                );
+
+                if (right) {
+                    right.innerText = text;
+                    const hidden2 = right.querySelector('input[type="hidden"]');
+                    if (hidden2) hidden2.value = text;
+                }
+            }
+
+            else if (seat.seat_class == 3) {
+
+                td.classList.add('vertical-sleeper');
+                td.dataset.layout = 'VERTICAL_SLEEPER';
+
+                if (text === 'EXIT') td.dataset.type = 'EXIT';
+                else if (text === 'TOILET') td.dataset.type = 'TOILET';
+                else td.dataset.type = 'NORMAL';
+
+                // 👉 BOTTOM cell
+                const bottom = document.querySelector(
+                    `.seat[data-deck="${deck}"][data-row="${row + 1}"][data-col="${col}"]`
+                );
+
+                if (bottom) {
+                    bottom.innerText = text;
+                    const hidden2 = bottom.querySelector('input[type="hidden"]');
+                    if (hidden2) hidden2.value = text;
+                }
+            }
+
+            else {
+                td.innerText = '';
+            }
+
+        });
+
+        // ✅ Generate preview
+        ['UPPER', 'LOWER'].forEach(deck => {
+            reValidateDeck(deck);
+        });
+
+        // ✅ HIDE LOADER
+        const loaderEl = document.getElementById('seatLoader');
+        if (loaderEl) loaderEl.remove();
+
+    }, 500); // small delay for smooth UX
+}
