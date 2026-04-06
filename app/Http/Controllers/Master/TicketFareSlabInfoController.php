@@ -192,21 +192,34 @@ class TicketFareSlabInfoController extends Controller
                         'name' => $r->operator_name
                     ];
 
-                    // slab rows
-                    $slabInfo[] = [
-                        'starting_fare' => (string)$r->starting_fare,
-                        'upto_fare' => (string)$r->upto_fare,
-                        'commision' => (string)$r->commision,
-                        'from_date' => date('Y-m-d', strtotime($r->from_date)),
-                        'to_date' => date('Y-m-d', strtotime($r->to_date)),
-                    ];
+                    // slab rows (unique)
+                    $key = md5(
+                        $r->starting_fare . '|' .
+                            $r->upto_fare . '|' .
+                            $r->commision . '|' .
+                            date('Y-m-d', strtotime($r->from_date)) . '|' .
+                            date('Y-m-d', strtotime($r->to_date))
+                    );
+
+                    if (!isset($slabInfo[$key])) {
+                        $slabInfo[$key] = [
+                            'starting_fare' => (string)$r->starting_fare,
+                            'upto_fare' => (string)$r->upto_fare,
+                            'commision' => (string)$r->commision,
+                            'from_date' => date('Y-m-d', strtotime($r->from_date)),
+                            'to_date' => date('Y-m-d', strtotime($r->to_date)),
+                        ];
+                    }
                 }
+
+                // ✅ THIS LINE WAS MISSING
+                $slabInfo = array_values($slabInfo);
 
                 $data['row'] = [
                     'slab_id' => $id,
                     'operators' => array_values($operators),
                     'slabInfo' => $slabInfo
-                ];
+                ];;
 
                 if ($row->isEmpty()) {
                     return redirect('ticketfareslab-info');
