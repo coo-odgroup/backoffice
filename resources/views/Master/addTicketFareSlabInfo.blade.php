@@ -216,16 +216,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     let selectedOperators = [];
 
     $(document).ready(function() {
+        let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
+
 
         commonAjax.initSelect2('#slab', 'Select Ticket Fare Slab');
         commonAjax.initSelect2('#operator', 'Select Bus Operator');
-
         commonAjax.loadTicketFareSlabList('#slab', slab_id);
         commonAjax.loadBusOperatorList();
 
 
-        let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
-        commonAjax.loadTicketFareSlabList('#slab', slab_id);
+
 
         $('#operator').on('change', function() {
 
