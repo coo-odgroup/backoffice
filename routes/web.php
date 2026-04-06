@@ -144,6 +144,7 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/seat-layout', [SeatLayoutController::class, 'index'])->name('seatlayout.index');
     Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
+    Route::match(['get', 'post'], 'seat-layout/edit/{encId}', [SeatLayoutController::class, 'edit'])->name('seatlayout.edit');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
   
@@ -467,6 +468,7 @@ Route::prefix('admin')->group(function () {
 
     //View Bus Seat Layout
     Route::get('/bus-seat-layout/{id}', [BusSeatLayoutController::class, "index"])->name('buslayout.index');
+    Route::post('/get-seat-layout-preview', [SeatLayoutController::class, "getSeatLyoutPreview"]);
 
     //--------------------------------------------------------------------------------------------------------------------
 

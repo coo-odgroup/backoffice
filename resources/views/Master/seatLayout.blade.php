@@ -149,6 +149,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 
+<div class="modal fade" id="viewSeatModal" tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false"   aria-hidden="true">
+ <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Seat Layout: <span id="seatLayoutName"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="overflow-y:auto">
+        <div id="viewSeatContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 @push('scripts')
 
@@ -298,16 +312,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: '',
                 render: function(data, type, row) {
 
-                    let editUrl = $('#' + tableId).data('edit-url');
-
-                    if (!editUrl) return '';
-
                     return `
-                        <a href="{{ "bus-seat-layout/"}}${row.bustype_id}"
-                            class="btn btn-sm btn-success"
-                            data-table="mst_bus_type"
-                            data-id="${row.enc_bustype_id}">View
-                        </a>
+                        <span class="btn btn-sm btn-success btnViewSeats"
+                              data-table="mst_bus_type"
+                              data-id="${row.enc_bustype_id}"
+                              data-name="${row.layout_name}">View
+                        </span>
                     `;
                 },
                 className: "noPrint text-center"
@@ -316,5 +326,44 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
+
+   $(document).on('click', '.btnViewSeats', function () {
+
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+
+        $('#seatLayoutName').text(name);
+
+        $('#viewSeatContainer').html(`
+            <div class="text-center p-4">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2">Loading seats...</p>
+            </div>
+        `);
+
+        const modal = new bootstrap.Modal(document.getElementById('viewSeatModal'));
+        modal.show();
+
+        $.ajax({
+            type: "POST",
+            url: "{{ url('admin/get-seat-layout-preview') }}",
+            data: {
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            dataType: "html",
+            success: function (response) {
+                // ✅ Replace loader with actual content
+                $('#viewSeatContainer').html(response);
+            },
+            error: function () {
+                $('#viewSeatContainer').html(`
+                    <div class="text-danger text-center p-4">
+                        Failed to load seats. Please try again.
+                    </div>
+                `);
+            }
+        });
+    });
 </script>
 @endpush
