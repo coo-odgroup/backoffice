@@ -2,12 +2,6 @@
 @section('page_title', 'City Timings')
 @section('content')
 
-<style>
-    #previewList .d-flex {
-        cursor: move;
-    }
-</style>
-
 <?php
 $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
@@ -83,10 +77,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <!-- Conductor Row -->
                                         <div class="row align-items-center mb-4">
                                             <div class="col-md-4">
-                                                <label class="form-label fw-semibold">Conductor Number</label>
+                                                <label class="form-label fw-semibold">Conductor Number <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control form-control-sm"
                                                     placeholder="Conductor Number"
-                                                    name="contacts[0][phone]">
+                                                    name="contacts[0][phone]" id="conductorNumber">
                                             </div>
 
                                             <div class="col-md-2 text-center">
@@ -129,7 +123,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold">Manager Number</label>
                                                 <input type="text" class="form-control form-control-sm"
                                                     placeholder="Manager Number"
-                                                    name="contacts[1][phone]">
+                                                    name="contacts[1][phone]" id="managerNumber">
                                             </div>
 
                                             <div class="col-md-2 text-center">
@@ -172,7 +166,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold">Owner Number</label>
                                                 <input type="text" class="form-control form-control-sm"
                                                     placeholder="Owner Number"
-                                                    name="contacts[2][phone]">
+                                                    name="contacts[2][phone]" id="ownerNumber">
                                             </div>
 
                                             <div class="col-md-2 text-center">
@@ -214,7 +208,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <button class="btn btn-warning px-5 rounded-pill me-3">
                                                 Back
                                             </button>
-                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Preview →</button>
+                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
 
                                         </div>
 
@@ -234,6 +228,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
+    $(document).ready(function() {
+        commonAjax.allowOnlyNumbers(['conductorNumber', 'managerNumber', 'ownerNumber']); // Ids
+    });
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -244,9 +242,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
+        if (!validator.blankCheck('conductorNumber', 'Conductor Number cannot be left blank'))
+            return false;
+
         commonAjax.confirmAlert('Are you sure to proceed !');
 
-        $('#btnConfirmOk').on('click', function() {
+        $('#btnConfirmOk').one('click', function() {
             e.currentTarget.submit();
         });
 

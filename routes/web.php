@@ -87,7 +87,10 @@ Route::prefix('admin/bus/create')->group(function () {
     Route::post('/step5/{encId}', [BusWizardController::class, 'postStep5']);
 
     Route::get('/step6/{encId}', [BusWizardController::class, 'step6'])->name('bus.step6');
-    Route::post('/step6/{encId}', [BusWizardController::class, 'finish']);
+    Route::post('/step6/{encId}', [BusWizardController::class, 'postStep6']);
+
+    Route::get('/step7/{encId}', [BusWizardController::class, 'step7'])->name('bus.step7');
+    Route::post('/step7/{encId}', [BusWizardController::class, 'postStep7']);
 
     Route::get('/preview/{encId}', [BusWizardController::class, 'preview'])->name('bus.preview');
 });
@@ -126,6 +129,7 @@ Route::prefix('admin')->group(function () {
     Route::get('get-boarding-dropping', [BusWizardController::class, 'getBoardingDropping']);
     Route::post('get-listing-time', [BusWizardController::class, 'getListingTime']);
     Route::post('get-boarding-dropping-by-cityId', [BoardingDroppingController::class, 'getBoardingDroppingByCityId']);
+    Route::get('/get-seats-by-layout', [BusWizardController::class, 'getSeatsByLayout']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);

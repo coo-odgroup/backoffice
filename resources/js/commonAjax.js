@@ -1667,3 +1667,19 @@ export function makeUpperCase(ids) {
         });
     });
 }
+
+export function allowOnlyNumbers(ids) {
+    ids.forEach(function(id) {
+        $(document).on("input", "#" + id, function() {
+            let value = $(this).val();
+
+            // Remove non-numeric characters
+            value = value.replace(/[^0-9]/g, '');
+
+            // Limit to 10 digits
+            value = value.slice(0, 10);
+
+            $(this).val(value);
+        });
+    });
+}

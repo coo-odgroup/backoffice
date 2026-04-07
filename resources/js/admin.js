@@ -130,6 +130,7 @@ window.initTooltips = commonAjax.initTooltips;
 window.actionRec = commonAjax.actionRec;
 window.initCharCounter = commonAjax.initCharCounter;
 window.makeUpperCase = commonAjax.makeUpperCase;
+window.allowOnlyNumbers = commonAjax.allowOnlyNumbers;
 
 $(document).on('click', '.btn-view-log', function() {
 

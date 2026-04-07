@@ -419,7 +419,7 @@ class BusWizardController extends Controller
         return view('admin.bus.wizard.step6', compact('data'));
     }
 
-    public function finish(Request $request)
+    public function postStep6(Request $request)
     {
         try {
             $contacts = $request->contacts ?? [];
@@ -455,7 +455,20 @@ class BusWizardController extends Controller
         }
 
         $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
-        return redirect()->route('bus.preview', ['encId' => $enc_bus_id]);
+        return redirect()->route('bus.step7', ['encId' => $enc_bus_id]);
+    }
+
+    public function step7($bus_id = null)
+    {
+        $data = [];
+        $data['strPage'] = $method = 'Add';
+        $data['strSubmit'] = 'Submit';
+        $data['strReset'] = 'Reset';
+
+        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['seat_layout'] = DB::table('mst_seat_layout_name')->get();
+        $data['bus_id'] = $bus_id;
+        return view('admin.bus.wizard.step7', compact('data'));
     }
 
     public function preview($bus_id = null)
@@ -491,6 +504,59 @@ class BusWizardController extends Controller
 
         return response()->json([
             'listing_time' => $data->listing_time ?? null
+        ]);
+    }
+
+    public function getSeatsByLayout(Request $request)
+    {
+        $seatLayoutId = $request->layout_id;
+
+        $seats = DB::table('mst_seats')
+            ->where('seat_layout_name_id', $seatLayoutId)
+            ->orderBy('row_number')
+            ->orderBy('col_number')
+            ->get();
+
+        $layout = [
+            'UPPER' => [],
+            'LOWER' => []
+        ];
+
+        foreach ($seats as $seat) {
+
+            $deck = $seat->berth_type == 1 ? 'LOWER' : 'UPPER';
+
+            $layout[$deck][$seat->row_number][$seat->col_number] = $seat;
+        }
+
+        foreach ($layout as $deck => $rows) {
+
+            ksort($rows); // sort rows
+
+            foreach ($rows as $rowKey => $cols) {
+                ksort($cols); // sort columns
+                $rows[$rowKey] = $cols;
+            }
+
+            $layout[$deck] = $rows;
+        }
+
+        $maxCols = [
+            'UPPER' => 0,
+            'LOWER' => 0
+        ];
+
+        foreach ($layout as $deck => $rows) {
+            foreach ($rows as $cols) {
+                if (!empty($cols)) {
+                    $maxCols[$deck] = max($maxCols[$deck], max(array_keys($cols)));
+                }
+            }
+        }
+
+        return response()->json([
+            'layout'  => $layout,
+            'maxCols' => $maxCols
         ]);
     }
 }
