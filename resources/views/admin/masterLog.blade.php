@@ -76,9 +76,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <span>Last 24h</span>
             <span>7 days</span>
             <span>30 days</span>
+            <span>1 year</span>
         </div>
 
     </div>
+
+
 
 
     <!-- FILTERS -->
@@ -126,7 +129,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </div>
 
 
-        <table class="log-table"  id="logTable">
+        <table class="log-table" id="logTable">
 
             <thead>
                 <tr>
@@ -175,63 +178,160 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @endsection
 
 <script>
-let table;
+    // LOAD DATA
+    function loadAuditLogs(page = 1) {
 
-$(document).ready(function() {
+        let range = $('.log-quick-filter span.active').data('range') || '';
 
-    table = $('#logTable').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '/admin/master-log-list',
-            type: 'POST',
-            data: function(d) {
-                d.txtSearch = $('#txtSearch').val();
-                d.from_date = $('#from_date').val();
-                d.to_date   = $('#to_date').val();
-                d.action    = $('#action').val();
-                d._token    = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+            url: "/admin/audit-logs-data?page=" + page,
+            type: "GET",
+            data: {
+                search: $('#txtSearch').val(),
+                action: $('#action').val(),
+                from_date: $('#from_date').val(),
+                to_date: $('#to_date').val(),
+                range: range
             },
-            dataSrc: function(res) {
+            success: function(res) {
 
-                // 🔢 COUNTS
-                $('.total-count').text(res.counts.total);
-                $('.create-count').text(res.counts.creates);
-                $('.update-count').text(res.counts.updates);
-                $('.delete-count').text(res.counts.deletes);
+                // STATS
+                $('.total-count').text(res.stats.total);
+                $('.create-count').text(res.stats.create);
+                $('.update-count').text(res.stats.update);
+                $('.delete-count').text(res.stats.delete);
 
-                return res.data;
-            }
-        },
+                // TABLE
+                let html = '';
 
-        columns: [
-            { data: 'table_name' },
-            { data: 'record_id' },
-            { data: 'action_badge', orderable: false },
-            { data: 'created_by_name', defaultContent: 'System' },
-            { data: 'created_date' },
-            {
-                data: 'id',
-                orderable: false,
-                render: function(data) {
-                    return `<button class="fa fa-eye view_btn" onclick="viewLog(${data})"></button>`;
+                if (res.data.data.length === 0) {
+                    html = `<tr><td colspan="6" class="text-center">No data found</td></tr>`;
                 }
+
+                res.data.data.forEach(row => {
+
+                    let badgeClass = 'blue';
+                    if (row.action === 'INSERT') badgeClass = 'green';
+                    else if (row.action === 'UPDATE') badgeClass = 'blue';
+                    else if (row.action === 'DELETE') badgeClass = 'red';
+                    else badgeClass = 'gray';
+                    html += `
+                <tr>
+                    <td>${row.table_name}</td>
+                    <td>${row.record_id}</td>
+                    <td><span class="log-badge ${badgeClass}">${row.action}</span></td>
+                    <td>${row.created_by ?? '--'}</td>
+                    <td>${function formatDate(date) {
+                            let d = new Date(date);
+                            let now = new Date();
+
+                            let diff = (now - d) / 1000;
+
+                            if (diff < 60) return "Just now";
+                            if (diff < 3600) return Math.floor(diff / 60) + " min ago";
+                            if (diff < 86400) return Math.floor(diff / 3600) + " hrs ago";
+
+                            return d.toLocaleDateString();
+                        }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info viewDetails" data-id="${row.id}">
+                            <i class="fa fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>`;
+                });
+
+                $('#logTable tbody').html(html);
+
+                // ✅ UPDATE COUNT HEADER
+                $('.log-table-header span').text(res.stats.total + ' total');
+
+                // ✅ PAGINATION (simple)
+                renderPagination(res.data);
             }
-        ]
+        });
+    }
+
+    // 📅 FORMAT DATE
+    function formatDate(date) {
+        return new Date(date).toLocaleString();
+    }
+
+    // 📄 PAGINATION
+    function renderPagination(pagination) {
+
+        let html = '';
+
+        for (let i = 1; i <= pagination.last_page; i++) {
+            html += `<button class="btn btn-sm ${i === pagination.current_page ? 'btn-primary' : 'btn-light'} page-btn" data-page="${i}">
+                    ${i}
+                 </button>`;
+        }
+
+        $('#customPagination').html(html);
+    }
+
+
+    // 🔍 Search
+    $('#btnSearch').click(() => loadAuditLogs());
+
+    // ⌨️ Enter key search
+    $('#txtSearch').on('keyup', function(e) {
+        if (e.key === 'Enter') loadAuditLogs();
     });
 
-    // 🔍 SEARCH
-    $('#btnSearch').click(function() {
-        table.ajax.reload();
-    });
+    // 🔁 Refresh
+    $('.log-refresh-btn').click(() => loadAuditLogs());
 
-    // 🔄 RESET
+    // ❌ Clear Filters
     $('#btnReset').click(function() {
         $('#txtSearch').val('');
+        $('#action').val('');
         $('#from_date').val('');
         $('#to_date').val('');
-        $('#action').val('');
-        table.ajax.reload();
+        $('.log-quick-filter span').removeClass('active');
+        loadAuditLogs();
     });
 
-});
+    // 📅 Quick Filters
+    $('.log-quick-filter span').click(function() {
+
+        $('.log-quick-filter span').removeClass('active');
+        $(this).addClass('active');
+
+        let text = $(this).text().toLowerCase();
+
+        if (text.includes('24')) $(this).data('range', '24h');
+        else if (text.includes('7')) $(this).data('range', '7d');
+        else if (text.includes('30')) $(this).data('range', '30d');
+        else if (text.includes('year')) $(this).data('range', '1y');
+
+        loadAuditLogs();
+    });
+
+    // 📄 Pagination click
+    $(document).on('click', '.page-btn', function() {
+        let page = $(this).data('page');
+        loadAuditLogs(page);
+    });
+
+    // 👁 VIEW DETAILS
+    $(document).on('click', '.viewDetails', function() {
+
+        let id = $(this).data('id');
+
+        $.get('/admin/audit-log/' + id, function(res) {
+
+            alert(JSON.stringify(res, null, 2)); // replace with modal later
+        });
+    });
+
+    // 📥 EXPORT CSV
+    $('.log-export-btn').click(function() {
+        window.location.href = "/admin/audit-logs-export";
+    });
+
+    // 🚀 INITIAL LOAD
+    $(document).ready(function() {
+        loadAuditLogs();
+    });

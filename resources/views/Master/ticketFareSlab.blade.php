@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Blog Tags')
+@section('page_title', 'Ticket Fare Slab')
 @section('content')
 
 <?php
@@ -12,7 +12,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Blog Management</li>
+        <li class="breadcrumb-item">Master</li>
         <li class="breadcrumb-item active">@yield('page_title')</li>
     </ol>
 </nav>
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('blog-tags.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('ticketfareslab.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -40,10 +40,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
-                        <div class="col-lg-9 col-md-9 mb-2">
-                            <label for="txtSearch">Search By Blog Tags</label>
+                        <div class="col-lg-5 col-md-5 mb-2">
+                            <label for="txtSearch">Search By Slab</label>
                             <input type="text" class="form-control clearable form-select-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Blog Tags">
+                                placeholder="Slab">
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="amenityCategory">Category</label>
+                            <select class="form-select form-select-sm" id="amenityCategory" name="amenityCategory">
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
 
                         <!-- BUTTONS -->
@@ -69,15 +83,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white d-none" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm d-none" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -102,8 +116,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('blog-tags.dataTableView') }}"
-                    data-edit-url="{{ route('blog-tags.edit', 'ID') }}">
+                    data-url="{{ route('ticketfareslab.dataTableView') }}"
+                    data-edit-url="{{ route('ticketfareslab.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -112,9 +126,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Tag Name</th>
-                            <th>Slug</th>
+                            <th>Slab Name</th>
+                            <th>Description</th>
                             <th>Last Modified</th>
+                            <th>Status</th>
                             <th class="no-sort">Action</th>
                         </tr>
                     </thead>
@@ -125,7 +140,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BlogTags">
+            <input type="hidden" id="hdn_model" value="TicketFareSlab">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -151,6 +166,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
     });
+
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -180,23 +196,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let faqCategory = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
+        }
+        if ($('#selStatus').val() != '') {
+            selStatus = $('#selStatus').val();
         }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtSearch: txtSearch
+            txtsearch: txtSearch,
+            selstatus: selStatus
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
                 data: '',
                 className: "noPrint text-center",
                 render: (d, t, r) =>
-                    `<div class="checkbox"><input class="chkItem" type="checkbox" value="${r.blog_tags_id}"></div>`
+                    `<div class="checkbox"><input class="chkItem" type="checkbox" value="${r.slab_id}"></div>`
             },
             {
                 data: 'slNo',
@@ -206,11 +225,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'tag_name',
+                data: 'slab_name',
                 defaultContent: "--"
             },
             {
-                data: 'slug',
+                data: 'description',
                 defaultContent: "--"
             },
             {
@@ -247,7 +266,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 }
             },
             {
-                data: null,
+                data: 'is_active',
+                render: function(data, type, row) {
+                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
+                    return '<span class="' + cls + '">' + row.is_active + '</span>';
+                },
+                className: "text-center"
+            },
+            {
+                data: '',
                 render: function(data, type, row) {
 
                     let editUrl = $('#' + tableId).data('edit-url');
@@ -255,15 +282,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
-                        <a class="btn btn-sm btn-info text-white"
-                        href="${editUrl.replace('ID', row.enc_blog_tags_id)}">
+                        <a class="btn btn-sm btn-info"
+                        href="${editUrl.replace('ID', row.enc_slab_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="blog_tags"
-                            data-id="${row.enc_blog_tags_id}">
+                            data-table="mst_ticket_fare_slab"
+                            data-id="${row.enc_slab_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
 
@@ -271,16 +298,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "noPrint text-center"
             }
-        ];
-
+        ]
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#faqCategory', 'Select Category');
-        commonAjax.loadFaqCategory(0);
+        commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
+
+        commonAjax.loadAmenityCategory(0);
     });
 </script>
 @endpush

@@ -561,11 +561,11 @@ td:focus {
     grid-row: span 2;
     width: 36px;
     height: 80px;
-    background-image: url("/assets/seats/../../public/assets/seats/SleeperGray.png");
+    background-image: url("../../public/assets/seats/sleeper_layout_vertical.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    transform: rotate(90deg);
+    /* transform: rotate(90deg); */
     transform-origin: center;
 }
 
@@ -1228,22 +1228,22 @@ svg.svg-inline--fa.fa-file-export {
 
 /* DEFAULT */
 .bus-seat {
-    background-image: url("/assets/seats/../../public/assets/seats/seat_layout.png");
+    background-image: url("../../public/assets/seats/seat_layout.png");
 }
 
 .bus-sleeper {
-    background-image: url("/assets/seats/../../public/assets/seats/sleeper_layout.png");
+    background-image: url("../../public/assets/seats/sleeper_layout.png");
 }
 
 /* SELECTED */
 .bus-seat.selected,
 .seat-checkbox:checked+.seat {
-    background-image: url("/assets/seats/../../public/assets/seats/Seat_layout_blue.png");
+    background-image: url("../../public/assets/seats/Seat_layout_blue.png");
 }
 
 .bus-sleeper.selected,
 .seat-checkbox:checked+.bus-sleeper {
-    background-image: url("/assets/seats/../../public/assets/seats/Sleeper_layout_blue.png");
+    background-image: url("../../public/assets/seats/Sleeper_layout_blue.png");
 }
 
 /* SEAT NUMBER GAP BELOW */
@@ -1550,7 +1550,7 @@ svg.svg-inline--fa.fa-file-export {
 
 /* GRID COMPACT */
 .layout-box {
-    grid-template-columns: repeat(12, 34px) !important;
+    /* grid-template-columns: repeat(12, 34px) !important; */
     gap: 6px !important;
     padding: 10px !important;
 }
@@ -1576,6 +1576,87 @@ svg.svg-inline--fa.fa-file-export {
 .seat-number {
     font-size: 10px !important;
     margin-top: 4px;
+}
+
+.vertical-sleeper-wrap {
+    grid-row: span 2;
+    height: auto !important;
+}
+
+.bus-vertical-sleeper {
+    display: block; /* IMPORTANT */
+    width: 36px; /* match seat width */
+    height: 80px;
+
+    background-image: url("../../public/assets/seats/sleeper_layout_vertical.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.exit_prv {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Horizontal Exit */
+.horizontal_exit_prv {
+    display: block; 
+    width: 80px; 
+    height: 36px;
+    background-image: url('../../public/assets/seats/exit_horizontal.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+/* TOILET HORIZONTAL */
+.horizontal_toilet_prv {
+    display: block; 
+    width: 80px; 
+    height: 36px;
+    background: url('../../public/assets/seats/toilet_horizontal.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Vertical Exit */
+.vertical_exit_prv {
+    display: block; 
+    width: 36px; 
+    height: 80px;
+    background-image: url('../../public/assets/seats/exit_vertical.png');
+     background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.toilet_prv {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Vertical Toilet */
+.vertical_toilet_prv {  
+    display: block; 
+    width: 36px; 
+    height: 80px;
+    background-image: url('../../public/assets/seats/toilet_vertical.png');
+     background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.exit-seat {
+    border: 2px solid red;
+}
+
+.toilet-seat {
+    border: 2px solid blue;
 }
 
 @media (max-width: 768px) {
@@ -2028,4 +2109,38 @@ label.amenity-chip:has(input:checked) {
     .meta-left{
         margin-bottom: 8px;
     }
+
+
+
+.selected-tag {
+    display: inline-block;
+    background: #ffc107;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin: 3px;
+    font-size: 13px;
+}
+
+.selected-tag .remove {
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.table-sm td {
+    vertical-align: middle;
+}
+}
+#seatLoader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255,255,255,0.7);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

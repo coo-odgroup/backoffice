@@ -62,55 +62,45 @@ $page_name = 'Add Seat Layout';
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-3 mb-3">
-                                            <label>Seat Layout Name<span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control clearable form-control-sm" id="layout_name" name="layout_name" placeholder="Seat Layout Name">
+                                            <label for="layout_name">Seat Layout Name<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control clearable form-control-sm" id="layout_name" name="layout_name" placeholder="Seat Layout Name" value="{{ $data['row']->layout_name ?? '' }}">
                                             <small id="layoutError" class="text-danger"></small>
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="classType">Rows<span class="text-danger important">*</span></label>
-                                            <select class="form-select clearable" id="rows" name="rows">
+                                            <select class="form-select form-select-sm clearable" id="rows" name="rows">
                                                 <option value="0">Rows</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
-                                                <option value="6">6</option>
-                                                <option value="7">7</option>
-                                                <option value="8">8</option>
-                                                <option value="9">9</option>
-                                                <option value="10">10</option>
+                                               @for ($i = 1; $i <= 10; $i++)
+                                                    <option value="{{ $i }}" 
+                                                        {{ (isset($data['row']->rows) && $data['row']->rows == $i) ? 'selected' : '' }}>
+                                                        {{ $i }}
+                                                    </option>
+                                                @endfor
                                             </select>
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="classType">Columns<span class="text-danger important">*</span></label>
-                                            <select class="form-select clearable" id="cols" name="cols">
+                                            <select class="form-select form-select-sm clearable" id="cols" name="cols">
                                                 <option value="0">Columns</option>
-                                                <option value="1">1</option>
-                                                <option value="2">2</option>
-                                                <option value="3">3</option>
-                                                <option value="4">4</option>
-                                                <option value="5">5</option>
-                                                <option value="6">6</option>
-                                                <option value="7">7</option>
-                                                <option value="8">8</option>
-                                                <option value="9">9</option>
-                                                <option value="10">10</option>
-                                                <option value="11">11</option>
-                                                <option value="12">12</option>
+                                                    @for ($i = 1; $i <= 12; $i++)
+                                                        <option value="{{ $i }}" 
+                                                            {{ (isset($data['row']->cols) && $data['row']->cols == $i) ? 'selected' : '' }}>
+                                                            {{ $i }}
+                                                        </option>
+                                                     @endfor
                                             </select>
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="classType">Bus Tier<span class="text-danger important">*</span></label>
-                                            <select class="form-select " id="busTier" name="busTier">
+                                            <select class="form-select form-select-sm clearable" id="busTier" name="busTier">
                                                 <option value="0">Select Tier</option>
-                                                <option value="1">1 Tier</option>
-                                                <option value="2">2 Tier</option>
-                                                <option value="3">3 Tier</option>
+                                                <option value="1" {{ (isset($data['row']->tier) && $data['row']->tier == 1) ? 'selected' : '' }}>1 Tier</option>
+                                                <option value="2" {{ (isset($data['row']->tier) && $data['row']->tier == 2) ? 'selected' : '' }}>2 Tier</option>
+                                                <option value="3" {{ (isset($data['row']->tier) && $data['row']->tier == 3) ? 'selected' : '' }}>3 Tier</option>
                                             </select>
                                         </div>
                                         <div class="col-md-2 mb-3 align-self-end">
-                                            <button id="generateBtn" type="button" class="btn btn-secondary w-100">Generate</button>
+                                            <button id="generateBtn" type="button" class="btn btn-sm btn-primary">Generate</button>
                                         </div>
                                     </div>
                                     <!-- Preview Seat Layout -->
@@ -157,7 +147,7 @@ $page_name = 'Add Seat Layout';
                                     <div class="row mt-4">
                                         <div class="col-12 d-flex gap-2">
                                             <button type="submit" class="btn btn-primary" id="saveLayout">
-                                                Save Seat Layout
+                                               Submit
                                             </button>
                                         </div>
                                     </div>
@@ -175,9 +165,36 @@ $page_name = 'Add Seat Layout';
 @push('scripts')
 
 <script type="module">
-    let saveBtn = $('#saveLayout');
-    // Disable initially
-    saveBtn.hide();
+
+      $(document).ready(function() {
+
+        let editRows = <?= $data['row']->rows ?? '0' ?>;
+        let editCols = <?= $data['row']->cols ?? '0' ?>;
+        let ids = <?= $data['row']->id ?? '0' ?>;
+        let seatJson = '<?= $data['seats'] ?? '' ?>';
+
+
+        if(editRows > 0 && editCols > 0){
+            $('#generateBtn').hide();
+            seatAjax.initLayout(editRows, editCols);
+            document.getElementById('seat_layout').style.display = 'block';
+        }
+
+        if(seatJson && ids != 0){
+            seatJson = @json($data['seats']);
+             seatAjax.loadLayoutFromJSON(seatJson);
+             updateValidSeats();
+             document.getElementById('validBtn').style.display = 'block';
+             document.getElementById('tag').style.display = 'block';
+             $('#generateBtn').show();
+        } else {
+             let saveBtn = $('#saveLayout');
+             saveBtn.hide();
+        }
+       
+        commonAjax.initClearableInputs();
+    });
+    
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -201,9 +218,7 @@ $page_name = 'Add Seat Layout';
             e.currentTarget.submit();
         });
 
-        const layout = seatAjax.generateSeatJSON();
-
-        console.log(layout);
+        const layout = seatAjax.generateSeatJSON();     
 
         document.getElementById("seat_layout_json").value = JSON.stringify(layout);
 
@@ -214,6 +229,7 @@ $page_name = 'Add Seat Layout';
     let validSeats = [];
 
     function updateValidSeats() {
+        $('#saveLayout').show();
         const layout = seatAjax.generateSeatJSON();
 
         validSeats = layout
@@ -226,6 +242,7 @@ $page_name = 'Add Seat Layout';
     $('#validBtns').on('click', function() {
         updateValidSeats();
         document.getElementById('tag').style.display = 'block';
+        document.getElementById('seat_layout').style.display = 'block';
     });
 
     $('#tags').on('change', function() {
@@ -256,11 +273,11 @@ $page_name = 'Add Seat Layout';
 
         if (invalidSeats.length > 0) {
             errorBox.text("Invalid seats: " + invalidSeats.join(', '));
-            saveBtn.hide();
+            // saveBtn.hide();
 
         } else {
             errorBox.text('');
-            saveBtn.show();
+            // saveBtn.show();
 
         }
     });
@@ -312,7 +329,7 @@ $page_name = 'Add Seat Layout';
 
     });
 
-    $('#layout_name').on('keyup', function() {
+    $('#layout_name').on('change', function() {
 
         let layoutName = $(this).val().trim();
         let errorBox = $('#layoutError');
@@ -343,8 +360,6 @@ $page_name = 'Add Seat Layout';
 
     });
 
-    $(document).ready(function() {
-        commonAjax.initClearableInputs();
-    });
+  
 </script>
 @endpush

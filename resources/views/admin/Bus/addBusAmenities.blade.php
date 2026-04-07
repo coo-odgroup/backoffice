@@ -70,11 +70,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label for="amenity_name">Amenity Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="amenity_name" name="amenity_name" value="{{ $data['row']->amenity_name ?? '' }}" placeholder="Enter Amenity Name">
+                                            <input type="text" class="form-control form-control-sm clearable" id="amenity_name" name="amenity_name" value="{{ $data['row']->amenity_name ?? '' }}" placeholder="Enter Amenity Name">
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="icon">Icon<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control" id="icon" name="icon" value="{{ $data['row']->icon ?? '' }}" placeholder="Icon Class Name Only">
+                                            <input type="text" class="form-control form-control-sm clearable" id="icon" name="icon" value="{{ $data['row']->icon ?? '' }}" placeholder="Icon Class Name Only">
                                         </div>
                                         <div class="col-md-2 mb-3">
                                             <label for="is_paid">Is Paid</label>
@@ -106,7 +106,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="description">Description</label>
-                                            <textarea class="form-control" id="description" name="description">{{ $data['row']->description ?? '' }}</textarea>
+                                            <textarea class="form-control form-control-sm clearable" id="description" name="description">{{ $data['row']->description ?? '' }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -150,6 +150,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
 
         let category_id = <?= $data['row']->category_id ?? '0' ?>

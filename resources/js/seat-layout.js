@@ -68,65 +68,6 @@ export function attachEvents() {
 
 /* ================= VALIDATION ================= */
 
-// export function validateSeat(td) {
-
-//     const name = td.innerText.trim();
-//     if (!name) return;
-
-//     const deck = td.dataset.deck;
-
-//     const matches = [...document.querySelectorAll(`.seat[data-deck="${deck}"]`)]
-//         .filter(s => s.innerText.trim() === name);
-
-//     // Reset existing preview
-//     matches.forEach(s => {
-//         removePreview(deck, +s.dataset.row, +s.dataset.col);
-//         resetSeat(s);
-//     });
-
-//     /* ---------- SINGLE SEAT ---------- */
-
-//     if (matches.length === 1) {
-//         mark(matches[0], 'SEATER');
-//         return;
-//     }
-
-//     /* ---------- MORE THAN TWO ---------- */
-
-//     if (matches.length > 2) {
-//         alert(`Seat "${name}" used more than twice`);
-//         matches.forEach(clearSeat);
-//         return;
-//     }
-
-//     /* ---------- TWO SEATS ---------- */
-
-//     const [a, b] = matches;
-
-//     const r1 = +a.dataset.row, c1 = +a.dataset.col;
-//     const r2 = +b.dataset.row, c2 = +b.dataset.col;
-
-//     // Horizontal sleeper
-//     if (r1 === r2 && Math.abs(c1 - c2) === 1) {
-
-//         const primary = c1 < c2 ? a : b;
-
-//         mark(primary, 'SLEEPER');
-//         return;
-//     }
-
-//     // Vertical sleeper
-//     if (c1 === c2 && Math.abs(r1 - r2) === 1) {
-
-//         const primary = r1 < r2 ? a : b;
-
-//         mark(primary, 'VERTICAL_SLEEPER');
-//         return;
-//     }
-
-//     alert(`Seat "${name}" must be adjacent`);
-//     matches.forEach(clearSeat);
-// }
 
 export function validateSeat(td) {
 
@@ -161,8 +102,6 @@ export function validateSeat(td) {
 function reValidateDeck(deck) {
 
     const seats = [...document.querySelectorAll(`.seat[data-deck="${deck}"]`)];
-
-    // Group seats by number
     const grouped = {};
 
     seats.forEach(td => {
@@ -173,21 +112,106 @@ function reValidateDeck(deck) {
         grouped[value].push(td);
     });
 
-    Object.values(grouped).forEach(matches => {
+    // Object.entries(grouped).forEach(([seatText, matches]) => {
 
-        // Clear old state
+    //     // 🔹 Detect role
+    //     let role = 'NORMAL';
+    //     if (seatText === 'E') role = 'EXIT';
+    //     if (seatText === 'T') role = 'TOILET';
+
+    //     // Reset
+    //     matches.forEach(s => {
+    //         removePreview(deck, +s.dataset.row, +s.dataset.col);
+    //         resetSeat(s);
+    //     });
+
+    //     // ❌ EXIT / TOILET must be exactly 2 cells
+    //     if ((role === 'EXIT' || role === 'TOILET') && matches.length !== 2) {
+    //         alert(`${seatText} must be exactly 2 adjacent cells`);
+    //         matches.forEach(clearSeat);
+    //         return;
+    //     }
+
+    //     // ✅ Normal seat (single)
+    //     if (role === 'NORMAL' && matches.length === 1) {
+    //         mark(matches[0], 'SEATER');
+    //         return;
+    //     }
+
+    //     // ❌ More than 2
+    //     if (matches.length > 2) {
+    //         alert(`"${seatText}" used more than twice`);
+    //         matches.forEach(clearSeat);
+    //         return;
+    //     }
+
+    //     const [a, b] = matches;
+
+    //     const r1 = +a.dataset.row, c1 = +a.dataset.col;
+    //     const r2 = +b.dataset.row, c2 = +b.dataset.col;
+
+    //     const isHorizontal = (r1 === r2 && Math.abs(c1 - c2) === 1);
+    //     const isVertical = (c1 === c2 && Math.abs(r1 - r2) === 1);
+
+    //     // ❌ Not adjacent
+    //     if (!isHorizontal && !isVertical) {
+    //         alert(`"${seatText}" must be adjacent`);
+    //         matches.forEach(clearSeat);
+    //         return;
+    //     }
+
+    //     // 🔹 Decide type
+    //     let type;
+
+    //     if (role === 'EXIT') {
+    //         type = isVertical ? 'EXIT_VERTICAL_SLEEPER' : 'EXIT_VERTICAL_SLEEPER';
+    //     }
+    //     else if (role === 'TOILET') {
+    //         type = isVertical ? 'TOILET_VERTICAL_SLEEPER' : 'TOILET_VERTICAL_SLEEPER';
+    //     }
+    //     else {
+    //         type = isVertical ? 'VERTICAL_SLEEPER' : 'SLEEPER';
+    //     }
+
+    //     // 🔹 Pick correct starting cell
+    //     let primary;
+
+    //     if (isHorizontal) {
+    //         primary = c1 < c2 ? a : b;
+    //     } else {
+    //         primary = r1 < r2 ? a : b;
+    //     }
+
+    //     mark(primary, type);
+    // });
+
+    Object.entries(grouped).forEach(([seatText, matches]) => {
+
+        // 🔹 Detect role
+        let role = 'NORMAL';
+        if (seatText === 'EXIT') role = 'EXIT';
+        if (seatText === 'TOILET') role = 'TOILET';
+
+        // Reset
         matches.forEach(s => {
             removePreview(deck, +s.dataset.row, +s.dataset.col);
             resetSeat(s);
         });
 
+        // ✅ SINGLE CELL (Seater / Exit)
         if (matches.length === 1) {
-            mark(matches[0], 'SEATER');
+
+            let type = 'SEATER';
+
+            if (role === 'EXIT') type = 'EXIT_SEATER';
+
+            mark(matches[0], type);
             return;
         }
 
+        // ❌ More than 2
         if (matches.length > 2) {
-            alert(`Seat "${matches[0].innerText}" used more than twice`);
+            alert(`"${seatText}" used more than twice`);
             matches.forEach(clearSeat);
             return;
         }
@@ -197,32 +221,50 @@ function reValidateDeck(deck) {
         const r1 = +a.dataset.row, c1 = +a.dataset.col;
         const r2 = +b.dataset.row, c2 = +b.dataset.col;
 
-        // Horizontal
-        if (r1 === r2 && Math.abs(c1 - c2) === 1) {
-            // Mark BOTH seats visually
-            a.classList.add('sleeper');
-            b.classList.add('sleeper');
-
-            // Choose one for preview rendering
-            const primary = c1 < c2 ? a : b;
-            updatePreview(deck, +primary.dataset.row, +primary.dataset.col, 'SLEEPER');
-            return;
-        }
-
-        // Vertical
+        // 🔸 VERTICAL (IMPORTANT for EXIT + TOILET)
         if (c1 === c2 && Math.abs(r1 - r2) === 1) {
-            a.classList.add('vertical-sleeper');
-            b.classList.add('vertical-sleeper');
+
+            let type = 'VERTICAL_SLEEPER';
+
+            if (role === 'EXIT') type = 'EXIT_VERTICAL_SLEEPER';
+            if (role === 'TOILET') type = 'TOILET_VERTICAL_SLEEPER';
 
             const primary = r1 < r2 ? a : b;
-            updatePreview(deck, +primary.dataset.row, +primary.dataset.col, 'VERTICAL_SLEEPER');
+
+            mark(primary, type);
             return;
         }
 
-        alert(`Seat "${a.innerText}" must be adjacent`);
+        if (r1 === r2 && Math.abs(c1 - c2) === 1) {
+
+            let type = 'SLEEPER';
+
+            if (role === 'EXIT') type = 'EXIT_SLEEPER';
+            if (role === 'TOILET') type = 'TOILET_SLEEPER';
+
+            const primary = c1 < c2 ? a : b;
+
+            mark(primary, type);
+            return;
+        }
+
+        // 🔸 HORIZONTAL (only normal sleeper)
+        if (r1 === r2 && Math.abs(c1 - c2) === 1) {
+
+            let type = 'SLEEPER';
+
+            const primary = c1 < c2 ? a : b;
+
+            mark(primary, type);
+            return;
+        }
+
+        alert(`"${seatText}" must be adjacent`);
         matches.forEach(clearSeat);
     });
 }
+
+
 
 /* ================= MARKING ================= */
 
@@ -232,23 +274,28 @@ export function mark(td, type) {
     const row = +td.dataset.row;
     const col = +td.dataset.col;
 
-    td.dataset.type = type;
+    // 🔹 Detect role
+    let role = 'NORMAL';
+    if (type.includes('EXIT')) role = 'EXIT';
+    else if (type.includes('TOILET')) role = 'TOILET';
+
+    // 🔹 Detect layout
+    let layout = 'SEATER';
+
+    if (type.includes('VERTICAL')) layout = 'VERTICAL_SLEEPER';
+    else if (type.includes('SLEEPER')) layout = 'SLEEPER';
+
+    td.dataset.type = role;
+    td.dataset.layout = layout;
 
     td.classList.remove('seater', 'sleeper', 'vertical-sleeper');
 
-    if (type === 'SEATER') {
-        td.classList.add('seater');
-    }
-    else if (type === 'SLEEPER') {
-        td.classList.add('sleeper');
-    }
-    else if (type === 'VERTICAL_SLEEPER') {
-        td.classList.add('vertical-sleeper');
-    }
+    if (layout === 'SEATER') td.classList.add('seater');
+    if (layout === 'SLEEPER') td.classList.add('sleeper');
+    if (layout === 'VERTICAL_SLEEPER') td.classList.add('vertical-sleeper');
 
     updatePreview(deck, row, col, type);
 }
-
 /* ================= RESET ================= */
 
 export function resetSeat(td) {
@@ -274,18 +321,56 @@ function updatePreview(deck, row, col, type) {
     seat.style.gridColumnStart = col;
     seat.style.gridRowStart = row;
 
-    if (type === 'SEATER') {
-        seat.classList.add('seat_prv');
+    const isExit = type.includes('EXIT');
+    const isToilet = type.includes('TOILET');
+
+    // 🔹 Layout span
+    if (type.includes('VERTICAL')) {
+        seat.style.gridRowEnd = row + 2;
+    }
+    else if (type.includes('SLEEPER')) {
+        seat.style.gridColumnEnd = col + 2;
     }
 
-    else if (type === 'SLEEPER') {
-        seat.classList.add('sleeper_prv');
-        seat.style.gridColumnEnd = 'span 2';
+    // 🔥 EXIT
+    if (isExit) {
+
+        if (type.includes('VERTICAL')) {
+            seat.classList.add('vertical_exit_prv');
+        } 
+        else if (type.includes('SLEEPER')) {
+            seat.classList.add('horizontal_exit_prv'); // ✅ NEW
+        }
+        else {
+            seat.classList.add('seat_exit_prv');
+        }
     }
 
-    else if (type === 'VERTICAL_SLEEPER') {
-        seat.classList.add('vertical_sleeper_prv');
-        seat.style.gridRowEnd = 'span 2';
+    // 🚽 TOILET
+    else if (isToilet) {
+
+        if (type.includes('VERTICAL')) {
+            seat.classList.add('vertical_toilet_prv');
+        } 
+        else if (type.includes('SLEEPER')) {
+            seat.classList.add('horizontal_toilet_prv'); // ✅ NEW
+        }
+        else {
+            seat.classList.add('seat_toilet_prv');
+        }
+    }
+
+    // 🪑 NORMAL
+    else {
+        if (type === 'SEATER') {
+            seat.classList.add('seat_prv');
+        }
+        else if (type === 'SLEEPER') {
+            seat.classList.add('sleeper_prv');
+        }
+        else if (type === 'VERTICAL_SLEEPER') {
+            seat.classList.add('vertical_sleeper_prv');
+        }
     }
 
     layoutBox.appendChild(seat);
@@ -306,160 +391,6 @@ function removePreview(deck, row, col) {
     });
 }
 
-// export function generateSeatJSON() {
-
-//     // const seat_layout_name_id = 1;
-//     const created_by = 1;
-
-//     let seats = [];
-
-//     document.querySelectorAll(".seat").forEach(td => {
-
-//         const seat = td.innerText.trim();
-//         const deck = td.dataset.deck;
-//         const row = parseInt(td.dataset.row);
-//         const col = parseInt(td.dataset.col);
-
-//         const berth_type = deck === "UPPER" ? 1 : 2;
-
-//         const next = document.querySelector(
-//             `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col+1}"]`
-//         );
-
-//         let seat_class = 0; // default blank
-
-//         // BLANK CELL
-//         if (!seat) {
-
-//             seats.push({
-//                 // seat_layout_name_id,
-//                 seat_class: 0,
-//                 berth_type,
-//                 seat_text: null,
-//                 row_number: row,
-//                 col_number: col,
-//                 is_window: 0,
-//                 is_aisle: 0,
-//                 created_by
-//             });
-
-//             return;
-//         }
-
-//         // SLEEPER CHECK
-//         if (next && next.innerText.trim() === seat) {
-
-//             seats.push({
-//                 // seat_layout_name_id,
-//                 seat_class: 2,
-//                 berth_type,
-//                 seat_text: seat,
-//                 row_number: row,
-//                 col_number: col,
-//                 is_window: 1,
-//                 is_aisle: 0,
-//                 created_by
-//             });
-
-//             next.dataset.skip = "true";
-//             return;
-//         }
-
-//         // SKIP second sleeper cell
-//         if (td.dataset.skip === "true") return;
-
-//         // SEATER
-//         seats.push({
-//             // seat_layout_name_id,
-//             seat_class: 1,
-//             berth_type,
-//             seat_text: seat,
-//             row_number: row,
-//             col_number: col,
-//             is_window: 1,
-//             is_aisle: 0,
-//             created_by
-//         });
-
-//     });
-
-//     return seats;
-// }
-
-// export function generateSeatJSON() {
-
-//     const created_by = 1;
-//     const tier = document.getElementById('busTier').value; // ✅ added
-
-//     let seats = [];
-
-//     document.querySelectorAll(".seat").forEach(td => {
-
-//         const seat = td.innerText.trim();
-//         const deck = td.dataset.deck;
-
-//         // ✅ ONLY THIS CONDITION
-//         if (tier == "1" && deck === "UPPER") return;
-
-//         const row = parseInt(td.dataset.row);
-//         const col = parseInt(td.dataset.col);
-
-//         const berth_type = deck === "UPPER" ? 1 : 2;
-
-//         const next = document.querySelector(
-//             `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col + 1}"]`
-//         );
-
-//         let seat_class = 0;
-
-//         if (!seat) {
-//             seats.push({
-//                 seat_class: 0,
-//                 berth_type,
-//                 seat_text: null,
-//                 row_number: row,
-//                 col_number: col,
-//                 is_window: 0,
-//                 is_aisle: 0,
-//                 created_by
-//             });
-//             return;
-//         }
-
-//         if (next && next.innerText.trim() === seat) {
-//             seats.push({
-//                 seat_class: 2,
-//                 berth_type,
-//                 seat_text: seat,
-//                 row_number: row,
-//                 col_number: col,
-//                 is_window: 1,
-//                 is_aisle: 0,
-//                 created_by
-//             });
-
-//             next.dataset.skip = "true";
-//             return;
-//         }
-
-//         if (td.dataset.skip === "true") return;
-
-//         seats.push({
-//             seat_class: 1,
-//             berth_type,
-//             seat_text: seat,
-//             row_number: row,
-//             col_number: col,
-//             is_window: 1,
-//             is_aisle: 0,
-//             created_by
-//         });
-
-//     });
-
-//     return seats;
-// }
-
 
 export function generateSeatJSON() {
 
@@ -473,20 +404,24 @@ export function generateSeatJSON() {
         const seat = td.innerText.trim();
         const deck = td.dataset.deck;
 
-        // ✅ Tier condition
         if (tier == "1" && deck === "UPPER") return;
 
-        const row = parseInt(td.dataset.row);
-        const col = parseInt(td.dataset.col);
+        const row = +td.dataset.row;
+        const col = +td.dataset.col;
 
-        // ✅ FIXED mapping
         const berth_type = deck === "UPPER" ? 2 : 1;
 
-        const next = document.querySelector(
+        const role = td.dataset.type || 'NORMAL';
+
+        const right = document.querySelector(
             `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col + 1}"]`
         );
 
-        let seat_class = 0;
+        const bottom = document.querySelector(
+            `.seat[data-deck="${deck}"][data-row="${row + 1}"][data-col="${col}"]`
+        );
+
+        if (td.dataset.skip === "true") return;
 
         if (!seat) {
             seats.push({
@@ -495,43 +430,160 @@ export function generateSeatJSON() {
                 seat_text: null,
                 row_number: row,
                 col_number: col,
-                is_window: 0,
-                is_aisle: 0,
                 created_by
             });
             return;
         }
 
-        if (next && next.innerText.trim() === seat) {
+        // Horizontal sleeper
+        if (right && right.innerText.trim() === seat) {
             seats.push({
                 seat_class: 2,
                 berth_type,
                 seat_text: seat,
                 row_number: row,
                 col_number: col,
-                is_window: 1,
-                is_aisle: 0,
+                role,
                 created_by
             });
-
-            next.dataset.skip = "true";
+            right.dataset.skip = "true";
             return;
         }
 
-        if (td.dataset.skip === "true") return;
+        // Vertical sleeper / exit / toilet
+        if (bottom && bottom.innerText.trim() === seat) {
+            seats.push({
+                seat_class: 3,
+                berth_type,
+                seat_text: seat,
+                row_number: row,
+                col_number: col,
+                role,
+                created_by
+            });
+            bottom.dataset.skip = "true";
+            return;
+        }
 
+        // Single seat / exit
         seats.push({
             seat_class: 1,
             berth_type,
             seat_text: seat,
             row_number: row,
             col_number: col,
-            is_window: 1,
-            is_aisle: 0,
+            role,
             created_by
         });
 
     });
 
     return seats;
+}
+
+//while edit
+
+export function loadLayoutFromJSON(seatData) {
+
+    // ✅ SHOW LOADER
+    const loader = document.createElement('div');
+    loader.id = 'seatLoader';
+    loader.innerHTML = `
+        <div style="text-align:center; padding:20px;">
+            <div class="spinner-border text-primary"></div>
+            <p>Loading layout...</p>
+        </div>
+    `;
+    document.body.appendChild(loader);
+
+    // ⏳ Small delay so loader is visible
+    setTimeout(() => {
+
+        seatData.forEach(seat => {
+
+            const deck = seat.berth_type == 2 ? 'UPPER' : 'LOWER';
+            const row = seat.row_number;
+            const col = seat.col_number;
+
+            const selector = `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col}"]`;
+            const td = document.querySelector(selector);
+
+            if (!td) return;
+
+            const text = seat.seat_text ?? '';
+
+            // ✅ Fill main cell
+            td.innerText = text;
+
+            const hidden = td.querySelector('input[type="hidden"]');
+            if (hidden) hidden.value = text;
+
+            // =============================
+            // 🔥 APPLY CLASS BASED ON TYPE
+            // =============================
+
+            if (seat.seat_class == 1) {
+                td.classList.add('seater');
+                td.dataset.layout = 'SEATER';
+                td.dataset.type = (text === 'EXIT') ? 'EXIT' : 'NORMAL';
+            }
+
+            else if (seat.seat_class == 2) {
+
+                td.classList.add('sleeper');
+                td.dataset.layout = 'SLEEPER';
+
+                if (text === 'EXIT') td.dataset.type = 'EXIT';
+                else if (text === 'TOILET') td.dataset.type = 'TOILET';
+                else td.dataset.type = 'NORMAL';
+
+                // 👉 RIGHT cell
+                const right = document.querySelector(
+                    `.seat[data-deck="${deck}"][data-row="${row}"][data-col="${col + 1}"]`
+                );
+
+                if (right) {
+                    right.innerText = text;
+                    const hidden2 = right.querySelector('input[type="hidden"]');
+                    if (hidden2) hidden2.value = text;
+                }
+            }
+
+            else if (seat.seat_class == 3) {
+
+                td.classList.add('vertical-sleeper');
+                td.dataset.layout = 'VERTICAL_SLEEPER';
+
+                if (text === 'EXIT') td.dataset.type = 'EXIT';
+                else if (text === 'TOILET') td.dataset.type = 'TOILET';
+                else td.dataset.type = 'NORMAL';
+
+                // 👉 BOTTOM cell
+                const bottom = document.querySelector(
+                    `.seat[data-deck="${deck}"][data-row="${row + 1}"][data-col="${col}"]`
+                );
+
+                if (bottom) {
+                    bottom.innerText = text;
+                    const hidden2 = bottom.querySelector('input[type="hidden"]');
+                    if (hidden2) hidden2.value = text;
+                }
+            }
+
+            else {
+                td.innerText = '';
+            }
+
+        });
+
+        // ✅ Generate preview
+        ['UPPER', 'LOWER'].forEach(deck => {
+            reValidateDeck(deck);
+        });
+
+        // ✅ HIDE LOADER
+        const loaderEl = document.getElementById('seatLoader');
+        if (loaderEl) loaderEl.remove();
+
+    }, 500); // small delay for smooth UX
 }

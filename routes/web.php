@@ -45,6 +45,8 @@ use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Master\CancellationslabController;
 use App\Http\Controllers\Master\CancellationslabInfoController;
+use App\Http\Controllers\Master\TicketFareSlabController;
+use App\Http\Controllers\Master\TicketFareSlabInfoController;
 use App\Http\Controllers\MasterLogController;
 use App\Http\Controllers\Master\AxleTypeController;
 use App\Http\Controllers\Master\MstSeatLayoutController;
@@ -130,6 +132,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-listing-time', [BusWizardController::class, 'getListingTime']);
     Route::post('get-boarding-dropping-by-cityId', [BoardingDroppingController::class, 'getBoardingDroppingByCityId']);
     Route::get('/get-seats-by-layout', [BusWizardController::class, 'getSeatsByLayout']);
+    Route::get('ticket-fare-slab/list', [CommonController::class, 'getTicketFareSlabList'])->name('ticketfareslab.list');
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -145,15 +148,15 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/seat-layout', [SeatLayoutController::class, 'index'])->name('seatlayout.index');
     Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
+    Route::match(['get', 'post'], 'seat-layout/edit/{encId}', [SeatLayoutController::class, 'edit'])->name('seatlayout.edit');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
-    Route::get('/master-logs', [MasterLogController::class, 'index'])->name('master-log.index');
+  
     Route::post('/get-amenity-list', [CommonController::class, 'getAmenities']);
 
     Route::get('search-amenities', [CommonController::class, 'searchAmenities']);
     Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
 
-    Route::post('/admin/master-log-list', [MasterLogController::class, 'logDataTableView']);
     Route::post('/admin/upload-editor-image', [BlogController::class, 'uploadEditorImage']);
 
     //Subhasis
@@ -289,12 +292,30 @@ Route::prefix('admin')->group(function () {
     Route::get('/businfo/blog-preview', [BusInfoController::class, 'blogPreview'])->name('businfo.blogPreview');
     Route::get('/admin/blogs-preview/{id}', [BlogPreviewController::class, 'blogPreview'])->name('blogs.preview');
     Route::post('/blogs/update-status', [BlogPreviewController::class, 'updateStatus'])->name('blogs.updateStatus');
-
+    //Festive Days
     Route::get('/festive-days', [FestiveDaysController::class, 'festiveDays'])->name('festiveDays.index');
     Route::match(['get', 'post'], 'festive-days/add', [FestiveDaysController::class, 'add'])->name('festiveDays.add');
     Route::post('festive-days/dataTableView', [FestiveDaysController::class, 'dataTableView'])->name('festiveDays.dataTableView');
     Route::match(['get', 'post'], 'festive-days/edit/{encId}', [FestiveDaysController::class, 'edit'])->name('festiveDays.edit');
     Route::post('admin/festive-days/check-exists', [FestiveDaysController::class, 'checkExists'])->name('festiveDays.checkExists');
+
+    //Ticket Fare Slab
+    Route::get('/ticket-fare-slab', [TicketFareSlabController::class, 'index'])->name('ticketfareslab.index');
+    Route::match(['get', 'post'], 'ticket-fare-slab/add', [TicketFareSlabController::class, 'add'])->name('ticketfareslab.add');
+    Route::post('ticket-fare-slab/dataTableView', [TicketFareSlabController::class, 'dataTableView'])->name('ticketfareslab.dataTableView');
+    Route::match(['get', 'post'], 'ticket-fare-slab/edit/{encId}', [TicketFareSlabController::class, 'edit'])->name('ticketfareslab.edit');
+
+    // Ticket Fare Slab Info
+    Route::get('/ticketfareslab-info', [TicketFareSlabInfoController::class, 'index'])->name('ticketfareslab-info.index');
+    Route::match(['get', 'post'], 'ticketfareslab-info/add', [TicketFareSlabInfoController::class, 'add'])->name('ticketfareslab-info.add');
+    Route::post('ticketfareslab-info/dataTableView', [TicketFareSlabInfoController::class, 'dataTableView'])->name('ticketfareslab-info.dataTableView');
+    Route::match(['get', 'post'], 'ticketfareslab-info/edit/{encId}', [TicketFareSlabInfoController::class, 'edit'])->name('ticketfareslab-info.edit');
+    Route::post('get-operator-slab-data', [TicketFareSlabInfoController::class, 'getOperatorSlabData']);
+
+    // Master Logs
+    Route::get('/master-logs', [MasterLogController::class, 'index'])->name('master-log.index');
+    Route::get('/admin/audit-logs-data', [MasterLogController::class, 'auditLogData']);
+    Route::get('/admin/audit-log/{id}', [MasterLogController::class, 'viewAuditLog']);
 
 
     // Jagan
@@ -451,6 +472,7 @@ Route::prefix('admin')->group(function () {
 
     //View Bus Seat Layout
     Route::get('/bus-seat-layout/{id}', [BusSeatLayoutController::class, "index"])->name('buslayout.index');
+    Route::post('/get-seat-layout-preview', [SeatLayoutController::class, "getSeatLyoutPreview"]);
 
     //--------------------------------------------------------------------------------------------------------------------
 

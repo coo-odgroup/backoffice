@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -64,23 +64,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="campaign_name">Campaign Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="campaign_name" name="campaign_name" value="{{ $data['row']->campaign_name ?? old('campaign_name') }}" placeholder="Enter Campaign Name">
+                                            <input type="text" class="form-control clearable form-control-sm" id="campaign_name" name="campaign_name" value="{{ $data['row']->campaign_name ?? old('campaign_name') }}" placeholder="Enter Campaign Name">
                                         </div>
-                                       <div class="col-md-3 mb-3">
+                                        <div class="col-md-3 mb-3">
                                             <label for="start">Start<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="start" name="start" value="{{ $data['row']->start ?? old('start') }}" placeholder="Enter Start">
+                                            <input type="text" class="form-control clearable form-control-sm" id="start" name="start" value="{{ $data['row']->start ?? old('start') }}" placeholder="Enter Start">
                                         </div>
                                         <div class="col-md-3 mb-3">
                                             <label for="stop">Stop<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm" id="stop" name="stop" value="{{ $data['row']->stop ?? old('stop') }}" placeholder="Enter Stop">
+                                            <input type="text" class="form-control clearable form-control-sm" id="stop" name="stop" value="{{ $data['row']->stop ?? old('stop') }}" placeholder="Enter Stop">
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="short_desc">Short Description</label>
-                                            <textarea class="form-control form-control-sm" id="short_desc" name="short_desc" placeholder="Enter Short Description">{{ $data['row']->short_desc ?? old('short_desc') }}</textarea>
+                                            <textarea class="form-control clearableform-control-sm" id="short_desc" name="short_desc" placeholder="Enter Short Description">{{ $data['row']->short_desc ?? old('short_desc') }}</textarea>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label for="full_desc">Full Description</label>
-                                            <textarea class="form-control" id="full_desc" name="full_desc" placeholder="Enter Full Description">{{ strip_tags(html_entity_decode($data['row']->full_desc ?? old('full_desc'))) }}</textarea>
+                                            <textarea class="form-control form-control-sm clearable" id="full_desc" name="full_desc" placeholder="Enter Full Description">{{ strip_tags(html_entity_decode($data['row']->full_desc ?? old('full_desc'))) }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -157,6 +157,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
         document.getElementById("sidebar-wrapper").classList.toggle("collapsed");
+    });
+
+    $(document).ready(function() {
+        commonAjax.initClearableInputs();
     });
 </script>
 @endpush

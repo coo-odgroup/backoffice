@@ -84,11 +84,48 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div class="berth-label">Lower Berth</div>
                 <div class="layout-box" style="grid-template-columns: repeat({{ $maxCols['LOWER'] }}, 42px);">
 
-                    @foreach($layout['LOWER'] as $row)
-                    @foreach($row as $seat)
+                    @php
+                       $skip = [];
+                    @endphp
+
+                    @foreach($layout['LOWER'] as $rIndex => $row)
+                    @foreach($row as $cIndex => $seat)
+
+                     @php
+                        // Check if this cell should be skipped
+                        if (isset($skip[$rIndex][$cIndex])) {
+                            continue;
+                        }
+                    @endphp
 
                     @if($seat->seat_class == 0 || $seat->seat_text == null)
                     <div class="empty-seat"></div>
+
+                    @elseif($seat->seat_class == 3)
+                    @php
+                        $isExit = strtoupper($seat->seat_text) === 'EXIT';
+                        $isToilet = strtoupper($seat->seat_text) === 'TOILET';
+                    @endphp
+
+                    <label class="seat-wrap vertical-sleeper-wrap">
+
+                        @if($isExit)
+                            <span class="vertical_exit_prv"></span>
+
+                        @elseif($isToilet)
+                            <span class="vertical_toilet_prv"></span>
+
+                        @else
+                            <span class="bus-vertical-sleeper"></span>
+                        @endif
+                    <!-- <label class="seat-wrap vertical-sleeper-wrap">
+                        <span class="bus-vertical-sleeper"></span> -->
+                        <span class="seat-number">{{ $seat->seat_text }}</span>
+                    </label>
+                    @php
+                        // Mark next row same column as skipped
+                        $skip[$rIndex + 1][$cIndex] = true;
+                    @endphp
 
                     @elseif($seat->seat_class == 2)
                     <label class="seat-wrap sleeper-wrap">
@@ -279,5 +316,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
+   
 </script>
 @endpush

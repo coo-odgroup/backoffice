@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-12 mb-3">
                                                         <label for="title">Title <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control form-select-sm" id="title" name="title"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="title" name="title"
                                                             value="{{ $data['row']->title ?? '' }}"
                                                             placeholder="Enter Title" maxlength="100">
                                                         <small class="text-muted char-counter float-end"></small>
@@ -77,7 +77,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="col-md-12 mb-3">
                                                         <label for="blogAlias">Alias <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control form-select-sm" id="blogAlias" name="slug"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="blogAlias" name="slug"
                                                             value="{{ $data['row']->slug ?? '' }}"
                                                             placeholder="Enter Alias"
                                                             maxlength="100">
@@ -87,7 +87,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-12 mb-3">
                                                         <label for="short_description">Short Description</label>
                                                         <textarea
-                                                            class="form-control form-select-sm"
+                                                            class="form-control clearable form-select-sm"
                                                             id="short_description"
                                                             name="short_description"
                                                             maxlength="512">{{ strip_tags(html_entity_decode($data['row']->short_description ?? '')) }}</textarea>
@@ -97,7 +97,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-12 mb-3">
                                                         <label for="content">Content</label>
                                                         <textarea
-                                                            class="form-control form-select-sm"
+                                                            class="form-control clearable form-select-sm"
                                                             id="content"
                                                             name="content"
                                                             maxlength="512">{!! strip_tags(
@@ -124,7 +124,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     </div>
                                                     <div class="col-md-6 mb-3">
                                                         <label for="is_featured">Is Featured</label>
-                                                        <select class="form-select form-select-sm" id="is_featured" name="is_featured">
+                                                        <select class="form-select clearable form-select-sm" id="is_featured" name="is_featured">
                                                             <option disabled selected>Select</option>
                                                             <option value="1"
                                                                 {{ (isset($data['row']) && $data['row']->is_featured == 1) ? 'selected' : '' }}>
@@ -143,14 +143,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <div class="row">
                                                     <div class="mb-3">
                                                         <label for="thumb_alt_text">Thumb Image Alt Text</label>
-                                                        <input type="text" class="form-control form-select-sm" id="thumb_alt_text" name="thumb_alt_text"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="thumb_alt_text" name="thumb_alt_text"
                                                             value="{{ $data['row']->thumb_alt_text ?? '' }}"
                                                             placeholder="Enter Thumb Image Alt Text">
                                                     </div>
 
                                                     <div class="mb-3">
                                                         <label for="thumb_image">Thumb Image</label>
-                                                        <input type="file" class="form-control form-select-sm" id="img_1" name="thumb_image" accept="image/*">
+                                                        <input type="file" class="form-control clearable form-select-sm" id="img_1" name="thumb_image" accept="image/*">
                                                         <small class="text-muted text-md-end mt-2">
                                                             Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
                                                         </small>
@@ -191,14 +191,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                     <div class="mb-3">
                                                         <label for="feature_alt_text">Featured Image Alt Text</label>
-                                                        <input type="text" class="form-control form-select-sm" id="feature_alt_text" name="feature_alt_text"
+                                                        <input type="text" class="form-control clearable form-select-sm" id="feature_alt_text" name="feature_alt_text"
                                                             value="{{ $data['row']->feature_alt_text ?? '' }}"
                                                             placeholder="Enter Featured Image Alt Text">
                                                     </div>
 
                                                     <div class="mb-3">
                                                         <label for="featured_image">Featured Image</label>
-                                                        <input type="file" class="form-control form-select-sm" id="img_2" name="featured_image" accept="image/*">
+                                                        <input type="file" class="form-control clearable form-select-sm" id="img_2" name="featured_image" accept="image/*">
                                                         <small class="text-muted text-md-end mt-2">
                                                             Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
                                                         </small>
@@ -264,19 +264,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             <div class="row">
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="meta_title">Meta Title</label>
-                                                                    <input type="text" class="form-control form-select-sm" id="meta_title" name="meta_title" value="{{ $data['row']->meta_title ?? old('meta_title') }}" placeholder="Enter Meta Title">
+                                                                    <input type="text" class="form-control clearable form-select-sm" id="meta_title" name="meta_title" value="{{ $data['row']->meta_title ?? old('meta_title') }}" placeholder="Enter Meta Title">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="canonical_url">Canonical Url</label>
-                                                                    <input type="text" class="form-control form-select-sm" id="canonical_url" name="canonical_url" value="{{ $data['row']->canonical_url ?? old('canonical_url') }}" placeholder="Enter Canonical Url">
+                                                                    <input type="text" class="form-control clearable form-select-sm" id="canonical_url" name="canonical_url" value="{{ $data['row']->canonical_url ?? old('canonical_url') }}" placeholder="Enter Canonical Url">
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="meta_description">Meta Description</label>
-                                                                    <textarea class="form-control form-select-sm" id="meta_description" name="meta_description" placeholder="Enter Meta Description">{{ $data['row']->meta_description ?? old('meta_description') }}</textarea>
+                                                                    <textarea class="form-control clearable  form-select-sm" id="meta_description" name="meta_description" placeholder="Enter Meta Description">{{ $data['row']->meta_description ?? old('meta_description') }}</textarea>
                                                                 </div>
                                                                 <div class="col-md-6 mb-3">
                                                                     <label for="meta_keywords">Meta Keywords</label>
-                                                                    <textarea class="form-control form-select-sm" id="meta_keywords" name="meta_keywords" placeholder="Enter Meta Keywords">{{ $data['row']->meta_keywords ?? old('meta_keywords') }}</textarea>
+                                                                    <textarea class="form-control clearable form-select-sm" id="meta_keywords" name="meta_keywords" placeholder="Enter Meta Keywords">{{ $data['row']->meta_keywords ?? old('meta_keywords') }}</textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -360,7 +360,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                                     <!-- IMAGE INPUT -->
                                                                     <input type="file"
-                                                                        class="form-control form-select-sm og-image-input"
+                                                                        class="form-control clearable form-select-sm og-image-input"
                                                                         id="og_img_{{ $row->id }}"
                                                                         name="open_graph_image[{{ $row->id }}]"
                                                                         accept="image/*">
@@ -378,7 +378,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                                     <!-- TEXT INPUT -->
                                                                     <input type="text"
-                                                                        class="form-control form-select-sm"
+                                                                        class="form-control clearable form-select-sm"
                                                                         name="open_graph[{{ $row->id }}]"
                                                                         value="{{ $value }}"
                                                                         placeholder="Enter Value">
@@ -475,7 +475,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                     @endphp
 
                                                                     <input type="text"
-                                                                        class="form-control form-select-sm"
+                                                                        class="form-control clearable form-select-sm"
                                                                         name="twitter[{{ $row->id }}]"
                                                                         value="{{ $value }}"
                                                                         placeholder="Enter Value">
@@ -546,7 +546,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                 @endphp
 
                                                                 <input type="datetime-local"
-                                                                    class="form-control form-select-sm"
+                                                                    class="form-control clearable form-select-sm"
                                                                     name="article[{{ $row->id }}]"
                                                                     value="{{ $published }}">
                                                             </div>
@@ -616,7 +616,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                 @endphp
 
                                                                 <textarea
-                                                                    class="form-control form-select-sm"
+                                                                    class="form-control clearable form-select-sm"
                                                                     name="schema[{{ $row->id }}]"
                                                                     rows="5"
                                                                     style="resize: vertical;"
@@ -914,6 +914,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
+        commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['title', 'blogAlias']);
     });
 

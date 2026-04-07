@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Blog Tags')
+@section('page_title', 'Ticket Fare Slab Info')
 @section('content')
 
 <?php
@@ -12,7 +12,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Blog Management</li>
+        <li class="breadcrumb-item">Master</li>
         <li class="breadcrumb-item active">@yield('page_title')</li>
     </ol>
 </nav>
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('blog-tags.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('ticketfareslab-info.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -40,10 +40,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
-                        <div class="col-lg-9 col-md-9 mb-2">
-                            <label for="txtSearch">Search By Blog Tags</label>
-                            <input type="text" class="form-control clearable form-select-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Blog Tags">
+                        <div class="col-lg-5 col-md-5 mb-2">
+                            <label for="txtSearch">Search By Slab Info</label>
+                            <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
+                                placeholder="Slab Info">
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="amenityCategory">Category</label>
+                            <select class="form-select form-select-sm" id="amenityCategory" name="amenityCategory">
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-2 mb-2">
+                            <label for="selStatus">Status</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
                         </div>
 
                         <!-- BUTTONS -->
@@ -69,15 +83,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white d-none" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm d-none" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -102,8 +116,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('blog-tags.dataTableView') }}"
-                    data-edit-url="{{ route('blog-tags.edit', 'ID') }}">
+                    data-url="{{ route('ticketfareslab-info.dataTableView') }}"
+                    data-edit-url="{{ route('ticketfareslab-info.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -112,20 +126,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Tag Name</th>
-                            <th>Slug</th>
+                            <th>Slab Name</th>
+                            <th>Operator Name</th>
+                            <th>Slab Info</th>
                             <th>Last Modified</th>
+                            <th>Status</th>
                             <th class="no-sort">Action</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody class="table-secondary"></tbody>
                 </table>
             </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BlogTags">
+            <input type="hidden" id="hdn_model" value="TicketFareSlabInfo">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -136,9 +152,44 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 
+<style>
+    .selected-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #ffc107;
+        color: #000;
+        padding: 5px 10px;
+        border-radius: 20px;
+        margin: 3px;
+        font-size: 13px;
+    }
+
+    .selected-tag .remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 6px;
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+        color: #555;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .selected-tag .remove:hover {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* ✅ ADD THIS HERE */
+    .table-sm td {
+        vertical-align: middle;
+    }
+</style>
+
 @endsection
 @push('scripts')
-
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
 
@@ -152,12 +203,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         getDataTableView();
     });
 
+
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
         getDataTableView(true);
     });
+
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '--';
+
+        let date = new Date(dateStr);
+
+        let options = {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        };
+
+        return date.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+    }
+
 
     window.getDataTableView = function(reset = true) {
 
@@ -180,24 +248,30 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let faqCategory = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
+        }
+        if ($('#selStatus').val() != '') {
+            selStatus = $('#selStatus').val();
         }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtSearch: txtSearch
+            txtsearch: txtSearch,
+            selstatus: selStatus
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
-        let dataTableColumns = [{
+        let dataTableColumns = [
+
+            {
                 data: '',
                 className: "noPrint text-center",
                 render: (d, t, r) =>
-                    `<div class="checkbox"><input class="chkItem" type="checkbox" value="${r.blog_tags_id}"></div>`
+                    `<input class="chkItem" type="checkbox" value="${r.id}">`
             },
+
             {
                 data: 'slNo',
                 render: function(data, type, row, meta) {
@@ -205,14 +279,69 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
+
+            // Slab Name
             {
-                data: 'tag_name',
+                data: 'slab_name',
                 defaultContent: "--"
             },
             {
-                data: 'slug',
-                defaultContent: "--"
+                data: 'operators',
+                render: function(data) {
+
+                    if (!data || data.length === 0) return "--";
+
+                    return data.join('<br>');
+                }
             },
+
+            //  Operator Name (FIXED)
+            {
+                data: 'slab_info',
+                render: function(data) {
+
+                    if (!data || data.length === 0) return "--";
+
+                    let table = `
+            <div class="slab-info-box">
+                <table class="table table-sm mb-0 slab-inner-table">
+                    <thead>
+                        <tr>
+                            <th>Fare Range</th>
+                            <th>Commission</th>
+                            <th>Validity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+                    data.forEach(row => {
+                        table += `
+                <tr>
+                    <td>
+                            ${row.starting_fare} - ${row.upto_fare}
+                    </td>
+                    <td>
+                            ${row.commision}
+                    </td>
+                    <td>
+                        ${formatDate(row.from_date)} → ${formatDate(row.to_date)}
+                    </td>
+                </tr>
+            `;
+                    });
+
+                    table += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+                    return table;
+                }
+            },
+
+            // Last Modified
             {
                 data: null,
                 render: function(data, type, row) {
@@ -246,41 +375,49 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     `;
                 }
             },
+
+            // Status
             {
-                data: null,
+                data: 'is_active',
+                render: function(data) {
+                    let cls = data == 'Active' ? 'badge bg-success' : 'badge bg-danger';
+                    return `<span class="${cls}">${data}</span>`;
+                },
+                className: "text-center"
+            },
+
+            // Action
+            {
+                data: '',
+                className: "text-center",
                 render: function(data, type, row) {
 
-                    let editUrl = $('#' + tableId).data('edit-url');
-
-                    if (!editUrl) return '';
+                    let editUrl = $('#datatable').data('edit-url');
 
                     return `
-                        <a class="btn btn-sm btn-info text-white"
-                        href="${editUrl.replace('ID', row.enc_blog_tags_id)}">
-                        <i class="fa fa-edit"></i> Edit
-                        </a>
-
-                        <a href="javascript:void(0);"
-                            class="btn btn-sm btn-success btn-view-log"
-                            data-table="blog_tags"
-                            data-id="${row.enc_blog_tags_id}">
-                                <i class="fa fa-history"></i> View Log
-                        </a>
-
-                    `;
-                },
-                className: "noPrint text-center"
+            <a class="btn btn-sm btn-info"
+               href="${editUrl.replace('ID', row.enc_id)}">
+                Edit
+            </a>
+            <a class="btn btn-sm btn-success btn-view-log"
+               data-table="mst_ticket_fare_slab_info"
+               data-id="${row.enc_id}">
+                Log
+            </a>
+        `;
+                }
             }
-        ];
 
+        ];
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#faqCategory', 'Select Category');
-        commonAjax.loadFaqCategory(0);
+        commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
+
+        commonAjax.loadAmenityCategory(0);
     });
 </script>
 @endpush
