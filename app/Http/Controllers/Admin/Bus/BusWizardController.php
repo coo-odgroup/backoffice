@@ -11,6 +11,7 @@ use App\Models\Bus\BusRoutesMap;
 use App\Models\Bus\BusBoardingDropping;
 use App\Models\Bus\BusRouteFares;
 use App\Models\Bus\BusContacts;
+use App\Models\Bus\BusSeats;
 use App\Models\Master\Amenity;
 use App\Models\Master\AmenityCategory;
 use Illuminate\Http\Request;
@@ -427,10 +428,10 @@ class BusWizardController extends Controller
 
             $insertData = [];
 
-            foreach ($contacts as $contact) {
+            foreach ($contacts as $k => $contact) {
                 $insertData[] = [
                     'bus_id' => $busId,
-                    'type' => 1,
+                    'type' => $k,
                     'phone' => $contact['phone'] ?? null,
                     'booking_sms_send' => isset($contact['booking_sms_send']) ? 1 : 0,
                     'cancel_sms_send' => isset($contact['cancel_sms_send']) ? 1 : 0,
@@ -471,6 +472,48 @@ class BusWizardController extends Controller
         return view('admin.bus.wizard.step7', compact('data'));
     }
 
+    public function postStep7(Request $request)
+    {
+        try {
+
+            $busId = $request->bus_id;
+            $seat_layout_id = $request->seat_layout_id;
+            $seat_codes = $request->seat_code;
+            $seat_ids = $request->seat_id;
+
+            $insertData = [];
+
+            foreach ($seat_ids as $k => $seat) {
+                $insertData[] = [
+                    'seat_id' => $seat,
+                    'bus_id' => $busId,
+                    'type' => 0,
+                    'seat_layout_id' => $seat_layout_id,
+                    'seat_code' => $seat_codes[$k],
+                    'created_at' => now(),
+                    'created_by' => 1
+                ];
+            }
+
+            BusSeats::insert($insertData);
+
+            session()->flash('level', 'success');
+            session()->flash('message', 'Seat Layout Created successfully.');
+        } catch (\Exception $e) {
+
+            Log::error('Batch insert error', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ]);
+
+            session()->flash('level', 'success');
+            session()->flash('message', 'Failed to save Seat Layout. Please try again.');
+        }
+
+        $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
+        return redirect()->route('bus.preview', ['encId' => $enc_bus_id]);
+    }
+
     public function preview($bus_id = null)
     {
         $data = [];
@@ -478,7 +521,27 @@ class BusWizardController extends Controller
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
 
-        return view('admin.bus.wizard.preview', compact('data'));
+        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+
+        $bus_record = Bus::with('operator', 'brand', 'model', 'axleType', 'service', 'seatType', 'seatLayout', 'cancellationslab.slabInfo')->where('id', $bus_id)->first();
+
+        $amennity_records = DB::table('odbusdev.bus_amenities as ba')
+            ->join('mst_amenities as a', 'a.id', '=', 'ba.amenities_id')
+            ->join('mst_amenity_categories as c', 'c.id', '=', 'a.category_id')
+            ->where('ba.active_status', 1)
+            ->where('ba.bus_id', $bus_id)
+            ->select('c.category_name', 'a.amenity_name', 'a.icon')
+            ->get()
+            ->groupBy('category_name');
+
+        $busRoutesStops = BusRoutesStops::with('city')->where('bus_id', $bus_id)->orderBy('stop_order', 'ASC')->get();
+        $busBoardingDropping = BusBoardingDropping::with('city', 'stop')->where('bus_id', $bus_id)->get();
+        $busRouteFares = BusRouteFares::with('source', 'destination')->where('bus_id', $bus_id)->get();
+        $busContacts = BusContacts::where('bus_id', $bus_id)->get();
+
+        // return $busContacts;
+
+        return view('admin.bus.wizard.preview', compact('data', 'bus_record', 'amennity_records', 'busRoutesStops', 'busBoardingDropping', 'busRouteFares', 'busContacts'));
     }
 
     public function getBoardingDropping(Request $request)

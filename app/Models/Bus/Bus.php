@@ -2,6 +2,14 @@
 
 namespace App\Models\Bus;
 
+use App\Models\Master\AxleType;
+use App\Models\Master\Brand;
+use App\Models\Master\BusModel;
+use App\Models\Master\BusService;
+use App\Models\Master\Cancellationslab;
+use App\Models\Master\MstSeatLayout;
+use App\Models\Master\SeatType;
+use App\Models\Users;
 use Illuminate\Database\Eloquent\Model;
 
 class Bus extends Model
@@ -36,5 +44,45 @@ class Bus extends Model
     public function stops()
     {
         return $this->hasMany(BusRoutesStops::class, 'bus_id');
+    }
+
+    public function operator()
+    {
+        return $this->belongsTo(Users::class, 'bus_operator_id');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function model()
+    {
+        return $this->belongsTo(BusModel::class, 'model_id');
+    }
+
+    public function axleType()
+    {
+        return $this->belongsTo(AxleType::class, 'axle_type_id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(BusService::class, 'service_id');
+    }
+
+    public function seatType()
+    {
+        return $this->belongsTo(SeatType::class, 'seat_type_id');
+    }
+
+    public function seatLayout()
+    {
+        return $this->belongsTo(MstSeatLayout::class, 'seat_layout_type_id');
+    }
+
+    public function cancellationslab()
+    {
+        return $this->belongsTo(Cancellationslab::class, 'cancellationslabs_id');
     }
 }

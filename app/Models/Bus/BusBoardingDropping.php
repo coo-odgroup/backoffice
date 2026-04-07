@@ -2,6 +2,7 @@
 
 namespace App\Models\Bus;
 
+use App\Models\Master\Cities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,4 +19,14 @@ class BusBoardingDropping extends Model
         'timing',
         'active_status'
     ];
+
+    public function city()
+    {
+        return $this->belongsTo(Cities::class, 'city_id');
+    }
+
+    public function stop()
+    {
+        return $this->belongsTo(Cities::class, 'stop_id');
+    }
 }

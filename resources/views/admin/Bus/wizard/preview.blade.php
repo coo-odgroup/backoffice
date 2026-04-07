@@ -28,22 +28,22 @@
 
             <div class="bpv-grid">
                 <div><span>Operator</span>
-                    <p>ABC Travel</p>
+                    <p>{{$bus_record['operator']['name']}}</p>
                 </div>
                 <div><span>Bus Name/No</span>
-                    <p>Dildar Bus / OD02 AV 2545</p>
+                    <p>{{$bus_record['name']}} / {{$bus_record['bus_number']}}</p>
                 </div>
                 <div><span>Via</span>
-                    <p>Balasore, Soro, Bhadhrak</p>
+                    <p>{{$bus_record['via']}}</p>
                 </div>
                 <div><span>Max Seat</span>
-                    <p>6</p>
+                    <p>{{$bus_record['max_seat_book']}}</p>
                 </div>
                 <div><span>Bus Type</span>
-                    <p>Scania Lift Axle AC Seater 1+2</p>
+                    <p>{{$bus_record['gen_bus_type']}}</p>
                 </div>
                 <div><span>IRCTC Model</span>
-                    <p>No</p>
+                    <p>{{($bus_record['is_irctc_model']==1)?'YES':'NO'}}</p>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
 
             <div class="bpv-amenities">
 
-                <div class="bpv-amenity-col">
+                <!-- <div class="bpv-amenity-col">
                     <h6>Seating & Comfort</h6>
 
                     <div class="bpv-amenity-item">
@@ -68,21 +68,24 @@
                         <i class="bi bi-layout-sidebar-inset"></i>
                         Window Curtains
                     </div>
-                </div>
+                </div> -->
 
+                @foreach($amennity_records as $category => $items)
                 <div class="bpv-amenity-col">
-                    <h6>Climate Control</h6>
 
-                    <div class="bpv-amenity-item">
-                        <i class="bi bi-snow2"></i>
-                        Air Conditioning (AC)
-                    </div>
+                    <h6>{!! html_entity_decode($category) !!}</h6>
 
+                    @foreach($items as $item)
                     <div class="bpv-amenity-item">
-                        <i class="bi bi-wind"></i>
-                        Individual Air Vents
+
+                        <i class="{{ $item->icon }}"></i>
+
+                        {!! html_entity_decode($item->amenity_name) !!}
                     </div>
+                    @endforeach
+
                 </div>
+                @endforeach
 
             </div>
         </div>
@@ -102,16 +105,13 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach($bus_record->cancellationslab->SlabInfo as $k => $val)
                     <tr>
-                        <td>1</td>
-                        <td>12-24</td>
-                        <td>25%</td>
+                        <td>{{$k+1}}</td>
+                        <td>{{$val['duration']}}</td>
+                        <td>{{$val['deduction']}}%</td>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>12-35</td>
-                        <td>30%</td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -133,41 +133,15 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach($busRoutesStops as $k => $val)
                     <tr>
-                        <td>1</td>
-                        <td>Bhubaneswar</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>20:30</td>
+                        <td>{{$k+1}}</td>
+                        <td>{{$val['city']['city_name']}}</td>
+                        <td>{{($val['is_boarding']==1)?'Yes':'No'}}</td>
+                        <td>{{($val['is_dropping']==1)?'Yes':'No'}}</td>
+                        <td>{{ date('g:i A', strtotime($val['listing_time'])) }}</td>
                     </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Cuttack</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Jajpur</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Bhadhrak</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>Soro</td>
-                        <td>Yes</td>
-                        <td>No</td>
-                        <td>21:30</td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -188,24 +162,14 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach($busBoardingDropping as $k => $val)
                     <tr>
-                        <td>Bhubaneswar</td>
-                        <td>Boarding</td>
-                        <td>BSBT</td>
-                        <td>20:30</td>
+                        <td>{{$val['city']['city_name']}}</td>
+                        <td>{{($val['type']==1)?'Boarding':'Dropping'}}</td>
+                        <td>{{(@$val['stop']['city_name']!='')?$val['stop']['city_name']:'--'}}</td>
+                        <td>{{ date('g:i A', strtotime($val['timing'])) }}</td>
                     </tr>
-                    <tr>
-                        <td>Bhubaneswar</td>
-                        <td>Boarding</td>
-                        <td>CRP Square</td>
-                        <td>20:40</td>
-                    </tr>
-                    <tr>
-                        <td>Cuttack</td>
-                        <td>Boarding</td>
-                        <td>Link Road</td>
-                        <td>20:50</td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -232,30 +196,20 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach($busRouteFares as $k => $val)
                     <tr>
-                        <td>Bhubaneswar</td>
-                        <td>1</td>
-                        <td>Rourkela</td>
-                        <td>2</td>
-                        <td>480</td>
-                        <td>560</td>
-                        <td>-</td>
-                        <td>255</td>
-                        <td>16:00</td>
-                        <td><span class="bpv-badge">Active</span></td>
+                        <td>{{$val['source']['city_name']}}</td>
+                        <td>{{$val['from_journey_day']}}</td>
+                        <td>{{$val['destination']['city_name']}}</td>
+                        <td>{{$val['to_journey_day']}}</td>
+                        <td>{{($val['seat_fare']!='')?$val['seat_fare']:'--'}}</td>
+                        <td>{{($val['upper_sleeper_fare']!='')?$val['upper_sleeper_fare']:'--'}}</td>
+                        <td>{{($val['lower_sleeper_fare']!='')?$val['lower_sleeper_fare']:'--'}}</td>
+                        <td>{{$val['seize_time']}} M</td>
+                        <td>{{ date('g:i A', strtotime($val['close_time'])) }}</td>
+                        <td><span class="bpv-badge">{{($val['active_status']==1)?'Active':'Inactive'}}</span></td>
                     </tr>
-                    <tr>
-                        <td>Cuttack</td>
-                        <td>1</td>
-                        <td>Rourkela</td>
-                        <td>2</td>
-                        <td>480</td>
-                        <td>560</td>
-                        <td>-</td>
-                        <td>255</td>
-                        <td>16:00</td>
-                        <td><span class="bpv-badge">Active</span></td>
-                    </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -266,23 +220,36 @@
                 <i class="bi bi-telephone-fill bpv-icon text-success"></i> Contact
             </h6>
 
+            @foreach($busContacts as $contact)
+            @if($contact->phone)
             <div class="bpv-grid">
-                <div><span>Conductor</span>
-                    <p>9887744412</p>
+                <div>
+                    <span>{{ $contact->type == 0 ? 'Conductor' : ($contact->type == 1 ? 'Manager' : 'Owner') }}</span>
+                    <p>{{ $contact->phone }}</p>
                 </div>
-                <div><span>SMS On Ticket</span>
-                    <p>Yes</p>
+
+                <div>
+                    <span>SMS On Ticket</span>
+                    <p>{{ $contact->booking_sms_send ? 'Yes' : 'No' }}</p>
                 </div>
-                <div><span>SMS On Cancel</span>
-                    <p>Yes</p>
+
+                <div>
+                    <span>SMS On Cancel</span>
+                    <p>{{ $contact->cancel_sms_send ? 'Yes' : 'No' }}</p>
                 </div>
-                <div><span>WhatsApp Ticket</span>
-                    <p>Yes</p>
+
+                <div>
+                    <span>WhatsApp Ticket</span>
+                    <p>{{ $contact->booking_wp_send ? 'Yes' : 'No' }}</p>
                 </div>
-                <div><span>WhatsApp Cancel</span>
-                    <p>Yes</p>
+
+                <div>
+                    <span>WhatsApp Cancel</span>
+                    <p>{{ $contact->cancel_wp_send ? 'Yes' : 'No' }}</p>
                 </div>
             </div>
+            @endif
+            @endforeach
         </div>
 
         <!-- ================= SEAT LAYOUT ================= -->

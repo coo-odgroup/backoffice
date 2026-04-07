@@ -69,7 +69,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold">
                                                     Seat Layout <span class="text-danger">*</span>
                                                 </label>
-                                                <select class="form-select form-select-sm" name="seat_id" id="seatLayout">
+                                                <select class="form-select form-select-sm" name="seat_layout_id" id="seatLayout">
                                                     <option value="">Select Seat Layout</option>
                                                     @foreach($data['seat_layout'] as $layout)
                                                     <option value="{{ $layout->id }}">
@@ -156,18 +156,56 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     function generateFullLayout(response) {
 
-        let upperHTML = generateSection(response.layout.UPPER, response.maxCols.UPPER, 'U', 'upper-berth-box', true);
-        let lowerHTML = generateSection(response.layout.LOWER, response.maxCols.LOWER, 'L', 'lower-berth-box', false);
+        let upperExists = response.layout.UPPER && Object.keys(response.layout.UPPER).length > 0;
+        let lowerExists = response.layout.LOWER && Object.keys(response.layout.LOWER).length > 0;
+
+        let upperHTML = '';
+        let lowerHTML = '';
+        let tabsHTML = '';
+
+        // Generate sections only if exists
+        if (upperExists) {
+            upperHTML = generateSection(
+                response.layout.UPPER,
+                response.maxCols.UPPER,
+                'UPPER',
+                'upper-berth-box',
+                true
+            );
+
+            tabsHTML += `
+                <button type="button" class="seat-tab-btn ${!lowerExists ? 'active' : 'active'}" data-target="upper-berth-box">
+                    Upper Berth
+                </button>
+            `;
+        }
+
+        if (lowerExists) {
+            lowerHTML = generateSection(
+                response.layout.LOWER,
+                response.maxCols.LOWER,
+                'LOWER',
+                'lower-berth-box',
+                !upperExists
+            );
+
+            tabsHTML += `
+                <button type="button" class="seat-tab-btn ${!upperExists ? 'active' : ''}" data-target="lower-berth-box">
+                    Lower Berth
+                </button>
+            `;
+        }
 
         return `
         <div class="seat-main-card">
 
             <div class="seat-left">
 
-                <div class="seat-tabs">
-                    <button type="button" class="seat-tab-btn active" data-target="upper-berth-box">Upper Berth</button>
-                    <button type="button" class="seat-tab-btn" data-target="lower-berth-box">Lower Berth</button>
-                </div>
+                ${ (upperExists || lowerExists) ? `
+                    <div class="seat-tabs">
+                        ${tabsHTML}
+                    </div>
+                ` : '' }
 
                 <div class="bus-layout">
                     ${upperHTML}
@@ -176,49 +214,94 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             </div>
         </div>
-    `;
+        `;
     }
 
-    function generateSection(layoutData, maxCols, prefix, id, isActive) {
+    function generateSection(layoutData, maxCols, type, id, isActive) {
 
         let html = `
         <div class="berth-row berth-section ${isActive ? 'active' : ''}" id="${id}">
-            <div class="berth-label">${prefix === 'U' ? 'Upper Berth' : 'Lower Berth'}</div>
-            <div class="layout-box">
-    `;
+            <div class="berth-label">${type === 'UPPER' ? 'Upper Berth' : 'Lower Berth'}</div>
+            <div class="layout-box" style="grid-template-columns: repeat(${maxCols}, 42px);">
+        `;
 
-        if (!layoutData || Object.keys(layoutData).length === 0) {
+        let skip = {};
+
+        if (!layoutData) {
             html += `<div>No seats</div>`;
         } else {
 
-            Object.keys(layoutData).forEach(rowKey => {
+            Object.keys(layoutData).forEach((rIndex) => {
 
-                let row = layoutData[rowKey];
+                let row = layoutData[rIndex];
 
-                Object.keys(row).forEach(colKey => {
+                Object.keys(row).forEach((cIndex) => {
 
-                    let seat = row[colKey];
+                    let seat = row[cIndex];
 
-                    if (seat.seat_class == 1) {
+                    // Skip logic (for vertical sleeper)
+                    if (skip[rIndex] && skip[rIndex][cIndex]) {
+                        return;
+                    }
 
-                        let isSleeper = seat.berth_type == 2;
+                    // EMPTY
+                    if (seat.seat_class == 0 || !seat.seat_text) {
+
+                        html += `<div class="empty-seat"></div>`;
+
+                    }
+
+                    // VERTICAL SLEEPER (LOWER)
+                    else if (seat.seat_class == 3) {
+
+                        let text = (seat.seat_text || '').toUpperCase();
+
+                        let iconClass = 'bus-vertical-sleeper';
+
+                        if (text === 'EXIT') {
+                            iconClass = 'vertical_exit_prv';
+                        } else if (text === 'TOILET') {
+                            iconClass = 'vertical_toilet_prv';
+                        }
 
                         html += `
-                        <label class="seat-wrap ${isSleeper ? 'sleeper-wrap' : ''}">
-                            <input type="checkbox" class="seat-checkbox" 
-                                   name="seat_no[]" value="${prefix}${seat.seat_text}">
-                            
-                            <span class="${isSleeper ? 'sleeper' : 'seat'}" 
-                                  data-type="${isSleeper ? 'sleeper' : 'seat'}"></span>
-                            
-                            <span class="seat-number">
-                                ${prefix}${seat.seat_text ?? ''}
-                            </span>
+                        <label class="seat-wrap vertical-sleeper-wrap">
+                            <span class="${iconClass}"></span>
+                            <span class="seat-number">${seat.seat_text}</span>
                         </label>
-                    `;
+                        `;
 
-                    } else {
-                        html += `<div class="empty"></div>`;
+                        // Skip next row same column
+                        if (!skip[parseInt(rIndex) + 1]) {
+                            skip[parseInt(rIndex) + 1] = {};
+                        }
+                        skip[parseInt(rIndex) + 1][cIndex] = true;
+                    }
+
+                    // SLEEPER
+                    else if (seat.seat_class == 2) {
+
+                        html += `
+                        <label class="seat-wrap sleeper-wrap">
+                            <input type="checkbox" class="seat-checkbox" name="seat_id[]" value="${seat.id}">
+                            <input type="checkbox" class="seat-checkbox" name="seat_code[]" value="${seat.seat_text}">
+                            <span class="bus-sleeper"></span>
+                            <span class="seat-number">${seat.seat_text}</span>
+                        </label>
+                        `;
+                    }
+
+                    // NORMAL SEAT
+                    else {
+
+                        html += `
+                        <label class="seat-wrap">
+                            <input type="checkbox" class="seat-checkbox" name="seat_id[]" value="${seat.id}">
+                            <input type="checkbox" class="seat-checkbox" name="seat_code[]" value="${seat.seat_text}">
+                            <span class="bus-seat"></span>
+                            <span class="seat-number">${seat.seat_text}</span>
+                        </label>
+                        `;
                     }
 
                 });
@@ -233,29 +316,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).on('click', '.seat-wrap', function() {
 
-        let checkbox = $(this).find('.seat-checkbox');
-        let seat = $(this).find('.seat, .sleeper');
+        console.log("hello");
 
-        setTimeout(() => {
+        const checkbox = $(this).find('.seat-checkbox');
+        const seat = $(this).find('.bus-seat, .bus-sleeper');
+
+        if (checkbox.length) {
+
+            checkbox.prop('checked', !checkbox.prop('checked'));
+
             if (checkbox.is(':checked')) {
                 seat.addClass('selected');
             } else {
                 seat.removeClass('selected');
             }
-        }, 0);
-    });
-
-    $(document).on('click', '.seat-tab-btn', function() {
-
-        if (window.innerWidth <= 767) {
-
-            let target = $(this).data('target');
-
-            $('.seat-tab-btn').removeClass('active');
-            $(this).addClass('active');
-
-            $('.berth-section').removeClass('active');
-            $('#' + target).addClass('active');
         }
     });
 </script>

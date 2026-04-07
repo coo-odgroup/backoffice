@@ -1625,11 +1625,38 @@ export function initClearableInputs() {
 
 }
 
+export function loadBusOperatorList(bus_operator_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-busoperator-list",
+        data: {
+            bus_operator_id: bus_operator_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">Select Bus Operator</option>';
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, app) {
+                    let selected =
+                        bus_operator_id > 0 && app.id == bus_operator_id
+                            ? "selected"
+                            : "";
+                    options += `<option value="${app.id}" ${selected}>
+                                    ${app.name}
+                                </option>`;
+                });
+            }
 
+            $("#busOperator").html(options);
+        },
+        error: function (xhr) {
+            console.log("Error loading Bus Operator");
+        },
+    });
+}
 
-
-
-export function loadBusOperatorList(selected_ids = []) {
+export function loadBusOperatorList_bk(selected_ids = []) {
 
     $.ajax({
         type: "POST",
