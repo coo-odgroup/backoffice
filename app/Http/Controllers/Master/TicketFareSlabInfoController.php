@@ -100,7 +100,9 @@ class TicketFareSlabInfoController extends Controller
                 }
 
 
-                $operatorName = $row->operator_name ?? 'Default Operator';
+                $operatorName = (!empty($row->bus_operator_id) && !empty($row->operator_name))
+                    ? $row->operator_name
+                    : '--';
 
                 if (!in_array($operatorName, $grouped[$slabId]['operators'])) {
                     $grouped[$slabId]['operators'][] = $operatorName;
@@ -212,13 +214,14 @@ class TicketFareSlabInfoController extends Controller
 
                 foreach ($row as $r) {
 
-                    // operators
-                    $operators[$r->bus_operator_id] = [
-                        'id' => $r->bus_operator_id,
-                        'name' => $r->operator_name
-                    ];
+                    if (!empty($r->bus_operator_id) && !empty($r->operator_name)) {
 
-                    // slab rows 
+                        $operators[$r->bus_operator_id] = [
+                            'id' => $r->bus_operator_id,
+                            'name' => $r->operator_name
+                        ];
+                    }
+
                     $key = md5(
                         $r->starting_fare . '|' .
                             $r->upto_fare . '|' .

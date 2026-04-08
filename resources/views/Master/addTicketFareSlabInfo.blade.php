@@ -162,7 +162,7 @@
                                             </div>
 
                                             <div class="col-md-2 d-flex align-items-center">
-                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add mt-4">+</button>
+                                                <button type="button" class="btn btn-outline-primary btn-sm btn-add mt-4 ">+</button>
                                             </div>
 
                                         </div>
@@ -254,12 +254,10 @@
             let existingOperators = @json($data['row']['operators'] ?? []);
 
             existingOperators.forEach(op => {
-                selectedOperators.push({
-                    id: op.id,
-                    text: op.name
-                });
 
-                loadOperatorTable({
+                if (!op.id || !op.name || op.name === 'null') return;
+
+                selectedOperators.push({
                     id: op.id,
                     text: op.name
                 });
