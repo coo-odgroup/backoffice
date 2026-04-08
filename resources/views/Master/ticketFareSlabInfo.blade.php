@@ -286,7 +286,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // Slab Name
             {
                 data: 'slab_name',
-                defaultContent: "--"
+                defaultContent: "--"    
             },
             {
                 data: 'operators',
@@ -396,7 +396,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // Action
             {
                 data: '',
-                className: "text-center",
+                className: "text-center noPrint",
                 render: function(data, type, row) {
 
                     let editUrl = $('#datatable').data('edit-url');
