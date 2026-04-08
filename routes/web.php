@@ -54,6 +54,7 @@ use App\Http\Controllers\Master\BusServiceController;
 use App\Http\Controllers\Master\AnnextureTypeController;
 use App\Http\Controllers\Master\AnnextureController;
 use App\Http\Controllers\Admin\Bus\BusWizardController;
+use App\Http\Controllers\Master\BusScheduleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -482,4 +483,9 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-category/add', [BlogCategoryController::class, 'add'])->name('blog-category.add');
     Route::post('blog-category/dataTableView', [BlogCategoryController::class, 'dataTableView'])->name('blog-category.dataTableView');
     Route::match(['get', 'post'], 'blog-category/edit/{encId}', [BlogCategoryController::class, 'edit'])->name('blog-category.edit');
+
+    Route::get('/bus-schedule', [BusScheduleController::class, 'index'])->name('bus-schedule.index');
+    Route::match(['get', 'post'], 'bus-schedule/add', [BusScheduleController::class, 'add'])->name('bus-schedule.add');
+    Route::post('bus-schedule/dataTableView', [BusScheduleController::class, 'dataTableView'])->name('bus-schedule.dataTableView');
+    Route::match(['get', 'post'], 'bus-schedule/edit/{encId}', [BusScheduleController::class, 'edit'])->name('bus-schedule.edit');
 });
