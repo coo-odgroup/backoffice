@@ -56,43 +56,7 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                     </div>
                                     @endif
-
-                                    <!-- <div class="col-12">
-                                        <div class="row mb-1">
-                                            <div class="col-md-5">
-                                                <label for="slab">Operator<span class="text-danger important">*</span></label>
-                                                <select class="form-select form-select-sm" id="operator" name="operator"></select>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-1">
-                                            <div class="col-md-5">
-                                                <label for="bus">Bus</label>
-                                                <select class="form-select form-select-sm" id="bus" name="bus"></select>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-1">
-                                            <div class="col-md-5">
-                                                <label for="running_cycle">Running Cycle</label>
-                                                <select class="form-select form-select-sm" id="running_cycle" name="running_cycle">
-                                                    @for ($i = 1; $i <= 5; $i++)
-                                                        <option value="{{ $i }}">
-                                                        {{ $i }}
-                                                        </option>
-                                                        @endfor
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mb-1">
-                                            <div class="col-md-5">
-                                                <label for="date">Date</label>
-                                                <input type="date" name="date" id="date" class="form-control clearable form-control-sm">
-                                            </div>
-                                        </div>
-                                    </div> -->
-
+                                 
                                     <div class="col-12">
                                         <div class="row">
 
@@ -213,7 +177,7 @@
         let selectedOperators = [];
 
         $(document).ready(function() {
-            
+
             let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
 
 
