@@ -382,10 +382,7 @@
         function loadOperatorTable(operator) {
 
             let slab_id = $('#slab').val();
-            if (!slab_id) {
-                alert('Please select Ticket Fare Slab first');
-                return;
-            }
+
 
             $.ajax({
                 url: "/admin/get-operator-slab-data",

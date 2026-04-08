@@ -182,7 +182,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         background: rgba(0, 0, 0, 0.2);
     }
 
-    /* ✅ ADD THIS HERE */
     .table-sm td {
         vertical-align: middle;
     }
