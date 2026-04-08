@@ -151,7 +151,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seat-layout/edit/{encId}', [SeatLayoutController::class, 'edit'])->name('seatlayout.edit');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
-  
+
     Route::post('/get-amenity-list', [CommonController::class, 'getAmenities']);
 
     Route::get('search-amenities', [CommonController::class, 'searchAmenities']);

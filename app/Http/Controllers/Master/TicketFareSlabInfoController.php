@@ -25,9 +25,9 @@ class TicketFareSlabInfoController extends Controller
         $data = [];
 
         try {
-
-            $txtSearch = htmlEncode(request('txtsearch'));
-            $selStatus = request('selstatus');
+            $txtSearch = htmlEncode(request('txtSearch'));
+            $status = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $operator = (request('operator') !== null && request('operator') !== '') ? (int)request('operator') : '';
 
             $query = DB::table('mst_ticket_fare_slab_info as t')
                 ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
@@ -38,6 +38,7 @@ class TicketFareSlabInfoController extends Controller
                 ->select(
                     't.id',
                     't.slab_id',
+                    't.bus_operator_id',
                     's.slab_name',
                     'u.organization_name as operator_name',
                     't.starting_fare',
@@ -55,15 +56,24 @@ class TicketFareSlabInfoController extends Controller
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
                     $q->where('s.slab_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
+                        ->orWhere('u.organization_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('t.starting_fare', 'like', "%{$txtSearch}%")
+                        ->orWhere('t.upto_fare', 'like', "%{$txtSearch}%");
                 });
             }
 
-            if ($selStatus !== null && $selStatus !== '') {
-                $query->where('t.active_status', $selStatus);
+            if ($status !== null && $status !== '') {
+                $query->where('t.active_status', $status);
+            }
+            
+            if ($operator !== null && $operator !== '') {
+                // return $operator;
+                $query->where('t.bus_operator_id', $operator);
             }
 
             $rows = $query->orderBy('t.id', 'desc')->get();
+
+            // return $rows;
 
             $grouped = [];
 
@@ -72,7 +82,6 @@ class TicketFareSlabInfoController extends Controller
                 $slabId = $row->slab_id;
 
                 if (!isset($grouped[$slabId])) {
-
                     $grouped[$slabId] = [
                         'id' => $row->id,
                         'slab_id' => $row->slab_id,
@@ -89,13 +98,19 @@ class TicketFareSlabInfoController extends Controller
                         'enc_id' => Crypt::encryptString($row->slab_id),
                     ];
                 }
+                if (!empty($row->operator_name)) {
 
-                if (
-                    !empty($row->operator_name) &&
-                    !in_array($row->operator_name, $grouped[$slabId]['operators'])
-                ) {
-
-                    $grouped[$slabId]['operators'][] = $row->operator_name;
+                    if (!empty($operator)) {
+                        if ($row->bus_operator_id == $operator) {
+                            if (!in_array($row->operator_name, $grouped[$slabId]['operators'])) {
+                                $grouped[$slabId]['operators'][] = $row->operator_name;
+                            }
+                        }
+                    } else {
+                        if (!in_array($row->operator_name, $grouped[$slabId]['operators'])) {
+                            $grouped[$slabId]['operators'][] = $row->operator_name;
+                        }
+                    }
                 }
 
                 $key = md5(
@@ -108,19 +123,38 @@ class TicketFareSlabInfoController extends Controller
 
                 if (!isset($grouped[$slabId]['slab_info'][$key])) {
 
-                    $grouped[$slabId]['slab_info'][$key] = [
-                        'starting_fare' => $row->starting_fare,
-                        'upto_fare' => $row->upto_fare,
-                        'commision' => $row->commision,
-                        'from_date' => $row->from_date,
-                        'to_date' => $row->to_date,
-                    ];
+                    if (!empty($operator)) {
+
+                        if ($row->bus_operator_id == $operator) {
+                            $grouped[$slabId]['slab_info'][$key] = [
+                                'starting_fare' => $row->starting_fare,
+                                'upto_fare' => $row->upto_fare,
+                                'commision' => $row->commision,
+                                'from_date' => $row->from_date,
+                                'to_date' => $row->to_date,
+                            ];
+                        }
+                    } else {
+
+                        $grouped[$slabId]['slab_info'][$key] = [
+                            'starting_fare' => $row->starting_fare,
+                            'upto_fare' => $row->upto_fare,
+                            'commision' => $row->commision,
+                            'from_date' => $row->from_date,
+                            'to_date' => $row->to_date,
+                        ];
+                    }
                 }
             }
 
-            // ✅ MOVE THIS OUTSIDE LOOP (VERY IMPORTANT)
-            foreach ($grouped as &$slab) {
+            foreach ($grouped as $key => &$slab) {
+
                 $slab['slab_info'] = array_values($slab['slab_info']);
+
+                // remove empty slabs after filter
+                if (empty($slab['slab_info'])) {
+                    unset($grouped[$key]);
+                }
             }
 
             $data = array_values($grouped);
@@ -205,8 +239,13 @@ class TicketFareSlabInfoController extends Controller
                             'starting_fare' => (string)$r->starting_fare,
                             'upto_fare' => (string)$r->upto_fare,
                             'commision' => (string)$r->commision,
-                            'from_date' => date('Y-m-d', strtotime($r->from_date)),
-                            'to_date' => date('Y-m-d', strtotime($r->to_date)),
+                            'from_date' => (!empty($r->from_date) && $r->from_date != '1970-01-01')
+                                ? $r->from_date
+                                : null,
+
+                            'to_date'   => (!empty($r->to_date) && $r->to_date != '1970-01-01')
+                                ? $r->to_date
+                                : null,
                         ];
                     }
                 }

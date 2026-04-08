@@ -1037,4 +1037,27 @@ class CommonController extends Controller
             ]);
         }
     }
+
+
+    public function getSlabList()
+    {
+        try {
+            $data = DB::table('mst_ticket_fare_slab')
+                ->select('id', 'slab_name')
+                ->where('is_active', 1)
+                ->orderBy('slab_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'data' => [],
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }

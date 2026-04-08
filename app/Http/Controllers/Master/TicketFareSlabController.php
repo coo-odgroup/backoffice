@@ -123,6 +123,7 @@ class TicketFareSlabController extends Controller
             'data'            => $data,
         ]);
     }
+
     public function add($encId = null)
     {
         $data = [];
@@ -142,7 +143,6 @@ class TicketFareSlabController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
 
-                // ✅ MODEL FIXED
                 $dataResQry = TicketFareSlab::select('id', 'slab_name', 'small_desc')
                     ->where('id', $id)
                     ->first();
@@ -154,8 +154,9 @@ class TicketFareSlabController extends Controller
                 $data['row'] = $dataResQry;
             } else {
                 $id = 0;
-                $redirectPage = route('ticketfareslab.index'); // correct
+                $redirectPage = route('ticketfareslab.index');
             }
+
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
@@ -173,7 +174,6 @@ class TicketFareSlabController extends Controller
                 $slab_name  = htmlEncode(request('slab_name'));
                 $small_desc = htmlEncode(request('small_desc'));
 
-                // ✅ DUPLICATE CHECK
                 $duplicate = TicketFareSlab::where('slab_name', $slab_name);
 
                 if ($id != 0) {
@@ -187,6 +187,7 @@ class TicketFareSlabController extends Controller
                     ])->withInput();
                 }
 
+                // ================= UPDATE =================
                 if ($id != 0) {
 
                     $oldData = TicketFareSlab::find($id);
@@ -208,7 +209,7 @@ class TicketFareSlabController extends Controller
 
                     if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
-                            'mst_ticket_fare_slab', // ✅ FIXED
+                            'mst_ticket_fare_slab',
                             $id,
                             'UPDATE',
                             $oldChanged,
@@ -219,19 +220,26 @@ class TicketFareSlabController extends Controller
                     $oldData->slab_name  = $slab_name;
                     $oldData->small_desc = $small_desc;
                     $oldData->updated_by = 1;
+
+                    // ✅ IMPORTANT FIX
+                    $oldData->updated_at = now();
+
                     $oldData->save();
-                } else {
+                }
+                // ================= INSERT =================
+                else {
 
                     $row = [
-                        'slab_name'    => $slab_name,
-                        'small_desc'   => $small_desc,
-                        'created_by'   => 1,
+                        'slab_name'     => $slab_name,
+                        'small_desc'    => $small_desc,
+                        'created_by'    => 1,
                         'active_status' => 1,
-                        'created_at'   => now()
+                        'created_at'    => now(),
+                        'updated_at'    => null // ✅ force NULL
                     ];
 
                     app(CommonController::class)->auditLog(
-                        'mst_ticket_fare_slab', // ✅ FIXED
+                        'mst_ticket_fare_slab',
                         null,
                         'INSERT',
                         [],
@@ -239,6 +247,10 @@ class TicketFareSlabController extends Controller
                     );
 
                     $obj = new TicketFareSlab();
+
+                    // ✅ IMPORTANT FIX (disable auto timestamps)
+                    $obj->timestamps = false;
+
                     $obj->fill($row);
                     $obj->save();
                 }
@@ -268,7 +280,6 @@ class TicketFareSlabController extends Controller
             ])->withInput();
         }
 
-        // ✅ VIEW FIX
         return view('Master.addTicketFareSlab', compact('data'));
     }
 

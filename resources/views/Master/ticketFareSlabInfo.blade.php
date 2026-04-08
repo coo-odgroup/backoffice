@@ -40,15 +40,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
-                        <div class="col-lg-5 col-md-5 mb-2">
+                        <div class="col-lg-2 col-md-2 mb-2">
                             <label for="txtSearch">Search By Slab Info</label>
                             <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Slab Info">
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="amenityCategory">Category</label>
-                            <select class="form-select form-select-sm" id="amenityCategory" name="amenityCategory">
-                                <option value="">Select Category</option>
+                            <label for="operator">Operator Name</label>
+                            <select class="form-select form-select-sm" id="operator" name="operator">
+                                <option value="">Select Operator</option>
                             </select>
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
@@ -200,6 +200,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
         commonAjax.initClearableInputs();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initSelect2('#slabName', 'Select Slabs');
+        commonAjax.loadTicketFareSlabList('#slabName');
+        commonAjax.initSelect2('#operator', 'Select Operator');
+        commonAjax.loadBusOperatorDropdown('#operator');
         getDataTableView();
     });
 
@@ -229,25 +233,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     window.getDataTableView = function(reset = true) {
 
-        //  If table already initialized
+
         if (window.dataTableInstance && reset) {
-
-            // Clear saved state
             window.dataTableInstance.state.clear();
-
-            // Reset length dropdown UI
             $('#pageSizeDatatable').val(10);
-
-            // Reset page length internally
             window.dataTableInstance.page.len(10);
-
-            // Force first page
             window.dataTableInstance.page(0);
         }
 
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let slabName = '';
+        let operator = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -255,13 +253,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
+        if ($('#operator').val() != '') {
+            operator = $('#operator').val();
+        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+        txtsearch: txtSearch,
+        selstatus: selStatus,
+        operator_id: operator
         };
+
+        //console.log("Search Params:", searchParams);
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [
 

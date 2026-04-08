@@ -225,7 +225,7 @@
             commonAjax.initSelect2('#slab', 'Select Ticket Fare Slab');
             commonAjax.initSelect2('#operator', 'Select Bus Operator');
             commonAjax.loadTicketFareSlabList('#slab', slab_id);
-            commonAjax.loadBusOperatorList();
+            commonAjax.loadBusOperatorDropdown();
             commonAjax.initClearableInputs();
 
 
