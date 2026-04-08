@@ -71,7 +71,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                         <div class="text-center mt-5">
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
+                                            <a href="{{ url($createBusUrl.'step3/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                                ← Back
+                                            </a>
                                             <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>
@@ -86,17 +88,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     </div>
     </div>
 </form>
-
-<script>
-    function backStep() {
-        window.location.href = "/admin/bus/create/step4";
-    }
-
-    function nextStep() {
-        window.location.href = "/admin/bus/create/step5";
-    }
-</script>
-
 @endsection
 @push('scripts')
 
@@ -106,7 +97,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
     });
-
 
     $('#backoffice-form').on('submit', function(e) {
 

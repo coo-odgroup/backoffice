@@ -76,7 +76,9 @@ Route::prefix('admin/bus/create')->group(function () {
     Route::get('/step1', [BusWizardController::class, 'step1'])->name('bus.step1');
     Route::post('/step1', [BusWizardController::class, 'postStep1']);
 
-    // Route::get('/step2', [BusWizardController::class, 'step2'])->name('bus.step2');
+    Route::get('/step1/{encId}', [BusWizardController::class, 'step1']);
+    Route::post('/step1/{encId}', [BusWizardController::class, 'postStep1']);
+    
     Route::get('/step2/{encId}', [BusWizardController::class, 'step2'])->name('bus.step2');
     Route::post('/step2/{encId}', [BusWizardController::class, 'postStep2']);
 
