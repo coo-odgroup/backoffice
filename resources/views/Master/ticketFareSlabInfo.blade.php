@@ -260,9 +260,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-        txtsearch: txtSearch,
-        selstatus: selStatus,
-        operator_id: operator
+            txtsearch: txtSearch,
+            selstatus: selStatus,
+            operator_id: operator
         };
 
         //console.log("Search Params:", searchParams);
@@ -326,11 +326,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             ${row.starting_fare} - ${row.upto_fare}
                     </td>
                     <td>
-                            ${row.commision}
+                            ${row.commision}%
                     </td>
-                    <td>
-                        ${formatDate(row.from_date)} → ${formatDate(row.to_date)}
-                    </td>
+                   <td>
+                    ${
+                        (!row.from_date && !row.to_date)
+                            ? '--'
+                            : `${row.from_date ? formatDate(row.from_date) : '--'} → ${row.to_date ? formatDate(row.to_date) : '--'}`
+                    }
+                </td>
                 </tr>
             `;
                     });

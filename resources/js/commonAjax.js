@@ -1653,22 +1653,21 @@ export function loadBusOperatorList(bus_operator_id = 0) {
         },
     });
 }
-export function loadBusOperatorDropdown(selector = '#operator', selected_ids = []) {
 
+
+export function loadBusOperatorDropdown(selected_ids = []) {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-busoperator-list",
+        url: ajaxUrl + "get-busoperator-role-list", // ✅ UPDATED ENDPOINT
         data: {
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
 
         success: function (response) {
-
             let options = `<option value="">Select Bus Operator</option>`;
 
             if (response.status && response.data.length > 0) {
-
                 $.each(response.data, function (index, app) {
 
                     let selected = selected_ids.includes(app.id)
@@ -1681,9 +1680,18 @@ export function loadBusOperatorDropdown(selector = '#operator', selected_ids = [
                 });
             }
 
-            $(selector).html(options);
-            $(selector).trigger("change");
-        }
+            $("#operator").html(options);
+
+            if (selected_ids.length === 0) {
+                $("#operator").val("");
+            }
+
+            $("#operator").trigger("change");
+        },
+
+        error: function () {
+            console.log("Error loading Bus Operator");
+        },
     });
 }
 

@@ -105,7 +105,7 @@
                                             <div class="col-md-2">
                                                 <input type="number" name="commision[]"
                                                     value="{{ $row['commision'] }}"
-                                                    class="form-control clearable form-control-sm">
+                                                    class="form-control clearable form-control-sm" min="0" max="99">
                                             </div>
 
                                             <div class="col-md-2">
@@ -331,6 +331,20 @@
             $(this).closest('.dynamic-item').remove();
         });
 
+
+        $(document).on('input', 'input[name="commision[]"]', function() {
+
+            let val = this.value;
+
+            val = val.replace(/\D/g, '');
+
+            if (val.length > 2) {
+                val = val.slice(0, 2);
+            }
+
+            this.value = val;
+        });
+
         // FROM DATE CHANGE
         $(document).on('change', '.from-date', function() {
 
@@ -367,59 +381,65 @@
         // UPDATED: no table if no data
         function loadOperatorTable(operator) {
 
+            let slab_id = $('#slab').val();
+            if (!slab_id) {
+                alert('Please select Ticket Fare Slab first');
+                return;
+            }
+
             $.ajax({
                 url: "/admin/get-operator-slab-data",
                 type: "POST",
                 data: {
                     operator_id: operator.id,
+                    slab_id: slab_id,
                     _token: $('meta[name="csrf-token"]').attr("content"),
                 },
 
                 success: function(res) {
 
-                    // skip if no data
                     if (!res.status || res.data.length === 0) {
                         $(`#table_${operator.id}`).remove();
                         return;
                     }
 
                     let tableHtml = `
-                    <div class="card mt-3 operator-table" id="table_${operator.id}">
-                        <div class="card-header bg-warning">
-                            <b>${operator.text}</b>
-                        </div>
+            <div class="card mt-3 operator-table" id="table_${operator.id}">
+                <div class="card-header bg-warning">
+                    <b>${operator.text}</b>
+                </div>
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Slab</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th>Commission</th>
-                                        <th>From Date</th>
-                                        <th>To Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>Slab</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Commission</th>
+                                <th>From Date</th>
+                                <th>To Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
 
                     res.data.forEach(row => {
                         tableHtml += `
-                        <tr>
-                            <td>${row.slab_name}</td>
-                            <td>${row.starting_fare}</td>
-                            <td>${row.upto_fare}</td>
-                            <td>${row.commision}</td>
-                            <td>${row.from_date}</td>
-                            <td>${row.to_date}</td>
-                        </tr>`;
+                <tr>
+                    <td>${row.slab_name}</td>
+                    <td>${row.starting_fare}</td>
+                    <td>${row.upto_fare}</td>
+                    <td>${row.commision}</td>
+                    <td>${row.from_date ?? '--'}</td>
+                    <td>${row.to_date ?? '--'}</td>
+                </tr>`;
                     });
 
                     tableHtml += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`;
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
 
                     $(`#table_${operator.id}`).remove();
                     $('#operatorTables').append(tableHtml);

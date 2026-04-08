@@ -65,7 +65,7 @@ class TicketFareSlabInfoController extends Controller
             if ($status !== null && $status !== '') {
                 $query->where('t.active_status', $status);
             }
-            
+
             if ($operator !== null && $operator !== '') {
                 // return $operator;
                 $query->where('t.bus_operator_id', $operator);
@@ -98,19 +98,12 @@ class TicketFareSlabInfoController extends Controller
                         'enc_id' => Crypt::encryptString($row->slab_id),
                     ];
                 }
-                if (!empty($row->operator_name)) {
 
-                    if (!empty($operator)) {
-                        if ($row->bus_operator_id == $operator) {
-                            if (!in_array($row->operator_name, $grouped[$slabId]['operators'])) {
-                                $grouped[$slabId]['operators'][] = $row->operator_name;
-                            }
-                        }
-                    } else {
-                        if (!in_array($row->operator_name, $grouped[$slabId]['operators'])) {
-                            $grouped[$slabId]['operators'][] = $row->operator_name;
-                        }
-                    }
+
+                $operatorName = $row->operator_name ?? 'Default Operator';
+
+                if (!in_array($operatorName, $grouped[$slabId]['operators'])) {
+                    $grouped[$slabId]['operators'][] = $operatorName;
                 }
 
                 $key = md5(
@@ -293,13 +286,29 @@ class TicketFareSlabInfoController extends Controller
 
                 DB::beginTransaction();
 
-
                 $slab_id = (int) request('slab_id');
                 $bus_operator_id = request('bus_operator_id');
 
-                $operators = !empty($bus_operator_id)
-                    ? explode(',', $bus_operator_id)
-                    : [0];
+                $operators = [];
+
+                $operators = [];
+
+                if (!empty($bus_operator_id)) {
+
+                    $operators = array_filter(
+                        array_map('intval', explode(',', $bus_operator_id)),
+                        function ($val) {
+                            return $val > 0;
+                        }
+                    );
+
+                    if (empty($operators)) {
+                        $operators = [null];
+                    }
+                } else {
+                    $operators = [null];
+                }
+
 
                 $starting_fare = request('starting_fare');
                 $upto_fare     = request('upto_fare');
@@ -308,6 +317,7 @@ class TicketFareSlabInfoController extends Controller
                 $to_date       = request('to_date');
 
                 foreach ($starting_fare as $i => $start) {
+
                     if ($upto_fare[$i] < $start) {
                         DB::rollBack();
                         return back()->with([
@@ -316,7 +326,7 @@ class TicketFareSlabInfoController extends Controller
                         ])->withInput();
                     }
 
-                    if ($to_date[$i] < $from_date[$i]) {
+                    if (!empty($from_date[$i]) && !empty($to_date[$i]) && $to_date[$i] < $from_date[$i]) {
                         DB::rollBack();
                         return back()->with([
                             'level' => 'danger',
@@ -325,42 +335,89 @@ class TicketFareSlabInfoController extends Controller
                     }
                 }
 
+                $oldData = [];
+
+                if ($id > 0) {
+                    $oldData = DB::table('mst_ticket_fare_slab_info')
+                        ->where('slab_id', $slab_id)
+                        ->get()
+                        ->map(function ($row) {
+                            return [
+                                'slab_id'         => $row->slab_id,
+                                'bus_operator_id' => $row->bus_operator_id,
+                                'starting_fare'   => $row->starting_fare,
+                                'upto_fare'       => $row->upto_fare,
+                                'commision'       => $row->commision,
+                                'from_date'       => $row->from_date,
+                                'to_date'         => $row->to_date,
+                            ];
+                        })
+                        ->toArray();
+                }
+
+                $newData = [];
+
+                foreach ($operators as $operator) {
+
+                    foreach ($starting_fare as $key => $val) {
+
+                        $newData[] = [
+                            'slab_id'         => $slab_id,
+                            'bus_operator_id' => (int) $operator,
+                            'starting_fare'   => $starting_fare[$key],
+                            'upto_fare'       => $upto_fare[$key],
+                            'commision'       => $commision[$key],
+                            'from_date'       => !empty($from_date[$key]) ? $from_date[$key] : null,
+                            'to_date'         => !empty($to_date[$key]) ? $to_date[$key] : null,
+                        ];
+                    }
+                }
+
+                $oldChanged = [];
+                $newChanged = [];
+
+                if ($id > 0) {
+
+                    if ($oldData != $newData) {
+
+                        $oldChanged = $oldData;
+                        $newChanged = $newData;
+
+                        app(CommonController::class)->auditLog(
+                            'mst_ticket_fare_slab_info',
+                            $slab_id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+                } else {
+
+                    app(CommonController::class)->auditLog(
+                        'mst_ticket_fare_slab_info',
+                        null,
+                        'INSERT',
+                        [],
+                        $newData
+                    );
+                }
+
                 if ($id > 0) {
                     DB::table('mst_ticket_fare_slab_info')
                         ->where('slab_id', $slab_id)
                         ->delete();
                 }
 
-
                 $insertData = [];
 
-                foreach ($operators as $operator) {
+                foreach ($newData as $row) {
 
-                    foreach ($starting_fare as $key => $val) {
-
-                        $rowData = [
-                            'slab_id'         => $slab_id,
-                            'bus_operator_id' => (int) $operator,
-                            'starting_fare'   => $starting_fare[$key],
-                            'upto_fare'       => $upto_fare[$key],
-                            'commision'       => $commision[$key],
-                            'from_date'       => $from_date[$key],
-                            'to_date'         => $to_date[$key],
-                            'active_status'   => 1,
-                            'created_at'      => now(),
-                            'updated_at'      => now(),
-                        ];
-
-                        $insertData[] = $rowData;
-
-                        app(CommonController::class)->auditLog(
-                            'mst_ticket_fare_slab_info',
-                            null,
-                            ($id > 0 ? 'UPDATE' : 'INSERT'),
-                            [],
-                            $rowData
-                        );
-                    }
+                    $insertData[] = [
+                        ...$row,
+                        'active_status' => 1,
+                        'created_at'    => now(),
+                        'updated_at'    => ($id > 0) ? now() : null
+                    ];
                 }
 
                 DB::table('mst_ticket_fare_slab_info')->insert($insertData);
@@ -401,21 +458,36 @@ class TicketFareSlabInfoController extends Controller
 
     public function getOperatorSlabData(Request $request)
     {
-        $operator_id = $request->operator_id;
+        try {
 
-        $data = DB::table('mst_ticket_fare_slab_info as t')
-            ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-            ->where('t.bus_operator_id', $operator_id)
-            ->select(
-                't.*',
-                's.slab_name'
-            )
-            ->orderBy('t.starting_fare')
-            ->get();
+            $operator_id = $request->operator_id;
+            $slab_id     = $request->slab_id;
 
-        return response()->json([
-            'status' => true,
-            'data' => $data
-        ]);
+            $data = DB::table('mst_ticket_fare_slab_info as t')
+                ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
+                ->where('t.bus_operator_id', $operator_id)
+                ->where('t.slab_id', $slab_id)
+                ->select(
+                    's.slab_name',
+                    't.starting_fare',
+                    't.upto_fare',
+                    't.commision',
+                    't.from_date',
+                    't.to_date'
+                )
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => [],
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
