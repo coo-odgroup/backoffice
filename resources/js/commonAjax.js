@@ -1621,8 +1621,6 @@ export function initClearableInputs() {
         let input = $(this).siblings("input");
         input.val("").trigger("keyup").focus();
     });
-
-
 }
 
 export function loadBusOperatorList(bus_operator_id = 0) {
@@ -1656,25 +1654,25 @@ export function loadBusOperatorList(bus_operator_id = 0) {
     });
 }
 
-export function loadBusOperatorList_bk(selected_ids = []) {
 
+export function loadBusOperatorDropdown(selected_ids = []) {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-busoperator-list",
+        url: ajaxUrl + "get-busoperator-role-list", // ✅ UPDATED ENDPOINT
         data: {
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
 
         success: function (response) {
-
             let options = `<option value="">Select Bus Operator</option>`;
 
             if (response.status && response.data.length > 0) {
-
                 $.each(response.data, function (index, app) {
 
-                    let selected = selected_ids.includes(app.id) ? "selected" : "";
+                    let selected = selected_ids.includes(app.id)
+                        ? "selected"
+                        : "";
 
                     options += `<option value="${app.id}" ${selected}>
                                     ${app.organization_name || app.name}
@@ -1685,7 +1683,7 @@ export function loadBusOperatorList_bk(selected_ids = []) {
             $("#operator").html(options);
 
             if (selected_ids.length === 0) {
-                $("#operator").val('');
+                $("#operator").val("");
             }
 
             $("#operator").trigger("change");
@@ -1693,7 +1691,7 @@ export function loadBusOperatorList_bk(selected_ids = []) {
 
         error: function () {
             console.log("Error loading Bus Operator");
-        }
+        },
     });
 }
 
@@ -1706,12 +1704,12 @@ export function makeUpperCase(ids) {
 }
 
 export function allowOnlyNumbers(ids) {
-    ids.forEach(function(id) {
-        $(document).on("input", "#" + id, function() {
+    ids.forEach(function (id) {
+        $(document).on("input", "#" + id, function () {
             let value = $(this).val();
 
             // Remove non-numeric characters
-            value = value.replace(/[^0-9]/g, '');
+            value = value.replace(/[^0-9]/g, "");
 
             // Limit to 10 digits
             value = value.slice(0, 10);
@@ -1720,7 +1718,6 @@ export function allowOnlyNumbers(ids) {
         });
     });
 }
-
 
 export function loadTicketFareSlabList(selector, selected = null) {
     $.ajax({
@@ -1733,7 +1730,6 @@ export function loadTicketFareSlabList(selector, selected = null) {
 
             if (res.status && res.data.length > 0) {
                 $.each(res.data, function (i, item) {
-
                     let isSelected = selected == item.id ? "selected" : "";
 
                     html += `<option value="${item.id}" ${isSelected}>
