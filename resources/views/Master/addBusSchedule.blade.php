@@ -98,32 +98,34 @@
                                                         </div>
                                                         <div class="card-body" id="scheduleContainer">
 
-                                                            @if(!empty($data['scheduleDates']) && count($data['scheduleDates']) > 0)
+                                                            <div id="scheduleTemplate" style="display:none;">
 
-                                                            @php
-                                                            $dates = $data['scheduleDates'];
-                                                            $chunkSize = ceil(count($dates) / 3);
-                                                            $chunks = array_chunk($dates, $chunkSize);
-                                                            @endphp
+                                                                @if(!empty($data['scheduleDates']) && count($data['scheduleDates']) > 0)
 
-                                                            <div class="row">
-                                                                @foreach($chunks as $chunk)
-                                                                <div class="col-4">
-                                                                    @foreach($chunk as $date)
-                                                                    <!-- <div class="border p-1 text-center rounded bg-light mb-2"> -->
-                                                                    <div class="date-tile text-center mb-2">
-                                                                        {{ \Carbon\Carbon::parse($date)->format('d-M-Y') }}
+                                                                @php
+                                                                $chunkSize = ceil(count($data['scheduleDates']) / 3);
+                                                                $chunks = array_chunk($data['scheduleDates'], $chunkSize);
+                                                                @endphp
+
+                                                                <div class="row">
+                                                                    @foreach($chunks as $chunk)
+                                                                    <div class="col-4">
+                                                                        @foreach($chunk as $date)
+                                                                        <div class="date-tile text-center mb-2">
+                                                                            {{ \Carbon\Carbon::parse($date)->format('d-M-Y') }}
+                                                                        </div>
+                                                                        @endforeach
                                                                     </div>
                                                                     @endforeach
                                                                 </div>
-                                                                @endforeach
-                                                            </div>
 
-                                                            @else
-                                                            <div class="text-center text-muted">
-                                                                Bus is not scheduled
+                                                                @else
+                                                                <div class="text-center text-muted">
+                                                                    Bus is not scheduled
+                                                                </div>
+                                                                @endif
+
                                                             </div>
-                                                            @endif
 
                                                         </div>
                                                     </div>
@@ -153,36 +155,7 @@
         </form>
 
         <style>
-            .select2-container--open {
-                z-index: 99999 !important;
-            }
 
-
-
-
-            /* .schedule-header {
-                background-color: #1e6bd6;
-                color: #fff;
-                font-weight: 600;
-                border-radius: 6px 6px 0 0;
-            } */
-
-            .date-tile {
-                background-color: #ffc107;
-                /* bootstrap warning */
-                color: #000;
-                font-weight: 500;
-                border-radius: 20px;
-                padding: 6px 10px;
-                border: none;
-                transition: 0.2s ease;
-            }
-
-            /* Hover effect (optional but nice) */
-            .date-tile:hover {
-                background-color: #e0a800;
-                transform: scale(1.05);
-            }
         </style>
 
         @endsection
@@ -297,40 +270,10 @@
             });
 
 
-
-            // add/remove rows
-            $(document).on('click', '.btn-add', function() {
-                $('#slabWrapper').append(`
-                <div class="row mb-3 dynamic-item">
-                    <div class="col-md-2"><input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm"></div>
-                    <div class="col-md-2"><input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm"></div>
-                    <div class="col-md-2"><input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm"></div>
-                    <div class="col-md-2"><input type="date" name="from_date[]" class="form-control form-control-sm from-date" min="{{ date('Y-m-d') }}"></div>
-                    <div class="col-md-2"><input type="date" name="to_date[]" class="form-control form-control-sm to-date" min="{{ date('Y-m-d') }}"></div>
-                    <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm btn-remove mt-1">-</button></div>
-                </div>
-            `);
-            });
-
             $(document).on('click', '.btn-remove', function() {
                 $(this).closest('.dynamic-item').remove();
             });
 
-            // FROM DATE CHANGE
-            $(document).on('change', '.from-date', function() {
-
-                let fromDate = $(this).val();
-                let row = $(this).closest('.row');
-                let toInput = row.find('.to-date');
-
-                if (fromDate) {
-                    toInput.attr('min', fromDate);
-
-                    if (toInput.val() && toInput.val() < fromDate) {
-                        toInput.val('');
-                    }
-                }
-            });
 
             $('#operator').on('change', function() {
 
@@ -355,9 +298,17 @@
             $('#bus').on('change', function() {
 
                 let bus_id = $(this).val();
-
                 if (!bus_id) return;
 
+                //  SHOW SPINNER FIRST
+                            $('#scheduleContainer').html(`
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2">Loading schedule...</p>
+                    </div>
+                `);
+
+                // AJAX CALL
                 $.ajax({
                     type: "POST",
                     url: "/admin/get-schedule-dates",
@@ -365,38 +316,15 @@
                         bus_id: bus_id,
                         _token: $('meta[name="csrf-token"]').attr("content")
                     },
-                    success: function(res) {
-
-                        let html = '';
-
-                        if (res.status && res.data.length > 0) {
-
-                            let dates = res.data;
-                            let chunkSize = Math.ceil(dates.length / 3);
-
-                            for (let i = 0; i < dates.length; i += chunkSize) {
-
-                                html += '<div class="col-4">';
-
-                                let chunk = dates.slice(i, i + chunkSize);
-
-                                chunk.forEach(date => {
-                                    html += `
-                                <div class="border p-1 text-center rounded bg-light mb-2">
-                                    ${formatDate(date)}
-                                </div>`;
-                                });
-
-                                html += '</div>';
-                            }
-
-                            html = `<div class="row">${html}</div>`;
-
-                        } else {
-                            html = `<div class="text-center text-muted">Bus is not scheduled</div>`;
-                        }
-
-                        $('#scheduleContainer').html(html);
+                    success: function(response) {
+                        $('#scheduleContainer').html(response);
+                    },
+                    error: function() {
+                        $('#scheduleContainer').html(`
+                            <div class="text-danger text-center p-3">
+                                Failed to load schedule
+                            </div>
+                        `);
                     }
                 });
 

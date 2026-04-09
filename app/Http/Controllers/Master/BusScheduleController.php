@@ -262,11 +262,9 @@ class BusScheduleController extends Controller
     public function getScheduleDates(Request $request)
     {
         $bus_id = $request->bus_id;
-
         $scheduleDates = [];
 
         if ($bus_id) {
-
             $schedule = DB::table('odbusdev.bus_schedule')
                 ->where('bus_id', $bus_id)
                 ->where('active_status', 1)
@@ -278,13 +276,36 @@ class BusScheduleController extends Controller
                     ->where('bus_schedule_id', $schedule->id)
                     ->orderBy('entry_date', 'asc')
                     ->limit(30)
-                    ->pluck('entry_date');
+                    ->pluck('entry_date')
+                    ->toArray();
             }
         }
 
-        return response()->json([
-            'status' => true,
-            'data' => $scheduleDates
-        ]);
+        // ✅ Build HTML here (no blade file)
+        if (!empty($scheduleDates)) {
+
+            $chunkSize = ceil(count($scheduleDates) / 3);
+            $chunks = array_chunk($scheduleDates, $chunkSize);
+
+            $html = '<div class="row">';
+
+            foreach ($chunks as $chunk) {
+                $html .= '<div class="col-4">';
+
+                foreach ($chunk as $date) {
+                    $html .= '<div class="date-tile text-center mb-2">'
+                        . \Carbon\Carbon::parse($date)->format('d-M-Y') .
+                        '</div>';
+                }
+
+                $html .= '</div>';
+            }
+
+            $html .= '</div>';
+        } else {
+            $html = '<div class="text-center text-muted">Bus is not scheduled</div>';
+        }
+
+        return response($html);
     }
 }
