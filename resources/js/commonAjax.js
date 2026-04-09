@@ -1654,7 +1654,6 @@ export function loadBusOperatorList(bus_operator_id = 0) {
     });
 }
 
-
 export function loadBusOperatorDropdown(selected_ids = []) {
     $.ajax({
         type: "POST",
@@ -1669,7 +1668,6 @@ export function loadBusOperatorDropdown(selected_ids = []) {
 
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, app) {
-
                     let selected = selected_ids.includes(app.id)
                         ? "selected"
                         : "";
@@ -1743,6 +1741,38 @@ export function loadTicketFareSlabList(selector, selected = null) {
 
         error: function () {
             console.log("Error loading Ticket Fare Slab");
+        },
+    });
+}
+
+
+export function loadBusListByOperator(selector, operator_id, selected = null) {
+   
+
+    $.ajax({
+        type: "POST",
+        url: "/admin/get-buses-by-operator",
+        data: {
+            operator_id: operator_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+
+        success: function (res) {
+            console.log("Bus Data:", res);
+
+            let html = '<option value="">Select Bus</option>';
+
+            if (res.status && res.data.length > 0) {
+                res.data.forEach((item) => {
+                    html += `<option value="${item.id}">
+                                ${item.name} (${item.bus_number})
+                             </option>`;
+                });
+            } else {
+                html += `<option value="">No Bus Found</option>`;
+            }
+
+            $(selector).html(html).trigger("change");
         },
     });
 }

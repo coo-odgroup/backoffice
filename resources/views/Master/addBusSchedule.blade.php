@@ -56,7 +56,7 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                     </div>
                                     @endif
-                                 
+
                                     <div class="col-12">
                                         <div class="row">
 
@@ -96,36 +96,34 @@
                                                     <div class="card-header">
                                                         <strong>Date Schedule List</strong>
                                                     </div>
+
                                                     <div class="card-body">
 
+                                                        @if(!empty($data['scheduleDates']) && count($data['scheduleDates']) > 0)
+
+                                                        @php
+                                                        $dates = $data['scheduleDates'];
+                                                        $chunkSize = ceil(count($dates) / 3);
+                                                        $chunks = array_chunk($dates, $chunkSize);
+                                                        @endphp
+
                                                         <div class="row">
+                                                            @foreach($chunks as $chunk)
                                                             <div class="col-4">
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">03-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">04-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">05-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">06-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">06-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">06-Apr-2026</div>
+                                                                @foreach($chunk as $date)
+                                                                <div class="border p-1 text-center rounded bg-light mb-2">
+                                                                    {{ \Carbon\Carbon::parse($date)->format('d-M-Y') }}
+                                                                </div>
+                                                                @endforeach
                                                             </div>
-
-                                                            <div class="col-4">
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">07-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">08-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">09-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">10-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">06-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">06-Apr-2026</div>
-                                                            </div>
-
-                                                            <div class="col-4">
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">07-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">08-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">09-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">10-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">06-Apr-2026</div>
-                                                                <div class="border p-1 text-center rounded bg-light mb-2">06-Apr-2026</div>
-                                                            </div>
+                                                            @endforeach
                                                         </div>
+
+                                                        @else
+                                                        <div class="text-center text-muted">
+                                                            Bus is not scheduled
+                                                        </div>
+                                                        @endif
 
                                                     </div>
                                                 </div>
@@ -134,7 +132,7 @@
                                     </div>
 
                                     <!-- Buttons -->
-                                    <div class="row">
+                                    <div class="row mt-3">
                                         <div class="col-12 d-flex gap-2">
                                             <button class="btn btn-primary btn-sm" type="submit">
                                                 {{ $data['strSubmit'] }}
@@ -182,44 +180,47 @@
 
 
             commonAjax.initSelect2('#bus', 'Select Bus');
-            commonAjax.initSelect2('#operator', 'Select Operator');
+            commonAjax.initSelect2('#operator', 'Select Bus Operator');
             commonAjax.loadTicketFareSlabList('#slab', slab_id);
-            commonAjax.loadBusOperatorList();
+            commonAjax.loadBusOperatorDropdown();
+
+            setTimeout(() => {
+
+                if (selectedOperator) {
+
+                    // set operator first
+                    $('#operator').val(selectedOperator).trigger('change.select2');
+
+                    // load buses after operator set
+                    setTimeout(() => {
+
+                        commonAjax.loadBusListByOperator('#bus', selectedOperator);
+
+                        // then set bus
+                        setTimeout(() => {
+                            if (selectedBus) {
+                                $('#bus').val(selectedBus).trigger('change.select2');
+                            }
+                        }, 400);
+
+                    }, 300);
+                }
+
+            }, 300);
+
             commonAjax.initClearableInputs();
 
-            $('#operator').on('change', function() {
+            $('#bus').on('focus', function() {
 
-                let id = $(this).val();
-                let text = $("#operator option:selected").text();
+                let operator_id = $('#operator').val();
 
-                if (!id) return;
-                if (selectedOperators.some(op => op.id == id)) return;
-
-                let operator = {
-                    id,
-                    text
-                };
-                selectedOperators.push(operator);
-
-                renderOperators();
-                loadOperatorTable(operator);
-
-                $(this).val('').trigger('change');
+                if (!operator_id) {
+                    commonAjax.viewAlert("Please select operator first", "warning");
+                    $(this).blur();
+                }
             });
 
             let existingOperators = @json($data['row']['operators'] ?? []);
-
-            existingOperators.forEach(op => {
-                selectedOperators.push({
-                    id: op.id,
-                    text: op.name
-                });
-
-                loadOperatorTable({
-                    id: op.id,
-                    text: op.name
-                });
-            });
 
             renderOperators();
         });
@@ -259,15 +260,7 @@
             $('#operatorTables').html('');
         });
 
-        $('#backoffice-form').on('submit', function(e) {
 
-            e.preventDefault();
-
-            if (!validator.selectDropdown('slab', 'Select Ticket Fare Slab')) return;
-            commonAjax.confirmAlert('Are you sure to proceed!');
-
-            $('#btnConfirmOk').one('click', () => this.submit());
-        });
 
         // add/remove rows
         $(document).on('click', '.btn-add', function() {
@@ -303,84 +296,71 @@
             }
         });
 
+        $('#operator').on('change', function() {
 
+            let operator_id = $(this).val();
+            let text = $("#operator option:selected").text();
 
+            commonAjax.loadBusListByOperator('#bus', operator_id);
 
-        // TO DATE CHANGE
-        $(document).on('change', '.to-date', function() {
+            if (selectedOperators.some(op => op.id == operator_id)) return;
 
-            let row = $(this).closest('.row');
-            let fromDate = row.find('.from-date').val();
-            let toDate = $(this).val();
+            let operator = {
+                id: operator_id,
+                text
+            };
 
-            if (fromDate && toDate && toDate < fromDate) {
-                alert('To Date cannot be less than From Date');
-                $(this).val('');
-            }
+            selectedOperators.push(operator);
+
+            renderOperators();
         });
 
 
-        // UPDATED: no table if no data
-        function loadOperatorTable(operator) {
+        $('#bus').on('change', function() {
 
-            $.ajax({
-                url: "/admin/get-operator-slab-data",
-                type: "POST",
-                data: {
-                    operator_id: operator.id,
-                    _token: $('meta[name="csrf-token"]').attr("content"),
-                },
+            let bus_id = $(this).val();
+            let operator_id = $('#operator').val();
 
-                success: function(res) {
+            if (!bus_id) return;
 
-                    // skip if no data
-                    if (!res.status || res.data.length === 0) {
-                        $(`#table_${operator.id}`).remove();
-                        return;
-                    }
+            let url = new URL(window.location.href);
 
-                    let tableHtml = `
-                    <div class="card mt-3 operator-table" id="table_${operator.id}">
-                        <div class="card-header bg-warning">
-                            <b>${operator.text}</b>
-                        </div>
+            url.searchParams.set('bus', bus_id);
+            url.searchParams.set('operator', operator_id);
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Slab</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th>Commission</th>
-                                        <th>From Date</th>
-                                        <th>To Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
+            window.location.href = url.toString();
+        });
 
-                    res.data.forEach(row => {
-                        tableHtml += `
-                        <tr>
-                            <td>${row.slab_name}</td>
-                            <td>${row.starting_fare}</td>
-                            <td>${row.upto_fare}</td>
-                            <td>${row.commision}</td>
-                            <td>${row.from_date}</td>
-                            <td>${row.to_date}</td>
-                        </tr>`;
-                    });
+        let selectedOperator = "{{ request('operator') ?? old('operator') }}";
+        let selectedBus = "{{ request('bus') ?? old('bus') }}";
 
-                    tableHtml += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`;
+        function restoreSelection() {
 
-                    $(`#table_${operator.id}`).remove();
-                    $('#operatorTables').append(tableHtml);
+            if (!selectedOperator) return;
+
+            // wait until operator options loaded
+            if ($('#operator option[value="' + selectedOperator + '"]').length === 0) {
+                setTimeout(restoreSelection, 200);
+                return;
+            }
+
+            // set operator
+            $('#operator').val(selectedOperator).trigger('change');
+
+            // load buses
+            commonAjax.loadBusListByOperator('#bus', selectedOperator);
+
+            // wait and set bus
+            setTimeout(() => {
+
+                if (selectedBus) {
+                    $('#bus').val(selectedBus).trigger('change.select2');
                 }
-            });
+
+            }, 400);
         }
+
+        // start restore
+        setTimeout(restoreSelection, 300);
     </script>
     @endpush

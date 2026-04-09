@@ -248,6 +248,9 @@
                 renderOperators();
                 loadOperatorTable(operator);
 
+                let operator_id = $(this).val();
+                commonAjax.loadBusListByOperator('#bus', operator_id);
+
                 $(this).val('').trigger('change');
             });
 
