@@ -181,6 +181,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     tbody.empty();
 
     let routes = <?= json_encode($data['schedule_data']) ?>;
+    let step5Res = <?= json_encode($step5Res) ?>;
 
     routes.forEach((item, index) => {
 
@@ -195,11 +196,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                 <td>
                     <select class="form-select form-select-sm" name="from_journey_day[]">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
+                        <option value="1" ${step5Res[index]?.to_journey_day == 1 ? 'selected' : ''}>1</option>
+                        <option value="2" ${step5Res[index]?.to_journey_day == 2 ? 'selected' : ''}>2</option>
+                        <option value="3" ${step5Res[index]?.to_journey_day == 3 ? 'selected' : ''}>3</option>
+                        <option value="4" ${step5Res[index]?.to_journey_day == 4 ? 'selected' : ''}>4</option>
+                        <option value="5" ${step5Res[index]?.to_journey_day == 5 ? 'selected' : ''}>5</option>
                     </select>
                 </td>
 
@@ -210,39 +211,39 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                 <td>
                     <select class="form-select form-select-sm" name="to_journey_day[]">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
+                        <option value="1" ${step5Res[index]?.to_journey_day == 1 ? 'selected' : ''}>1</option>
+                        <option value="2" ${step5Res[index]?.to_journey_day == 2 ? 'selected' : ''}>2</option>
+                        <option value="3" ${step5Res[index]?.to_journey_day == 3 ? 'selected' : ''}>3</option>
+                        <option value="4" ${step5Res[index]?.to_journey_day == 4 ? 'selected' : ''}>4</option>
+                        <option value="5" ${step5Res[index]?.to_journey_day == 5 ? 'selected' : ''}>5</option>
                     </select>
                 </td>
 
                 <td>
-                    <input type="number" class="form-control form-control-sm seatFare" name="seat_fare[]" placeholder="Enter Seat Fare">
+                    <input type="number" class="form-control form-control-sm seatFare" name="seat_fare[]" placeholder="Enter Seat Fare" value="${step5Res[index]?.seat_fare}">
                 </td>
 
                 <td>
-                    <input type="number" class="form-control form-control-sm upperSleeperFare" name="upper_sleeper_fare[]" placeholder="Enter U-Sleeper Fare">
+                    <input type="number" class="form-control form-control-sm upperSleeperFare" name="upper_sleeper_fare[]" placeholder="Enter U-Sleeper Fare" value="${step5Res[index]?.upper_sleeper_fare}">
                 </td>
 
                 <td>
-                    <input type="number" class="form-control form-control-sm lowerSleeperFare" name="lower_sleeper_fare[]" placeholder="Enter L-Sleeper Fare">
+                    <input type="number" class="form-control form-control-sm lowerSleeperFare" name="lower_sleeper_fare[]" placeholder="Enter L-Sleeper Fare" value="${step5Res[index]?.lower_sleeper_fare}">
                 </td>
 
                 <td class="closeTimeRow">
                     <input type="hidden" value="${item.city_id}" class="city_id" />
-                    <input type="time" class="form-control form-control-sm close_time" name="close_time[]">
+                    <input type="time" class="form-control form-control-sm close_time" name="close_time[]" value="${step5Res[index]?.close_time}">
                 </td>
 
                 <td>
-                    <input type="number" class="form-control form-control-sm seize_time" name="seize_time[]" placeholder="Enter Seize Time">
+                    <input type="number" class="form-control form-control-sm seize_time" name="seize_time[]" placeholder="Enter Seize Time" value="${step5Res[index]?.seize_time}">
                 </td>
 
                 <td>
                     <div class="d-flex justify-content-center gap-2">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="active_status[]" value="1">
+                            <input class="form-check-input" type="checkbox" name="active_status[]" value="1" ${step5Res[index]?.active_status == 1 ? 'checked' : ''}>
                         </div>
                         <button class="btn btn-outline-danger btn-sm removeRow">
                             ✕

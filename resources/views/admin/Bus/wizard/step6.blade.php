@@ -80,14 +80,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold">Conductor Number <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control form-control-sm"
                                                     placeholder="Conductor Number"
-                                                    name="contacts[0][phone]" id="conductorNumber">
+                                                    name="contacts[0][phone]" id="conductorNumber" value="{{ @$step6Res[0]->phone }}">
                                             </div>
 
                                             <div class="col-md-2 text-center">
                                                 <label class="form-label fw-semibold d-block">SMS On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[0][booking_sms_send]" value="1">
+                                                        name="contacts[0][booking_sms_send]" {{ @$step6Res[0]->booking_sms_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -95,7 +95,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Cancellation On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[0][cancel_sms_send]" value="1">
+                                                        name="contacts[0][cancel_sms_send]" {{ @$step6Res[0]->cancel_sms_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -103,7 +103,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Wp On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[0][booking_wp_send]" value="1">
+                                                        name="contacts[0][booking_wp_send]" {{ @$step6Res[0]->booking_wp_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -111,7 +111,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Cancellation Wp On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[0][cancel_wp_send]" value="1">
+                                                        name="contacts[0][cancel_wp_send]" {{ @$step6Res[0]->cancel_wp_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
                                         </div>
@@ -123,14 +123,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold">Manager Number</label>
                                                 <input type="text" class="form-control form-control-sm"
                                                     placeholder="Manager Number"
-                                                    name="contacts[1][phone]" id="managerNumber">
+                                                    name="contacts[1][phone]" id="managerNumber" value="{{ @$step6Res[1]->phone }}">
                                             </div>
 
                                             <div class="col-md-2 text-center">
                                                 <label class="form-label fw-semibold d-block">SMS On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[1][booking_sms_send]" value="1">
+                                                        name="contacts[1][booking_sms_send]" {{ @$step6Res[1]->booking_sms_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -138,7 +138,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Cancellation On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[1][cancel_sms_send]" value="1">
+                                                        name="contacts[1][cancel_sms_send]" {{ @$step6Res[1]->cancel_sms_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -146,7 +146,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Wp On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[1][booking_wp_send]" value="1">
+                                                        name="contacts[1][booking_wp_send]" {{ @$step6Res[1]->booking_wp_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -154,7 +154,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Cancellation Wp On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[1][cancel_wp_send]" value="1">
+                                                        name="contacts[1][cancel_wp_send]" {{ @$step6Res[1]->cancel_wp_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
                                         </div>
@@ -166,14 +166,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold">Owner Number</label>
                                                 <input type="text" class="form-control form-control-sm"
                                                     placeholder="Owner Number"
-                                                    name="contacts[2][phone]" id="ownerNumber">
+                                                    name="contacts[2][phone]" id="ownerNumber" value="{{ @$step6Res[2]->phone }}">
                                             </div>
 
                                             <div class="col-md-2 text-center">
                                                 <label class="form-label fw-semibold d-block">SMS On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[2][booking_sms_send]" value="1">
+                                                        name="contacts[2][booking_sms_send]" {{ @$step6Res[2]->booking_sms_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -181,7 +181,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Cancellation On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[2][cancel_sms_send]" value="1">
+                                                        name="contacts[2][cancel_sms_send]" {{ @$step6Res[2]->cancel_sms_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -189,7 +189,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Wp On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[2][booking_wp_send]" value="1">
+                                                        name="contacts[2][booking_wp_send]" {{ @$step6Res[2]->booking_wp_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
 
@@ -197,7 +197,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <label class="form-label fw-semibold d-block">Cancellation Wp On Ticket</label>
                                                 <div class="form-check form-switch d-flex justify-content-center">
                                                     <input class="form-check-input red-switch" type="checkbox"
-                                                        name="contacts[2][cancel_wp_send]" value="1">
+                                                        name="contacts[2][cancel_wp_send]" {{ @$step6Res[2]->cancel_wp_send ? 'checked' : '' }} value="1">
                                                 </div>
                                             </div>
                                         </div>

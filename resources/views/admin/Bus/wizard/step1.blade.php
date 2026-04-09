@@ -80,25 +80,25 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busName">Bus Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="name" id="busName" maxlength="100">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Name" name="name" id="busName" maxlength="100" value="{{@$step1Res->name}}">
                                                             <small class="text-muted char-counter float-end"></small>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busNumber">Bus Number <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="bus_number" id="busNumber" maxlength="20">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Bus Number" name="bus_number" id="busNumber" maxlength="20" value="{{@$step1Res->bus_number}}">
                                                             <small class="text-muted char-counter float-end"></small>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="via">Via</label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Via" name="via" id="via" maxlength="50">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Via" name="via" id="via" maxlength="50" value="{{@$step1Res->via}}">
                                                             <small class="text-muted char-counter float-end"></small>
                                                         </div>
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="maxSeat">Max Seat Booked <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="max_seat_book" id="maxSeat" value="6">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="max_seat_book" id="maxSeat" value="{{@$step1Res->max_seat_book}}">
                                                         </div>
 
                                                     </div>
@@ -159,7 +159,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                                 <div class="col-md-6 mb-1">
                                                                     <label for="busType">Bus Type<span class="text-danger">*</span></label>
-                                                                    <span id="busType"></span>
+                                                                    <span id="busType">{{ @$step1Res->gen_bus_type ?? '' }}</span>
                                                                     <input type="hidden" name="gen_bus_type" id="busTypeVal" value="">
                                                                 </div>
                                                             </div>
@@ -306,6 +306,8 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
 <script type="module">
     $(document).ready(function() {
+        const selAmenities = <?= json_encode(@$step1AmenityRes) ?>;
+        localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
         // commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['busName', 'busNumber', 'via']);
         commonAjax.makeUpperCase(['busName', 'busNumber']); // Ids
@@ -371,10 +373,12 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
         commonAjax.initSelect2('#selAmenity', 'Select Amenity');
 
-        let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
+        // let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
+        let selectedBrand = "{{ @$step1Res->brand_id ?? '' }}";
         commonAjax.loadBrandList(selectedBrand);
 
-        let model_id = "{{ $data['row']->model_id ?? '' }}";
+        // let model_id = "{{ $data['row']->model_id ?? '' }}";
+        let model_id = "{{ @$step1Res->model_id ?? '' }}";
         commonAjax.loadBusModelsList(model_id);
 
         $('#brand').on('change', function() {
@@ -390,30 +394,37 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             }
         });
 
-        let axle_id = "{{ $data['row']->axle_id ?? '' }}";
-        commonAjax.loadAxleTypeList(axle_id);
+        // let axle_id = "{{ $data['row']->axle_id ?? '' }}";
+        let axle_type_id = "{{ @$step1Res->axle_type_id ?? '' }}";
+        commonAjax.loadAxleTypeList(axle_type_id);
 
-        let bus_service_id = "{{ $data['row']->bus_service_id ?? '' }}";
-        commonAjax.loadBusServicesList(bus_service_id);
+        // let bus_service_id = "{{ $data['row']->bus_service_id ?? '' }}";
+        let service_id = "{{ @$step1Res->service_id ?? '' }}";
+        commonAjax.loadBusServicesList(service_id);
 
-        let seat_type_id = "{{ $data['row']->seat_type_id ?? '' }}";
+        // let seat_type_id = "{{ $data['row']->seat_type_id ?? '' }}";
+        let seat_type_id = "{{ @$step1Res->seat_type_id ?? '' }}";
         commonAjax.loadSeatTypeList(seat_type_id);
 
-        let seat_layout_id = "{{ $data['row']->seat_layout_id ?? '' }}";
+        // let seat_layout_id = "{{ $data['row']->seat_layout_id ?? '' }}";
+        let seat_layout_id = "{{ @$step1Res->seat_layout_type_id ?? '' }}";
         commonAjax.loadSeatLayoutList(seat_layout_id);
 
-        let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
+        // let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
+        let annexture_type_id = "{{ @$step1Res->ac_type_id ?? '' }}";
         commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
 
         commonAjax.loadAmenityList();
 
         // Jagan
         commonAjax.initSelect2('#busOperator', 'Select Bus Operator');
-        let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
+        // let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
+        let bus_operator_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
         commonAjax.loadBusOperatorList(bus_operator_id);
 
         commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
-        let slab_id = "{{ $data['row']->slab_id ?? '' }}";
+        // let slab_id = "{{ $data['row']->slab_id ?? '' }}";
+        let slab_id = "{{ @$step1Res->cancellationslabs_id ?? '' }}";
         commonAjax.loadCancellationslabList(slab_id);
     });
 

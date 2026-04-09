@@ -142,7 +142,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     });
 
-    // ✅ Generate dropdown options
     function generateOptions(data) {
         let html = '';
 
@@ -153,11 +152,12 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         return html;
     }
 
-    // ✅ Render Accordion
-    function renderStations(data) {
+    function renderStations(data, step4Res) {
+
+        // console.log(step4Res);
 
         if (!data.length) {
-            $("#stationAccordion").html('<div class="alert alert-warning">No stations found in localStorage</div>');
+            $("#stationAccordion").html('<div class="alert alert-warning">No stations found</div>');
             return;
         }
 
@@ -168,6 +168,98 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             let id = station[0]; // station id
             let name = station[1];
             let collapseId = 'station' + (index + 1);
+
+            let cityData = step4Res.filter(item => item.city_id == id);
+
+            let rowsHtml = '';
+
+            if (cityData.length > 0) {
+
+                cityData.forEach((item, i) => {
+
+                    console.log(item);
+
+                    rowsHtml += `
+                    <div class="row stationRow align-items-center mb-2">
+
+                        <div class="col-md-1">
+                            <input type="checkbox" name="stations[${id}][${i}][checked]"
+                                ${item.active_status == 1 ? 'checked' : ''}>
+                        </div>
+
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm typeSelect" name="stations[${id}][${i}][type]">
+
+                                <option value="">Select Type</option>
+                                <option value="1" ${item.type == 1 ? 'selected' : ''}>Boarding</option>
+                                <option value="2" ${item.type == 2 ? 'selected' : ''}>Dropping</option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <select class="form-select form-select-sm stationSelect" name="stations[${id}][${i}][stop_id]">
+
+                                <option value="">Select Station</option>
+                                <option value="${item.stop_id}" ${item.stop && item.stop.id == item.stop_id ? 'selected' : ''}>
+                                    ${item.stop ? item.stop.city_name : ''}
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="time" name="stations[${id}][${i}][time]" value="${item.timing.substring(0,5)}" class="form-control form-control-sm time">
+                        </div>
+
+                        <div class="col-md-2">
+                            <input type="hidden" value="${id}" class="cityId">
+                            ${ (cityData.length === 1 || i === 0) ? `
+                                <button class="btn btn-primary btn-sm addRow" data-station="${id}" type="button">+</button>
+                            ` : `
+                                <button class="btn btn-danger btn-sm removeRow" type="button">-</button>
+                            `}
+                        </div>
+
+                    </div>
+                    `;
+                });
+
+            } else {
+
+                rowsHtml = `
+                <div class="row stationRow align-items-center mb-2">
+
+                    <div class="col-md-1">
+                        <input type="checkbox" name="stations[${id}][0][checked]">
+                    </div>
+
+                    <div class="col-md-2">
+                        <select class="form-select form-select-sm typeSelect" name="stations[${id}][0][type]">
+                            <option value="">Select Type</option>
+                            <option value="1">Boarding</option>
+                            <option value="2">Dropping</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <select class="form-select form-select-sm stationSelect" name="stations[${id}][0][stop_id]">
+                            <option>Select Station</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="time" name="stations[${id}][0][time]" class="form-control form-control-sm time">
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="hidden" value="${id}" class="cityId">
+                        <button class="btn btn-primary btn-sm addRow" data-station="${id}" type="button">+</button>
+                    </div>
+
+                </div>
+                `;
+            }
 
             html += `
             <div class="accordion-item">
@@ -184,36 +276,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                         <div class="stationRows">
 
-                            <div class="row stationRow align-items-center mb-2">
-
-                                <div class="col-md-1">
-                                    <input type="checkbox" name="stations[${id}][0][checked]">
-                                </div>
-
-                                <div class="col-md-2">
-                                    <select class="form-select form-select-sm typeSelect" name="stations[${id}][0][type]">
-                                        <option value="">Select Type</option>
-                                        <option value="1">Boarding</option>
-                                        <option value="2">Dropping</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <select class="form-select form-select-sm stationSelect" name="stations[${id}][0][stop_id]">
-                                        <option>Select Station</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <input type="time" name="stations[${id}][0][time]" class="form-control form-control-sm time">
-                                </div>
-
-                                <div class="col-md-2">
-                                    <input type="hidden" value="${id}" class="cityId">
-                                    <button class="btn btn-primary btn-sm addRow" data-station="${id}" type="button">+</button>
-                                </div>
-
-                            </div>
+                            ${rowsHtml}
 
                         </div>
 
@@ -280,8 +343,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $(document).ready(function() {
 
         let selectedCities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
+        let step4Res = <?= json_encode($step4Res) ?>;
 
-        renderStations(selectedCities);
+        renderStations(selectedCities, step4Res);
     });
 
     $(document).on("change", ".typeSelect", function() {
@@ -293,17 +357,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         let stationDropdown = row.find(".stationSelect");
         let city_id = row.find(".cityId").val();
 
-        // ✅ Checkbox logic
         if (type === "1" || type === "2") {
             checkbox.prop("checked", true);
         } else {
             checkbox.prop("checked", false);
         }
 
-        // ✅ Reset dropdown
         stationDropdown.html('<option value="">Select Station</option>');
 
-        // ✅ If valid type, load data
         if (type !== "") {
 
             stationDropdown.html('<option value="">Loading...</option>');

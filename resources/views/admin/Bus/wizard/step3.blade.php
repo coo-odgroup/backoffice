@@ -155,6 +155,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $(document).ready(function() {
 
         let cities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
+        let step3Res = <?= json_encode($step3Res) ?>;
+
+        console.log(step3Res);
 
         let html = "";
 
@@ -170,18 +173,18 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                 <div class="col-md-3 text-center align-middle">
                     <div class="checkbox">
-                        <input type="checkbox" name="boarding[${cityId}]" class="boarding">
+                        <input type="checkbox" name="boarding[${cityId}]" class="boarding" ${step3Res?.[index]?.is_boarding == 1 ? 'checked' : ''}>
                     </div>
                 </div>
 
                 <div class="col-md-3 text-center align-middle">
                     <div class="checkbox">
-                        <input type="checkbox" name="dropping[${cityId}]" class="dropping">
+                        <input type="checkbox" name="dropping[${cityId}]" class="dropping" ${step3Res?.[index]?.is_dropping == 1 ? 'checked' : ''}>
                     </div>
                 </div>
 
                 <div class="col-md-2 text-center">
-                    <input type="time" name="time[${cityId}]" class="form-control form-control-sm city-time" value="">
+                    <input type="time" name="time[${cityId}]" class="form-control form-control-sm city-time" value="${step3Res?.[index]?.listing_time}">
                 </div>
             </div>
             `;
