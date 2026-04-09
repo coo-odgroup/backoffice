@@ -46,7 +46,6 @@ class BusScheduleController extends Controller
                     't.from_date',
                     't.to_date',
                     't.active_status',
-                    't.created_at',
                     't.updated_at',
                     DB::raw('(SELECT name FROM users WHERE id = t.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
@@ -156,7 +155,6 @@ class BusScheduleController extends Controller
 
         try {
 
-            // ================== FETCH SCHEDULE FOR VIEW ==================
             $bus_id = request('bus') ?? old('bus');
             $scheduleDates = [];
 
@@ -181,7 +179,6 @@ class BusScheduleController extends Controller
 
             $data['scheduleDates'] = $scheduleDates;
 
-            // ================== FORM SUBMIT ==================
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
@@ -202,17 +199,14 @@ class BusScheduleController extends Controller
                 $running_cycle = (int) request('running_cycle');
                 $start_date    = request('date');
 
-                // ✅ Insert into bus_schedule
                 $schedule_id = DB::table('odbusdev.bus_schedule')->insertGetId([
                     'operator_id'   => $operator_id,
                     'bus_id'        => $bus_id,
                     'running_cycle' => $running_cycle,
                     'active_status' => 1,
-                    'created_at'    => now(),
                     'created_by'    => 1
                 ]);
 
-                // ✅ Generate 30 dates
                 $dates = [];
                 $current = \Carbon\Carbon::parse($start_date);
 
@@ -221,7 +215,6 @@ class BusScheduleController extends Controller
                     $dates[] = [
                         'bus_schedule_id' => $schedule_id,
                         'entry_date'      => $current->format('Y-m-d'),
-                        'created_at'      => now(),
                         'created_by'      => 1
                     ];
 
@@ -230,7 +223,6 @@ class BusScheduleController extends Controller
 
                 DB::table('odbusdev.bus_schedule_date')->insert($dates);
 
-                // ✅ Update bus running_cycle
                 DB::table('odbusdev.bus')
                     ->where('id', $bus_id)
                     ->update([
@@ -265,5 +257,34 @@ class BusScheduleController extends Controller
     public function edit($encId)
     {
         return $this->add($encId);
+    }
+
+    public function getScheduleDates(Request $request)
+    {
+        $bus_id = $request->bus_id;
+
+        $scheduleDates = [];
+
+        if ($bus_id) {
+
+            $schedule = DB::table('odbusdev.bus_schedule')
+                ->where('bus_id', $bus_id)
+                ->where('active_status', 1)
+                ->orderByDesc('id')
+                ->first();
+
+            if ($schedule) {
+                $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $schedule->id)
+                    ->orderBy('entry_date', 'asc')
+                    ->limit(30)
+                    ->pluck('entry_date');
+            }
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $scheduleDates
+        ]);
     }
 }
