@@ -19,13 +19,23 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use SebastianBergmann\Environment\Console;
 
 class BusWizardController extends Controller
 {
+    protected $createBusUrl;
+
+    public function __construct()
+    {
+        $this->createBusUrl = '/admin/bus/create/';
+
+        view()->share('createBusUrl', $this->createBusUrl);
+    }
+
     public function step1()
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
         $data['categories'] = AmenityCategory::with(['amenities' => function ($q) {
@@ -144,11 +154,12 @@ class BusWizardController extends Controller
     public function step2($bus_id = null)
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
-        $data['bus_id'] = $bus_id;
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
         return view('admin.bus.wizard.step2', compact('data'));
     }
 
@@ -163,11 +174,12 @@ class BusWizardController extends Controller
     public function step3($bus_id = null)
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
-        $data['bus_id'] = $bus_id;
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
         return view('admin.bus.wizard.step3', compact('data'));
     }
 
@@ -258,11 +270,12 @@ class BusWizardController extends Controller
     public function step4($bus_id = null)
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
-        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
-        $data['bus_id'] = $bus_id;
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
         return view('admin.bus.wizard.step4', compact('data'));
     }
 
@@ -309,18 +322,18 @@ class BusWizardController extends Controller
     public function step5($bus_id = null)
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
 
-        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
 
         $res = BusRoutesStops::with([
             'bus:id,name',
             'route:id,route_name',
             'city:id,city_name'
         ])
-            ->where('bus_id', $bus_id)
+            ->where('bus_id', $busId)
             ->get();
 
         $resCollect = collect($res); // your JSON data
@@ -349,10 +362,9 @@ class BusWizardController extends Controller
             }
         }
 
-        // return $result;
-
         $data['schedule_data'] = $result;
-        $data['bus_id'] = $bus_id;
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
         return view('admin.bus.wizard.step5', compact('data'));
     }
 
@@ -392,7 +404,7 @@ class BusWizardController extends Controller
             session()->flash('message', 'Routes added successfully.');
         } catch (\Exception $e) {
 
-            Log::error('Batch insert error', [
+            Log::error('postStep5 Batch insert error', [
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
             ]);
@@ -408,15 +420,16 @@ class BusWizardController extends Controller
     public function step6($bus_id = null)
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
 
-        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
-        $busData = Bus::where('id', $bus_id)->first();
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $busData = Bus::where('id', $busId)->first();
 
         $data['bus_number'] = $busData ? $busData->bus_number : null;
-        $data['bus_id'] = $bus_id;
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
         return view('admin.bus.wizard.step6', compact('data'));
     }
 
@@ -446,7 +459,7 @@ class BusWizardController extends Controller
             session()->flash('message', 'Bus Contacts added successfully.');
         } catch (\Exception $e) {
 
-            Log::error('Batch insert error', [
+            Log::error('postStep6 Batch insert error', [
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
             ]);
@@ -462,13 +475,14 @@ class BusWizardController extends Controller
     public function step7($bus_id = null)
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
 
-        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
         $data['seat_layout'] = DB::table('mst_seat_layout_name')->get();
-        $data['bus_id'] = $bus_id;
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
         return view('admin.bus.wizard.step7', compact('data'));
     }
 
@@ -501,7 +515,7 @@ class BusWizardController extends Controller
             session()->flash('message', 'Seat Layout Created successfully.');
         } catch (\Exception $e) {
 
-            Log::error('Batch insert error', [
+            Log::error('postStep7 Batch insert error', [
                 'message' => $e->getMessage(),
                 'line' => $e->getLine(),
             ]);
@@ -517,31 +531,206 @@ class BusWizardController extends Controller
     public function preview($bus_id = null)
     {
         $data = [];
-        $data['strPage'] = $method = 'Add';
+        $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset'] = 'Reset';
 
-        $bus_id = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
 
-        $bus_record = Bus::with('operator', 'brand', 'model', 'axleType', 'service', 'seatType', 'seatLayout', 'cancellationslab.slabInfo')->where('id', $bus_id)->first();
+        $bus_record = Bus::with('operator', 'brand', 'model', 'axleType', 'service', 'seatType', 'seatLayout', 'cancellationslab.slabInfo')->where('id', $busId)->first();
 
         $amennity_records = DB::table('odbusdev.bus_amenities as ba')
             ->join('mst_amenities as a', 'a.id', '=', 'ba.amenities_id')
             ->join('mst_amenity_categories as c', 'c.id', '=', 'a.category_id')
             ->where('ba.active_status', 1)
-            ->where('ba.bus_id', $bus_id)
+            ->where('ba.bus_id', $busId)
             ->select('c.category_name', 'a.amenity_name', 'a.icon')
             ->get()
             ->groupBy('category_name');
 
-        $busRoutesStops = BusRoutesStops::with('city')->where('bus_id', $bus_id)->orderBy('stop_order', 'ASC')->get();
-        $busBoardingDropping = BusBoardingDropping::with('city', 'stop')->where('bus_id', $bus_id)->get();
-        $busRouteFares = BusRouteFares::with('source', 'destination')->where('bus_id', $bus_id)->get();
-        $busContacts = BusContacts::where('bus_id', $bus_id)->get();
+        $busRoutesStops = BusRoutesStops::with('city')->where('bus_id', $busId)->orderBy('stop_order', 'ASC')->get();
+        $busBoardingDropping = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
+        $busRouteFares = BusRouteFares::with('source', 'destination')->where('bus_id', $busId)->get();
+        $busContacts = BusContacts::where('bus_id', $busId)->get();
 
-        // return $busContacts;
+        $seat_layout_id = BusSeats::where('bus_id', $busId)
+            ->select('seat_layout_id')
+            ->distinct()
+            ->first()
+            ->seat_layout_id;
 
-        return view('admin.bus.wizard.preview', compact('data', 'bus_record', 'amennity_records', 'busRoutesStops', 'busBoardingDropping', 'busRouteFares', 'busContacts'));
+        $seatLayout = $this->genSeatLayout($seat_layout_id);
+
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
+        return view('admin.bus.wizard.preview', compact('data', 'bus_record', 'amennity_records', 'busRoutesStops', 'busBoardingDropping', 'busRouteFares', 'busContacts', 'seatLayout'));
+    }
+
+    public function genSeatLayout($seatLayoutId = null)
+    {
+        $busSeats = BusSeats::where('seat_layout_id', $seatLayoutId)->get();
+
+        $seats = DB::table('mst_seats')
+            ->where('seat_layout_name_id', $seatLayoutId)
+            ->orderBy('row_number')
+            ->orderBy('col_number')
+            ->get();
+
+        $layout = [
+            'UPPER' => [],
+            'LOWER' => []
+        ];
+
+        foreach ($seats as $seat) {
+            $deck = $seat->berth_type == 1 ? 'LOWER' : 'UPPER';
+            $layout[$deck][$seat->row_number][$seat->col_number] = $seat;
+        }
+
+        foreach ($layout as $deck => $rows) {
+            ksort($rows);
+            foreach ($rows as $rowKey => $cols) {
+                ksort($cols);
+                $rows[$rowKey] = $cols;
+            }
+            $layout[$deck] = $rows;
+        }
+
+        $maxCols = ['UPPER' => 0, 'LOWER' => 0];
+
+        foreach ($layout as $deck => $rows) {
+            foreach ($rows as $cols) {
+                if (!empty($cols)) {
+                    $maxCols[$deck] = max($maxCols[$deck], max(array_keys($cols)));
+                }
+            }
+        }
+
+        // BUILD HTML
+        $html = '<div class="bpv-seat-box"><div class="seat-left"><div class="bus-layout">';
+
+        $windowSeatCount = 0;
+        $aisleSeatCount = 0;
+
+        foreach (['UPPER', 'LOWER'] as $deck) {
+
+            if (empty($layout[$deck])) {
+                continue;
+            }
+
+            $html .= '<div class="berth-row">';
+            $html .= '<div class="berth-label">' . ucwords(strtolower($deck)) . ' Berth</div>';
+            $html .= '<div class="layout-box" style="display:grid;grid-template-columns: repeat(' . $maxCols[$deck] . ', 42px);gap:5px;">';
+
+            $skip = [];
+
+            foreach ($layout[$deck] as $rIndex => $row) {
+                foreach ($row as $cIndex => $seat) {
+
+                    $selectedCalss = "";
+
+                    foreach ($busSeats as $s_val) {
+                        if ($seat->id == $s_val->seat_id) {
+                            $selectedCalss = "selected";
+                            break;
+                        }
+                    }
+
+                    if ($seat->is_window == 1) {
+                        $windowSeatCount++;
+                    }
+
+                    if ($seat->is_aisle == 1) {
+                        $aisleSeatCount++;
+                    }
+
+                    if (isset($skip[$rIndex][$cIndex])) {
+                        continue;
+                    }
+
+                    // EMPTY
+                    if ($seat->seat_class == 0 || $seat->seat_text == null) {
+                        $html .= '<div class="empty-seat"></div>';
+                    }
+
+                    // VERTICAL
+                    elseif ($seat->seat_class == 3) {
+
+                        $text = strtoupper($seat->seat_text);
+
+                        if ($text === 'EXIT') {
+                            $class = 'vertical_exit_prv';
+                        } elseif ($text === 'TOILET') {
+                            $class = 'vertical_toilet_prv';
+                        } else {
+                            $class = 'bus-vertical-sleeper';
+                        }
+
+                        $html .= '
+                        <label class="seat-wrap vertical-sleeper-wrap">
+                            <span class="' . $class . ' ' . $selectedCalss . '"></span>
+                            <span class="seat-number">' . $seat->seat_text . '</span>
+                        </label>
+                    ';
+
+                        $skip[$rIndex + 1][$cIndex] = true;
+                    }
+
+                    // HORIZONTAL
+                    elseif ($seat->seat_class == 2) {
+
+                        $text = strtoupper($seat->seat_text);
+
+                        if ($text === 'EXIT') {
+                            $class = 'horizontal_exit_prv';
+                        } elseif ($text === 'TOILET') {
+                            $class = 'horizontal_toilet_prv';
+                        } else {
+                            $class = 'bus-sleeper';
+                        }
+
+                        $html .= '
+                        <label class="seat-wrap sleeper-wrap">
+                            <span class="' . $class . ' ' . $selectedCalss . '"></span>
+                            <span class="seat-number">' . $seat->seat_text . '</span>
+                        </label>
+                    ';
+                    }
+
+                    // SINGLE
+                    else {
+
+                        $text = strtoupper($seat->seat_text);
+
+                        if ($text === 'EXIT') {
+                            $class = 'seat_exit_prv';
+                        } else {
+                            $class = 'bus-seat';
+                        }
+
+                        $html .= '
+                        <label class="seat-wrap">
+                            <span class="' . $class . ' ' . $selectedCalss . '"></span>
+                            <span class="seat-number">' . $seat->seat_text . '</span>
+                        </label>
+                    ';
+                    }
+                }
+            }
+
+            $html .= '</div></div>';
+        }
+
+        $html .= '</div></div></div>
+        <div class="bpv-seat-info">
+            <div><span>Window Seats:</span>
+                <p>' . $windowSeatCount . '</p>
+            </div>
+            <div><span>Aisle Seats:</span>
+                <p>' . $aisleSeatCount . '</p>
+            </div>
+        </div>';
+
+        return $html;
     }
 
     public function getBoardingDropping(Request $request)

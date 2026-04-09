@@ -83,10 +83,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                         <div class="text-center mt-5">
 
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
-
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep2()">
+                                            <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
                                                 ← Back
-                                            </button>
+                                            </a>
                                             <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>

@@ -88,7 +88,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                         <!-- STEP 2 BUTTONS -->
                                         <div class="text-center mt-4">
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
-                                            <button type="button" class="btn btn-warning px-5 rounded-pill me-3" onclick="backStep()">← Back</button>
+                                            <a href="{{ url($createBusUrl.'step1/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                                ← Back
+                                            </a>
                                             <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                         </div>
                                     </div>
@@ -107,7 +109,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
 <script type="module">
     document.addEventListener("DOMContentLoaded", function() {
-
         updatePreview();
         syncCheckboxes();
     });
@@ -131,16 +132,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $(document).on('change', '.cityCheck', function() {
         toggleCity(this);
     });
-
-
-    function backStep() {
-        document.getElementById("step1").style.display = "block";
-        document.getElementById("step2").style.display = "none";
-    }
-
-    function nextStep() {
-        window.location.href = "/admin/bus/create/step3";
-    }
 
     let selectedCities = new Map(
         JSON.parse(localStorage.getItem("selectedCities") || "[]")
