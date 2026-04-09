@@ -46,7 +46,6 @@ class BusScheduleController extends Controller
                     't.from_date',
                     't.to_date',
                     't.active_status',
-                    't.created_at',
                     't.updated_at',
                     DB::raw('(SELECT name FROM users WHERE id = t.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
@@ -150,102 +149,43 @@ class BusScheduleController extends Controller
     public function add($encId = null)
     {
         $data = [];
-        $data['strPage']   = $method = 'Add';
+        $data['strPage']   = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset']  = 'Reset';
 
         try {
 
-            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+            $bus_id = request('bus') ?? old('bus');
+            $scheduleDates = [];
 
-            if ($id > 0) {
+            if ($bus_id) {
 
-                $redirectPage = "admin/ticketfareslab-info/edit/" . $encId;
+                $schedule = DB::table('odbusdev.bus_schedule')
+                    ->where('bus_id', $bus_id)
+                    ->where('active_status', 1)
+                    ->orderByDesc('id')
+                    ->first();
 
-                $data['strPage']   = $method = 'Edit';
-                $data['strSubmit'] = 'Update';
-                $data['strReset']  = 'Cancel';
+                if ($schedule) {
 
-
-                $row = DB::table('mst_ticket_fare_slab_info as t')
-                    ->leftJoin('users as u', 'u.id', '=', 't.bus_operator_id')
-                    ->where('t.slab_id', $id)
-                    ->select(
-                        't.*',
-                        'u.organization_name as operator_name'
-                    )
-                    ->get();
-
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
+                    $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                        ->where('bus_schedule_id', $schedule->id)
+                        ->orderBy('entry_date', 'asc')
+                        ->limit(30)
+                        ->pluck('entry_date')
+                        ->toArray();
                 }
-
-                $operators = [];
-                $slabInfo = [];
-
-                foreach ($row as $r) {
-
-                    // operators
-                    $operators[$r->bus_operator_id] = [
-                        'id' => $r->bus_operator_id,
-                        'name' => $r->operator_name
-                    ];
-
-                    // slab rows 
-                    $key = md5(
-                        $r->starting_fare . '|' .
-                            $r->upto_fare . '|' .
-                            $r->commision . '|' .
-                            date('Y-m-d', strtotime($r->from_date)) . '|' .
-                            date('Y-m-d', strtotime($r->to_date))
-                    );
-
-                    if (!isset($slabInfo[$key])) {
-                        $slabInfo[$key] = [
-                            'starting_fare' => (string)$r->starting_fare,
-                            'upto_fare' => (string)$r->upto_fare,
-                            'commision' => (string)$r->commision,
-                            'from_date' => date('Y-m-d', strtotime($r->from_date)),
-                            'to_date' => date('Y-m-d', strtotime($r->to_date)),
-                        ];
-                    }
-                }
-
-
-                $slabInfo = array_values($slabInfo);
-
-                $data['row'] = [
-                    'slab_id' => $id,
-                    'operators' => array_values($operators),
-                    'slabInfo' => $slabInfo
-                ];;
-
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
-                }
-            } else {
-                $id = 0;
-                $redirectPage = "admin/ticketfareslab-info";
             }
+
+            $data['scheduleDates'] = $scheduleDates;
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
-
                 $validator = Validator::make(request()->all(), [
-                    'slab_id' => 'bail|required|integer',
-                    'bus_operator_id' => 'nullable',
-
-                    'starting_fare.*' => 'required|numeric|min:0',
-                    'upto_fare.*'     => 'required|numeric',
-                    'commision.*'     => 'required|numeric',
-
-                    'from_date.*' => 'nullable|date',
-                    'to_date.*'   => 'nullable|date',
-                ], [
-                    'slab_id.required' => 'Please select slab',
-                    'bus_operator_id.required' => 'Please select at least one operator',
+                    'operator'       => 'required|integer',
+                    'bus'            => 'required|integer',
+                    'running_cycle'  => 'required|integer|min:1|max:5',
+                    'date'           => 'required|date',
                 ]);
 
                 if ($validator->fails()) {
@@ -254,95 +194,55 @@ class BusScheduleController extends Controller
 
                 DB::beginTransaction();
 
+                $operator_id   = request('operator');
+                $bus_id        = request('bus');
+                $running_cycle = (int) request('running_cycle');
+                $start_date    = request('date');
 
-                $slab_id = (int) request('slab_id');
-                $bus_operator_id = request('bus_operator_id');
+                $schedule_id = DB::table('odbusdev.bus_schedule')->insertGetId([
+                    'operator_id'   => $operator_id,
+                    'bus_id'        => $bus_id,
+                    'running_cycle' => $running_cycle,
+                    'active_status' => 1,
+                    'created_by'    => 1
+                ]);
 
-                $operators = !empty($bus_operator_id)
-                    ? explode(',', $bus_operator_id)
-                    : [0];
+                $dates = [];
+                $current = \Carbon\Carbon::parse($start_date);
 
-                $starting_fare = request('starting_fare');
-                $upto_fare     = request('upto_fare');
-                $commision     = request('commision');
-                $from_date     = request('from_date');
-                $to_date       = request('to_date');
+                for ($i = 0; $i < 30; $i++) {
 
-                foreach ($starting_fare as $i => $start) {
-                    if ($upto_fare[$i] < $start) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Fare must be greater than or equal to From Fare'
-                        ])->withInput();
-                    }
+                    $dates[] = [
+                        'bus_schedule_id' => $schedule_id,
+                        'entry_date'      => $current->format('Y-m-d'),
+                        'created_by'      => 1
+                    ];
 
-                    if ($to_date[$i] < $from_date[$i]) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Date must be after From Date'
-                        ])->withInput();
-                    }
+                    $current->addDays($running_cycle);
                 }
 
-                if ($id > 0) {
-                    DB::table('mst_ticket_fare_slab_info')
-                        ->where('slab_id', $slab_id)
-                        ->delete();
-                }
+                DB::table('odbusdev.bus_schedule_date')->insert($dates);
 
-
-                $insertData = [];
-
-                foreach ($operators as $operator) {
-
-                    foreach ($starting_fare as $key => $val) {
-
-                        $rowData = [
-                            'slab_id'         => $slab_id,
-                            'bus_operator_id' => (int) $operator,
-                            'starting_fare'   => $starting_fare[$key],
-                            'upto_fare'       => $upto_fare[$key],
-                            'commision'       => $commision[$key],
-                            'from_date'       => $from_date[$key],
-                            'to_date'         => $to_date[$key],
-                            'active_status'   => 1,
-                            'created_at'      => now(),
-                            'updated_at'      => now(),
-                        ];
-
-                        $insertData[] = $rowData;
-
-                        app(CommonController::class)->auditLog(
-                            'mst_ticket_fare_slab_info',
-                            null,
-                            ($id > 0 ? 'UPDATE' : 'INSERT'),
-                            [],
-                            $rowData
-                        );
-                    }
-                }
-
-                DB::table('mst_ticket_fare_slab_info')->insert($insertData);
+                DB::table('odbusdev.bus')
+                    ->where('id', $bus_id)
+                    ->update([
+                        'running_cycle' => $running_cycle,
+                        'updated_at'    => now()
+                    ]);
 
                 DB::commit();
 
-                session()->flash('level', 'success');
-                session()->flash(
-                    'message',
-                    'Ticket Fare Slab Info ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
-                );
-
-                return redirect($redirectPage);
+                return back()->with([
+                    'level' => 'success',
+                    'message' => 'Bus schedule created successfully'
+                ])->withInput();
             }
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("Error in TicketFareSlabInfoController@add", [
-                'method' => $method,
-                'error'  => $t->getMessage()
+            Log::error("Error in BusScheduleController@add", [
+                'error' => $t->getMessage()
             ]);
 
             return back()->with([
@@ -350,7 +250,6 @@ class BusScheduleController extends Controller
                 'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
-
 
         return view('Master.addBusSchedule', compact('data'));
     }
@@ -360,23 +259,53 @@ class BusScheduleController extends Controller
         return $this->add($encId);
     }
 
-    public function getOperatorSlabData(Request $request)
+    public function getScheduleDates(Request $request)
     {
-        $operator_id = $request->operator_id;
+        $bus_id = $request->bus_id;
+        $scheduleDates = [];
 
-        $data = DB::table('mst_ticket_fare_slab_info as t')
-            ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-            ->where('t.bus_operator_id', $operator_id)
-            ->select(
-                't.*',
-                's.slab_name'
-            )
-            ->orderBy('t.starting_fare')
-            ->get();
+        if ($bus_id) {
+            $schedule = DB::table('odbusdev.bus_schedule')
+                ->where('bus_id', $bus_id)
+                ->where('active_status', 1)
+                ->orderByDesc('id')
+                ->first();
 
-        return response()->json([
-            'status' => true,
-            'data' => $data
-        ]);
+            if ($schedule) {
+                $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $schedule->id)
+                    ->orderBy('entry_date', 'asc')
+                    ->limit(30)
+                    ->pluck('entry_date')
+                    ->toArray();
+            }
+        }
+
+        // ✅ Build HTML here (no blade file)
+        if (!empty($scheduleDates)) {
+
+            $chunkSize = ceil(count($scheduleDates) / 3);
+            $chunks = array_chunk($scheduleDates, $chunkSize);
+
+            $html = '<div class="row">';
+
+            foreach ($chunks as $chunk) {
+                $html .= '<div class="col-4">';
+
+                foreach ($chunk as $date) {
+                    $html .= '<div class="date-tile text-center mb-2">'
+                        . \Carbon\Carbon::parse($date)->format('d-M-Y') .
+                        '</div>';
+                }
+
+                $html .= '</div>';
+            }
+
+            $html .= '</div>';
+        } else {
+            $html = '<div class="text-center text-muted">Bus is not scheduled</div>';
+        }
+
+        return response($html);
     }
 }

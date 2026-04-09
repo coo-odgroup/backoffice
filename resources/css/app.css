@@ -2144,3 +2144,24 @@ label.amenity-chip:has(input:checked) {
     align-items: center;
     justify-content: center;
 }
+
+/* ===============================
+    SELECT2 & DATE TILES IN Bus Schedule
+=============================== */
+.select2-container--open {
+    z-index: 99999 !important;
+}
+.date-tile {
+    background-color: #f1f3f5;   /* ✅ light grey (same as your old UI) */
+    color: #212529;              /* dark text */
+    font-weight: 500;
+    border-radius: 6px;          /* less rounded (not pill) */
+    padding: 6px 10px;
+    border: 1px solid #ced4da;   /* grey border */
+    transition: 0.2s ease;
+}
+
+/* Hover effect */
+.date-tile:hover {
+    background-color: #e9ecef;   /* slightly darker grey */
+}

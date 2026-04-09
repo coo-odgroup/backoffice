@@ -137,6 +137,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/get-seats-by-layout', [BusWizardController::class, 'getSeatsByLayout']);
     Route::get('ticket-fare-slab/list', [CommonController::class, 'getTicketFareSlabList'])->name('ticketfareslab.list');
     Route::post('get-busoperator-role-list', [CommonController::class, 'getBusOperatorListRoleWise']);
+    Route::post('get-buses-by-operator', [CommonController::class, 'getBusesByOperator']);
+    Route::post('get-schedule-dates', [BusScheduleController::class, 'getScheduleDates']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);

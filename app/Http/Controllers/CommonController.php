@@ -1084,4 +1084,20 @@ class CommonController extends Controller
             ]);
         }
     }
+
+    public function getBusesByOperator(Request $request)
+    {
+        $operator_id = $request->operator_id;
+
+        $buses = DB::table('odbusdev.bus')
+            ->where('bus_operator_id', $operator_id)
+            ->where('active_status', 1)
+            ->select('id', 'name', 'bus_number')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $buses
+        ]);
+    }
 }
