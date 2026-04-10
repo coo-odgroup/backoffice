@@ -57,6 +57,7 @@ use App\Http\Controllers\Admin\Bus\BusWizardController;
 use App\Http\Controllers\Master\BusScheduleController;
 use App\Http\Controllers\Master\BusCancelController;
 use App\Http\Controllers\Master\SeatBlockController;
+use App\Http\Controllers\Master\ExtraSeatBlockController;
 use App\Http\Controllers\Master\SeatOpenController;
 /*
 |--------------------------------------------------------------------------
@@ -510,4 +511,9 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seat-open/add', [SeatOpenController::class, 'add'])->name('seat-open.add');
     Route::post('seat-open/dataTableView', [SeatOpenController::class, 'dataTableView'])->name('seat-open.dataTableView');
     Route::match(['get', 'post'], 'seat-open/edit/{encId}', [SeatOpenController::class, 'edit'])->name('seat-open.edit');
+    
+    Route::get('/extra-seat-block', [ExtraSeatBlockController::class, 'index'])->name('extra-seat-block.index');
+    Route::match(['get', 'post'], 'extra-seat-block/add', [ExtraSeatBlockController::class, 'add'])->name('extra-seat-block.add');
+    Route::post('extra-seat-block/dataTableView', [ExtraSeatBlockController::class, 'dataTableView'])->name('extra-seat-block.dataTableView');
+    Route::match(['get', 'post'], 'extra-seat-block/edit/{encId}', [ExtraSeatBlockController::class, 'edit'])->name('extra-seat-block.edit');
 });
