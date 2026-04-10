@@ -216,7 +216,42 @@ class BusScheduleController extends Controller
                 $running_cycle = (int) request('running_cycle');
                 $start_date    = request('date');
 
+                // ================= UPDATE =================
                 if ($id > 0) {
+
+                    $oldData = DB::table('odbusdev.bus_schedule')
+                        ->where('id', $id)
+                        ->first();
+
+                    $newData = [
+                        'operator_id'   => $operator_id,
+                        'bus_id'        => $bus_id,
+                        'running_cycle' => $running_cycle,
+                    ];
+
+                    // 🔥 FIND CHANGES
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
+
+                        if ((string)$oldValue !== (string)$value) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    // 🔥 LOG UPDATE
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'bus_schedule',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
 
                     DB::table('odbusdev.bus_schedule')
                         ->where('id', $id)
@@ -228,7 +263,6 @@ class BusScheduleController extends Controller
                             'updated_at'    => now()
                         ]);
 
-                    // delete old schedule
                     DB::table('odbusdev.bus_schedule_date')
                         ->where('bus_schedule_id', $id)
                         ->delete();
@@ -236,17 +270,31 @@ class BusScheduleController extends Controller
                     $schedule_id = $id;
                 } else {
 
+                    // 🔥 LOG INSERT
+                    $insertData = [
+                        'operator_id'   => $operator_id,
+                        'bus_id'        => $bus_id,
+                        'running_cycle' => $running_cycle,
+                        'active_status' => 1
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'bus_schedule',
+                        null,
+                        'INSERT',
+                        [],
+                        $insertData
+                    );
+
                     $schedule_id = DB::table('odbusdev.bus_schedule')
                         ->insertGetId([
-                            'operator_id'   => $operator_id,
-                            'bus_id'        => $bus_id,
-                            'running_cycle' => $running_cycle,
-                            'active_status' => 1,
-                            'created_by'    => 1,
-                            'created_at'    => now()
+                            ...$insertData,
+                            'created_by' => 1,
+                            'created_at' => now()
                         ]);
                 }
 
+                // ================= INSERT DATES =================
                 $dates = [];
                 $current = \Carbon\Carbon::parse($start_date);
 
@@ -264,7 +312,6 @@ class BusScheduleController extends Controller
 
                 DB::table('odbusdev.bus_schedule_date')->insert($dates);
 
-                // update bus table
                 DB::table('odbusdev.bus')
                     ->where('id', $bus_id)
                     ->update([
@@ -278,7 +325,7 @@ class BusScheduleController extends Controller
                     ->withInput()
                     ->with([
                         'level' => 'success',
-                        'message' => 'Bus Schedule created successfully'
+                        'message' => 'Bus Schedule ' . ($id ? 'updated' : 'created') . ' successfully'
                     ]);
             }
         } catch (\Throwable $t) {
@@ -307,9 +354,21 @@ class BusScheduleController extends Controller
     public function getScheduleDates(Request $request)
     {
         $bus_id = $request->bus_id;
+        $schedule_id = $request->bus_schedule_id;
+
         $scheduleDates = [];
 
-        if ($bus_id) {
+
+        if (!empty($schedule_id)) {
+
+            $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                ->where('bus_schedule_id', $schedule_id)
+                ->orderBy('entry_date', 'asc')
+                ->limit(30)
+                ->pluck('entry_date')
+                ->toArray();
+        } elseif (!empty($bus_id)) {
+
             $schedule = DB::table('odbusdev.bus_schedule')
                 ->where('bus_id', $bus_id)
                 ->where('active_status', 1)
@@ -326,7 +385,6 @@ class BusScheduleController extends Controller
             }
         }
 
-        //  Build HTML here (no blade file)
         if (!empty($scheduleDates)) {
 
             $chunkSize = ceil(count($scheduleDates) / 3);
@@ -338,7 +396,7 @@ class BusScheduleController extends Controller
                 $html .= '<div class="col-4">';
 
                 foreach ($chunk as $date) {
-                    $html .= '<div class="date-tile text-center mb-2">'
+                    $html .= '<div class="date-tile text-center mb-2 p-2 border rounded">'
                         . \Carbon\Carbon::parse($date)->format('d-M-Y') .
                         '</div>';
                 }
@@ -348,7 +406,7 @@ class BusScheduleController extends Controller
 
             $html .= '</div>';
         } else {
-            $html = '<div class="text-center text-muted">Bus is not scheduled</div>';
+            $html = '<div class="text-center text-muted p-4">Bus is not scheduled</div>';
         }
 
         return response($html);

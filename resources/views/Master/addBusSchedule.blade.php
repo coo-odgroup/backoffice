@@ -309,7 +309,8 @@
 
                 $('#operator').val(selectedOperator).trigger('change');
 
-                // wait for buses to load
+                commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
+
                 setTimeout(() => {
 
                     if (selectedBus) {
@@ -334,6 +335,7 @@
             }, 500);
 
             @endif
+
             function renderOperators() {
 
                 let html = '';

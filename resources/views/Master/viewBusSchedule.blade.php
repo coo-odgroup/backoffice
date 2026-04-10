@@ -190,7 +190,7 @@
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initClearableInputs();
             commonAjax.loadBusOperatorDropdown();
-  
+
             $('#operator').on('change', function() {
                 let operator_id = $(this).val();
                 if (!operator_id) return;
@@ -322,8 +322,8 @@
                     render: function(data, type, row) {
 
                         return `
-                            <span class="btn btn-sm btn-primary btnViewSeats"
-                                data-table="mst_bus_type"
+                            <span class="btn btn-sm btn-primary btnViewSchedule"
+                                data-id="${row.bus_schedule_id}"
                                 data-id="${row.enc_bustype_id}"
                                 data-name="${row.layout_name}">
                                 <i class="fa fa-calendar"></i> View
@@ -360,5 +360,42 @@
 
             loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
         }
+
+        $(document).on('click', '.btnViewSchedule', function () {
+
+    let id = $(this).data('id');
+
+    // show loader
+    $('#viewScheduleContainer').html(`
+        <div class="text-center p-4">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2">Loading schedule...</p>
+        </div>
+    `);
+
+    // open modal
+    let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
+    modal.show();
+
+    // ajax call
+    $.ajax({
+        type: "POST",
+        url: "/admin/get-schedule-dates",
+        data: {
+            bus_schedule_id: id,
+            _token: $('meta[name="csrf-token"]').attr("content")
+        },
+        success: function (response) {
+            $('#viewScheduleContainer').html(response);
+        },
+        error: function () {
+            $('#viewScheduleContainer').html(`
+                <div class="text-danger text-center p-4">
+                    Failed to load schedule
+                </div>
+            `);
+        }
+    });
+});
     </script>
     @endpush
