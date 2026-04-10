@@ -69,12 +69,12 @@
                                                         </div>
 
                                                         <div class="mb-2">
-                                                            <label for="bus">Bus</label>
+                                                            <label for="bus">Bus<span class="text-danger">*</span></label>
                                                             <select class="form-select form-select-sm" id="bus" name="bus"></select>
                                                         </div>
 
                                                         <div class="mb-2">
-                                                            <label for="running_cycle">Running Cycle</label>
+                                                            <label for="running_cycle">Running Cycle<span class="text-danger">*</span></label>
                                                             <select class="form-select form-select-sm" id="running_cycle" name="running_cycle">
                                                                 @for ($i = 1; $i <= 5; $i++)
                                                                     <option value="{{ $i }}">{{ $i }}</option>
@@ -83,7 +83,7 @@
                                                         </div>
 
                                                         <div class="mb-2">
-                                                            <label for="date">Date</label>
+                                                            <label for="date">Date<span class="text-danger">*</span></label>
                                                             <input type="date" name="date" id="date" class="form-control form-control-sm">
                                                         </div>
                                                     </div>
@@ -162,11 +162,54 @@
 
         @push('scripts')
         <script type="module">
+            $('#backoffice-form').on('submit', function(e) {
+
+                let operator = $('#operator').val();
+                let bus = $('#bus').val();
+                let cycle = $('#running_cycle').val();
+                let date = $('#date').val();
+
+                // yesterday date
+                let yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                let minDate = yesterday.toISOString().split('T')[0];
+
+                if (!operator) {
+                    commonAjax.viewAlert("Please select operator", "warning");
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!bus) {
+                    commonAjax.viewAlert("Please select bus", "warning");
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!cycle) {
+                    commonAjax.viewAlert("Please select running cycle", "warning");
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!date) {
+                    commonAjax.viewAlert("Please select date", "warning");
+                    e.preventDefault();
+                    return;
+                }
+
+                if (date < minDate) {
+                    commonAjax.viewAlert("Date cannot be before yesterday", "warning");
+                    e.preventDefault();
+                    return;
+                }
+
+            });
+
+
             let selectedOperators = [];
 
             $(document).ready(function() {
-
-                let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
 
 
                 $('#operator').select2({
@@ -178,7 +221,6 @@
                     placeholder: "Select Bus",
                     dropdownParent: $('body')
                 });
-                commonAjax.loadTicketFareSlabList('#slab', slab_id);
                 commonAjax.loadBusOperatorDropdown();
 
                 setTimeout(() => {
@@ -229,9 +271,61 @@
                     }
                 });
 
+                let today = new Date();
+
+                today.setDate(today.getDate() - 1);
+                let minDate = today.toISOString().split('T')[0];
+                $('#date').attr('min', minDate);
+
+
                 let existingOperators = @json($data['row']['operators'] ?? []);
 
                 renderOperators();
+
+                @if(session('level') == 'success')
+
+                setTimeout(() => {
+
+                    let bus_id = "{{ old('bus') }}";
+
+                    if (bus_id) {
+
+                        // ensure bus is set properly
+                        $('#bus').val(bus_id).trigger('change.select2');
+
+                        // show loader
+                        $('#scheduleContainer').html(`
+                            <div class="text-center p-4">
+                                <div class="spinner-border text-primary"></div>
+                                <p class="mt-2">Loading updated schedule...</p>
+                            </div>
+                        `);
+
+                        // DIRECT AJAX CALL (no trigger)
+                        $.ajax({
+                            type: "POST",
+                            url: "/admin/get-schedule-dates",
+                            data: {
+                                bus_id: bus_id,
+                                _token: $('meta[name="csrf-token"]').attr("content")
+                            },
+                            success: function(response) {
+                                $('#scheduleContainer').html(response);
+                            },
+                            error: function() {
+                                $('#scheduleContainer').html(`
+                                <div class="text-danger text-center p-3">
+                                    Failed to load schedule
+                                </div>
+                            `);
+                            }
+                        });
+
+                    }
+
+                }, 1000); // ⏱️ important delay
+
+                @endif
             });
 
             function renderOperators() {
@@ -301,7 +395,7 @@
                 if (!bus_id) return;
 
                 //  SHOW SPINNER FIRST
-                            $('#scheduleContainer').html(`
+                $('#scheduleContainer').html(`
                     <div class="text-center p-4">
                         <div class="spinner-border text-primary" role="status"></div>
                         <p class="mt-2">Loading schedule...</p>

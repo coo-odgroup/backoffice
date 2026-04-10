@@ -26,109 +26,86 @@ class BusScheduleController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtsearch'));
-            $selStatus = request('selstatus');
+            $txtSearch = htmlEncode(request('txtSearch'));
+            $selStatus = request('selStatus');
+            $operator = request('operator');
+            $bus = request('bus');
 
-            $query = DB::table('mst_ticket_fare_slab_info as t')
-                ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-                ->leftJoin('users as u', function ($join) {
-                    $join->on('u.id', '=', 't.bus_operator_id')
-                        ->where('u.user_role', 9);
-                })
+            $query = DB::connection('odbusdev')
+                ->table('bus_schedule as bs')
+
                 ->select(
-                    't.id',
-                    't.slab_id',
-                    's.slab_name',
-                    'u.organization_name as operator_name',
-                    't.starting_fare',
-                    't.upto_fare',
-                    't.commision',
-                    't.from_date',
-                    't.to_date',
-                    't.active_status',
-                    't.updated_at',
-                    DB::raw('(SELECT name FROM users WHERE id = t.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
+                    'bs.id',
+                    'bs.operator_id',
+                    'bs.bus_id',
+                    DB::raw('(SELECT name FROM bus WHERE id = bs.bus_id LIMIT 1) as BUS_name'),
+                    DB::raw('(SELECT bus_number FROM bus WHERE id = bs.bus_id LIMIT 1) as bus_number'),
+                    DB::raw('(SELECT organization_name FROM odbusmaster.users WHERE id = bs.operator_id AND user_role = 9 LIMIT 1) as operator_name'),
+                    'bs.active_status',
+                    'bs.created_at',
+                    'bs.updated_at',
+
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            if (!empty($txtSearch)) {
-                $query->where(function ($q) use ($txtSearch) {
-                    $q->where('s.slab_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
-                });
+            // if (!empty($txtSearch)) {
+            //     $query->where(function ($q) use ($txtSearch) {
+            //         $q->where('b.bus_name', 'like', "%{$txtSearch}%")
+            //             ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
+            //             ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
+            //     });
+            // }
+
+            // //  FILTERS
+            // if (!empty($operator)) {
+            //     $query->where('bs.operator_id', $operator);
+            // }
+
+            // if (!empty($bus)) {
+            //     $query->where('bs.bus_id', $bus);
+            // }
+
+            // if ($selStatus !== null && $selStatus !== '') {
+            //     $query->where('bs.active_status', $selStatus);
+            // }
+
+            $rows = $query->orderBy('bs.id', 'desc')->get();
+
+            foreach ($rows as $key => $row) {
+
+                $data[] = [
+                    'id' => $row->id,
+
+                    'operator_name' => $row->operator_name ?? '--',
+
+                    'bus_name' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
+
+                    'created_date' => $row->created_at
+                        ? date('d-M-Y H:i:s', strtotime($row->created_at))
+                        : null,
+
+                    'updated_date' => $row->updated_at
+                        ? date('d-M-Y H:i:s', strtotime($row->updated_at))
+                        : null,
+
+                    'created_by_name' => $row->created_by_name ?? '--',
+                    'updated_by_name' => $row->updated_by_name ?? '--',
+
+                    'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
+
+                    'enc_brand_id' => Crypt::encryptString($row->id),
+
+                    'enc_bustype_id' => Crypt::encryptString($row->bus_id),
+                    'layout_name' => $row->bus_name ?? 'Bus'
+                ];
             }
-
-            if ($selStatus !== null && $selStatus !== '') {
-                $query->where('t.active_status', $selStatus);
-            }
-
-            $rows = $query->orderBy('t.id', 'desc')->get();
-
-            $grouped = [];
-
-            foreach ($rows as $row) {
-
-                $slabId = $row->slab_id;
-
-                if (!isset($grouped[$slabId])) {
-
-                    $grouped[$slabId] = [
-                        'id' => $row->id,
-                        'slab_id' => $row->slab_id,
-                        'slab_name' => $row->slab_name,
-                        'operators' => [],
-                        'slab_info' => [],
-                        'created_date' => date('d-M-Y H:i:s', strtotime($row->created_at)),
-                        'updated_date' => $row->updated_at
-                            ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                            : null,
-                        'created_by_name' => $row->created_by_name,
-                        'updated_by_name' => $row->updated_by_name,
-                        'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-                        'enc_id' => Crypt::encryptString($row->slab_id),
-                    ];
-                }
-
-                if (
-                    !empty($row->operator_name) &&
-                    !in_array($row->operator_name, $grouped[$slabId]['operators'])
-                ) {
-
-                    $grouped[$slabId]['operators'][] = $row->operator_name;
-                }
-
-                $key = md5(
-                    $row->starting_fare . '|' .
-                        $row->upto_fare . '|' .
-                        $row->commision . '|' .
-                        date('Y-m-d', strtotime($row->from_date)) . '|' .
-                        date('Y-m-d', strtotime($row->to_date))
-                );
-
-                if (!isset($grouped[$slabId]['slab_info'][$key])) {
-
-                    $grouped[$slabId]['slab_info'][$key] = [
-                        'starting_fare' => $row->starting_fare,
-                        'upto_fare' => $row->upto_fare,
-                        'commision' => $row->commision,
-                        'from_date' => $row->from_date,
-                        'to_date' => $row->to_date,
-                    ];
-                }
-            }
-
-            // ✅ MOVE THIS OUTSIDE LOOP (VERY IMPORTANT)
-            foreach ($grouped as &$slab) {
-                $slab['slab_info'] = array_values($slab['slab_info']);
-            }
-
-            $data = array_values($grouped);
 
             $recordsTotal = count($data);
             $recordsFiltered = $recordsTotal;
         } catch (\Throwable $t) {
 
-            Log::error("TicketFareSlabInfoController Error", [
+            Log::error("BusScheduleController Error", [
                 'message' => $t->getMessage()
             ]);
 
@@ -281,7 +258,7 @@ class BusScheduleController extends Controller
             }
         }
 
-        // ✅ Build HTML here (no blade file)
+        //  Build HTML here (no blade file)
         if (!empty($scheduleDates)) {
 
             $chunkSize = ceil(count($scheduleDates) / 3);

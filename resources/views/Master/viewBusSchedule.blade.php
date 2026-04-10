@@ -41,7 +41,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div class="card-body">
                     <div class="row align-items-end">
 
-                         <div class="col-lg-4 col-md-6">
+                        <div class="col-lg-4 col-md-6">
                             <label for="operator">Operator</label>
                             <select class="form-select form-select-sm clearable" id="operator" name="operator">
                                 <option value="">Select Operator</option>
@@ -132,7 +132,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </th>
                             <th>Sl No</th>
                             <th>Opeator</th>
-                            <th>Route</th>
+                            <!-- <th>Route</th> -->
                             <th>Bus Name/No</th>
                             <th>Last Modified</th>
                             <th>Status</th>
@@ -158,18 +158,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 
-<div class="modal fade" id="viewScheduleModal" tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false"   aria-hidden="true">
- <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Bus Schedule Dates</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body" style="overflow-y:auto">
-        <div id="viewScheduleContainer"></div>
-      </div>
+<div class="modal fade" id="viewScheduleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bus Schedule Dates</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="overflow-y:auto">
+                <div id="viewScheduleContainer"></div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @endsection
@@ -186,7 +186,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         commonAjax.initSelect2('#operator', 'Select Operator');
         commonAjax.initSelect2('#bus', 'Select Bus');
-        commonAjax.loadCountryList();
         commonAjax.initClearableInputs();
         getDataTableView();
     });
@@ -258,21 +257,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'brand_name',
+                data: 'operator_name',
                 defaultContent: "--"
             },
             {
-                data: 'brand_name',
+                data: 'bus_name',
                 defaultContent: "--"
-            },
-            {
-                data: 'country',
-                render: function(data) {
-                    if (!data || data === null) {
-                        return "--";
-                    }
-                    return data;
-                }
             },
             {
                 data: null,
@@ -316,7 +306,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-               data: '',
+                data: '',
                 render: function(data, type, row) {
 
                     return `
