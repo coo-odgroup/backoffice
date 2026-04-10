@@ -98,7 +98,7 @@
                                                         </div>
                                                         <div class="card-body" id="scheduleContainer">
 
-                                                            <div id="scheduleTemplate" >
+                                                            <div id="scheduleTemplate">
 
                                                                 @if(!empty($data['scheduleDates']) && count($data['scheduleDates']) > 0)
 
@@ -162,6 +162,9 @@
 
         @push('scripts')
         <script type="module">
+            let isRestoring = false;
+            let selectedOperators = [];
+
             $('#backoffice-form').on('submit', function(e) {
 
                 let operator = $('#operator').val();
@@ -169,7 +172,6 @@
                 let cycle = $('#running_cycle').val();
                 let date = $('#date').val();
 
-                // yesterday date
                 let yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
                 let minDate = yesterday.toISOString().split('T')[0];
@@ -203,15 +205,11 @@
                     e.preventDefault();
                     return;
                 }
-
             });
-
-
-            let selectedOperators = [];
 
             $(document).ready(function() {
 
-
+                // Select2 init (ONLY ONCE)
                 $('#operator').select2({
                     placeholder: "Select Bus Operator",
                     dropdownParent: $('body')
@@ -221,50 +219,17 @@
                     placeholder: "Select Bus",
                     dropdownParent: $('body')
                 });
+
                 commonAjax.loadBusOperatorDropdown();
 
                 setTimeout(() => {
-                    $('#operator').select2({
-                        placeholder: "Select Bus Operator",
-                        dropdownParent: $('body')
-                    });
-
-                    $('#bus').select2({
-                        placeholder: "Select Bus",
-                        dropdownParent: $('body')
-                    });
-                }, 300);
-
-                setTimeout(() => {
-
-                    if (selectedOperator) {
-
-                        // set operator first
-                        $('#operator').val(selectedOperator).trigger('change.select2');
-
-                        // load buses after operator set
-                        setTimeout(() => {
-
-                            commonAjax.loadBusListByOperator('#bus', selectedOperator);
-
-                            // then set bus
-                            setTimeout(() => {
-                                if (selectedBus) {
-                                    $('#bus').val(selectedBus).trigger('change.select2');
-                                }
-                            }, 400);
-
-                        }, 300);
-                    }
-
-                }, 300);
+                    restoreSelection();
+                }, 500);
 
                 commonAjax.initClearableInputs();
 
                 $('#bus').on('focus', function() {
-
                     let operator_id = $('#operator').val();
-
                     if (!operator_id) {
                         commonAjax.viewAlert("Please select operator first", "warning");
                         $(this).blur();
@@ -272,138 +237,54 @@
                 });
 
                 let today = new Date();
-
                 today.setDate(today.getDate() - 1);
-                let minDate = today.toISOString().split('T')[0];
-                $('#date').attr('min', minDate);
+                $('#date').attr('min', today.toISOString().split('T')[0]);
 
-
-                let existingOperators = @json($data['row']->operators ?? []);
-
-                renderOperators();
-
-                @if(session('level') == 'success')
-
-                setTimeout(() => {
-
-                    let bus_id = "{{ old('bus') }}";
-
-                    if (bus_id) {
-
-                        // ensure bus is set properly
-                        $('#bus').val(bus_id).trigger('change.select2');
-
-                        // show loader
-                        $('#scheduleContainer').html(`
-                            <div class="text-center p-4">
-                                <div class="spinner-border text-primary"></div>
-                                <p class="mt-2">Loading updated schedule...</p>
-                            </div>
-                        `);
-
-                        // DIRECT AJAX CALL (no trigger)
-                        $.ajax({
-                            type: "POST",
-                            url: "/admin/get-schedule-dates",
-                            data: {
-                                bus_id: bus_id,
-                                _token: $('meta[name="csrf-token"]').attr("content")
-                            },
-                            success: function(response) {
-                                $('#scheduleContainer').html(response);
-                            },
-                            error: function() {
-                                $('#scheduleContainer').html(`
-                                <div class="text-danger text-center p-3">
-                                    Failed to load schedule
-                                </div>
-                            `);
-                            }
-                        });
-
-                    }
-
-                }, 1000); // ⏱️ important delay
-
-                @endif
-            });
-
-            function renderOperators() {
-
-                let html = '';
-
-                selectedOperators.forEach((op, index) => {
-                    html += `<span class="selected-tag" data-index="${index}">${op.text}<span class="remove">×</span></span>`;
+                $('#btnReset').click(function() {
+                    $('#backoffice-form')[0].reset();
+                    $('.form-select').val('').trigger('change');
+                    selectedOperators = [];
+                    renderOperators();
+                    $('#scheduleContainer').html('');
                 });
 
-                $('#selectedOperators').html(html);
-                $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
-
-                $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
-            }
-
-            $(document).on('click', '.remove', function() {
-
-                let index = $(this).closest('.selected-tag').data('index');
-                let operator = selectedOperators[index];
-
-                selectedOperators.splice(index, 1);
-                $(`#table_${operator.id}`).remove();
-
-                renderOperators();
             });
 
-            $('#btnReset').click(function() {
-
-                $('#backoffice-form')[0].reset();
-                $('.form-select').val('').trigger('change');
-
-                selectedOperators = [];
-                renderOperators();
-                $('#operatorTables').html('');
-            });
-
-
-            $(document).on('click', '.btn-remove', function() {
-                $(this).closest('.dynamic-item').remove();
-            });
-
-
+            // Operator change load buses
             $('#operator').on('change', function() {
 
                 let operator_id = $(this).val();
-                let text = $("#operator option:selected").text();
+                if (!operator_id || isRestoring) return;
 
                 commonAjax.loadBusListByOperator('#bus', operator_id);
-
-                if (selectedOperators.some(op => op.id == operator_id)) return;
-
-                let operator = {
-                    id: operator_id,
-                    text
-                };
-
-                selectedOperators.push(operator);
-
-                renderOperators();
             });
 
 
+            // Bus change → load schedule
             $('#bus').on('change', function() {
 
                 let bus_id = $(this).val();
-                if (!bus_id) return;
+                if (!bus_id || isRestoring) return;
 
-                //  SHOW SPINNER FIRST
+                loadSchedule(bus_id);
+            });
+
+            let scheduleRequest = null;
+
+            function loadSchedule(bus_id) {
+
                 $('#scheduleContainer').html(`
                     <div class="text-center p-4">
-                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="spinner-border text-primary"></div>
                         <p class="mt-2">Loading schedule...</p>
                     </div>
                 `);
 
-                // AJAX CALL
-                $.ajax({
+                if (scheduleRequest) {
+                    scheduleRequest.abort();
+                }
+
+                scheduleRequest = $.ajax({
                     type: "POST",
                     url: "/admin/get-schedule-dates",
                     data: {
@@ -412,27 +293,10 @@
                     },
                     success: function(response) {
                         $('#scheduleContainer').html(response);
-                    },
-                    error: function() {
-                        $('#scheduleContainer').html(`
-                            <div class="text-danger text-center p-3">
-                                Failed to load schedule
-                            </div>
-                        `);
                     }
                 });
-
-            });
-
-
-            function formatDate(dateStr) {
-                let d = new Date(dateStr);
-                return d.toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
             }
+
 
             let selectedOperator = "{{ $data['row']->operator_id ?? old('operator') ?? '' }}";
             let selectedBus = "{{ $data['row']->bus_id ?? old('bus') ?? '' }}";
@@ -441,29 +305,49 @@
 
                 if (!selectedOperator) return;
 
-                // wait until operator options loaded
-                if ($('#operator option[value="' + selectedOperator + '"]').length === 0) {
-                    setTimeout(restoreSelection, 200);
-                    return;
-                }
+                isRestoring = true;
 
-                // set operator
                 $('#operator').val(selectedOperator).trigger('change');
 
-                // load buses
-                commonAjax.loadBusListByOperator('#bus', selectedOperator);
-
-                // wait and set bus
+                // wait for buses to load
                 setTimeout(() => {
 
                     if (selectedBus) {
-                        $('#bus').val(selectedBus).trigger('change.select2');
+                        $('#bus').val(selectedBus).trigger('change');
                     }
 
-                }, 400);
+                    isRestoring = false;
+
+                }, 500);
             }
 
-            // start restore
-            setTimeout(restoreSelection, 300);
+            @if(session('level') == 'success')
+
+            setTimeout(() => {
+
+                let bus_id = "{{ old('bus') }}";
+
+                if (bus_id) {
+                    loadSchedule(bus_id);
+                }
+
+            }, 500);
+
+            @endif
+            function renderOperators() {
+
+                let html = '';
+
+                selectedOperators.forEach((op, index) => {
+                    html += `<span class="selected-tag" data-index="${index}">
+                    ${op.text}
+                    <span class="remove">×</span>
+                 </span>`;
+                });
+
+                $('#selectedOperators').html(html);
+                $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
+                $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
+            }
         </script>
         @endpush

@@ -41,23 +41,23 @@
                     <div class="card-body">
                         <div class="row align-items-end">
 
-                            <div class="col-lg-4 col-md-6">
-                                <label for="operator">Operator</label>
-                                <select class="form-select form-select-sm clearable" id="operator" name="operator">
+                            <div class="col-lg-3 col-md-6">
+                                <label for="operator">Operator:</label>
+                                <select class="form-select form-select-sm" id="operator" name="operator">
                                     <option value="">Select Operator</option>
                                 </select>
                             </div>
 
                             <div class="col-lg-3 col-md-6">
-                                <label for="bus">Bus</label>
-                                <select class="form-select form-select-sm clearable" id="bus" name="bus">
-                                    <option value="">Select Bus</option>
+                                <label for="bus">Bus:</label>
+                                <select class="form-select form-select-sm" id="bus" name="bus">
+                                    <option value="">Select Bus:</option>
                                 </select>
                             </div>
 
                             <!-- Status -->
-                            <div class="col-lg-2 col-md-6">
-                                <label for="selStatus">Status</label>
+                            <div class="col-lg-3 col-md-6">
+                                <label for="selStatus">Status:</label>
                                 <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                     <option value="">Select Status</option>
                                     <option value="1">Active</option>
@@ -183,10 +183,21 @@
         });
 
         $(document).ready(function() {
+
             commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+
             commonAjax.initSelect2('#operator', 'Select Operator');
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initClearableInputs();
+            commonAjax.loadBusOperatorDropdown();
+  
+            $('#operator').on('change', function() {
+                let operator_id = $(this).val();
+                if (!operator_id) return;
+
+                commonAjax.loadBusListByOperator('#bus', operator_id);
+            });
+
             getDataTableView();
         });
 
@@ -237,17 +248,17 @@
             let searchParams = {
                 txtSearch: txtSearch,
                 selStatus: selStatus,
-                operator:operator,
-                bus:bus,
+                operator: operator,
+                bus: bus,
             };
             let displayColumns = [1, 2, 3, 4, 5, 6, 7];
             let dataTableColumns = [{
                     data: '',
                     render: function(data, type, row) {
-                                        return `<div class="checkbox">
+                        return `<div class="checkbox">
                                             <input class="chkItem" type="checkbox" value="${row.bus_schedule_id}">
                                         </div>`;
-                                        },
+                    },
                     className: "noPrint text-center"
                 },
                 {
