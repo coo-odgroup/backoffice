@@ -342,15 +342,15 @@
 
                         return `
                             <a class="btn btn-sm btn-info"
-                            href="${editUrl.replace('ID', row.enc_bus_schedule_id)}">
-                            <i class="fa fa-edit"></i> Edit
+                                href="${editUrl.replace('ID', row.enc_bus_schedule_id)}">
+                                <i class="fa fa-edit"></i> Edit
                             </a>
 
                             <a href="javascript:void(0);"
                                 class="btn btn-sm btn-success btn-view-log"
-                                data-table="mst_bus_brand"
+                                data-table="bus_schedule"
                                 data-id="${row.enc_bus_schedule_id}">
-                                    <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i> View Log
                             </a>
                         `;
                     },
@@ -361,41 +361,41 @@
             loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
         }
 
-        $(document).on('click', '.btnViewSchedule', function () {
+        $(document).on('click', '.btnViewSchedule', function() {
 
-    let id = $(this).data('id');
+            let id = $(this).data('id');
 
-    // show loader
-    $('#viewScheduleContainer').html(`
+            // show loader
+            $('#viewScheduleContainer').html(`
         <div class="text-center p-4">
             <div class="spinner-border text-primary"></div>
             <p class="mt-2">Loading schedule...</p>
         </div>
-    `);
+     `);
 
-    // open modal
-    let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
-    modal.show();
+            // open modal
+            let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
+            modal.show();
 
-    // ajax call
-    $.ajax({
-        type: "POST",
-        url: "/admin/get-schedule-dates",
-        data: {
-            bus_schedule_id: id,
-            _token: $('meta[name="csrf-token"]').attr("content")
-        },
-        success: function (response) {
-            $('#viewScheduleContainer').html(response);
-        },
-        error: function () {
-            $('#viewScheduleContainer').html(`
+            // ajax call
+            $.ajax({
+                type: "POST",
+                url: "/admin/get-schedule-dates",
+                data: {
+                    bus_schedule_id: id,
+                    _token: $('meta[name="csrf-token"]').attr("content")
+                },
+                success: function(response) {
+                    $('#viewScheduleContainer').html(response);
+                },
+                error: function() {
+                    $('#viewScheduleContainer').html(`
                 <div class="text-danger text-center p-4">
                     Failed to load schedule
                 </div>
             `);
-        }
-    });
-});
+                }
+            });
+        });
     </script>
     @endpush

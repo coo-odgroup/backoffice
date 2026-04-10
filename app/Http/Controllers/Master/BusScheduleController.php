@@ -27,10 +27,13 @@ class BusScheduleController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $operator = (request('operator') !== null && request('operator') !== '') ? (int)request('operator') : null;
-            $bus = (request('bus') !== null && request('bus') !== '') ? (int)request('bus') : null;
-            $status = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : null;
+            $operator  = request('operator') !== null && request('operator') !== '' ? (int)request('operator') : null;
+            $bus       = request('bus') !== null && request('bus') !== '' ? (int)request('bus') : null;
+            $status    = request('selStatus') !== null && request('selStatus') !== '' ? (int)request('selStatus') : null;
 
+            // DataTable pagination params
+            $start  = request('start', 0);
+            $length = request('length', 10);
 
             $query = DB::table('odbusdev.bus_schedule as bs')
                 ->select(
@@ -55,6 +58,7 @@ class BusScheduleController extends Controller
                     DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.updated_by LIMIT 1) as updated_by_name')
                 );
 
+            $recordsTotal = DB::table('odbusdev.bus_schedule')->count();
 
             if (!empty(trim($txtSearch))) {
                 $search = trim($txtSearch);
@@ -66,11 +70,11 @@ class BusScheduleController extends Controller
                 });
             }
 
-            if ($operator !== null && $operator !== '') {
+            if (!empty($operator)) {
                 $query->where('bs.operator_id', $operator);
             }
 
-            if ($bus !== null && $bus !== '') {
+            if (!empty($bus)) {
                 $query->where('bs.bus_id', $bus);
             }
 
@@ -78,15 +82,20 @@ class BusScheduleController extends Controller
                 $query->where('bs.active_status', $status);
             }
 
+            $recordsFiltered = (clone $query)->count();
+
+            if ($length != -1) { 
+                $query->offset($start)->limit($length);
+            }
+
             $rows = $query->orderBy('bs.id', 'desc')->get();
 
-            foreach ($rows as $key => $row) {
+            foreach ($rows as $row) {
 
                 $data[] = [
                     'id' => $row->id,
 
-                    'bus_schedule_id' => $row->id, // for checkbox
-
+                    'bus_schedule_id' => $row->id,
                     'enc_bus_schedule_id' => Crypt::encryptString($row->id),
 
                     'operator_name' => $row->operator_name ?? '--',
@@ -110,9 +119,6 @@ class BusScheduleController extends Controller
                     'layout_name' => $row->bus_name ?? 'Bus'
                 ];
             }
-
-            $recordsTotal = count($data);
-            $recordsFiltered = $recordsTotal;
         } catch (\Throwable $t) {
 
             Log::error("BusScheduleController Error", [
@@ -125,7 +131,6 @@ class BusScheduleController extends Controller
                 'data' => []
             ]);
         }
-
         return response()->json([
             'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
@@ -216,7 +221,6 @@ class BusScheduleController extends Controller
                 $running_cycle = (int) request('running_cycle');
                 $start_date    = request('date');
 
-                // ================= UPDATE =================
                 if ($id > 0) {
 
                     $oldData = DB::table('odbusdev.bus_schedule')
@@ -229,7 +233,6 @@ class BusScheduleController extends Controller
                         'running_cycle' => $running_cycle,
                     ];
 
-                    // 🔥 FIND CHANGES
                     $oldChanged = [];
                     $newChanged = [];
 
@@ -241,8 +244,6 @@ class BusScheduleController extends Controller
                             $newChanged[$key] = $value;
                         }
                     }
-
-                    // 🔥 LOG UPDATE
                     if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
                             'bus_schedule',
@@ -269,8 +270,6 @@ class BusScheduleController extends Controller
 
                     $schedule_id = $id;
                 } else {
-
-                    // 🔥 LOG INSERT
                     $insertData = [
                         'operator_id'   => $operator_id,
                         'bus_id'        => $bus_id,
@@ -294,7 +293,6 @@ class BusScheduleController extends Controller
                         ]);
                 }
 
-                // ================= INSERT DATES =================
                 $dates = [];
                 $current = \Carbon\Carbon::parse($start_date);
 
