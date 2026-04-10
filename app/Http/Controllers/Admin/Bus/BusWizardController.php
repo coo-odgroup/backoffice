@@ -14,6 +14,7 @@ use App\Models\Bus\BusContacts;
 use App\Models\Bus\BusSeats;
 use App\Models\Master\Amenity;
 use App\Models\Master\AmenityCategory;
+use App\Models\Master\Cities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,7 @@ class BusWizardController extends Controller
         view()->share('createBusUrl', $this->createBusUrl);
     }
 
-    public function step1()
+    public function step1($bus_id = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -45,7 +46,27 @@ class BusWizardController extends Controller
                 $q->where('active_status', 1);
             })
             ->get();
-        return view('admin.bus.wizard.step1', compact('data'));
+
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+        $data['bus_id'] = $busId;
+        $data['enc_bus_id'] = $bus_id;
+
+        // Edit or Back
+        $step1Res = Bus::where('id', $busId)->first();
+        $step1AmenityRes = BusAmenity::with('amenity')
+            ->where('bus_id', $busId)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    (string) $item->amenity->id,
+                    $item->amenity->amenity_name
+                ];
+            })
+            ->values();
+
+        // return $step1AmenityRes;
+
+        return view('admin.bus.wizard.step1', compact('data', 'step1Res', 'step1AmenityRes'));
     }
 
     public function postStep1(Request $request)
@@ -134,7 +155,7 @@ class BusWizardController extends Controller
             DB::commit();
 
             session()->flash('level', 'success');
-            session()->flash('message', 'Bus info created successfully.');
+            session()->flash('message', 'Bus info created Successfully.');
 
             $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
             return redirect()->route('bus.step2', ['encId' => $enc_bus_id]);
@@ -166,7 +187,7 @@ class BusWizardController extends Controller
     public function postStep2(Request $request)
     {
         session()->flash('level', 'success');
-        session()->flash('message', 'Cities selected and sorted successfully.');
+        session()->flash('message', 'Cities Selected and Sorted Successfully.');
         $enc_bus_id = (!empty($request->bus_id)) ? Crypt::encryptString($request->bus_id) : 0;
         return redirect()->route('bus.step3', ['encId' => $enc_bus_id]);
     }
@@ -180,7 +201,13 @@ class BusWizardController extends Controller
         $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
-        return view('admin.bus.wizard.step3', compact('data'));
+
+        // Edit or Back
+        $step3Res = BusRoutesStops::where('bus_id', $busId)->get();
+
+        // return $step3Res;
+
+        return view('admin.bus.wizard.step3', compact('data', 'step3Res'));
     }
 
     public function postStep3(Request $request)
@@ -249,7 +276,7 @@ class BusWizardController extends Controller
             DB::commit();
 
             session()->flash('level', 'success');
-            session()->flash('message', 'Boarding & Dropping managed successfully.');
+            session()->flash('message', 'Boarding & Dropping managed Successfully.');
 
             $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
             return redirect()->route('bus.step4', ['encId' => $enc_bus_id]);
@@ -276,7 +303,11 @@ class BusWizardController extends Controller
         $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
-        return view('admin.bus.wizard.step4', compact('data'));
+
+        // Edit or Back
+        $step4Res = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
+
+        return view('admin.bus.wizard.step4', compact('data', 'step4Res'));
     }
 
     public function postStep4(Request $request)
@@ -313,7 +344,7 @@ class BusWizardController extends Controller
         }
 
         session()->flash('level', 'success');
-        session()->flash('message', 'Stoppage added successfully.');
+        session()->flash('message', 'Stoppage added Successfully.');
 
         $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
         return redirect()->route('bus.step5', ['encId' => $enc_bus_id]);
@@ -365,7 +396,11 @@ class BusWizardController extends Controller
         $data['schedule_data'] = $result;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
-        return view('admin.bus.wizard.step5', compact('data'));
+
+        // Edit or Back
+        $step5Res = BusRouteFares::where('bus_id', $busId)->get();
+
+        return view('admin.bus.wizard.step5', compact('data', 'step5Res'));
     }
 
     public function postStep5(Request $request)
@@ -401,7 +436,7 @@ class BusWizardController extends Controller
             BusRouteFares::insert($data);
 
             session()->flash('level', 'success');
-            session()->flash('message', 'Routes added successfully.');
+            session()->flash('message', 'Routes added Successfully.');
         } catch (\Exception $e) {
 
             Log::error('postStep5 Batch insert error', [
@@ -430,7 +465,11 @@ class BusWizardController extends Controller
         $data['bus_number'] = $busData ? $busData->bus_number : null;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
-        return view('admin.bus.wizard.step6', compact('data'));
+
+        // Edit or Back
+        $step6Res = BusContacts::where('bus_id', $busId)->get();
+
+        return view('admin.bus.wizard.step6', compact('data', 'step6Res'));
     }
 
     public function postStep6(Request $request)
@@ -456,7 +495,7 @@ class BusWizardController extends Controller
             BusContacts::insert($insertData);
 
             session()->flash('level', 'success');
-            session()->flash('message', 'Bus Contacts added successfully.');
+            session()->flash('message', 'Bus Contacts added Successfully.');
         } catch (\Exception $e) {
 
             Log::error('postStep6 Batch insert error', [
@@ -512,7 +551,7 @@ class BusWizardController extends Controller
             BusSeats::insert($insertData);
 
             session()->flash('level', 'success');
-            session()->flash('message', 'Seat Layout Created successfully.');
+            session()->flash('message', 'Seat Layout Created Successfully.');
         } catch (\Exception $e) {
 
             Log::error('postStep7 Batch insert error', [

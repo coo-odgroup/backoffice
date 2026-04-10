@@ -2,6 +2,7 @@
 
 namespace App\Models\Master;
 
+use App\Models\Bus\BusAmenity;
 use Illuminate\Database\Eloquent\Model;
 
 class Amenity extends Model
@@ -16,4 +17,9 @@ class Amenity extends Model
         'is_seat_specific',
         'active_status'
     ];
+
+    public function busAmenities()
+    {
+        return $this->hasMany(BusAmenity::class, 'amenities_id', 'id');
+    }
 }

@@ -55,7 +55,9 @@ use App\Http\Controllers\Master\AnnextureTypeController;
 use App\Http\Controllers\Master\AnnextureController;
 use App\Http\Controllers\Admin\Bus\BusWizardController;
 use App\Http\Controllers\Master\BusScheduleController;
-
+use App\Http\Controllers\Master\BusCancelController;
+use App\Http\Controllers\Master\SeatBlockController;
+use App\Http\Controllers\Master\SeatOpenController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -493,4 +495,19 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'bus-schedule/add', [BusScheduleController::class, 'add'])->name('bus-schedule.add');
     Route::post('bus-schedule/dataTableView', [BusScheduleController::class, 'dataTableView'])->name('bus-schedule.dataTableView');
     Route::match(['get', 'post'], 'bus-schedule/edit/{encId}', [BusScheduleController::class, 'edit'])->name('bus-schedule.edit');
+
+    Route::get('/bus-cancel', [BusCancelController::class, 'index'])->name('bus-cancel.index');
+    Route::match(['get', 'post'], 'bus-cancel/add', [BusCancelController::class, 'add'])->name('bus-cancel.add');
+    Route::post('bus-cancel/dataTableView', [BusCancelController::class, 'dataTableView'])->name('bus-cancel.dataTableView');
+    Route::match(['get', 'post'], 'bus-cancel/edit/{encId}', [BusCancelController::class, 'edit'])->name('bus-cancel.edit');
+
+    Route::get('/seat-block', [SeatBlockController::class, 'index'])->name('seat-block.index');
+    Route::match(['get', 'post'], 'seat-block/add', [SeatBlockController::class, 'add'])->name('seat-block.add');
+    Route::post('seat-block/dataTableView', [SeatBlockController::class, 'dataTableView'])->name('seat-block.dataTableView');
+    Route::match(['get', 'post'], 'seat-block/edit/{encId}', [SeatBlockController::class, 'edit'])->name('seat-block.edit');
+
+    Route::get('/seat-open', [SeatOpenController::class, 'index'])->name('seat-open.index');
+    Route::match(['get', 'post'], 'seat-open/add', [SeatOpenController::class, 'add'])->name('seat-open.add');
+    Route::post('seat-open/dataTableView', [SeatOpenController::class, 'dataTableView'])->name('seat-open.dataTableView');
+    Route::match(['get', 'post'], 'seat-open/edit/{encId}', [SeatOpenController::class, 'edit'])->name('seat-open.edit');
 });
