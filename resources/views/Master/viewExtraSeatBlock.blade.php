@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Seat Open')
+@section('page_title', 'Extra Seat Block')
 @section('content')
 
 <?php
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('seat-open.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('extra-seat-block.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -88,7 +88,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <label for="toDate">To Date</label>
                             <input type="date" id="toDate" name="toDate" class="form-control form-control-sm" placeholder="To Date">
                         </div>
-                        <div class="col-lg-2 col-md-6">
+
+                         <div class="col-lg-2 col-md-6">
                             <label for="reason">Reason</label>
                             <select class="form-select form-select-sm" id="reason" name="reason">
                             </select>
@@ -151,8 +152,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('seat-block.dataTableView') }}"
-                    data-edit-url="{{ route('seat-block.edit', 'ID') }}">
+                    data-url="{{ route('extra-seat-block.dataTableView') }}"
+                    data-edit-url="{{ route('extra-seat-block.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <!-- <th class="noPrint no-sort">
@@ -164,7 +165,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Opeator</th>
                             <th>Bus Name/No</th>
                             <th>Route</th>
-                            <th class="no-sort">Seat Open Info</th>
+                            <th class="no-sort">Extra Seat Block Info</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -202,6 +203,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#bus', 'Select Bus');
         commonAjax.initSelect2('#source', 'Select Source');
         commonAjax.initSelect2('#destination', 'Select Destination');
+        commonAjax.initSelect2('#reason', 'Select Reason');
         commonAjax.loadCountryList();
         commonAjax.initClearableInputs();
         getDataTableView();
@@ -258,15 +260,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         };
         let displayColumns = [1, 2, 3, 4, 5, 6, 7];
         let dataTableColumns = [
-            // {
-            //     data: '',
-            //     render: function(data, type, row) {
-            //         return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
-            //             '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
-            //             '" ></div>';
-            //     },
-            //     className: "noPrint text-center"
-            // },
             {
                 data: 'slNo',
                 render: function(data, type, row, meta) {
@@ -286,33 +279,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'brand_name',
                 defaultContent: "--"
             },
-           {
+            {
                 data: 'brand_name',
                 render: function(data, type, row) {
 
                      let editUrl = $('#' + tableId).data('edit-url');
 
-                    if (!editUrl) return '';
-
                     // if (!data || data.length === 0) return "--";
 
                     let table = `<div class="inner-table-hdr">
-                                    <table class="table table-sm mb-0 table-hover">
-                                        <thead>
+                                    <table class="table mb-0 table-hover table-sm">
+                                        <thead class="table-secondary">
                                             <tr>
                                                 <th>Date</th>
                                                 <th>Seats/Sleeper</th>
                                                 <th>Reason</th>
                                                 <th>Created By</th>
-                                                <th class="noPrint">Action</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>`;
 
                     // data.forEach(row => {
-                       table += `<tr>
+                        table += `<tr>
                                         <td class="align-middle">26-Apr-2026</td>
-                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB</td>
+                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
                                         <td class="align-middle">Blocked By Owner</td>
                                         <td>John Doe<br>03-Apr-2026 12:25:12</td>
                                         <td class="align-middle"> <a class="btn btn-sm btn-info"
@@ -326,8 +317,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </td>
                                     </tr>
                                      <tr>
-                                       <td class="align-middle">27-Apr-2026</td>
-                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB</td>
+                                       <td class="align-middle">26-Apr-2026</td>
+                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
                                         <td class="align-middle">Blocked By Owner</td>
                                         <td>John Doe<br>03-Apr-2026 12:25:12</td>
                                         <td class="align-middle">
@@ -343,90 +334,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     </tr>`;
                     // });
 
-                                    table += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
+                                    table += `</tbody>
+                                             </table>
+                                            </div> `;
 
                     return table;
                 },
                 className: ""
-            },
-            // {
-            //     data: 'country',
-            //     render: function(data) {
-            //         if (!data || data === null) {
-            //             return "--";
-            //         }
-            //         return data;
-            //     }
-            // },
-            // {
-            //     data: null,
-            //     render: function(data, type, row) {
-
-            //         let createdBy = row.created_by_name ?? '--';
-            //         let createdAt = row.created_date ?? '--';
-
-            //         let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
-            //         let updatedAt = (row.updated_date) ? row.updated_date : '--';
-
-            //         // Show updated date if exists, else created date
-            //         let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
-
-            //         return `
-            //             <span
-            //                 class="fw-semibold text-decoration-underline cursor-pointer"
-            //                 data-bs-toggle="tooltip"
-            //                 data-bs-placement="top"
-            //                 data-bs-html="true"
-            //                 title="
-            //                     <div class='audit-box'>
-            //                         <div><strong>Created By:</strong> ${createdBy}</div>
-            //                         <div><strong>Created At:</strong> ${createdAt}</div>
-            //                         <hr class='my-1'>
-            //                         <div><strong>Updated By:</strong> ${updatedBy}</div>
-            //                         <div><strong>Updated At:</strong> ${updatedAt}</div>
-            //                     </div>
-            //                 ">
-            //                 ${displayDate}
-            //             </span>
-            //         `;
-            //     }
-            // },
-            // {
-            //     data: 'is_active',
-            //     render: function(data, type, row) {
-            //         var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-            //         return '<span class="' + cls + '">' + row.is_active + '</span>';
-            //     },
-            //     className: "text-center"
-            // },
-            // {
-            //     data: '',
-            //     render: function(data, type, row) {
-
-            //         let editUrl = $('#' + tableId).data('edit-url');
-
-            //         if (!editUrl) return '';
-
-            //         return `
-            //             <a class="btn btn-sm btn-info"
-            //             href="${editUrl.replace('ID', row.enc_brand_id)}">
-            //             <i class="fa fa-edit"></i> Edit
-            //             </a>
-
-            //             <a href="javascript:void(0);"
-            //                 class="btn btn-sm btn-success btn-view-log"
-            //                 data-table="mst_bus_brand"
-            //                 data-id="${row.enc_brand_id}">
-            //                     <i class="fa fa-history"></i> View Log
-            //             </a>
-            //         `;
-            //     },
-            //     className: "noPrint text-center"
-            // }
+            }
         ]
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
