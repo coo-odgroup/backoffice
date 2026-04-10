@@ -98,7 +98,7 @@
                                                         </div>
                                                         <div class="card-body" id="scheduleContainer">
 
-                                                            <div id="scheduleTemplate" style="display:none;">
+                                                            <div id="scheduleTemplate" >
 
                                                                 @if(!empty($data['scheduleDates']) && count($data['scheduleDates']) > 0)
 
@@ -278,7 +278,7 @@
                 $('#date').attr('min', minDate);
 
 
-                let existingOperators = @json($data['row']['operators'] ?? []);
+                let existingOperators = @json($data['row']->operators ?? []);
 
                 renderOperators();
 
@@ -434,9 +434,8 @@
                 });
             }
 
-
-            let selectedOperator = "{{ request('operator') ?? old('operator') }}";
-            let selectedBus = "{{ request('bus') ?? old('bus') }}";
+            let selectedOperator = "{{ $data['row']->operator_id ?? old('operator') ?? '' }}";
+            let selectedBus = "{{ $data['row']->bus_id ?? old('bus') ?? '' }}";
 
             function restoreSelection() {
 
