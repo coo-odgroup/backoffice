@@ -162,7 +162,7 @@ class BusScheduleController extends Controller
                 }
 
                 $data['row'] = $row;
-                
+
                 $scheduleDates = DB::table('odbusdev.bus_schedule_date')
                     ->where('bus_schedule_id', $id)
                     ->orderBy('entry_date', 'asc')
@@ -274,10 +274,12 @@ class BusScheduleController extends Controller
 
                 DB::commit();
 
-                return redirect()->back()->with([
-                    'level'   => 'success',
-                    'message' => 'Bus Schedule ' . ($id ? 'updated' : 'created') . ' successfully'
-                ]);
+                return redirect()->back()
+                    ->withInput()
+                    ->with([
+                        'level' => 'success',
+                        'message' => 'Bus Schedule created successfully'
+                    ]);
             }
         } catch (\Throwable $t) {
 
