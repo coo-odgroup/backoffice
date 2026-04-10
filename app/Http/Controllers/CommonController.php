@@ -154,6 +154,7 @@ class CommonController extends Controller
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
+            'BusSchedule' => \App\Models\Bus\BusSchedule::class,
             'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
         ];
 

@@ -67,13 +67,11 @@ class TicketFareSlabInfoController extends Controller
             }
 
             if ($operator !== null && $operator !== '') {
-                // return $operator;
                 $query->where('t.bus_operator_id', $operator);
             }
 
             $rows = $query->orderBy('t.id', 'desc')->get();
 
-            // return $rows;
 
             $grouped = [];
 

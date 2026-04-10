@@ -29,12 +29,11 @@ class TicketFareSlabController extends Controller
             $txtSearch = htmlEncode(request('txtsearch'));
             $selStatus = request('selstatus');
 
-            // ✅ FIXED TABLE NAME + COLUMN NAME
             $dataQuery = DB::table('mst_ticket_fare_slab as tfs')
                 ->select(
                     'tfs.id as slab_id',
                     'tfs.slab_name',
-                    'tfs.small_desc as description', // 👈 alias for blade compatibility
+                    'tfs.small_desc as description',
                     'tfs.created_at',
                     'tfs.created_by',
                     'tfs.updated_at',
@@ -44,7 +43,6 @@ class TicketFareSlabController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = tfs.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // 🔍 Search
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('tfs.slab_name', 'like', "%{$txtSearch}%")
@@ -52,7 +50,6 @@ class TicketFareSlabController extends Controller
                 });
             }
 
-            // 🔥 Status filter
             if ($selStatus !== null && $selStatus !== '') {
                 $dataQuery->where('tfs.active_status', $selStatus);
             }
@@ -62,7 +59,6 @@ class TicketFareSlabController extends Controller
             $start  = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
 
-            // ✅ same mapping works
             $columns = [
                 2 => 'tfs.slab_name',
                 3 => 'tfs.small_desc',

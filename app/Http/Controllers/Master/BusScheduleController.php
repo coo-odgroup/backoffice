@@ -27,20 +27,26 @@ class BusScheduleController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = request('selStatus');
-            $operator = request('operator');
-            $bus = request('bus');
+            $operator = (request('operator') !== null && request('operator') !== '') ? (int)request('operator') : null;
+            $bus = (request('bus') !== null && request('bus') !== '') ? (int)request('bus') : null;
+            $status = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : null;
 
-            $query = DB::connection('odbusdev')
-                ->table('bus_schedule as bs')
 
+            $query = DB::table('odbusdev.bus_schedule as bs')
                 ->select(
                     'bs.id',
                     'bs.operator_id',
                     'bs.bus_id',
-                    DB::raw('(SELECT name FROM bus WHERE id = bs.bus_id LIMIT 1) as BUS_name'),
-                    DB::raw('(SELECT bus_number FROM bus WHERE id = bs.bus_id LIMIT 1) as bus_number'),
-                    DB::raw('(SELECT organization_name FROM odbusmaster.users WHERE id = bs.operator_id AND user_role = 9 LIMIT 1) as operator_name'),
+
+                    DB::raw('(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_name'),
+                    DB::raw('(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_number'),
+
+                    DB::raw('(SELECT organization_name
+                    FROM odbusmaster.users
+                    WHERE id = bs.operator_id
+                    AND user_role = 9
+                    LIMIT 1) as operator_name'),
+
                     'bs.active_status',
                     'bs.created_at',
                     'bs.updated_at',
@@ -49,26 +55,28 @@ class BusScheduleController extends Controller
                     DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // if (!empty($txtSearch)) {
-            //     $query->where(function ($q) use ($txtSearch) {
-            //         $q->where('b.bus_name', 'like', "%{$txtSearch}%")
-            //             ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
-            //             ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
-            //     });
-            // }
 
-            // //  FILTERS
-            // if (!empty($operator)) {
-            //     $query->where('bs.operator_id', $operator);
-            // }
+            if (!empty(trim($txtSearch))) {
+                $search = trim($txtSearch);
 
-            // if (!empty($bus)) {
-            //     $query->where('bs.bus_id', $bus);
-            // }
+                $query->where(function ($q) use ($search) {
+                    $q->whereRaw("(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("(SELECT organization_name FROM odbusmaster.users WHERE id = bs.operator_id LIMIT 1) LIKE ?", ["%{$search}%"]);
+                });
+            }
 
-            // if ($selStatus !== null && $selStatus !== '') {
-            //     $query->where('bs.active_status', $selStatus);
-            // }
+            if ($operator !== null && $operator !== '') {
+                $query->where('bs.operator_id', $operator);
+            }
+
+            if ($bus !== null && $bus !== '') {
+                $query->where('bs.bus_id', $bus);
+            }
+
+            if ($status !== null && $status !== '') {
+                $query->where('bs.active_status', $status);
+            }
 
             $rows = $query->orderBy('bs.id', 'desc')->get();
 
@@ -79,7 +87,7 @@ class BusScheduleController extends Controller
 
                     'operator_name' => $row->operator_name ?? '--',
 
-                    'bus_name' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
+                    'bus_name' => trim(($row->bus_name ?? '') .  '   -   ( '  . ($row->bus_number ?? '') . ' )'),
 
                     'created_date' => $row->created_at
                         ? date('d-M-Y H:i:s', strtotime($row->created_at))
@@ -94,7 +102,7 @@ class BusScheduleController extends Controller
 
                     'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
 
-                    'enc_brand_id' => Crypt::encryptString($row->id),
+                    'bus_schedule_id' => $row->id,
 
                     'enc_bustype_id' => Crypt::encryptString($row->bus_id),
                     'layout_name' => $row->bus_name ?? 'Bus'

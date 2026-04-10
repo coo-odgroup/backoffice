@@ -147,7 +147,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="Brand">
+            <input type="hidden" id="hdn_model" value="BusSchedule">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -237,16 +237,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let searchParams = {
             txtSearch: txtSearch,
             selStatus: selStatus,
-            countrySearch: countrySearch
+            operator:operator,
+            bus:bus,
         };
         let displayColumns = [1, 2, 3, 4, 5, 6, 7];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
-                        '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
-                        '" ></div>';
-                },
+                                    return `<div class="checkbox">
+                                        <input class="chkItem" type="checkbox" value="${row.bus_schedule_id}">
+                                    </div>`;
+                                    },
                 className: "noPrint text-center"
             },
             {
@@ -330,14 +331,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_brand_id)}">
+                        href="${editUrl.replace('ID', row.enc_bus_schedule_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="mst_bus_brand"
-                            data-id="${row.enc_brand_id}">
+                            data-id="${row.enc_bus_schedule_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
                     `;
