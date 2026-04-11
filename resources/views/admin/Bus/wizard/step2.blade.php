@@ -88,10 +88,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                         <!-- STEP 2 BUTTONS -->
                                         <div class="text-center mt-4">
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
-                                            <a href="{{ url($createBusUrl.'step1/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                            <input type="hidden" name="param" value="{{$data['param']}}">
+                                            <a href="{{ url($createBusUrl.'step1/'.$data['enc_bus_id'].'/back') }}" class="btn btn-secondary px-5 rounded-pill me-3">
                                                 ← Back
                                             </a>
-                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
+                                            <a href="{{ url($createBusUrl.'step3/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
+                                            <button type="submit" class="btn btn-success px-5 rounded-pill">Save & Continue →</button>
                                         </div>
                                     </div>
                                 </div>
@@ -109,8 +113,10 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
 <script type="module">
     $(document).ready(function() {
-        const stops = <?= json_encode(@$step2Res) ?>;
-        localStorage.setItem('selectedCities', JSON.stringify(stops));
+        const stops = <?= json_encode(@$data['step2Res']) ?>;
+        if (stops) {
+            localStorage.setItem('selCities', JSON.stringify(stops));
+        }
     });
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -138,14 +144,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         toggleCity(this);
     });
 
-    let selectedCities = new Map(
-        JSON.parse(localStorage.getItem("selectedCities") || "[]")
+    let selCities = new Map(
+        JSON.parse(localStorage.getItem("selCities") || "[]")
     );
 
     function saveToLocalStorage() {
         localStorage.setItem(
-            "selectedCities",
-            JSON.stringify([...selectedCities])
+            "selCities",
+            JSON.stringify([...selCities])
         );
     }
 
@@ -156,9 +162,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         let cityName = $(checkbox).data('name');
 
         if (checkbox.checked) {
-            selectedCities.set(cityId, cityName);
+            selCities.set(cityId, cityName);
         } else {
-            selectedCities.delete(cityId);
+            selCities.delete(cityId);
         }
 
         saveToLocalStorage();
@@ -192,7 +198,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     function removeCity(city) {
 
-        selectedCities.delete(city);
+        selCities.delete(city);
 
         saveToLocalStorage();
         updatePreview();
@@ -204,14 +210,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         let preview = document.getElementById("previewList");
         preview.innerHTML = '';
 
-        if (selectedCities.size === 0) {
+        if (selCities.size === 0) {
             preview.innerHTML = "<p>No city is added</p>";
             return;
         }
 
         let index = 0;
 
-        selectedCities.forEach((cityName, cityId) => {
+        selCities.forEach((cityName, cityId) => {
 
             index++;
 
@@ -247,7 +253,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
             let city = $(this).val();
 
-            $(this).prop('checked', selectedCities.has(city));
+            $(this).prop('checked', selCities.has(city));
         });
     }
 
@@ -297,7 +303,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
     function updateLocalStorageOrder(fromIndex, toIndex) {
 
-        let stored = JSON.parse(localStorage.getItem('selectedCities')) || [];
+        let stored = JSON.parse(localStorage.getItem('selCities')) || [];
 
         if (stored.length === 0) return;
 
@@ -306,10 +312,10 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         stored.splice(toIndex, 0, movedItem);
 
         // ✅ Save updated order
-        localStorage.setItem('selectedCities', JSON.stringify(stored));
+        localStorage.setItem('selCities', JSON.stringify(stored));
 
         // 🔥 VERY IMPORTANT: Sync Map with new order
-        selectedCities = new Map(stored);
+        selCities = new Map(stored);
 
         console.log("Updated localStorage:", stored);
     }
@@ -336,15 +342,15 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
         e.preventDefault();
 
-        let selectedCities = [];
+        let selCities = [];
 
         try {
-            selectedCities = JSON.parse(localStorage.getItem('selectedCities')) || [];
+            selCities = JSON.parse(localStorage.getItem('selCities')) || [];
         } catch (e) {
-            selectedCities = [];
+            selCities = [];
         }
 
-        if (selectedCities.length < 3) {
+        if (selCities.length < 3) {
             commonAjax.viewAlert("Please select at least 3 cities");
             return false;
         }

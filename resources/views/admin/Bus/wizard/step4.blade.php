@@ -71,10 +71,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                         <div class="text-center mt-5">
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
-                                            <a href="{{ url($createBusUrl.'step3/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                            <input type="hidden" name="param" value="{{$data['param']}}">
+                                            <a href="{{ url($createBusUrl.'step3/'.$data['enc_bus_id'].'/back') }}" class="btn btn-secondary px-5 rounded-pill me-3">
                                                 ← Back
                                             </a>
-                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
+                                            <a href="{{ url($createBusUrl.'step5/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
+                                            <button type="submit" class="btn btn-success px-5 rounded-pill">Save & Continue →</button>
                                         </div>
                                     </div>
                                 </div>
@@ -296,7 +300,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         let stationId = $(this).data("station");
 
         let rowIndex = container.find(".stationRow").length;
-        let data = JSON.parse(localStorage.getItem("selectedCities") || "[]");
+        let data = JSON.parse(localStorage.getItem("selCities") || "[]");
 
         let newRow = `
         <div class="row stationRow align-items-center mb-2">
@@ -342,10 +346,10 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     // ✅ Load from localStorage ONLY
     $(document).ready(function() {
 
-        let selectedCities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
+        let selCities = JSON.parse(localStorage.getItem("selCities") || "[]");
         let step4Res = <?= json_encode($step4Res) ?>;
 
-        renderStations(selectedCities, step4Res);
+        renderStations(selCities, step4Res);
     });
 
     $(document).on("change", ".typeSelect", function() {

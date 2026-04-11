@@ -83,10 +83,14 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                         <div class="text-center mt-5">
 
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
-                                            <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                            <input type="hidden" name="param" value="{{$data['param']}}">
+                                            <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id'].'/back') }}" class="btn btn-secondary px-5 rounded-pill me-3">
                                                 ← Back
                                             </a>
-                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
+                                            <a href="{{ url($createBusUrl.'step4/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
+                                            <button type="submit" class="btn btn-success px-5 rounded-pill">Save & Continue →</button>
                                         </div>
                                     </div>
                                 </div>
@@ -153,42 +157,48 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     });
 
     $(document).ready(function() {
-        const stops = <?= json_encode(@$stopRes) ?>;
-        localStorage.setItem('selectedCities', JSON.stringify(stops));
+        const stops = <?= json_encode(@$data['stopRes']) ?>;
 
-        let cities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
-        let step3Res = <?= json_encode($step3Res) ?>;
+        if (stops) {
+            localStorage.setItem('selCities', JSON.stringify(stops));
+        }
+
+        let cities = JSON.parse(localStorage.getItem("selCities") || "[]");
+        let step3Res = <?= json_encode(@$data['step3Res']) ?>;
 
         let html = "";
+        if (cities) {
+            cities.forEach(function(city, index) {
 
-        cities.forEach(function(city, index) {
+                let cityId = city[0];
+                let cityName = city[1];
 
-            let cityId = city[0];
-            let cityName = city[1];
+                html += `
+                <div class="row align-items-center border-bottom pb-1 pt-1">
+                    <div class="col-md-4 fw-bold">${index + 1}. ${cityName}</div>
+                    <input type="hidden" name="cities[${cityId}]" value="${cityName}" class="cityName">
 
-            html += `
-            <div class="row align-items-center border-bottom pb-1 pt-1">
-                <div class="col-md-4 fw-bold">${index + 1}. ${cityName}</div>
-                <input type="hidden" name="cities[${cityId}]" value="${cityName}" class="cityName">
+                    <div class="col-md-3 text-center align-middle">
+                        <div class="checkbox">
+                            <input type="checkbox" name="boarding[${cityId}]" class="boarding" ${step3Res?.[index]?.is_boarding == 1 ? 'checked' : ''}>
+                        </div>
+                    </div>
 
-                <div class="col-md-3 text-center align-middle">
-                    <div class="checkbox">
-                        <input type="checkbox" name="boarding[${cityId}]" class="boarding" ${step3Res?.[index]?.is_boarding == 1 ? 'checked' : ''}>
+                    <div class="col-md-3 text-center align-middle">
+                        <div class="checkbox">
+                            <input type="checkbox" name="dropping[${cityId}]" class="dropping" ${step3Res?.[index]?.is_dropping == 1 ? 'checked' : ''}>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2 text-center">
+                        <input type="time" name="time[${cityId}]" class="form-control form-control-sm city-time" value="${step3Res?.[index]?.listing_time}">
                     </div>
                 </div>
-
-                <div class="col-md-3 text-center align-middle">
-                    <div class="checkbox">
-                        <input type="checkbox" name="dropping[${cityId}]" class="dropping" ${step3Res?.[index]?.is_dropping == 1 ? 'checked' : ''}>
-                    </div>
-                </div>
-
-                <div class="col-md-2 text-center">
-                    <input type="time" name="time[${cityId}]" class="form-control form-control-sm city-time" value="${step3Res?.[index]?.listing_time}">
-                </div>
-            </div>
-            `;
-        });
+                `;
+            });
+        } else {
+            html = `<div class="text-center text-muted mt-5">No cities selected</div>`;
+        }
 
         $("#cityContainer").html(html);
     });

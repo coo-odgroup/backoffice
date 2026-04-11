@@ -33,7 +33,7 @@ class BusWizardController extends Controller
         view()->share('createBusUrl', $this->createBusUrl);
     }
 
-    public function step1($bus_id = null)
+    public function step1($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -50,19 +50,24 @@ class BusWizardController extends Controller
         $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
 
         // Edit or Back
-        $step1Res = Bus::where('id', $busId)->first();
-        $step1AmenityRes = BusAmenity::with('amenity')
-            ->where('bus_id', $busId)
-            ->get()
-            ->map(function ($item) {
-                return [
-                    (string) $item->amenity->id,
-                    $item->amenity->amenity_name
-                ];
-            })
-            ->values();
+        $step1Res = [];
+        $step1AmenityRes = [];
+        if ($busId != 0) {
+            $step1Res = Bus::where('id', $busId)->first();
+            $step1AmenityRes = BusAmenity::with('amenity')
+                ->where('bus_id', $busId)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        (string) $item->amenity->id,
+                        $item->amenity->amenity_name
+                    ];
+                })
+                ->values();
+        }
 
         return view('admin.bus.wizard.step1', compact('data', 'step1Res', 'step1AmenityRes'));
     }
@@ -184,7 +189,7 @@ class BusWizardController extends Controller
         }
     }
 
-    public function step2($bus_id = null)
+    public function step2($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -193,20 +198,23 @@ class BusWizardController extends Controller
         $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
 
         // Edit or Back
-        $busRouteStops = BusRoutesStops::with('city')
-            ->where('bus_id', $busId)
-            ->get();
+        if ($param != null && $param == 'edit' || $param == 'back') {
+            $busRouteStops = BusRoutesStops::with('city')
+                ->where('bus_id', $busId)
+                ->get();
 
-        $step2Res = $busRouteStops->map(function ($item) {
-            return [
-                (string) $item->city_id,
-                $item->city->city_name
-            ];
-        })->values();
+            $data['step2Res'] = $busRouteStops->map(function ($item) {
+                return [
+                    (string) $item->city_id,
+                    $item->city->city_name
+                ];
+            })->values();
+        }
 
-        return view('admin.bus.wizard.step2', compact('data', 'step2Res'));
+        return view('admin.bus.wizard.step2', compact('data'));
     }
 
     public function postStep2(Request $request)
@@ -217,7 +225,7 @@ class BusWizardController extends Controller
         return redirect()->route('bus.step3', ['encId' => $enc_bus_id]);
     }
 
-    public function step3($bus_id = null)
+    public function step3($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -226,22 +234,25 @@ class BusWizardController extends Controller
         $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
 
         // Edit or Back
-        $step3Res = BusRoutesStops::where('bus_id', $busId)->get();
+        if ($param != null && $param == 'edit' || $param == 'back') {
+            $data['step3Res'] = BusRoutesStops::where('bus_id', $busId)->get();
 
-        $busRouteStops = BusRoutesStops::with('city')
-            ->where('bus_id', $busId)
-            ->get();
+            $busRouteStops = BusRoutesStops::with('city')
+                ->where('bus_id', $busId)
+                ->get();
 
-        $stopRes = $busRouteStops->map(function ($item) {
-            return [
-                (string) $item->city_id,
-                $item->city->city_name
-            ];
-        })->values();
+            $data['stopRes'] = $busRouteStops->map(function ($item) {
+                return [
+                    (string) $item->city_id,
+                    $item->city->city_name
+                ];
+            })->values();
+        }
 
-        return view('admin.bus.wizard.step3', compact('data', 'step3Res', 'stopRes'));
+        return view('admin.bus.wizard.step3', compact('data'));
     }
 
     public function postStep3(Request $request)
@@ -331,7 +342,7 @@ class BusWizardController extends Controller
         }
     }
 
-    public function step4($bus_id = null)
+    public function step4($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -340,6 +351,7 @@ class BusWizardController extends Controller
         $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
 
         // Edit or Back
         $step4Res = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
@@ -387,7 +399,7 @@ class BusWizardController extends Controller
         return redirect()->route('bus.step5', ['encId' => $enc_bus_id]);
     }
 
-    public function step5($bus_id = null)
+    public function step5($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -433,6 +445,7 @@ class BusWizardController extends Controller
         $data['schedule_data'] = $result;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
 
         // Edit or Back
         $step5Res = BusRouteFares::where('bus_id', $busId)->get();
@@ -489,7 +502,7 @@ class BusWizardController extends Controller
         return redirect()->route('bus.step6', ['encId' => $enc_bus_id]);
     }
 
-    public function step6($bus_id = null)
+    public function step6($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -502,6 +515,7 @@ class BusWizardController extends Controller
         $data['bus_number'] = $busData ? $busData->bus_number : null;
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
 
         // Edit or Back
         $step6Res = BusContacts::where('bus_id', $busId)->get();
@@ -548,7 +562,7 @@ class BusWizardController extends Controller
         return redirect()->route('bus.step7', ['encId' => $enc_bus_id]);
     }
 
-    public function step7($bus_id = null)
+    public function step7($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -559,6 +573,8 @@ class BusWizardController extends Controller
         $data['seat_layout'] = DB::table('mst_seat_layout_name')->get();
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
+
         return view('admin.bus.wizard.step7', compact('data'));
     }
 
@@ -604,7 +620,7 @@ class BusWizardController extends Controller
         return redirect()->route('bus.preview', ['encId' => $enc_bus_id]);
     }
 
-    public function preview($bus_id = null)
+    public function preview($bus_id = null, $param = null)
     {
         $data = [];
         $data['strPage'] = 'Add';
@@ -639,6 +655,8 @@ class BusWizardController extends Controller
 
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
+        $data['param'] = $param;
+
         return view('admin.bus.wizard.preview', compact('data', 'bus_record', 'amennity_records', 'busRoutesStops', 'busBoardingDropping', 'busRouteFares', 'busContacts', 'seatLayout'));
     }
 

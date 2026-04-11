@@ -86,11 +86,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <!-- Buttons -->
                                         <div class="text-center mt-1">
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
-                                            <a href="{{ url($createBusUrl.'step6/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                            <input type="hidden" name="param" value="{{$data['param']}}">
+                                            <a href="{{ url($createBusUrl.'step6/'.$data['enc_bus_id'].'/back') }}" class="btn btn-secondary px-5 rounded-pill me-3">
                                                 ← Back
                                             </a>
-                                            <button type="submit" class="btn btn-warning px-5 rounded-pill">Preview →</button>
-
+                                            <button type="submit" class="btn btn-success px-5 rounded-pill">Save & Preview →</button>
                                         </div>
 
                                     </div>
