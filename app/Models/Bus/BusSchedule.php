@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\BusSchedule;
+namespace App\Models\Bus;
 
 
 use App\Models\Users;
@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class BusSchedule extends Model
 {
-    protected $table = 'odbusdev.bus';
+    protected $table = 'odbusdev.bus_schedule';
+    
     protected $fillable = [
         'operator_id',
         'bus_id',

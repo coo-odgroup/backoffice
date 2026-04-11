@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Bus Brands')
+@section('page_title', 'Extra Seat Block')
 @section('content')
 
 <?php
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('brand.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('extra-seat-block.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -41,18 +41,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div class="card-body">
                     <div class="row align-items-end">
 
-                        <!-- Search -->
-                        <div class="col-lg-4 col-md-6">
-                            <label for="txtSearch">Search By Brand</label>
-                            <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Brand">
+                         <div class="col-lg-3 col-md-3">
+                            <label for="operator">Operator</label>
+                            <select class="form-select form-select-sm" id="operator" name="operator">
+                                <option value="">Select Operator</option>
+                            </select>
+                         </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <label for="bus">Bus</label>
+                            <select class="form-select form-select-sm" id="bus" name="bus">
+                                <option value="">Select Bus</option>
+                            </select>
                         </div>
 
-                        <!-- Country -->
-                        <div class="col-lg-2 col-md-6">
-                            <label for="countrySearch">Country</label>
-                            <select class="form-select form-select-sm" id="country" name="country">
-                                <option value="">Select Country</option>
+                        <div class="col-lg-2 col-md-2">
+                            <label for="source">Source</label>
+                            <select class="form-select form-select-sm" id="source" name="source">
+                                <option value="">Select Source</option>
+                            </select>
+                        </div>
+
+                         <div class="col-lg-2 col-md-2">
+                            <label for="destination">Destination</label>
+                            <select class="form-select form-select-sm" id="destination" name="destination">
+                                <option value="">Select Destination</option>
                             </select>
                         </div>
 
@@ -66,8 +79,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
+                         <div class="col-lg-3 col-md-3 mt-1">
+                            <label for="fromDate">From Date</label>
+                            <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm" placeholder="From Date">
+                         </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <label for="toDate">To Date</label>
+                            <input type="date" id="toDate" name="toDate" class="form-control form-control-sm" placeholder="To Date">
+                        </div>
+
+                         <div class="col-lg-2 col-md-6">
+                            <label for="reason">Reason</label>
+                            <select class="form-select form-select-sm" id="reason" name="reason">
+                            </select>
+                        </div>
+
+
                         <!-- Buttons -->
-                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
+                        <div class="col-lg-3 d-flex flex-wrap action-btns gap-1 mt-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -94,11 +124,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white d-none" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm d-none" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -122,21 +152,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('brand.dataTableView') }}"
-                    data-edit-url="{{ route('brand.edit', 'ID') }}">
+                    data-url="{{ route('extra-seat-block.dataTableView') }}"
+                    data-edit-url="{{ route('extra-seat-block.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
-                            <th class="noPrint no-sort">
+                            <!-- <th class="noPrint no-sort">
                                 <div class="checkbox">
                                     <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
                                 </div>
-                            </th>
+                            </th> -->
                             <th>Sl No</th>
-                            <th>Brand</th>
-                            <th>Country</th>
-                            <th>Last Modified</th>
-                            <th>Status</th>
-                            <th class="no-sort">Action</th>
+                            <th>Opeator</th>
+                            <th>Bus Name/No</th>
+                            <th>Route</th>
+                            <th class="no-sort">Extra Seat Block Info</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -157,6 +186,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 
+
 @endsection
 @push('scripts')
 
@@ -169,7 +199,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        commonAjax.initSelect2('#country', 'Select Country');
+        commonAjax.initSelect2('#operator', 'Select Operator');
+        commonAjax.initSelect2('#bus', 'Select Bus');
+        commonAjax.initSelect2('#source', 'Select Source');
+        commonAjax.initSelect2('#destination', 'Select Destination');
+        commonAjax.initSelect2('#reason', 'Select Reason');
         commonAjax.loadCountryList();
         commonAjax.initClearableInputs();
         getDataTableView();
@@ -225,15 +259,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             countrySearch: countrySearch
         };
         let displayColumns = [1, 2, 3, 4, 5, 6, 7];
-        let dataTableColumns = [{
-                data: '',
-                render: function(data, type, row) {
-                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
-                        '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
-                        '" ></div>';
-                },
-                className: "noPrint text-center"
-            },
+        let dataTableColumns = [
             {
                 data: 'slNo',
                 render: function(data, type, row, meta) {
@@ -246,78 +272,75 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-                data: 'country',
-                render: function(data) {
-                    if (!data || data === null) {
-                        return "--";
-                    }
-                    return data;
-                }
+                data: 'brand_name',
+                defaultContent: "--"
             },
             {
-                data: null,
-                render: function(data, type, row) {
-
-                    let createdBy = row.created_by_name ?? '--';
-                    let createdAt = row.created_date ?? '--';
-
-                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
-
-                    // Show updated date if exists, else created date
-                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
-
-                    return `
-                        <span
-                            class="fw-semibold text-decoration-underline cursor-pointer"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            data-bs-html="true"
-                            title="
-                                <div class='audit-box'>
-                                    <div><strong>Created By:</strong> ${createdBy}</div>
-                                    <div><strong>Created At:</strong> ${createdAt}</div>
-                                    <hr class='my-1'>
-                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
-                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
-                                </div>
-                            ">
-                            ${displayDate}
-                        </span>
-                    `;
-                }
+                data: 'brand_name',
+                defaultContent: "--"
             },
             {
-                data: 'is_active',
+                data: 'brand_name',
                 render: function(data, type, row) {
-                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-                    return '<span class="' + cls + '">' + row.is_active + '</span>';
+
+                     let editUrl = $('#' + tableId).data('edit-url');
+
+                    // if (!data || data.length === 0) return "--";
+
+                    let table = `<div class="inner-table-hdr">
+                                    <table class="table mb-0 table-hover table-sm">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Seats/Sleeper</th>
+                                                <th>Reason</th>
+                                                <th>Created By</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+
+                    // data.forEach(row => {
+                        table += `<tr>
+                                        <td class="align-middle">26-Apr-2026</td>
+                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
+                                        <td class="align-middle">Blocked By Owner</td>
+                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
+                                        <td class="align-middle"> <a class="btn btn-sm btn-info"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-edit"></i>
+                                             </a>
+                                             <a class="btn btn-sm btn-danger"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-trash"></i>
+                                             </a>
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                       <td class="align-middle">26-Apr-2026</td>
+                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
+                                        <td class="align-middle">Blocked By Owner</td>
+                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
+                                        <td class="align-middle">
+                                             <a class="btn btn-sm btn-info"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-edit"></i>
+                                             </a>
+                                             <a class="btn btn-sm btn-danger"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-trash"></i>
+                                             </a>
+                                        </td>
+                                    </tr>`;
+                    // });
+
+                                    table += `</tbody>
+                                             </table>
+                                            </div> `;
+
+                    return table;
                 },
-                className: "text-center"
-            },
-            {
-                data: '',
-                render: function(data, type, row) {
-
-                    let editUrl = $('#' + tableId).data('edit-url');
-
-                    if (!editUrl) return '';
-
-                    return `
-                        <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_brand_id)}">
-                        <i class="fa fa-edit"></i> Edit
-                        </a>
-
-                        <a href="javascript:void(0);"
-                            class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_bus_brand"
-                            data-id="${row.enc_brand_id}">
-                                <i class="fa fa-history"></i> View Log
-                        </a>
-                    `;
-                },
-                className: "noPrint text-center"
+                className: ""
             }
         ]
 

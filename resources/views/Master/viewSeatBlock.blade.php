@@ -90,7 +90,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                          <div class="col-lg-2 col-md-6">
-                            <label for="reason">Status</label>
+                            <label for="reason">Reason</label>
                             <select class="form-select form-select-sm" id="reason" name="reason">
                             </select>
                         </div>
@@ -124,11 +124,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
-                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
+                        <button type="button" id="btnActive" class="btn btn-success btn-sm text-white d-none" onclick="actionRec('A');">
                             <i class="fa-solid fa-circle-check me-1"></i>
                             Active
                         </button>
-                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
+                        <button type="button" id="btnInactive" class="btn btn-danger btn-sm d-none" onclick="actionRec('UN');">
                             <i class="fa-solid fa-times me-1"></i>
                             Inactive
                         </button>
@@ -156,20 +156,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     data-edit-url="{{ route('seat-block.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
-                            <th class="noPrint no-sort">
+                            <!-- <th class="noPrint no-sort">
                                 <div class="checkbox">
                                     <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
                                 </div>
-                            </th>
+                            </th> -->
                             <th>Sl No</th>
                             <th>Opeator</th>
                             <th>Bus Name/No</th>
                             <th>Route</th>
-                            <th>Reason</th>
-                            <th>Cancel Dates</th>
-                            <th>Last Modified</th>
-                            <th>Status</th>
-                            <th class="no-sort">Action</th>
+                            <th class="no-sort">Seat Block Info</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -263,15 +259,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             countrySearch: countrySearch
         };
         let displayColumns = [1, 2, 3, 4, 5, 6, 7];
-        let dataTableColumns = [{
-                data: '',
-                render: function(data, type, row) {
-                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
-                        '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
-                        '" ></div>';
-                },
-                className: "noPrint text-center"
-            },
+        let dataTableColumns = [
             {
                 data: 'slNo',
                 render: function(data, type, row, meta) {
@@ -293,81 +281,66 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: 'brand_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'country',
-                render: function(data) {
-                    if (!data || data === null) {
-                        return "--";
-                    }
-                    return data;
-                }
-            },
-            {
-                data: null,
                 render: function(data, type, row) {
 
-                    let createdBy = row.created_by_name ?? '--';
-                    let createdAt = row.created_date ?? '--';
+                     let editUrl = $('#' + tableId).data('edit-url');
 
-                    let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
-                    let updatedAt = (row.updated_date) ? row.updated_date : '--';
+                    // if (!data || data.length === 0) return "--";
 
-                    // Show updated date if exists, else created date
-                    let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
+                    let table = `<div class="inner-table-hdr">
+                                    <table class="table mb-0 table-hover table-sm">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Seats/Sleeper</th>
+                                                <th>Reason</th>
+                                                <th>Created By</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
 
-                    return `
-                        <span
-                            class="fw-semibold text-decoration-underline cursor-pointer"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            data-bs-html="true"
-                            title="
-                                <div class='audit-box'>
-                                    <div><strong>Created By:</strong> ${createdBy}</div>
-                                    <div><strong>Created At:</strong> ${createdAt}</div>
-                                    <hr class='my-1'>
-                                    <div><strong>Updated By:</strong> ${updatedBy}</div>
-                                    <div><strong>Updated At:</strong> ${updatedAt}</div>
-                                </div>
-                            ">
-                            ${displayDate}
-                        </span>
-                    `;
-                }
-            },
-            {
-                data: 'is_active',
-                render: function(data, type, row) {
-                    var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-                    return '<span class="' + cls + '">' + row.is_active + '</span>';
+                    // data.forEach(row => {
+                        table += `<tr>
+                                        <td class="align-middle">26-Apr-2026</td>
+                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
+                                        <td class="align-middle">Blocked By Owner</td>
+                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
+                                        <td class="align-middle"> <a class="btn btn-sm btn-info"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-edit"></i>
+                                             </a>
+                                             <a class="btn btn-sm btn-danger"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-trash"></i>
+                                             </a>
+                                        </td>
+                                    </tr>
+                                     <tr>
+                                       <td class="align-middle">26-Apr-2026</td>
+                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
+                                        <td class="align-middle">Blocked By Owner</td>
+                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
+                                        <td class="align-middle">
+                                             <a class="btn btn-sm btn-info"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-edit"></i>
+                                             </a>
+                                             <a class="btn btn-sm btn-danger"
+                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
+                                                <i class="fa fa-trash"></i>
+                                             </a>
+                                        </td>
+                                    </tr>`;
+                    // });
+
+                                    table += `</tbody>
+                                             </table>
+                                            </div> `;
+
+                    return table;
                 },
-                className: "text-center"
-            },
-            {
-                data: '',
-                render: function(data, type, row) {
-
-                    let editUrl = $('#' + tableId).data('edit-url');
-
-                    if (!editUrl) return '';
-
-                    return `
-                        <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_brand_id)}">
-                        <i class="fa fa-edit"></i> Edit
-                        </a>
-
-                        <a href="javascript:void(0);"
-                            class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_bus_brand"
-                            data-id="${row.enc_brand_id}">
-                                <i class="fa fa-history"></i> View Log
-                        </a>
-                    `;
-                },
-                className: "noPrint text-center"
+                className: ""
             }
         ]
 

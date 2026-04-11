@@ -102,6 +102,42 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
                         if (input.length) {
                             return input.val();
                         }
+                         if ($(node).find('table').length) {
+
+                                let html = '<table class="table table-sm inner-table-hdr" style="font-size:12px;">';
+
+                                // 🔥 Get header dynamically (if exists)
+                                let headers = [];
+                                $(node).find('thead th').each(function () {
+                                    headers.push($(this).text().trim());
+                                });
+
+                                if (headers.length) {
+                                    html += '<thead><tr>';
+                                    headers.forEach(h => {
+                                        html += `<th>${h}</th>`;
+                                    });
+                                    html += '</tr></thead>';
+                                }
+
+                                html += '<tbody>';
+
+                                // 🔥 Loop rows dynamically
+                                $(node).find('tbody tr').each(function () {
+
+                                    html += '<tr>';
+
+                                    $(this).find('td').each(function () {
+                                        html += `<td>${$(this).text().trim()}</td>`;
+                                    });
+
+                                    html += '</tr>';
+                                });
+
+                                html += '</tbody></table>';
+
+                                return html;
+                        }
                         return $(node).text().trim();
                     }
                 }
@@ -114,12 +150,60 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
                 format: {
                     body: function (data, row, column, node) {
                         let input = $('input', node);
-                        if (input.length) {
-                            return input.val();
+                        // if (input.length) {
+                        //     return input.val();
+                        // }
+                        // return $(node).text().trim();
+
+                       if ($(node).find('table').length) {
+
+                                let html = '<table class="table table-sm inner-table-hdr" style="font-size:12px;">';
+
+                                // 🔥 Get header dynamically (if exists)
+                                let headers = [];
+                                $(node).find('thead th').each(function () {
+                                    headers.push($(this).text().trim());
+                                });
+
+                                if (headers.length) {
+                                    html += '<thead><tr>';
+                                    headers.forEach(h => {
+                                        html += `<th>${h}</th>`;
+                                    });
+                                    html += '</tr></thead>';
+                                }
+
+                                html += '<tbody>';
+
+                                // 🔥 Loop rows dynamically
+                                $(node).find('tbody tr').each(function () {
+
+                                    html += '<tr>';
+
+                                    $(this).find('td').each(function () {
+                                        html += `<td>${$(this).text().trim()}</td>`;
+                                    });
+
+                                    html += '</tr>';
+                                });
+
+                                html += '</tbody></table>';
+
+                                return html;
                         }
+
                         return $(node).text().trim();
                     }
+                },
+                 customize: function (win) {
+
+                   $(win.document.body)
+                        .find('table tbody tr')
+                        .not(':first')
+                        .find('.inner-table-hdr thead')
+                        .hide();
                 }
+
             } 
         }
     ],
