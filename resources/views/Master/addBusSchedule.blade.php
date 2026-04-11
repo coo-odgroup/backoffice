@@ -248,6 +248,18 @@
                     $('#scheduleContainer').html('');
                 });
 
+                setTimeout(() => {
+
+                    if (selectedCycle) {
+                        $('#running_cycle').val(selectedCycle).trigger('change');
+                    }
+
+                    if (lastScheduleDate) {
+                        $('#date').val(lastScheduleDate);
+                    }
+
+                }, 800);
+
             });
 
             // Operator change load buses
@@ -292,7 +304,22 @@
                         _token: $('meta[name="csrf-token"]').attr("content")
                     },
                     success: function(response) {
-                        $('#scheduleContainer').html(response);
+
+                        if (typeof response === 'object') {
+
+                            $('#scheduleContainer').html(response.html);
+
+                            if (response.running_cycle) {
+                                $('#running_cycle').val(response.running_cycle).trigger('change');
+                            }
+
+                            if (response.last_date) {
+                                $('#date').val(response.last_date);
+                            }
+
+                        } else {
+                            $('#scheduleContainer').html(response);
+                        }
                     }
                 });
             }
@@ -300,6 +327,8 @@
 
             let selectedOperator = "{{ $data['row']->operator_id ?? old('operator') ?? '' }}";
             let selectedBus = "{{ $data['row']->bus_id ?? old('bus') ?? '' }}";
+            let lastScheduleDate = "{{ $data['lastDate'] ?? '' }}";
+            let selectedCycle = "{{ $data['row']->running_cycle ?? '' }}";
 
             function restoreSelection() {
 

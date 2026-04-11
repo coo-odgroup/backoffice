@@ -31,7 +31,6 @@ class BusScheduleController extends Controller
             $bus       = request('bus') !== null && request('bus') !== '' ? (int)request('bus') : null;
             $status    = request('selStatus') !== null && request('selStatus') !== '' ? (int)request('selStatus') : null;
 
-            // DataTable pagination params
             $start  = request('start', 0);
             $length = request('length', 10);
 
@@ -84,7 +83,7 @@ class BusScheduleController extends Controller
 
             $recordsFiltered = (clone $query)->count();
 
-            if ($length != -1) { 
+            if ($length != -1) {
                 $query->offset($start)->limit($length);
             }
 
@@ -167,6 +166,13 @@ class BusScheduleController extends Controller
                 }
 
                 $data['row'] = $row;
+
+                $lastDate = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $id)
+                    ->orderByDesc('entry_date')
+                    ->value('entry_date');
+
+                $data['lastDate'] = $lastDate;
 
                 $scheduleDates = DB::table('odbusdev.bus_schedule_date')
                     ->where('bus_schedule_id', $id)
@@ -355,9 +361,21 @@ class BusScheduleController extends Controller
         $schedule_id = $request->bus_schedule_id;
 
         $scheduleDates = [];
+        $runningCycle = null;
+        $lastDate = null;
+
 
 
         if (!empty($schedule_id)) {
+
+            // get schedule
+            $schedule = DB::table('odbusdev.bus_schedule')
+                ->where('id', $schedule_id)
+                ->first();
+
+            if ($schedule) {
+                $runningCycle = $schedule->running_cycle;
+            }
 
             $scheduleDates = DB::table('odbusdev.bus_schedule_date')
                 ->where('bus_schedule_id', $schedule_id)
@@ -365,6 +383,11 @@ class BusScheduleController extends Controller
                 ->limit(30)
                 ->pluck('entry_date')
                 ->toArray();
+
+            $lastDate = DB::table('odbusdev.bus_schedule_date')
+                ->where('bus_schedule_id', $schedule_id)
+                ->orderByDesc('entry_date')
+                ->value('entry_date');
         } elseif (!empty($bus_id)) {
 
             $schedule = DB::table('odbusdev.bus_schedule')
@@ -374,14 +397,23 @@ class BusScheduleController extends Controller
                 ->first();
 
             if ($schedule) {
+
+                $runningCycle = $schedule->running_cycle;
+
                 $scheduleDates = DB::table('odbusdev.bus_schedule_date')
                     ->where('bus_schedule_id', $schedule->id)
                     ->orderBy('entry_date', 'asc')
                     ->limit(30)
                     ->pluck('entry_date')
                     ->toArray();
+
+                $lastDate = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $schedule->id)
+                    ->orderByDesc('entry_date')
+                    ->value('entry_date');
             }
         }
+
 
         if (!empty($scheduleDates)) {
 
@@ -405,6 +437,16 @@ class BusScheduleController extends Controller
             $html .= '</div>';
         } else {
             $html = '<div class="text-center text-muted p-4">Bus is not scheduled</div>';
+        }
+
+
+        if (!empty($bus_id)) {
+            return response()->json([
+                'status' => !empty($scheduleDates),
+                'html' => $html,
+                'running_cycle' => $runningCycle,
+                'last_date' => $lastDate
+            ]);
         }
 
         return response($html);

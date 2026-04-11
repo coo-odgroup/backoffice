@@ -325,12 +325,10 @@
 
         $(document).ready(function() {
 
-            let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
-
 
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#operator', 'Select Operator');
-            commonAjax.loadTicketFareSlabList('#slab', slab_id);
+            commonAjax.loadBusListByOperator();
             commonAjax.loadBusOperatorDropdown();
             commonAjax.initClearableInputs();
 
