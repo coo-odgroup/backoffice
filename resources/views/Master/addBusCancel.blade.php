@@ -331,7 +331,7 @@
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#operator', 'Select Operator');
             commonAjax.loadTicketFareSlabList('#slab', slab_id);
-            commonAjax.loadBusOperatorList();
+            commonAjax.loadBusOperatorDropdown();
             commonAjax.initClearableInputs();
 
             $('#operator').on('change', function() {
@@ -415,119 +415,21 @@
 
             $('#btnConfirmOk').one('click', () => this.submit());
         });
-
-        // add/remove rows
-        $(document).on('click', '.btn-add', function() {
-            $('#slabWrapper').append(`
-            <div class="row mb-3 dynamic-item">
-                <div class="col-md-2"><input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="date" name="from_date[]" class="form-control form-control-sm from-date" min="{{ date('Y-m-d') }}"></div>
-                <div class="col-md-2"><input type="date" name="to_date[]" class="form-control form-control-sm to-date" min="{{ date('Y-m-d') }}"></div>
-                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm btn-remove mt-1">-</button></div>
-            </div>
-        `);
-        });
+       
 
         $(document).on('click', '.btn-remove', function() {
             $(this).closest('.dynamic-item').remove();
         });
 
         // FROM DATE CHANGE
-        $(document).on('change', '.from-date', function() {
-
-            let fromDate = $(this).val();
-            let row = $(this).closest('.row');
-            let toInput = row.find('.to-date');
-
-            if (fromDate) {
-                toInput.attr('min', fromDate);
-
-                if (toInput.val() && toInput.val() < fromDate) {
-                    toInput.val('');
-                }
-            }
-        });
+        
 
 
 
 
-        // TO DATE CHANGE
-        $(document).on('change', '.to-date', function() {
-
-            let row = $(this).closest('.row');
-            let fromDate = row.find('.from-date').val();
-            let toDate = $(this).val();
-
-            if (fromDate && toDate && toDate < fromDate) {
-                alert('To Date cannot be less than From Date');
-                $(this).val('');
-            }
-        });
+       
 
 
-        // UPDATED: no table if no data
-        function loadOperatorTable(operator) {
-
-            $.ajax({
-                url: "/admin/get-operator-slab-data",
-                type: "POST",
-                data: {
-                    operator_id: operator.id,
-                    _token: $('meta[name="csrf-token"]').attr("content"),
-                },
-
-                success: function(res) {
-
-                    // skip if no data
-                    if (!res.status || res.data.length === 0) {
-                        $(`#table_${operator.id}`).remove();
-                        return;
-                    }
-
-                    let tableHtml = `
-                    <div class="card mt-3 operator-table" id="table_${operator.id}">
-                        <div class="card-header bg-warning">
-                            <b>${operator.text}</b>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Slab</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th>Commission</th>
-                                        <th>From Date</th>
-                                        <th>To Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
-
-                    res.data.forEach(row => {
-                        tableHtml += `
-                        <tr>
-                            <td>${row.slab_name}</td>
-                            <td>${row.starting_fare}</td>
-                            <td>${row.upto_fare}</td>
-                            <td>${row.commision}</td>
-                            <td>${row.from_date}</td>
-                            <td>${row.to_date}</td>
-                        </tr>`;
-                    });
-
-                    tableHtml += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`;
-
-                    $(`#table_${operator.id}`).remove();
-                    $('#operatorTables').append(tableHtml);
-                }
-            });
-        }
+      
     </script>
     @endpush

@@ -1657,7 +1657,7 @@ export function loadBusOperatorList(bus_operator_id = 0) {
 export function loadBusOperatorDropdown(selected_ids = []) {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-busoperator-role-list", // ✅ UPDATED ENDPOINT
+        url: ajaxUrl + "get-busoperator-role-list", 
         data: {
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
