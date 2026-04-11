@@ -70,7 +70,13 @@
 
                                                     <div class="mb-2">
                                                         <label for="bus">Bus <span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm" id="bus" name="bus"></select>
+                                                        <select class="form-select form-select-sm" id="bus"></select>
+
+                                                        <div id="selectedBusWrapper" class="mt-2" style="display:none;">
+                                                            <div id="selectedBuses"></div>
+                                                        </div>
+
+                                                        <input type="hidden" name="bus" id="bus_ids">
                                                     </div>
 
                                                     <div class="mb-2">
@@ -88,7 +94,7 @@
                                                                 <select class="form-select form-select-sm" id="month" name="month">
                                                                     @for ($m = 1; $m <= 12; $m++)
                                                                         <option value="{{ $m }}">
-                                                                              {{ date('M', mktime(0, 0, 0, $m, 1)) }}
+                                                                        {{ date('M', mktime(0, 0, 0, $m, 1)) }}
                                                                         </option>
                                                                         @endfor
                                                                 </select>
@@ -170,7 +176,7 @@
                                                             </div>
 
                                                             <!-- Column 2 -->
-                                                              <div class="col-4">
+                                                            <div class="col-4">
                                                                 <div class="checkbox mb-2">
                                                                     <input type="checkbox">
                                                                     <span class="form-check-label">10-Apr-2026</span>
@@ -193,7 +199,7 @@
                                                             </div>
 
                                                             <!-- Column 3 -->
-                                                              <div class="col-4">
+                                                            <div class="col-4">
                                                                 <div class="checkbox mb-2">
                                                                     <input type="checkbox">
                                                                     <span class="form-check-label">10-Apr-2026</span>
@@ -245,7 +251,7 @@
                                                             </div>
 
                                                             <!-- Column 2 -->
-                                                              <div class="col-4">
+                                                            <div class="col-4">
                                                                 <div class="checkbox mb-2">
                                                                     <input type="checkbox">
                                                                     <span class="form-check-label">10-Apr-2026</span>
@@ -268,7 +274,7 @@
                                                             </div>
 
                                                             <!-- Column 3 -->
-                                                              <div class="col-4">
+                                                            <div class="col-4">
                                                                 <div class="checkbox mb-2">
                                                                     <input type="checkbox">
                                                                     <span class="form-check-label">10-Apr-2026</span>
@@ -317,39 +323,54 @@
             </div>
     </form>
 
+    <style>
+        .selected-tag {
+            display: inline-flex;
+            align-items: center;
+            background: #ffc107;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin: 3px;
+        }
+
+        .selected-tag .remove {
+            margin-left: 6px;
+            cursor: pointer;
+        }
+    </style>
     @endsection
 
     @push('scripts')
     <script type="module">
         let selectedOperators = [];
+        let selectedBuses = [];
+        let existing_reason_id = @json($data['row']['reason'] ?? "");
 
         $(document).ready(function() {
 
 
-            commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#operator', 'Select Operator');
-            commonAjax.loadBusListByOperator();
+            commonAjax.initSelect2('#bus', 'Select Bus');
+            commonAjax.initSelect2('#reason', 'Select Reason'); // ✅ HERE
+    
             commonAjax.loadBusOperatorDropdown();
-            commonAjax.initClearableInputs();
+
+            commonAjax.loadAnnextureDropdown('#reason', 16, existing_reason_id || "");
+
+
 
             $('#operator').on('change', function() {
 
-                let id = $(this).val();
-                let text = $("#operator option:selected").text();
+                let operator_id = $(this).val();
 
-                if (!id) return;
-                if (selectedOperators.some(op => op.id == id)) return;
+                if (!operator_id) return;
 
-                let operator = {
-                    id,
-                    text
-                };
-                selectedOperators.push(operator);
+                // ✅ load buses based on operator
+                commonAjax.loadBusListByOperator('#bus', operator_id);
 
-                renderOperators();
-                loadOperatorTable(operator);
-
-                $(this).val('').trigger('change');
+                // ❗ clear previous buses when operator changes
+                selectedBuses = [];
+                renderBuses();
             });
 
             let existingOperators = @json($data['row']['operators'] ?? []);
@@ -394,13 +415,38 @@
             renderOperators();
         });
 
+        $('#bus').on('change', function() {
+
+            let id = $(this).val();
+            let text = $("#bus option:selected").text();
+
+            if (!id) return;
+
+            // prevent duplicate
+            if (selectedBuses.some(b => b.id == id)) return;
+
+            selectedBuses.push({
+                id,
+                text
+            });
+
+            renderBuses();
+
+            $(this).val('').trigger('change');
+        });
+
+
         $('#btnReset').click(function() {
 
             $('#backoffice-form')[0].reset();
             $('.form-select').val('').trigger('change');
 
             selectedOperators = [];
+            selectedBuses = [];
+
             renderOperators();
+            renderBuses();
+
             $('#operatorTables').html('');
         });
 
@@ -408,26 +454,76 @@
 
             e.preventDefault();
 
-            if (!validator.selectDropdown('slab', 'Select Ticket Fare Slab')) return;
+            let operator = $('#operator').val();
+            let buses = $('#bus_ids').val();
+            let year = $('#year').val();
+            let month = $('#month').val();
+            let reason = $('#reason').val();
+
+            if (!operator) {
+                commonAjax.viewAlert("Please select operator", "warning");
+                return;
+            }
+
+            if (!buses) {
+                commonAjax.viewAlert("Please select at least one bus", "warning");
+                return;
+            }
+
+            if (!year) {
+                commonAjax.viewAlert("Please select year", "warning");
+                return;
+            }
+
+            if (!month) {
+                commonAjax.viewAlert("Please select month", "warning");
+                return;
+            }
+
+            if (!reason) {
+                commonAjax.viewAlert("Please select reason", "warning");
+                return;
+            }
+
             commonAjax.confirmAlert('Are you sure to proceed!');
 
             $('#btnConfirmOk').one('click', () => this.submit());
         });
-       
+        $('#btnConfirmOk').one('click', () => this.submit());
+
 
         $(document).on('click', '.btn-remove', function() {
             $(this).closest('.dynamic-item').remove();
         });
 
-        // FROM DATE CHANGE
-        
+        function renderBuses() {
 
+            let html = '';
 
+            selectedBuses.forEach((bus, index) => {
+                html += `
+            <span class="selected-tag" data-index="${index}">
+                ${bus.text}
+                <span class="remove">×</span>
+            </span>
+        `;
+            });
 
+            $('#selectedBuses').html(html);
 
-       
+            // store IDs for backend
+            $('#bus_ids').val(selectedBuses.map(b => b.id).join(','));
 
+            $('#selectedBusWrapper').toggle(selectedBuses.length > 0);
+        }
 
-      
+        $(document).on('click', '#selectedBuses .remove', function() {
+
+            let index = $(this).closest('.selected-tag').data('index');
+
+            selectedBuses.splice(index, 1);
+
+            renderBuses();
+        });
     </script>
     @endpush
