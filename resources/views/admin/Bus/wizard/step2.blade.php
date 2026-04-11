@@ -108,6 +108,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 @push('scripts')
 
 <script type="module">
+    $(document).ready(function() {
+        const stops = <?= json_encode(@$step2Res) ?>;
+        localStorage.setItem('selectedCities', JSON.stringify(stops));
+    });
+
     document.addEventListener("DOMContentLoaded", function() {
         updatePreview();
         syncCheckboxes();

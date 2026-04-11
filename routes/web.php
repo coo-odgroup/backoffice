@@ -141,6 +141,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-busoperator-role-list', [CommonController::class, 'getBusOperatorListRoleWise']);
     Route::post('get-buses-by-operator', [CommonController::class, 'getBusesByOperator']);
     Route::post('get-schedule-dates', [BusScheduleController::class, 'getScheduleDates']);
+    Route::post('get-users-list', [CommonController::class, 'getUsersList']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);

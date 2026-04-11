@@ -1776,3 +1776,35 @@ export function loadBusListByOperator(selector, operator_id, selected = null) {
         },
     });
 }
+
+export function loadUsersList(user_code = "", selected_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-users-list",
+        data: {
+            user_code: user_code,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+            let options = '<option value="">Select Option</option>';
+
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, item) {
+                    let selected = selected_id == item.id ? "selected" : "";
+
+                    options += `<option value="${item.id}" ${selected}>
+                                    ${item.name}
+                                </option>`;
+                });
+            }
+
+            $(".users").html(options);
+        },
+
+        error: function () {
+            console.log("Error loading annexture list");
+        },
+    });
+}

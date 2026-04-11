@@ -73,7 +73,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="busOperator">Bus Operator <span class="text-danger">*</span></label>
-                                                            <select class="form-select form-select-sm" name="bus_operator_id" id="busOperator">
+                                                            <select class="form-select form-select-sm users" name="bus_operator_id" id="busOperator">
                                                                 <option value="0">Select Bus Operator</option>
                                                             </select>
                                                         </div>
@@ -98,7 +98,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                         <div class="col-md-6 mb-2">
                                                             <label for="maxSeat">Max Seat Booked <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="max_seat_book" id="maxSeat" value="{{@$step1Res->max_seat_book}}">
+                                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Max Seat" name="max_seat_book" id="maxSeat" value="{{@$step1Res->max_seat_book ? $step1Res->max_seat_book : 6 }}">
                                                         </div>
 
                                                     </div>
@@ -288,6 +288,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                     <!-- BUTTON -->
                                     <div class="text-center mt-4">
+                                        <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                         <button type="submit" class="btn btn-warning px-5 rounded-pill">Next →</button>
                                     </div>
                                 </div>
@@ -308,6 +309,13 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $(document).ready(function() {
         const selAmenities = <?= json_encode(@$step1AmenityRes) ?>;
         localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
+
+        let on_edit_slab_id = "{{ @$step1Res->cancellationslabs_id ?? '' }}";
+        let on_edit_bus_id = "{{ @$step1Res->id ?? '' }}";
+
+        if (on_edit_bus_id && on_edit_slab_id) {
+            loadSlabDetails(on_edit_slab_id);
+        }
         // commonAjax.initClearableInputs();
         commonAjax.initCharCounter(['busName', 'busNumber', 'via']);
         commonAjax.makeUpperCase(['busName', 'busNumber']); // Ids
@@ -417,10 +425,12 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         commonAjax.loadAmenityList();
 
         // Jagan
-        commonAjax.initSelect2('#busOperator', 'Select Bus Operator');
+        // commonAjax.initSelect2('#busOperator', 'Select Bus Operator');
         // let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
-        let bus_operator_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
-        commonAjax.loadBusOperatorList(bus_operator_id);
+        // commonAjax.loadBusOperatorList(bus_operator_id);
+        commonAjax.initSelect2('.users', 'Select Bus Operator');
+        let user_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
+        commonAjax.loadUsersList('OPERATOR', user_id);
 
         commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
         // let slab_id = "{{ $data['row']->slab_id ?? '' }}";
@@ -479,8 +489,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     });
 
     $('#slab').on('change', function() {
-
         let slabId = $(this).val();
+        loadSlabDetails(slabId);
+    });
+
+    function loadSlabDetails(slabId) {
 
         if (!slabId) {
             $('#slabDetails').hide();
@@ -511,14 +524,12 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 $('#slabDetails').show();
             }
         });
-    });
+    }
 
     let timer;
 
-    // ✅ Load from localStorage
     let selAmenities = JSON.parse(localStorage.getItem('selAmenities')) || [];
 
-    // ✅ Fast lookup set
     let selectedAmenities = new Set(selAmenities.map(item => item[0]));
 
     const selectedContainer = document.getElementById("selectedAmenities");
