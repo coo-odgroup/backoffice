@@ -153,11 +153,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     });
 
     $(document).ready(function() {
+        const stops = <?= json_encode(@$stopRes) ?>;
+        localStorage.setItem('selectedCities', JSON.stringify(stops));
 
         let cities = JSON.parse(localStorage.getItem("selectedCities") || "[]");
         let step3Res = <?= json_encode($step3Res) ?>;
-
-        console.log(step3Res);
 
         let html = "";
 

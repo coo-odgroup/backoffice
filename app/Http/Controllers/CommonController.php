@@ -1101,4 +1101,43 @@ class CommonController extends Controller
             'data' => $buses
         ]);
     }
+
+    public function getUsersList(Request $request)
+    {
+        try {
+
+            $user_code = $request->user_code;
+
+            $role = DB::table('mst_roles')
+                ->select('id')
+                ->where('code', $user_code)
+                ->where('active_status', 1)
+                ->first();
+
+            if (!$role) {
+                return response()->json([
+                    'status' => false,
+                    'data'   => []
+                ]);
+            }
+
+            $data = DB::table('users')
+                ->select('id', 'name', 'organization_name', 'unique_id')
+                ->where('user_role', $role->id)
+                ->where('active_status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
 }
