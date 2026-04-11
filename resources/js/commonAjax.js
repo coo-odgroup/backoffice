@@ -1515,6 +1515,49 @@ export function loadAnnextureList(annexture_type = "", selected_id = 0) {
     });
 }
 
+
+export function loadAnnextureDropdown(selector, annexture_type_id, selected = "") {
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-annexture-list",
+        data: {
+            annexture_type: annexture_type_id,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+
+        success: function (response) {
+
+            let html = '<option value="">Select Reason</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach((item) => {
+
+                    let isSelected = selected == item.id ? "selected" : "";
+
+                    html += `<option value="${item.id}" ${isSelected}>
+                                ${item.annexture_name}
+                             </option>`;
+                });
+
+            } else {
+                html = '<option value="">No Data Found</option>';
+            }
+
+            $(selector).html(html);
+
+            
+            commonAjax.initSelect2(selector, 'Select Reason');
+        },
+
+        error: function (err) {
+            console.log("Annexture Error:", err);
+        }
+    });
+}
+
+
 export function loadCampaignMasterList(campaign_master_id = 0) {
     $.ajax({
         type: "POST",
@@ -1657,7 +1700,7 @@ export function loadBusOperatorList(bus_operator_id = 0) {
 export function loadBusOperatorDropdown(selected_ids = []) {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-busoperator-role-list", // ✅ UPDATED ENDPOINT
+        url: ajaxUrl + "get-busoperator-role-list", 
         data: {
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
