@@ -1,637 +1,688 @@
-        @extends('admin.layouts.master')
-        @section('page_title', 'Bus Cancel')
-        @section('content')
+            @extends('admin.layouts.master')
+            @section('page_title', 'Bus Cancel')
+            @section('content')
 
-            <?php
-            $page_name = 'All ' . trim($__env->yieldContent('page_title'));
-            $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
-            ?>
+                <?php
+                $page_name = 'All ' . trim($__env->yieldContent('page_title'));
+                $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
+                ?>
 
-            <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item">Master</li>
-                    <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
-                </ol>
-            </nav>
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item">Master</li>
+                        <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
+                    </ol>
+                </nav>
 
-            <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 id="page_title">@yield('page_title')</h5>
-                <div>
-                    <a href="{{ route('bus-cancel.index') }}" class="btn btn-success btn-sm">
-                        View @yield('page_title')
-                    </a>
+                <!-- HEADER -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 id="page_title">@yield('page_title')</h5>
+                    <div>
+                        <a href="{{ route('bus-cancel.index') }}" class="btn btn-success btn-sm">
+                            View @yield('page_title')
+                        </a>
+                    </div>
                 </div>
-            </div>
 
-            <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
-                {{ csrf_field() }}
+                <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
+                    {{ csrf_field() }}
 
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
 
-                                <div class="mb-3">
-                                    <div class="card-body">
-                                        <div class="row">
+                                    <div class="mb-3">
+                                        <div class="card-body">
+                                            <div class="row">
 
-                                            <!-- Alerts -->
-                                            @if (session('message'))
-                                                <div
-                                                    class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show">
-                                                    {{ session('message') }}
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="alert"></button>
-                                                </div>
-                                            @endif
+                                                <!-- Alerts -->
+                                                @if (session('message'))
+                                                    <div
+                                                        class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show">
+                                                        {{ session('message') }}
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="alert"></button>
+                                                    </div>
+                                                @endif
 
-                                            @if ($errors->any())
-                                                <div class="alert alert-danger alert-dismissible fade show">
-                                                    <ul class="mb-0">
-                                                        @foreach ($errors->all() as $error)
-                                                            <li>{{ $error }}</li>
-                                                        @endforeach
-                                                    </ul>
-                                                    <button type="button" class="btn-close"
-                                                        data-bs-dismiss="alert"></button>
-                                                </div>
-                                            @endif
+                                                @if ($errors->any())
+                                                    <div class="alert alert-danger alert-dismissible fade show">
+                                                        <ul class="mb-0">
+                                                            @foreach ($errors->all() as $error)
+                                                                <li>{{ $error }}</li>
+                                                            @endforeach
+                                                        </ul>
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="alert"></button>
+                                                    </div>
+                                                @endif
 
-                                            <div class="col-12">
-                                                <div class="row">
+                                                <div class="col-12">
+                                                    <div class="row">
 
-                                                    <!-- LEFT COLUMN -->
-                                                    <div class="col-md-5">
+                                                        <!-- LEFT COLUMN -->
+                                                        <div class="col-md-5">
 
-                                                        <!-- FORM -->
-                                                        <div class="p-3 border rounded bg-white">
+                                                            <!-- FORM -->
+                                                            <div class="p-3 border rounded bg-white">
 
-                                                            <div class="mb-2">
-                                                                <label for="operator">Operator <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm" id="operator"
-                                                                    name="operator"></select>
-                                                            </div>
+                                                                <div class="mb-2">
+                                                                    <label for="operator">Operator <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="operator" name="operator"></select>
+                                                                </div>
 
-                                                            <div class="mb-2">
-                                                                <label for="bus">Bus <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="bus"></select>
+                                                                <div class="mb-2">
+                                                                    <label for="bus">Bus <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="bus"></select>
 
-                                                                <div id="selectedBusWrapper" class="mt-2"
+                                                                    <div id="selectedBusWrapper" class="mt-2"
+                                                                        style="display:none;">
+                                                                        <div id="selectedBuses"></div>
+                                                                    </div>
+
+                                                                    <input type="hidden" name="bus" id="bus_ids">
+                                                                </div>
+
+                                                                <div class="mb-2">
+                                                                    <div class="row">
+                                                                        <div class="col-xl-6">
+                                                                            <label for="year">Year <span
+                                                                                    class="text-danger">*</span></label>
+                                                                            <select class="form-select form-select-sm"
+                                                                                id="year" name="year">
+                                                                                <option value="">Select Year</option>
+                                                                                @for ($i = date('Y'); $i <= date('Y') + 1; $i++)
+                                                                                    <option value="{{ $i }}">
+                                                                                        {{ $i }}</option>
+                                                                                @endfor
+                                                                            </select>
+                                                                        </div>
+
+                                                                        <div class="col-xl-6">
+                                                                            <label for="month">Month <span
+                                                                                    class="text-danger">*</span></label>
+                                                                            <select class="form-select form-select-sm"
+                                                                                id="month" name="month">
+                                                                                <option value="">Select Month</option>
+                                                                                @for ($m = 1; $m <= 12; $m++)
+                                                                                    <option value="{{ $m }}">
+                                                                                        {{ date('M', mktime(0, 0, 0, $m, 1)) }}
+                                                                                    </option>
+                                                                                @endfor
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="mb-2">
+                                                                    <label for="reason">Reason <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="reason" name="reason"></select>
+                                                                </div>
+
+                                                                <div class="mb-2" id="otherReasonWrapper"
                                                                     style="display:none;">
-                                                                    <div id="selectedBuses"></div>
+                                                                    <label for="other_reason">Other Reason <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input type="hidden" name="removed_dates"
+                                                                        id="removed_dates">
+                                                                    <input type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        id="other_reason" name="other_reason"
+                                                                        placeholder="Enter reason">
                                                                 </div>
 
-                                                                <input type="hidden" name="bus" id="bus_ids">
                                                             </div>
 
-                                                            <div class="mb-2">
-                                                                <div class="row">
-                                                                    <div class="col-xl-6">
-                                                                        <label for="year">Year <span
-                                                                                class="text-danger">*</span></label>
-                                                                        <select class="form-select form-select-sm"
-                                                                            id="year" name="year">
-                                                                            <option value="">Select Year</option>
-                                                                            @for ($i = date('Y'); $i <= date('Y') + 1; $i++)
-                                                                                <option value="{{ $i }}">
-                                                                                    {{ $i }}</option>
-                                                                            @endfor
-                                                                        </select>
-                                                                    </div>
+                                                            <!--  CANCELLED TABLE-->
+                                                            <div class="p-3 border rounded bg-white mt-2"
+                                                                id="cancelledTableWrapper" style="display:none;">
 
-                                                                    <div class="col-xl-6">
-                                                                        <label for="month">Month <span
-                                                                                class="text-danger">*</span></label>
-                                                                        <select class="form-select form-select-sm"
-                                                                            id="month" name="month">
-                                                                            <option value="">Select Month</option>
-                                                                            @for ($m = 1; $m <= 12; $m++)
-                                                                                <option value="{{ $m }}">
-                                                                                    {{ date('M', mktime(0, 0, 0, $m, 1)) }}
-                                                                                </option>
-                                                                            @endfor
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                                <table
+                                                                    class="table table-hover table-bordered align-middle table-sm">
+                                                                    <thead class="table-secondary">
+                                                                        <tr>
+                                                                            <th>Sl No.</th>
+                                                                            <th>Bus Name/No</th>
+                                                                            <th>Bus Cancelled Dates</th>
+                                                                            <th>Reason</th>
+                                                                            <th>Cancelled By</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="cancelledTableBody"></tbody>
+                                                                </table>
 
-                                                            <div class="mb-2">
-                                                                <label for="reason">Reason <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm" id="reason"
-                                                                    name="reason"></select>
-                                                            </div>
-
-                                                            <div class="mb-2" id="otherReasonWrapper"
-                                                                style="display:none;">
-                                                                <label for="other_reason">Other Reason <span
-                                                                        class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control form-control-sm"
-                                                                    id="other_reason" name="other_reason"
-                                                                    placeholder="Enter reason">
                                                             </div>
 
                                                         </div>
 
-                                                        <!--  CANCELLED TABLE-->
-                                                        <div class="p-3 border rounded bg-white mt-2"
-                                                            id="cancelledTableWrapper" style="display:none;">
 
-                                                            <table
-                                                                class="table table-hover table-bordered align-middle table-sm">
-                                                                <thead class="table-secondary">
-                                                                    <tr>
-                                                                        <th>Sl No.</th>
-                                                                        <th>Bus Name/No</th>
-                                                                        <th>Bus Cancelled Dates</th>
-                                                                        <th>Reason</th>
-                                                                        <th>Cancelled By</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody id="cancelledTableBody"></tbody>
-                                                            </table>
+                                                        <!-- RIGHT COLUMN -->
+                                                        <div class="col-md-7">
+                                                            <div class="border rounded bg-white">
+                                                                <div class="card-header">
+                                                                    <strong>Date Schedule List</strong>
+                                                                </div>
 
-                                                        </div>
-
-                                                    </div>
-
-
-                                                    <!-- RIGHT COLUMN -->
-                                                    <div class="col-md-7">
-                                                        <div class="border rounded bg-white">
-                                                            <div class="card-header">
-                                                                <strong>Date Schedule List</strong>
-                                                            </div>
-
-                                                            <div class="card-body" id="scheduleContainer">
-                                                                <div class="text-center text-muted">
-                                                                    Please select operator, bus, year and month
+                                                                <div class="card-body" id="scheduleContainer">
+                                                                    <div class="text-center text-muted">
+                                                                        Please select operator, bus, year and month
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Buttons -->
-                                            <div class="row mt-2">
-                                                <div class="col-12 d-flex gap-2">
-                                                    <button class="btn btn-primary btn-sm" type="submit">
-                                                        {{ $data['strSubmit'] }}
-                                                    </button>
-                                                    <button class="btn btn-secondary btn-sm" id="btnReset"
-                                                        type="button">
-                                                        {{ $data['strReset'] }}
-                                                    </button>
+                                                <!-- Buttons -->
+                                                <div class="row mt-2">
+                                                    <div class="col-12 d-flex gap-2">
+                                                        <button class="btn btn-primary btn-sm" type="submit">
+                                                            {{ $data['strSubmit'] }}
+                                                        </button>
+                                                        <button class="btn btn-secondary btn-sm" id="btnReset"
+                                                            type="button">
+                                                            {{ $data['strReset'] }}
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            </div>
 
+                                            </div>
                                         </div>
-                                    </div>
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-            </form>
+                </form>
 
-            <style>
-                .selected-tag {
-                    display: inline-flex;
-                    align-items: center;
-                    background: #ffc107;
-                    padding: 5px 10px;
-                    border-radius: 20px;
-                    margin: 3px;
-                }
-
-                .selected-tag .remove {
-                    margin-left: 6px;
-                    cursor: pointer;
-                }
-
-                .bg-light {
-                    background-color: #f8f9fa !important;
-                }
-            </style>
-        @endsection
-
-        @push('scripts')
-            <script type="module">
-                let oldData = {
-                    operator: "{{ old('operator') }}",
-                    buses: "{{ old('bus') }}",
-                    year: "{{ old('year') }}",
-                    month: "{{ old('month') }}"
-                };
-                let selectedBuses = [];
-                let existing_reason_id = @json($data['row']['reason'] ?? '');
-                let cancelledDatesMap = {};
-
-                $(document).ready(function() {
-
-                    commonAjax.initSelect2('#operator', 'Select Operator');
-                    commonAjax.initSelect2('#bus', 'Select Bus');
-                    commonAjax.initSelect2('#reason', 'Select Reason');
-
-                    commonAjax.loadBusOperatorDropdown();
-                    commonAjax.loadBusCancelReasons('#reason', existing_reason_id || "");
-
-                });
-
-                $('#operator').on('change', function() {
-
-                    let operator_id = $(this).val();
-
-                    selectedBuses = [];
-                    renderBuses();
-
-                    $('#bus').val('').trigger('change'); // reset dropdown
-                    $('#bus_ids').val('');
-
-                    $('#year').val('');
-                    $('#month').val('');
-
-                    $('#scheduleContainer').html(`
-            <div class="text-center text-muted">
-                Please select operator, bus, year and month
-            </div>
-            `);
-                    $('#cancelledTableBody').html('');
-                    $('#cancelledTableWrapper').hide();
-
-                    if (operator_id) {
-                        commonAjax.loadBusListByOperator('#bus', operator_id, function() {
-                            restoreOldBuses();
-                        });
-                    }
-                });
-
-                $('#bus').on('change', function() {
-
-                    let id = $(this).val();
-                    let text = $("#bus option:selected").text();
-
-                    if (!id) return;
-
-                    if (selectedBuses.some(b => b.id == id)) return;
-
-                    selectedBuses.push({
-                        id,
-                        text
-                    });
-
-                    renderBuses();
-
-                    $(this).val('').trigger('change');
-
-                    loadBusSchedules();
-                    loadCancelledData();
-                });
-
-                $(document).on('click', '#selectedBuses .remove', function() {
-
-                    let index = $(this).closest('.selected-tag').data('index');
-
-                    selectedBuses.splice(index, 1);
-
-                    renderBuses();
-
-                    loadBusSchedules();
-                    loadCancelledData();
-                });
-
-                function renderBuses() {
-
-                    let html = '';
-
-                    selectedBuses.forEach((bus, index) => {
-                        html += `
-            <span class="selected-tag" data-index="${index}">
-                ${bus.text}
-                <span class="remove">×</span>
-            </span>
-            `;
-                    });
-
-                    $('#selectedBuses').html(html);
-
-                    $('#bus_ids').val(selectedBuses.map(b => b.id).join(','));
-
-                    $('#selectedBusWrapper').toggle(selectedBuses.length > 0);
-                }
-
-                function loadBusSchedules() {
-
-                    let operator = $('#operator').val();
-                    let bus_ids = $('#bus_ids').val();
-                    let year = $('#year').val();
-                    let month = $('#month').val();
-
-                    if (!operator || !bus_ids || !year || !month) {
-                        $('#scheduleContainer').html(`
-            <div class="text-center text-muted">
-                Please select operator, bus, year and month
-            </div>
-            `);
-                        return;
+                <style>
+                    .selected-tag {
+                        display: inline-flex;
+                        align-items: center;
+                        background: #ffc107;
+                        padding: 5px 10px;
+                        border-radius: 20px;
+                        margin: 3px;
                     }
 
-                    $('#scheduleContainer').html(`
-            <div class="text-center p-4">
-                <div class="spinner-border text-primary"></div>
-                <p>Loading schedules...</p>
-            </div>
-            `);
+                    .selected-tag .remove {
+                        margin-left: 6px;
+                        cursor: pointer;
+                    }
 
-                    $.ajax({
-                        type: "POST",
-                        url: "/admin/get-bus-schedule-by-month",
-                        data: {
-                            operator_id: operator,
-                            bus_ids: bus_ids,
-                            year: year,
-                            month: month,
-                            _token: $('meta[name="csrf-token"]').attr("content"),
-                        },
-                        success: function(res) {
+                    .bg-light {
+                        background-color: #f8f9fa !important;
+                    }
+                </style>
+            @endsection
 
-                            if (!res.status || !res.data) {
-                                $('#scheduleContainer').html(`<div class="text-danger">No data found</div>`);
-                                return;
+            @push('scripts')
+                <script type="module">
+                    let oldData = {
+                        operator: "{{ old('operator') }}",
+                        buses: "{{ old('bus') }}",
+                        year: "{{ old('year') }}",
+                        month: "{{ old('month') }}"
+                    };
+
+                    let editData = {
+                        operator: "{{ $data['row']->bus_operator_id ?? '' }}",
+                        bus: "{{ $data['row']->bus_id ?? '' }}".split(','),
+                        reason: "{{ $data['row']->reason ?? '' }}",
+                        other_reason: "{{ $data['row']->other_reason ?? '' }}"
+                    };
+                    let selectedBuses = [];
+                    let existing_reason_id = @json($data['row']['reason'] ?? '');
+                    let cancelledDatesMap = {};
+                    let removedCancelledDates = [];
+
+                    $(document).ready(function() {
+
+                        commonAjax.initSelect2('#operator', 'Select Operator');
+                        commonAjax.initSelect2('#bus', 'Select Bus');
+                        commonAjax.initSelect2('#reason', 'Select Reason');
+
+                        commonAjax.loadBusOperatorDropdown();
+                        commonAjax.loadBusCancelReasons('#reason', existing_reason_id || "");
+
+                    });
+
+                    if (editData.operator) {
+
+                        $('#operator').val(editData.operator).trigger('change');
+
+                        setTimeout(() => {
+
+                            if (editData.bus) {
+
+                                let text = $('#bus option[value="' + editData.bus + '"]').text();
+
+                                selectedBuses = [{
+                                    id: editData.bus,
+                                    text: text
+                                }];
+
+                                renderBuses();
+                                $('#bus_ids').val(editData.bus);
+
                             }
 
-                            renderSchedule(res.data);
+                            if (editData.reason) {
+                                $('#reason').val(editData.reason).trigger('change');
+                            }
+
+                            if (editData.reason == 77) {
+                                $('#otherReasonWrapper').show();
+                                $('#other_reason').val(editData.other_reason);
+                            }
+
+                            // 🔥 LOAD TABLES AFTER ALL SET
+                            setTimeout(() => {
+                                loadCancelledData();
+                            }, 300);
+
+                        }, 500);
+                    }
+
+                    $('#operator').on('change', function() {
+
+                        let operator_id = $(this).val();
+
+                        selectedBuses = [];
+                        renderBuses();
+
+                        $('#bus').val('').trigger('change'); // reset dropdown
+                        $('#bus_ids').val('');
+
+                        $('#year').val('');
+                        $('#month').val('');
+
+                        $('#scheduleContainer').html(`
+                <div class="text-center text-muted">
+                    Please select operator, bus, year and month
+                </div>
+                `);
+                        $('#cancelledTableBody').html('');
+                        $('#cancelledTableWrapper').hide();
+
+                        if (operator_id) {
+                            commonAjax.loadBusListByOperator('#bus', operator_id, function() {
+                                restoreOldBuses();
+                            });
                         }
                     });
-                }
 
-                function renderSchedule(data) {
+                    $('#bus').on('change', function() {
 
-                    let html = '';
+                        let id = $(this).val();
+                        let text = $("#bus option:selected").text();
 
-                    let operatorName = $("#operator option:selected").text();
+                        if (!id) return;
 
-                    html += `<div class="mb-3">
-                        <h5>${operatorName}</h5>
-                    </div>`;
+                        if (selectedBuses.some(b => b.id == id)) return;
 
-                    Object.keys(data).forEach(bus_id => {
+                        selectedBuses.push({
+                            id,
+                            text
+                        });
 
-                        let bus = data[bus_id];
+                        renderBuses();
 
-                        html += `
-                            <div class="mb-4">
-                                <div class="mb-2">
-                                    <strong>${bus.bus_name} | ${bus.bus_number}</strong>
-                                </div>
-                                <div class="row">
-                                    `;
+                        $(this).val('').trigger('change');
 
-                        bus.dates.forEach(date => {
+                        loadBusSchedules();
+                        loadCancelledData();
+                    });
 
-                            let today = new Date();
-                            today.setHours(0, 0, 0, 0);
+                    $(document).on('click', '#selectedBuses .remove', function() {
 
-                            let currentDate = new Date(date);
-                            currentDate.setHours(0, 0, 0, 0);
+                        let index = $(this).closest('.selected-tag').data('index');
 
-                            let isPast = currentDate < today;
-                            let isCancelled = cancelledDatesMap[bus_id]?.includes(date);
+                        selectedBuses.splice(index, 1);
+
+                        renderBuses();
+
+                        loadBusSchedules();
+                        loadCancelledData();
+                    });
+
+                    function renderBuses() {
+
+                        let html = '';
+
+                        selectedBuses.forEach((bus, index) => {
+                            html += `
+                <span class="selected-tag" data-index="${index}">
+                    ${bus.text}
+                    <span class="remove">×</span>
+                </span>
+                `;
+                        });
+
+                        $('#selectedBuses').html(html);
+
+                        $('#bus_ids').val(selectedBuses.map(b => b.id).join(','));
+
+                        $('#selectedBusWrapper').toggle(selectedBuses.length > 0);
+                    }
+
+                    function loadBusSchedules() {
+
+                        let operator = $('#operator').val();
+                        let bus_ids = $('#bus_ids').val();
+                        let year = $('#year').val();
+                        let month = $('#month').val();
+
+                        if (!operator || !bus_ids || !year || !month) {
+                            $('#scheduleContainer').html(`
+                <div class="text-center text-muted">
+                    Please select operator, bus, year and month
+                </div>
+                `);
+                            return;
+                        }
+
+                        $('#scheduleContainer').html(`
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary"></div>
+                    <p>Loading schedules...</p>
+                </div>
+                `);
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/admin/get-bus-schedule-by-month",
+                            data: {
+                                operator_id: operator,
+                                bus_ids: bus_ids,
+                                year: year,
+                                month: month,
+                                _token: $('meta[name="csrf-token"]').attr("content"),
+                            },
+                            success: function(res) {
+
+                                if (!res.status || !res.data) {
+                                    $('#scheduleContainer').html(`<div class="text-danger">No data found</div>`);
+                                    return;
+                                }
+
+                                renderSchedule(res.data);
+                            }
+                        });
+                    }
+
+                    function renderSchedule(data) {
+
+                        let html = '';
+
+                        let operatorName = $("#operator option:selected").text();
+
+                        html += `<div class="mb-3">
+                            <h5>${operatorName}</h5>
+                        </div>`;
+
+                        Object.keys(data).forEach(bus_id => {
+
+                            let bus = data[bus_id];
 
                             html += `
-                                <div class="col-md-4 mb-2">
-                                    <label class="w-100 border rounded p-2 text-center 
-                                        ${isPast ? 'bg-light text-muted' : ''}">
+                                <div class="mb-4">
+                                    <div class="mb-2">
+                                        <strong>${bus.bus_name} | ${bus.bus_number}</strong>
+                                    </div>
+                                    <div class="row">
+                                        `;
 
-                                        <input type="checkbox"
-                                            name="dates[]"
-                                            value="${date}"
-                                            class="schedule-checkbox"
-                                            data-bus="${bus_id}"
-                                            data-date="${date}"
-                                            ${isCancelled ? 'checked' : ''}
-                                            ${isPast ? 'disabled' : ''}>
+                            bus.dates.forEach(date => {
 
-                                        ${formatDate(date)}
-                                    </label>
-                                </div>
+                                let today = new Date();
+                                today.setHours(0, 0, 0, 0);
+
+                                let currentDate = new Date(date);
+                                currentDate.setHours(0, 0, 0, 0);
+
+                                let isPast = currentDate < today;
+                                let isCancelled = cancelledDatesMap[bus_id]?.includes(date);
+
+                                html += `
+                                    <div class="col-md-4 mb-2">
+                                        <label class="w-100 border rounded p-2 text-center 
+                                            ${isPast ? 'bg-light text-muted' : ''}">
+
+                                            <input type="checkbox"
+                                                name="dates[]"
+                                                value="${date}"
+                                                class="schedule-checkbox"
+                                                data-bus="${bus_id}"
+                                                data-date="${date}"
+                                                ${isCancelled ? 'checked' : ''}
+                                                ${isPast ? 'disabled' : ''}>
+
+                                            ${formatDate(date)}
+                                        </label>
+                                    </div>
+                                `;
+                            });
+
+                            html += `
+                            </div>
+                        </div>`;
+                        });
+
+                        $('#scheduleContainer').html(html);
+                    }
+
+                    function formatDate(dateStr) {
+                        let d = new Date(dateStr);
+                        return d.toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        });
+                    }
+
+                    $('#year, #month').on('change', function() {
+                        loadBusSchedules();
+                        loadCancelledData();
+                    });
+
+                    $('#reason').on('change', function() {
+
+                        let val = $(this).val();
+
+                        if (val == 77) {
+                            $('#otherReasonWrapper').show();
+                        } else {
+                            $('#otherReasonWrapper').hide();
+                            $('#other_reason').val('');
+                        }
+                    });
+
+                    $('#backoffice-form').on('submit', function(e) {
+
+                        e.preventDefault();
+
+                        let operator = $('#operator').val();
+                        let buses = $('#bus_ids').val();
+                        let year = $('#year').val();
+                        let month = $('#month').val();
+                        let reason = $('#reason').val();
+                        let otherReason = $('#other_reason').val() || '';
+
+                        if (!operator) return commonAjax.viewAlert("Please select operator", "warning");
+                        if (!buses) return commonAjax.viewAlert("Please select at least one bus", "warning");
+                        if (!year) return commonAjax.viewAlert("Please select year", "warning");
+                        if (!month) return commonAjax.viewAlert("Please select month", "warning");
+                        if (!reason) return commonAjax.viewAlert("Please select reason", "warning");
+
+                        if (reason == 77 && !otherReason.trim()) {
+                            return commonAjax.viewAlert("Please enter other reason", "warning");
+                        }
+
+                        commonAjax.confirmAlert('Are you sure to proceed!');
+
+                        let form = this;
+
+                        $('#btnConfirmOk').one('click', function() {
+
+                            $('#removed_dates').val(JSON.stringify(removedCancelledDates));
+
+                            form.submit();
+                        });
+
+                    });
+
+                    function loadCancelledData() {
+
+                        let operator = $('#operator').val();
+                        let bus_ids = $('#bus_ids').val();
+                        let year = $('#year').val();
+                        let month = $('#month').val();
+
+                        if (!operator || !bus_ids || !year || !month) {
+                            $('#cancelledTableBody').html('');
+                            return;
+                        }
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/admin/get-cancelled-bus-data",
+                            data: {
+                                operator_id: operator,
+                                bus_ids: bus_ids,
+                                year: year,
+                                month: month,
+                                _token: $('meta[name="csrf-token"]').attr("content"),
+                            },
+                            success: function(res) {
+
+                                console.log("Cancelled Data:", res);
+
+                                if (!res.status || Object.keys(res.data).length === 0) {
+                                    $('#cancelledTableBody').html('');
+                                    $('#cancelledTableWrapper').hide();
+                                    return;
+                                }
+
+                                cancelledDatesMap = {};
+
+                                Object.keys(res.data).forEach(bus_id => {
+                                    cancelledDatesMap[bus_id] = res.data[bus_id].dates;
+                                });
+
+                                renderCancelledTable(res.data);
+                                $('#cancelledTableWrapper').show();
+
+                                loadBusSchedules();
+                            }
+                        });
+                    }
+
+                    function renderCancelledTable(data) {
+
+                        let html = '';
+                        let i = 1;
+
+                        Object.keys(data).forEach(bus_id => {
+
+                            let bus = data[bus_id];
+
+                            html += `
+                            <tr>
+                                <td>${i++}</td>
+                                <td>${bus.bus_name} | ${bus.bus_number}</td>
+                                <td>${bus.dates.map(d => formatDate(d)).join('<br>')}</td>
+                                <td>${bus.reason}</td>
+                                <td>
+                                    ${formatDateTime(bus.created_at)}
+                                </td>
+                            </tr>
                             `;
                         });
 
-                        html += `
-                        </div>
-                    </div>`;
-                    });
-
-                    $('#scheduleContainer').html(html);
-                }
-
-                function formatDate(dateStr) {
-                    let d = new Date(dateStr);
-                    return d.toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    });
-                }
-
-                $('#year, #month').on('change', function() {
-                    loadBusSchedules();
-                    loadCancelledData();
-                });
-
-                $('#reason').on('change', function() {
-
-                    let val = $(this).val();
-
-                    if (val == 77) {
-                        $('#otherReasonWrapper').show();
-                    } else {
-                        $('#otherReasonWrapper').hide();
-                        $('#other_reason').val('');
-                    }
-                });
-
-                $('#backoffice-form').on('submit', function(e) {
-
-                    e.preventDefault();
-
-                    let operator = $('#operator').val();
-                    let buses = $('#bus_ids').val();
-                    let year = $('#year').val();
-                    let month = $('#month').val();
-                    let reason = $('#reason').val();
-                    let otherReason = $('#other_reason').val() || '';
-
-                    if (!operator) return commonAjax.viewAlert("Please select operator", "warning");
-                    if (!buses) return commonAjax.viewAlert("Please select at least one bus", "warning");
-                    if (!year) return commonAjax.viewAlert("Please select year", "warning");
-                    if (!month) return commonAjax.viewAlert("Please select month", "warning");
-                    if (!reason) return commonAjax.viewAlert("Please select reason", "warning");
-
-                    if (reason == 77 && !otherReason.trim()) {
-                        return commonAjax.viewAlert("Please enter other reason", "warning");
+                        $('#cancelledTableBody').html(html);
                     }
 
-                    commonAjax.confirmAlert('Are you sure to proceed!');
-
-                    let form = this;
-
-                    $('#btnConfirmOk').one('click', function() {
-                        form.submit();
-                    });
-
-                });
-
-                function loadCancelledData() {
-
-                    let operator = $('#operator').val();
-                    let bus_ids = $('#bus_ids').val();
-                    let year = $('#year').val();
-                    let month = $('#month').val();
-
-                    if (!operator || !bus_ids || !year || !month) {
-                        $('#cancelledTableBody').html('');
-                        return;
+                    function formatDateTime(dateStr) {
+                        let d = new Date(dateStr);
+                        return d.toLocaleString('en-GB');
                     }
 
-                    $.ajax({
-                        type: "POST",
-                        url: "/admin/get-cancelled-bus-data",
-                        data: {
-                            operator_id: operator,
-                            bus_ids: bus_ids,
-                            year: year,
-                            month: month,
-                            _token: $('meta[name="csrf-token"]').attr("content"),
-                        },
-                        success: function(res) {
+                    function restoreOldBuses() {
 
-                            console.log("Cancelled Data:", res);
+                        if (!oldData.buses) return;
 
-                            if (!res.status || Object.keys(res.data).length === 0) {
-                                $('#cancelledTableBody').html('');
-                                $('#cancelledTableWrapper').hide();
-                                return;
-                            }
+                        let busArray = oldData.buses.split(',');
 
-                            cancelledDatesMap = {};
+                        selectedBuses = [];
 
-                            Object.keys(res.data).forEach(bus_id => {
-                                cancelledDatesMap[bus_id] = res.data[bus_id].dates;
+                        busArray.forEach(id => {
+
+                            let text = $('#bus option[value="' + id + '"]').text();
+
+                            selectedBuses.push({
+                                id: id,
+                                text: text
                             });
 
-                            renderCancelledTable(res.data);
-                            $('#cancelledTableWrapper').show();
-
-                            loadBusSchedules();
-                        }
-                    });
-                }
-
-                function renderCancelledTable(data) {
-
-                    let html = '';
-                    let i = 1;
-
-                    Object.keys(data).forEach(bus_id => {
-
-                        let bus = data[bus_id];
-
-                        html += `
-                        <tr>
-                            <td>${i++}</td>
-                            <td>${bus.bus_name} | ${bus.bus_number}</td>
-                            <td>${bus.dates.map(d => formatDate(d)).join('<br>')}</td>
-                            <td>${bus.reason}</td>
-                            <td>
-                                ${formatDateTime(bus.created_at)}
-                            </td>
-                        </tr>
-                        `;
-                    });
-
-                    $('#cancelledTableBody').html(html);
-                }
-
-                function formatDateTime(dateStr) {
-                    let d = new Date(dateStr);
-                    return d.toLocaleString('en-GB');
-                }
-
-                function restoreOldBuses() {
-
-                    if (!oldData.buses) return;
-
-                    let busArray = oldData.buses.split(',');
-
-                    selectedBuses = [];
-
-                    busArray.forEach(id => {
-
-                        let text = $('#bus option[value="' + id + '"]').text();
-
-                        selectedBuses.push({
-                            id: id,
-                            text: text
                         });
 
-                    });
+                        renderBuses();
+                        $('#bus_ids').val(oldData.buses);
 
-                    renderBuses();
-                    $('#bus_ids').val(oldData.buses);
+                        // restore year & month
+                        if (oldData.year) $('#year').val(oldData.year);
+                        if (oldData.month) $('#month').val(oldData.month);
 
-                    // restore year & month
-                    if (oldData.year) $('#year').val(oldData.year);
-                    if (oldData.month) $('#month').val(oldData.month);
+                        loadBusSchedules();
+                        loadCancelledData();
+                    }
+                    if (oldData.operator) {
 
-                    loadBusSchedules();
-                    loadCancelledData();
-                }
-                if (oldData.operator) {
+                        $('#operator').val(oldData.operator).trigger('change');
 
-                    $('#operator').val(oldData.operator).trigger('change');
+                        // restore will happen after bus loads
+                    }
 
-                    // restore will happen after bus loads
-                }
+                    $(document).on('change', '.schedule-checkbox', function() {
 
-                $(document).on('change', '.schedule-checkbox', function() {
+                        let bus_id = $(this).data('bus');
+                        let date = $(this).data('date');
+                        let isChecked = $(this).is(':checked');
 
-                    let bus_id = $(this).data('bus');
-                    let date = $(this).data('date');
-                    let isChecked = $(this).is(':checked');
+                        let today = new Date();
+                        today.setHours(0, 0, 0, 0);
 
-                    let today = new Date();
-                    today.setHours(0, 0, 0, 0);
+                        let selectedDate = new Date(date);
+                        selectedDate.setHours(0, 0, 0, 0);
 
-                    let selectedDate = new Date(date);
-                    selectedDate.setHours(0, 0, 0, 0);
+                        if (selectedDate < today) return;
 
-                    if (selectedDate < today) return; // ignore past
+                        let isAlreadyCancelled = cancelledDatesMap[bus_id]?.includes(date);
 
-                    $.ajax({
-                        type: "POST",
-                        url: "/admin/update-cancel-status",
-                        data: {
-                            bus_id: bus_id,
-                            date: date,
-                            active_status: isChecked ? 1 : 0,
-                            _token: $('meta[name="csrf-token"]').attr("content"),
-                        },
-                        success: function(res) {
-                            console.log("Updated:", res);
-
-                            loadCancelledData(); // refresh UI
+                        if (isAlreadyCancelled && !isChecked) {
+                            removedCancelledDates.push({
+                                bus_id: bus_id,
+                                date: date
+                            });
                         }
-                    });
 
-                });
-            </script>
-        @endpush
+                        // remove if rechecked
+                        if (isAlreadyCancelled && isChecked) {
+                            removedCancelledDates = removedCancelledDates.filter(
+                                d => !(d.bus_id == bus_id && d.date == date)
+                            );
+                        }
+
+                    });
+                </script>
+            @endpush

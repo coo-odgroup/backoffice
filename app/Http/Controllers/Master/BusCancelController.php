@@ -26,101 +26,110 @@ class BusCancelController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtsearch'));
-            $selStatus = request('selstatus');
+            $txtSearch = htmlEncode(request('txtSearch'));
+            $selStatus = request('selStatus');
 
-            $query = DB::table('mst_ticket_fare_slab_info as t')
-                ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-                ->leftJoin('users as u', function ($join) {
-                    $join->on('u.id', '=', 't.bus_operator_id')
+            $query = DB::connection('mysql_dev')
+                ->table('bus_cancelled as bc')
+
+                // ✅ JOIN CANCELLED DATES
+                ->join('bus_cancelled_date as bcd', function ($join) {
+                    $join->on('bcd.bus_cancelled_id', '=', 'bc.id')
+                        ->where('bcd.active_status', 1);
+                })
+
+                ->join('bus as b', 'b.id', '=', 'bc.bus_id')
+
+                ->join('odbusmaster.users as u', function ($join) {
+                    $join->on('u.id', '=', 'bc.bus_operator_id')
                         ->where('u.user_role', 9);
                 })
+
+                ->leftJoin('odbusmaster.mst_annexture as ma', 'ma.id', '=', 'bc.reason')
+
                 ->select(
-                    't.id',
-                    't.slab_id',
-                    's.slab_name',
+                    'bc.id',
+                    'bc.bus_id',
+                    'bc.bus_operator_id',
+
                     'u.organization_name as operator_name',
-                    't.starting_fare',
-                    't.upto_fare',
-                    't.commision',
-                    't.from_date',
-                    't.to_date',
-                    't.active_status',
-                    't.created_at',
-                    't.updated_at',
-                    DB::raw('(SELECT name FROM users WHERE id = t.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
+
+                    'b.name as bus_name',
+                    'b.bus_number',
+
+                    'bcd.cancelled_date',
+
+                    'bc.reason',
+                    'bc.other_reason',
+                    'ma.annexture_name',
+
+                    'bc.active_status',
+                    'bc.created_at',
+                    'bc.updated_at'
                 );
 
+            // 🔍 SEARCH
             if (!empty($txtSearch)) {
                 $query->where(function ($q) use ($txtSearch) {
-                    $q->where('s.slab_name', 'like', "%{$txtSearch}%")
+                    $q->where('b.name', 'like', "%{$txtSearch}%")
+                        ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
                         ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
                 });
             }
 
+            // 🔍 STATUS
             if ($selStatus !== null && $selStatus !== '') {
-                $query->where('t.active_status', $selStatus);
+                $query->where('bc.active_status', $selStatus);
             }
 
-            $rows = $query->orderBy('t.id', 'desc')->get();
+            $rows = $query->orderBy('bc.id', 'desc')->get();
 
             $grouped = [];
 
             foreach ($rows as $row) {
 
-                $slabId = $row->slab_id;
+                $key = $row->bus_id; // 🔥 IMPORTANT (per bus)
 
-                if (!isset($grouped[$slabId])) {
+                if (!isset($grouped[$key])) {
 
-                    $grouped[$slabId] = [
+                    $reasonText = ($row->reason == 77)
+                        ? $row->other_reason
+                        : $row->annexture_name;
+
+                    $grouped[$key] = [
                         'id' => $row->id,
-                        'slab_id' => $row->slab_id,
-                        'slab_name' => $row->slab_name,
-                        'operators' => [],
-                        'slab_info' => [],
-                        'created_date' => date('d-M-Y H:i:s', strtotime($row->created_at)),
+                        'bus_cancel_id ' => $row->id,
+                        'enc_bus_cancel_id' => Crypt::encryptString($row->id),
+
+                        'operator' => $row->operator_name ?? '--',
+
+                        'busName' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
+
+                        'route' => '--',
+
+                        'reason' => $reasonText,
+
+                        'cancelDates' => [],
+
+                        'created_date' => $row->created_at
+                            ? date('d-M-Y H:i:s', strtotime($row->created_at))
+                            : null,
+
                         'updated_date' => $row->updated_at
                             ? date('d-M-Y H:i:s', strtotime($row->updated_at))
                             : null,
-                        'created_by_name' => $row->created_by_name,
-                        'updated_by_name' => $row->updated_by_name,
+
                         'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-                        'enc_id' => Crypt::encryptString($row->slab_id),
                     ];
                 }
 
-                if (
-                    !empty($row->operator_name) &&
-                    !in_array($row->operator_name, $grouped[$slabId]['operators'])
-                ) {
-
-                    $grouped[$slabId]['operators'][] = $row->operator_name;
-                }
-
-                $key = md5(
-                    $row->starting_fare . '|' .
-                        $row->upto_fare . '|' .
-                        $row->commision . '|' .
-                        date('Y-m-d', strtotime($row->from_date)) . '|' .
-                        date('Y-m-d', strtotime($row->to_date))
-                );
-
-                if (!isset($grouped[$slabId]['slab_info'][$key])) {
-
-                    $grouped[$slabId]['slab_info'][$key] = [
-                        'starting_fare' => $row->starting_fare,
-                        'upto_fare' => $row->upto_fare,
-                        'commision' => $row->commision,
-                        'from_date' => $row->from_date,
-                        'to_date' => $row->to_date,
-                    ];
-                }
+                // ✅ ADD DATES
+                $grouped[$key]['cancelDates'][] = date('d-M-Y', strtotime($row->cancelled_date));
             }
 
-            // ✅ MOVE THIS OUTSIDE LOOP (VERY IMPORTANT)
-            foreach ($grouped as &$slab) {
-                $slab['slab_info'] = array_values($slab['slab_info']);
+            // ✅ FORMAT DATES
+            foreach ($grouped as &$g) {
+                $g['cancelDates'] = implode('<br>', $g['cancelDates']);
             }
 
             $data = array_values($grouped);
@@ -129,7 +138,7 @@ class BusCancelController extends Controller
             $recordsFiltered = $recordsTotal;
         } catch (\Throwable $t) {
 
-            Log::error("TicketFareSlabInfoController Error", [
+            Log::error("BusCancelController Error", [
                 'message' => $t->getMessage()
             ]);
 
@@ -187,10 +196,6 @@ class BusCancelController extends Controller
                     ])->withInput();
                 }
 
-                if ($validator->fails()) {
-                    return back()->withErrors($validator)->withInput();
-                }
-
                 DB::beginTransaction();
 
                 $operator_id = request('operator');
@@ -200,6 +205,9 @@ class BusCancelController extends Controller
                 $reason = request('reason');
                 $other_reason = request('other_reason');
                 $dates = request('dates');
+
+                // 🔥 NEW: removed cancelled dates
+                $removedDates = json_decode(request('removed_dates'), true) ?? [];
 
                 foreach ($bus_ids as $bus_id) {
 
@@ -217,21 +225,67 @@ class BusCancelController extends Controller
                             'created_at' => now(),
                         ]);
 
-                    // 🔹 Insert multiple dates
                     $dateInsert = [];
 
                     foreach ($dates as $date) {
-                        $dateInsert[] = [
-                            'bus_cancelled_id' => $cancel_id,
-                            'cancelled_date' => $date,
-                            'active_status' => 1,
-                            'created_at' => now(),
-                        ];
+
+                        // 🔥 CHECK IF ALREADY EXISTS
+                        $existing = DB::connection('mysql_dev')
+                            ->table('bus_cancelled as bc')
+                            ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
+                            ->where('bc.bus_id', $bus_id)
+                            ->whereDate('bcd.cancelled_date', $date)
+                            ->select('bcd.id')
+                            ->first();
+
+                        if ($existing) {
+                            // 🔥 Reactivate if previously inactive
+                            DB::connection('mysql_dev')
+                                ->table('bus_cancelled_date')
+                                ->where('id', $existing->id)
+                                ->update([
+                                    'active_status' => 1,
+                                    'updated_at' => now()
+                                ]);
+                        } else {
+                            // 🔹 Insert new
+                            $dateInsert[] = [
+                                'bus_cancelled_id' => $cancel_id,
+                                'cancelled_date' => $date,
+                                'active_status' => 1,
+                                'created_at' => now(),
+                            ];
+                        }
                     }
 
-                    DB::connection('mysql_dev')
-                        ->table('bus_cancelled_date')
-                        ->insert($dateInsert);
+                    if (!empty($dateInsert)) {
+                        DB::connection('mysql_dev')
+                            ->table('bus_cancelled_date')
+                            ->insert($dateInsert);
+                    }
+                }
+
+                if (!empty($removedDates)) {
+
+                    foreach ($removedDates as $rd) {
+                        $record = DB::connection('mysql_dev')
+                            ->table('bus_cancelled as bc')
+                            ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
+                            ->where('bc.bus_id', $rd['bus_id'])
+                            ->whereDate('bcd.cancelled_date', $rd['date'])
+                            ->select('bcd.id')
+                            ->first();
+
+                        if ($record) {
+                            DB::connection('mysql_dev')
+                                ->table('bus_cancelled_date')
+                                ->where('id', $record->id)
+                                ->update([
+                                    'active_status' => 0,
+                                    'updated_at' => now()
+                                ]);
+                        }
+                    }
                 }
 
                 DB::commit();
@@ -332,10 +386,10 @@ class BusCancelController extends Controller
             $data = DB::connection('mysql_dev')
                 ->table('bus_cancelled as bc')
                 ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
-                ->join('bus as b', 'b.id', '=', 'bc.bus_id')
+                ->join('odbusdev.bus as b', 'b.id', '=', 'bc.bus_id')
                 ->leftJoin('odbusmaster.mst_annexture as ma', 'ma.id', '=', 'bc.reason')
                 ->whereIn('bc.bus_id', $bus_ids)
-                ->whereDate('bcd.cancelled_date', '>=', $startDate)
+                ->where('bcd.active_status', 1)
                 ->select(
                     'bc.bus_id',
                     'b.name as bus_name',
