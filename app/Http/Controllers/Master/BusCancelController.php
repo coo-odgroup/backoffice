@@ -132,11 +132,9 @@ class BusCancelController extends Controller
                     ];
                 }
 
-                // ✅ ADD DATES
                 $grouped[$key]['cancelDates'][] = date('d-M-Y', strtotime($row->cancelled_date));
             }
 
-            // ✅ FORMAT DATES
             foreach ($grouped as &$g) {
                 $g['cancelDates'] = implode('<br>', $g['cancelDates']);
             }
@@ -238,7 +236,6 @@ class BusCancelController extends Controller
 
                     foreach ($dates as $date) {
 
-                        // 🔥 CHECK IF ALREADY EXISTS
                         $existing = DB::connection('mysql_dev')
                             ->table('bus_cancelled as bc')
                             ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
@@ -248,7 +245,6 @@ class BusCancelController extends Controller
                             ->first();
 
                         if ($existing) {
-                            // 🔥 Reactivate if previously inactive
                             DB::connection('mysql_dev')
                                 ->table('bus_cancelled_date')
                                 ->where('id', $existing->id)
