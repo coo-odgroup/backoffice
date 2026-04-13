@@ -150,103 +150,42 @@ class BusCancelController extends Controller
     public function add($encId = null)
     {
         $data = [];
-        $data['strPage']   = $method = 'Add';
+        $data['strPage']   = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset']  = 'Reset';
 
         try {
 
-            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
-
-            if ($id > 0) {
-
-                $redirectPage = "admin/ticketfareslab-info/edit/" . $encId;
-
-                $data['strPage']   = $method = 'Edit';
-                $data['strSubmit'] = 'Update';
-                $data['strReset']  = 'Cancel';
-
-
-                $row = DB::table('mst_ticket_fare_slab_info as t')
-                    ->leftJoin('users as u', 'u.id', '=', 't.bus_operator_id')
-                    ->where('t.slab_id', $id)
-                    ->select(
-                        't.*',
-                        'u.organization_name as operator_name'
-                    )
-                    ->get();
-
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
-                }
-
-                $operators = [];
-                $slabInfo = [];
-
-                foreach ($row as $r) {
-
-                    // operators
-                    $operators[$r->bus_operator_id] = [
-                        'id' => $r->bus_operator_id,
-                        'name' => $r->operator_name
-                    ];
-
-                    // slab rows 
-                    $key = md5(
-                        $r->starting_fare . '|' .
-                            $r->upto_fare . '|' .
-                            $r->commision . '|' .
-                            date('Y-m-d', strtotime($r->from_date)) . '|' .
-                            date('Y-m-d', strtotime($r->to_date))
-                    );
-
-                    if (!isset($slabInfo[$key])) {
-                        $slabInfo[$key] = [
-                            'starting_fare' => (string)$r->starting_fare,
-                            'upto_fare' => (string)$r->upto_fare,
-                            'commision' => (string)$r->commision,
-                            'from_date' => date('Y-m-d', strtotime($r->from_date)),
-                            'to_date' => date('Y-m-d', strtotime($r->to_date)),
-                        ];
-                    }
-                }
-
-
-                $slabInfo = array_values($slabInfo);
-
-                $data['row'] = [
-                    'slab_id' => $id,
-                    'operators' => array_values($operators),
-                    'slabInfo' => $slabInfo
-                ];;
-
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
-                }
-            } else {
-                $id = 0;
-                $redirectPage = "admin/ticketfareslab-info";
-            }
-
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
-
                 $validator = Validator::make(request()->all(), [
-                    'slab_id' => 'bail|required|integer',
-                    'bus_operator_id' => 'nullable',
-
-                    'starting_fare.*' => 'required|numeric|min:0',
-                    'upto_fare.*'     => 'required|numeric',
-                    'commision.*'     => 'required|numeric',
-
-                    'from_date.*' => 'nullable|date',
-                    'to_date.*'   => 'nullable|date',
+                    'operator' => 'required',
+                    'bus'      => 'required',
+                    'year'     => 'required',
+                    'month'    => 'required',
+                    'reason'   => 'required',
+                    'dates'    => 'required|array|min:1',
                 ], [
-                    'slab_id.required' => 'Please select slab',
-                    'bus_operator_id.required' => 'Please select at least one operator',
+                    'operator.required' => 'Please select operator',
+                    'bus.required'      => 'Please select at least one bus',
+                    'year.required'     => 'Please select year',
+                    'month.required'    => 'Please select month',
+                    'reason.required'   => 'Please select reason',
+                    'dates.required'    => 'Please select at least one date',
+                    'dates.array'       => 'Invalid date selection',
+                    'dates.min'         => 'Please select at least one date',
                 ]);
+
+                if ($validator->fails()) {
+                    return back()->withErrors($validator)->withInput();
+                }
+
+                if (request('reason') == 77 && empty(trim(request('other_reason')))) {
+                    return back()->with([
+                        'level' => 'danger',
+                        'message' => 'Please enter other reason'
+                    ])->withInput();
+                }
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
@@ -254,103 +193,67 @@ class BusCancelController extends Controller
 
                 DB::beginTransaction();
 
+                $operator_id = request('operator');
+                $bus_ids = explode(',', request('bus'));
+                $year = request('year');
+                $month = request('month');
+                $reason = request('reason');
+                $other_reason = request('other_reason');
+                $dates = request('dates');
 
-                $slab_id = (int) request('slab_id');
-                $bus_operator_id = request('bus_operator_id');
+                foreach ($bus_ids as $bus_id) {
 
-                $operators = !empty($bus_operator_id)
-                    ? explode(',', $bus_operator_id)
-                    : [0];
+                    // 🔹 Insert into bus_cancelled
+                    $cancel_id = DB::connection('mysql_dev')
+                        ->table('bus_cancelled')
+                        ->insertGetId([
+                            'bus_id' => $bus_id,
+                            'bus_operator_id' => $operator_id,
+                            'month' => $month,
+                            'year' => $year,
+                            'reason' => $reason,
+                            'other_reason' => ($reason == 77) ? $other_reason : null,
+                            'active_status' => 1,
+                            'created_at' => now(),
+                        ]);
 
-                $starting_fare = request('starting_fare');
-                $upto_fare     = request('upto_fare');
-                $commision     = request('commision');
-                $from_date     = request('from_date');
-                $to_date       = request('to_date');
+                    // 🔹 Insert multiple dates
+                    $dateInsert = [];
 
-                foreach ($starting_fare as $i => $start) {
-                    if ($upto_fare[$i] < $start) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Fare must be greater than or equal to From Fare'
-                        ])->withInput();
-                    }
-
-                    if ($to_date[$i] < $from_date[$i]) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Date must be after From Date'
-                        ])->withInput();
-                    }
-                }
-
-                if ($id > 0) {
-                    DB::table('mst_ticket_fare_slab_info')
-                        ->where('slab_id', $slab_id)
-                        ->delete();
-                }
-
-
-                $insertData = [];
-
-                foreach ($operators as $operator) {
-
-                    foreach ($starting_fare as $key => $val) {
-
-                        $rowData = [
-                            'slab_id'         => $slab_id,
-                            'bus_operator_id' => (int) $operator,
-                            'starting_fare'   => $starting_fare[$key],
-                            'upto_fare'       => $upto_fare[$key],
-                            'commision'       => $commision[$key],
-                            'from_date'       => $from_date[$key],
-                            'to_date'         => $to_date[$key],
-                            'active_status'   => 1,
-                            'created_at'      => now(),
-                            'updated_at'      => now(),
+                    foreach ($dates as $date) {
+                        $dateInsert[] = [
+                            'bus_cancelled_id' => $cancel_id,
+                            'cancelled_date' => $date,
+                            'active_status' => 1,
+                            'created_at' => now(),
                         ];
-
-                        $insertData[] = $rowData;
-
-                        app(CommonController::class)->auditLog(
-                            'mst_ticket_fare_slab_info',
-                            null,
-                            ($id > 0 ? 'UPDATE' : 'INSERT'),
-                            [],
-                            $rowData
-                        );
                     }
-                }
 
-                DB::table('mst_ticket_fare_slab_info')->insert($insertData);
+                    DB::connection('mysql_dev')
+                        ->table('bus_cancelled_date')
+                        ->insert($dateInsert);
+                }
 
                 DB::commit();
 
-                session()->flash('level', 'success');
-                session()->flash(
-                    'message',
-                    'Ticket Fare Slab Info ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
-                );
-
-                return redirect($redirectPage);
+                return redirect()->back()->withInput()->with([
+                    'level' => 'success',
+                    'message' => 'Bus Cancelled Successfully'
+                ]);
             }
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("Error in TicketFareSlabInfoController@add", [
-                'method' => $method,
-                'error'  => $t->getMessage()
+            Log::error("Bus Cancel Error", [
+                'error' => $t->getMessage()
             ]);
 
             return back()->with([
-                'level'   => 'danger',
-                'message' => config('constants.SERVER_ERROR_MESSAGE')
-            ])->withInput();
+                'level' => 'danger',
+                'message' => 'Something went wrong'
+            ]);
         }
-
 
         return view('Master.addBusCancel', compact('data'));
     }
@@ -370,7 +273,7 @@ class BusCancelController extends Controller
 
             $startDate = $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-01';
 
-            $data = []; // ✅ ADD THIS (important)
+            $data = [];
 
             $schedules = DB::connection('mysql_dev')
                 ->table('bus_schedule')
@@ -384,7 +287,7 @@ class BusCancelController extends Controller
 
                 $schedule = $rows->first();
 
-                $dates = DB::connection('mysql_dev') // ✅ FIXED
+                $dates = DB::connection('mysql_dev')
                     ->table('bus_schedule_date')
                     ->where('bus_schedule_id', $schedule->id)
                     ->whereDate('entry_date', '>=', $startDate)
@@ -393,7 +296,7 @@ class BusCancelController extends Controller
 
                 if ($dates->isEmpty()) continue;
 
-                $bus = DB::connection('mysql_dev') // ✅ FIXED
+                $bus = DB::connection('mysql_dev')
                     ->table('bus')
                     ->where('id', $bus_id)
                     ->first();
@@ -408,6 +311,63 @@ class BusCancelController extends Controller
             return response()->json([
                 'status' => true,
                 'data' => $data
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getCancelledBusData(Request $request)
+    {
+        try {
+
+            $bus_ids = explode(',', $request->bus_ids);
+
+            $startDate = $request->year . '-' . str_pad($request->month, 2, '0', STR_PAD_LEFT) . '-01';
+
+            $data = DB::connection('mysql_dev')
+                ->table('bus_cancelled as bc')
+                ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
+                ->join('bus as b', 'b.id', '=', 'bc.bus_id')
+                ->leftJoin('odbusmaster.mst_annexture as ma', 'ma.id', '=', 'bc.reason')
+                ->whereIn('bc.bus_id', $bus_ids)
+                ->whereDate('bcd.cancelled_date', '>=', $startDate)
+                ->select(
+                    'bc.bus_id',
+                    'b.name as bus_name',
+                    'b.bus_number',
+                    'bcd.cancelled_date',
+                    'bc.reason',
+                    'bc.other_reason',
+                    'ma.annexture_name',
+                    'bc.created_at'
+                )
+                ->orderBy('bcd.cancelled_date')
+                ->get();
+
+            $grouped = [];
+
+            foreach ($data as $row) {
+
+                $reasonText = ($row->reason == 77)
+                    ? $row->other_reason
+                    : $row->annexture_name;
+
+                $grouped[$row->bus_id]['bus_name'] = $row->bus_name;
+                $grouped[$row->bus_id]['bus_number'] = $row->bus_number;
+                $grouped[$row->bus_id]['reason'] = $reasonText;
+                $grouped[$row->bus_id]['created_at'] = $row->created_at;
+
+                $grouped[$row->bus_id]['dates'][] = $row->cancelled_date;
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => $grouped
             ]);
         } catch (\Throwable $e) {
 

@@ -501,6 +501,7 @@ Route::prefix('admin')->group(function () {
     Route::post('bus-cancel/dataTableView', [BusCancelController::class, 'dataTableView'])->name('bus-cancel.dataTableView');
     Route::match(['get', 'post'], 'bus-cancel/edit/{encId}', [BusCancelController::class, 'edit'])->name('bus-cancel.edit');
     Route::post('get-bus-schedule-by-month', [BusCancelController::class, 'getBusScheduleDatesByMonth']);
+    Route::post('get-cancelled-bus-data', [BusCancelController::class, 'getCancelledBusData']);
 
     Route::get('/seat-block', [SeatBlockController::class, 'index'])->name('seat-block.index');
     Route::match(['get', 'post'], 'seat-block/add', [SeatBlockController::class, 'add'])->name('seat-block.add');
