@@ -2,528 +2,512 @@
     @section('page_title', 'Bus Cancel')
     @section('content')
 
-    <?php
-    $page_name = 'All ' . trim($__env->yieldContent('page_title'));
-    $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
-    ?>
+        <?php
+        $page_name = 'All ' . trim($__env->yieldContent('page_title'));
+        $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
+        ?>
 
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item">Master</li>
-            <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
-        </ol>
-    </nav>
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item">Master</li>
+                <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
+            </ol>
+        </nav>
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h5 id="page_title">@yield('page_title')</h5>
-        <div>
-            <a href="{{ route('bus-cancel.index') }}" class="btn btn-success btn-sm">
-                View @yield('page_title')
-            </a>
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 id="page_title">@yield('page_title')</h5>
+            <div>
+                <a href="{{ route('bus-cancel.index') }}" class="btn btn-success btn-sm">
+                    View @yield('page_title')
+                </a>
+            </div>
         </div>
-    </div>
 
-    <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
-        {{csrf_field()}}
+        <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
+            {{ csrf_field() }}
 
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
 
-                        <div class="mb-3">
-                            <div class="card-body">
-                                <div class="row">
+                            <div class="mb-3">
+                                <div class="card-body">
+                                    <div class="row">
 
-                                    <!-- Alerts -->
-                                    @if (session('message'))
-                                    <div class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show">
-                                        {{ session('message') }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                    @endif
-
-                                    @if ($errors->any())
-                                    <div class="alert alert-danger alert-dismissible fade show">
-                                        <ul class="mb-0">
-                                            @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                    @endif
-
-                                    <div class="col-12">
-                                        <div class="row">
-
-                                            <!-- LEFT COLUMN -->
-                                            <div class="col-md-5">
-                                                <div class="p-3 border rounded bg-white">
-                                                    <div class="mb-2">
-                                                        <label for="operator">Operator <span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm" id="operator" name="operator"></select>
-                                                    </div>
-
-                                                    <div class="mb-2">
-                                                        <label for="bus">Bus <span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm" id="bus"></select>
-
-                                                        <div id="selectedBusWrapper" class="mt-2" style="display:none;">
-                                                            <div id="selectedBuses"></div>
-                                                        </div>
-
-                                                        <input type="hidden" name="bus" id="bus_ids">
-                                                    </div>
-
-                                                    <div class="mb-2">
-                                                        <div class="row">
-                                                            <div class="col-xl-6">
-                                                                <label for="year">Year <span class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm" id="year" name="year">
-                                                                    @for ($i = date('Y'); $i <= date('Y') + 1; $i++)
-                                                                        <option value="{{ $i }}">{{ $i }}</option>
-                                                                        @endfor
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-xl-6">
-                                                                <label for="month">Month <span class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm" id="month" name="month">
-                                                                    @for ($m = 1; $m <= 12; $m++)
-                                                                        <option value="{{ $m }}">
-                                                                        {{ date('M', mktime(0, 0, 0, $m, 1)) }}
-                                                                        </option>
-                                                                        @endfor
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="mb-2">
-                                                        <label for="reason">Reason <span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm" id="reason" name="reason"></select>
-                                                    </div>
-                                                </div>
-                                                <div class="p-3 border rounded bg-white mt-2">
-                                                    <table class="table table-hover table-bordered align-middle table-sm table-responsive">
-                                                        <thead class="table-secondary">
-                                                            <tr>
-                                                                <th>Sl No.</th>
-                                                                <th>Bus Name/No</th>
-                                                                <th>Bus Cancelled Dates</th>
-                                                                <th>Reason</th>
-                                                                <th>Cacelled By</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>DILKHUS | OD 02 AS 5297</td>
-                                                                <td>03-Apr-2026<br>04-Apr-2026</td>
-                                                                <td>Request From Owner</td>
-                                                                <td>John Doe<br>23-Apr-2026 10:45:47</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2</td>
-                                                                <td>03-Apr-2026</td>
-                                                                <td>03-Apr-2026<br>04-Apr-2026</td>
-                                                                <td>Request From Owner</td>
-                                                                <td>John Doe<br>23-Apr-2026 10:45:47</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-
+                                        <!-- Alerts -->
+                                        @if (session('message'))
+                                            <div
+                                                class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show">
+                                                {{ session('message') }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                             </div>
+                                        @endif
 
-                                            <!-- RIGHT COLUMN -->
-                                            <div class="col-md-7">
-                                                <div class="border rounded bg-white">
-                                                    <div class="card-header">
-                                                        <strong>Date Schedule List</strong>
-                                                    </div>
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger alert-dismissible fade show">
+                                                <ul class="mb-0">
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        @endif
 
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="mb-3">
-                                                                <strong>DILKHUS | OD 02 AS 5297 | [Bhubaneswar >> Jharsuguda]</strong>
+                                        <div class="col-12">
+                                            <div class="row">
+
+                                                <!-- LEFT COLUMN -->
+                                                <div class="col-md-5">
+                                                    <div class="p-3 border rounded bg-white">
+                                                        <div class="mb-2">
+                                                            <label for="operator">Operator <span
+                                                                    class="text-danger">*</span></label>
+                                                            <select class="form-select form-select-sm" id="operator"
+                                                                name="operator"></select>
+                                                        </div>
+
+                                                        <div class="mb-2">
+                                                            <label for="bus">Bus <span
+                                                                    class="text-danger">*</span></label>
+                                                            <select class="form-select form-select-sm"
+                                                                id="bus"></select>
+
+                                                            <div id="selectedBusWrapper" class="mt-2"
+                                                                style="display:none;">
+                                                                <div id="selectedBuses"></div>
                                                             </div>
 
-                                                            <!-- Column 1 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
+                                                            <input type="hidden" name="bus" id="bus_ids">
+                                                        </div>
 
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
+                                                        <div class="mb-2">
+                                                            <div class="row">
+                                                                <div class="col-xl-6">
+                                                                    <label for="year">Year <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="year" name="year">
+                                                                        <option value="">Select Year</option>
+                                                                        <!-- ✅ ADD -->
 
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
+                                                                        @for ($i = date('Y'); $i <= date('Y') + 1; $i++)
+                                                                            <option value="{{ $i }}">
+                                                                                {{ $i }}</option>
+                                                                        @endfor
+                                                                    </select>
                                                                 </div>
+                                                                <div class="col-xl-6">
+                                                                    <label for="month">Month <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="month" name="month">
+                                                                        <option value="">Select Month</option>
+                                                                        <!-- ✅ ADD THIS -->
 
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 2 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 3 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
+                                                                        @for ($m = 1; $m <= 12; $m++)
+                                                                            <option value="{{ $m }}">
+                                                                                {{ date('M', mktime(0, 0, 0, $m, 1)) }}
+                                                                            </option>
+                                                                        @endfor
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="row">
-                                                            <div class="mb-3">
-                                                                <strong>DILKHUS | OD 02 AS 5299 | [Bhubaneswar >> Jharsuguda]</strong>
-                                                            </div>
+                                                        <div class="mb-2">
+                                                            <label for="reason">Reason <span
+                                                                    class="text-danger">*</span></label>
+                                                            <select class="form-select form-select-sm" id="reason"
+                                                                name="reason"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="p-3 border rounded bg-white mt-2">
+                                                        <table
+                                                            class="table table-hover table-bordered align-middle table-sm table-responsive">
+                                                            <thead class="table-secondary">
+                                                                <tr>
+                                                                    <th>Sl No.</th>
+                                                                    <th>Bus Name/No</th>
+                                                                    <th>Bus Cancelled Dates</th>
+                                                                    <th>Reason</th>
+                                                                    <th>Cacelled By</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>1</td>
+                                                                    <td>DILKHUS | OD 02 AS 5297</td>
+                                                                    <td>03-Apr-2026<br>04-Apr-2026</td>
+                                                                    <td>Request From Owner</td>
+                                                                    <td>John Doe<br>23-Apr-2026 10:45:47</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>2</td>
+                                                                    <td>03-Apr-2026</td>
+                                                                    <td>03-Apr-2026<br>04-Apr-2026</td>
+                                                                    <td>Request From Owner</td>
+                                                                    <td>John Doe<br>23-Apr-2026 10:45:47</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
 
-                                                            <!-- Column 1 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
+                                                </div>
 
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
+                                                <!-- RIGHT COLUMN -->
+                                                <div class="col-md-7">
+                                                    <div class="border rounded bg-white">
+                                                        <div class="card-header">
+                                                            <strong>Date Schedule List</strong>
+                                                        </div>
 
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 2 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 3 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
+                                                        <div class="card-body" id="scheduleContainer">
+                                                            <div class="text-center text-muted">
+                                                                Please select operator, bus, year and month
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <!-- Buttons -->
-                                    <div class="row mt-2">
-                                        <div class="col-12 d-flex gap-2">
-                                            <button class="btn btn-primary btn-sm" type="submit">
-                                                {{ $data['strSubmit'] }}
-                                            </button>
-                                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                                {{ $data['strReset'] }}
-                                            </button>
+                                        <!-- Buttons -->
+                                        <div class="row mt-2">
+                                            <div class="col-12 d-flex gap-2">
+                                                <button class="btn btn-primary btn-sm" type="submit">
+                                                    {{ $data['strSubmit'] }}
+                                                </button>
+                                                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                                    {{ $data['strReset'] }}
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
 
+                                    </div>
                                 </div>
-                            </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-    </form>
+        </form>
 
-    <style>
-        .selected-tag {
-            display: inline-flex;
-            align-items: center;
-            background: #ffc107;
-            padding: 5px 10px;
-            border-radius: 20px;
-            margin: 3px;
-        }
+        <style>
+            .selected-tag {
+                display: inline-flex;
+                align-items: center;
+                background: #ffc107;
+                padding: 5px 10px;
+                border-radius: 20px;
+                margin: 3px;
+            }
 
-        .selected-tag .remove {
-            margin-left: 6px;
-            cursor: pointer;
-        }
-    </style>
+            .selected-tag .remove {
+                margin-left: 6px;
+                cursor: pointer;
+            }
+        </style>
     @endsection
 
     @push('scripts')
-    <script type="module">
-        let selectedOperators = [];
-        let selectedBuses = [];
-        let existing_reason_id = @json($data['row']['reason'] ?? "");
+        <script type="module">
+            let selectedOperators = [];
+            let selectedBuses = [];
+            let existing_reason_id = @json($data['row']['reason'] ?? '');
 
-        $(document).ready(function() {
-
-
-            commonAjax.initSelect2('#operator', 'Select Operator');
-            commonAjax.initSelect2('#bus', 'Select Bus');
-            commonAjax.initSelect2('#reason', 'Select Reason'); // ✅ HERE
-    
-            commonAjax.loadBusOperatorDropdown();
-
-            commonAjax.loadAnnextureDropdown('#reason', 16, existing_reason_id || "");
+            $(document).ready(function() {
 
 
+                commonAjax.initSelect2('#operator', 'Select Operator');
+                commonAjax.initSelect2('#bus', 'Select Bus');
+                commonAjax.initSelect2('#reason', 'Select Reason');
 
-            $('#operator').on('change', function() {
+                commonAjax.loadBusOperatorDropdown();
 
-                let operator_id = $(this).val();
+                commonAjax.loadBusCancelReasons('#reason', existing_reason_id || "");
 
-                if (!operator_id) return;
 
-                // ✅ load buses based on operator
-                commonAjax.loadBusListByOperator('#bus', operator_id);
 
-                // ❗ clear previous buses when operator changes
-                selectedBuses = [];
+                $('#operator').on('change', function() {
+
+                    let operator_id = $(this).val();
+
+                    if (!operator_id) return;
+
+                    // ✅ load buses based on operator
+                    commonAjax.loadBusListByOperator('#bus', operator_id);
+
+                    // ❗ clear previous buses when operator changes
+                    selectedBuses = [];
+                    renderBuses();
+                });
+
+                let existingOperators = @json($data['row']['operators'] ?? []);
+
+                existingOperators.forEach(op => {
+                    selectedOperators.push({
+                        id: op.id,
+                        text: op.name
+                    });
+
+                    loadOperatorTable({
+                        id: op.id,
+                        text: op.name
+                    });
+                });
+
+                renderOperators();
+            });
+
+            function renderOperators() {
+
+                let html = '';
+
+                selectedOperators.forEach((op, index) => {
+                    html +=
+                        `<span class="selected-tag" data-index="${index}">${op.text}<span class="remove">×</span></span>`;
+                });
+
+                $('#selectedOperators').html(html);
+                $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
+
+                $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
+            }
+
+            $(document).on('click', '.remove', function() {
+
+                let index = $(this).closest('.selected-tag').data('index');
+                let operator = selectedOperators[index];
+
+                selectedOperators.splice(index, 1);
+                $(`#table_${operator.id}`).remove();
+
+                renderOperators();
+            });
+
+            $('#bus').on('change', function() {
+
+                let id = $(this).val();
+                let text = $("#bus option:selected").text();
+
+                if (!id) return;
+
+                // prevent duplicate
+                if (selectedBuses.some(b => b.id == id)) return;
+
+                selectedBuses.push({
+                    id,
+                    text
+                });
+
                 renderBuses();
+
+                $(this).val('').trigger('change');
             });
 
-            let existingOperators = @json($data['row']['operators'] ?? []);
 
-            existingOperators.forEach(op => {
-                selectedOperators.push({
-                    id: op.id,
-                    text: op.name
-                });
+            $('#btnReset').click(function() {
 
-                loadOperatorTable({
-                    id: op.id,
-                    text: op.name
-                });
+                $('#backoffice-form')[0].reset();
+                $('.form-select').val('').trigger('change');
+
+                selectedOperators = [];
+                selectedBuses = [];
+
+                renderOperators();
+                renderBuses();
+
+                $('#operatorTables').html('');
             });
 
-            renderOperators();
-        });
+            $('#backoffice-form').on('submit', function(e) {
 
-        function renderOperators() {
+                e.preventDefault();
 
-            let html = '';
+                let operator = $('#operator').val();
+                let buses = $('#bus_ids').val();
+                let year = $('#year').val();
+                let month = $('#month').val();
+                let reason = $('#reason').val();
 
-            selectedOperators.forEach((op, index) => {
-                html += `<span class="selected-tag" data-index="${index}">${op.text}<span class="remove">×</span></span>`;
+                if (!operator) {
+                    commonAjax.viewAlert("Please select operator", "warning");
+                    return;
+                }
+
+                if (!buses) {
+                    commonAjax.viewAlert("Please select at least one bus", "warning");
+                    return;
+                }
+
+                if (!year) {
+                    commonAjax.viewAlert("Please select year", "warning");
+                    return;
+                }
+
+                if (!month) {
+                    commonAjax.viewAlert("Please select month", "warning");
+                    return;
+                }
+
+                if (!reason) {
+                    commonAjax.viewAlert("Please select reason", "warning");
+                    return;
+                }
+
+                commonAjax.confirmAlert('Are you sure to proceed!');
+
+                $('#btnConfirmOk').one('click', () => this.submit());
             });
-
-            $('#selectedOperators').html(html);
-            $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
-
-            $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
-        }
-
-        $(document).on('click', '.remove', function() {
-
-            let index = $(this).closest('.selected-tag').data('index');
-            let operator = selectedOperators[index];
-
-            selectedOperators.splice(index, 1);
-            $(`#table_${operator.id}`).remove();
-
-            renderOperators();
-        });
-
-        $('#bus').on('change', function() {
-
-            let id = $(this).val();
-            let text = $("#bus option:selected").text();
-
-            if (!id) return;
-
-            // prevent duplicate
-            if (selectedBuses.some(b => b.id == id)) return;
-
-            selectedBuses.push({
-                id,
-                text
-            });
-
-            renderBuses();
-
-            $(this).val('').trigger('change');
-        });
-
-
-        $('#btnReset').click(function() {
-
-            $('#backoffice-form')[0].reset();
-            $('.form-select').val('').trigger('change');
-
-            selectedOperators = [];
-            selectedBuses = [];
-
-            renderOperators();
-            renderBuses();
-
-            $('#operatorTables').html('');
-        });
-
-        $('#backoffice-form').on('submit', function(e) {
-
-            e.preventDefault();
-
-            let operator = $('#operator').val();
-            let buses = $('#bus_ids').val();
-            let year = $('#year').val();
-            let month = $('#month').val();
-            let reason = $('#reason').val();
-
-            if (!operator) {
-                commonAjax.viewAlert("Please select operator", "warning");
-                return;
-            }
-
-            if (!buses) {
-                commonAjax.viewAlert("Please select at least one bus", "warning");
-                return;
-            }
-
-            if (!year) {
-                commonAjax.viewAlert("Please select year", "warning");
-                return;
-            }
-
-            if (!month) {
-                commonAjax.viewAlert("Please select month", "warning");
-                return;
-            }
-
-            if (!reason) {
-                commonAjax.viewAlert("Please select reason", "warning");
-                return;
-            }
-
-            commonAjax.confirmAlert('Are you sure to proceed!');
-
             $('#btnConfirmOk').one('click', () => this.submit());
-        });
-        $('#btnConfirmOk').one('click', () => this.submit());
 
 
-        $(document).on('click', '.btn-remove', function() {
-            $(this).closest('.dynamic-item').remove();
-        });
+            $(document).on('click', '.btn-remove', function() {
+                $(this).closest('.dynamic-item').remove();
+            });
 
-        function renderBuses() {
+            function renderBuses() {
 
-            let html = '';
+                let html = '';
 
-            selectedBuses.forEach((bus, index) => {
-                html += `
+                selectedBuses.forEach((bus, index) => {
+                    html += `
             <span class="selected-tag" data-index="${index}">
                 ${bus.text}
                 <span class="remove">×</span>
             </span>
         `;
+                });
+
+                $('#selectedBuses').html(html);
+
+                // store IDs for backend
+                $('#bus_ids').val(selectedBuses.map(b => b.id).join(','));
+
+                $('#selectedBusWrapper').toggle(selectedBuses.length > 0);
+            }
+
+            $(document).on('click', '#selectedBuses .remove', function() {
+
+                let index = $(this).closest('.selected-tag').data('index');
+
+                selectedBuses.splice(index, 1);
+
+                renderBuses();
             });
 
-            $('#selectedBuses').html(html);
+            function loadBusSchedules() {
 
-            // store IDs for backend
-            $('#bus_ids').val(selectedBuses.map(b => b.id).join(','));
+                let operator = $('#operator').val();
+                let bus_ids = $('#bus_ids').val();
+                let year = $('#year').val();
+                let month = $('#month').val();
 
-            $('#selectedBusWrapper').toggle(selectedBuses.length > 0);
-        }
+                if (!operator || !bus_ids || !year || !month) return;
 
-        $(document).on('click', '#selectedBuses .remove', function() {
+                $('#scheduleContainer').html(`
+        <div class="text-center p-4">
+            <div class="spinner-border text-primary"></div>
+            <p>Loading schedules...</p>
+        </div>
+    `);
 
-            let index = $(this).closest('.selected-tag').data('index');
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/get-bus-schedule-by-month",
+                    data: {
+                        operator_id: operator,
+                        bus_ids: bus_ids,
+                        year: year,
+                        month: month,
+                        _token: $('meta[name="csrf-token"]').attr("content"),
+                    },
 
-            selectedBuses.splice(index, 1);
+                    success: function(res) {
+
+                        if (!res.status) {
+                            $('#scheduleContainer').html(`<div class="text-danger">No data found</div>`);
+                            return;
+                        }
+
+                        renderSchedule(res.data);
+                    }
+                });
+            }
+
+            function renderSchedule(data) {
+
+                let html = '';
+
+                if (!data || Object.keys(data).length === 0) {
+                    $('#scheduleContainer').html(`
+                        <div class="text-center text-muted">
+                            No schedule found
+                        </div>
+                    `);
+                    return;
+                }
+
+                let operatorName = $("#operator option:selected").text();
+
+                html += `
+                    <div class="mb-3">
+                        <h3> ${operatorName}</h3>
+                    </div>
+                `;
+
+                Object.keys(data).forEach(bus_id => {
+
+                    let bus = data[bus_id];
+
+                    html += `
+                        <div class="mb-4">
+                            <div class="mb-2">
+                                <strong>${bus.bus_name} | ${bus.bus_number}</strong>
+                            </div>
+
+                            <div class="row">
+                    `;
+
+                    bus.dates.forEach(date => {
+                        html += `
+                            <div class="col-md-4 mb-2">
+                                <label class="w-100 border mr-6 rounded p-2 text-center cursor-pointer">
+                                    <input type="checkbox" name="dates[]" value="${date}" class="me-1">
+                                    ${formatDate(date)}
+                                </label>
+                            </div>
+                        `;
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+
+                $('#scheduleContainer').html(html);
+            }
+
+            $('#bus, #year, #month').on('change', function() {
+                loadBusSchedules();
+            });
+
+            function formatDate(dateStr) {
+                let d = new Date(dateStr);
+                return d.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            }
 
             renderBuses();
-        });
-    </script>
+            loadBusSchedules();
+        </script>
     @endpush

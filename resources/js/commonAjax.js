@@ -1515,48 +1515,40 @@ export function loadAnnextureList(annexture_type = "", selected_id = 0) {
     });
 }
 
-
-export function loadAnnextureDropdown(selector, annexture_type_id, selected = "") {
-
+export function loadBusCancelReasons(selector, selected = "") {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-annexture-list",
+        url: ajaxUrl + "get-bus-cancel-reasons", // ✅ common route
         data: {
-            annexture_type: annexture_type_id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
 
         success: function (response) {
-
             let html = '<option value="">Select Reason</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach((item) => {
-
                     let isSelected = selected == item.id ? "selected" : "";
 
                     html += `<option value="${item.id}" ${isSelected}>
                                 ${item.annexture_name}
                              </option>`;
                 });
-
             } else {
                 html = '<option value="">No Data Found</option>';
             }
 
             $(selector).html(html);
 
-            
-            commonAjax.initSelect2(selector, 'Select Reason');
+            // re-init select2
+            commonAjax.initSelect2(selector, "Select Reason");
         },
 
         error: function (err) {
-            console.log("Annexture Error:", err);
-        }
+            console.log("Bus Cancel Reason Error:", err);
+        },
     });
 }
-
 
 export function loadCampaignMasterList(campaign_master_id = 0) {
     $.ajax({
@@ -1700,7 +1692,7 @@ export function loadBusOperatorList(bus_operator_id = 0) {
 export function loadBusOperatorDropdown(selected_ids = []) {
     $.ajax({
         type: "POST",
-        url: ajaxUrl + "get-busoperator-role-list", 
+        url: ajaxUrl + "get-busoperator-role-list",
         data: {
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
@@ -1788,10 +1780,7 @@ export function loadTicketFareSlabList(selector, selected = null) {
     });
 }
 
-
 export function loadBusListByOperator(selector, operator_id, selected = null) {
-   
-
     $.ajax({
         type: "POST",
         url: "/admin/get-buses-by-operator",

@@ -140,6 +140,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-buses-by-operator', [CommonController::class, 'getBusesByOperator']);
     Route::post('get-schedule-dates', [BusScheduleController::class, 'getScheduleDates']);
     Route::post('get-users-list', [CommonController::class, 'getUsersList']);
+    Route::post('get-bus-cancel-reasons', [CommonController::class, 'getBusCancelReasons']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -499,6 +500,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'bus-cancel/add', [BusCancelController::class, 'add'])->name('bus-cancel.add');
     Route::post('bus-cancel/dataTableView', [BusCancelController::class, 'dataTableView'])->name('bus-cancel.dataTableView');
     Route::match(['get', 'post'], 'bus-cancel/edit/{encId}', [BusCancelController::class, 'edit'])->name('bus-cancel.edit');
+    Route::post('get-bus-schedule-by-month', [BusCancelController::class, 'getBusScheduleDatesByMonth']);
 
     Route::get('/seat-block', [SeatBlockController::class, 'index'])->name('seat-block.index');
     Route::match(['get', 'post'], 'seat-block/add', [SeatBlockController::class, 'add'])->name('seat-block.add');

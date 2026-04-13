@@ -360,23 +360,61 @@ class BusCancelController extends Controller
         return $this->add($encId);
     }
 
-    public function getOperatorSlabData(Request $request)
+    public function getBusScheduleDatesByMonth(Request $request)
     {
-        $operator_id = $request->operator_id;
+        try {
 
-        $data = DB::table('mst_ticket_fare_slab_info as t')
-            ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-            ->where('t.bus_operator_id', $operator_id)
-            ->select(
-                't.*',
-                's.slab_name'
-            )
-            ->orderBy('t.starting_fare')
-            ->get();
+            $bus_ids = explode(',', $request->bus_ids);
+            $year = $request->year;
+            $month = $request->month;
 
-        return response()->json([
-            'status' => true,
-            'data' => $data
-        ]);
+            $startDate = $year . '-' . str_pad($month, 2, '0', STR_PAD_LEFT) . '-01';
+
+            $data = []; // ✅ ADD THIS (important)
+
+            $schedules = DB::connection('mysql_dev')
+                ->table('bus_schedule')
+                ->whereIn('bus_id', $bus_ids)
+                ->where('active_status', 1)
+                ->orderByDesc('id')
+                ->get()
+                ->groupBy('bus_id');
+
+            foreach ($schedules as $bus_id => $rows) {
+
+                $schedule = $rows->first();
+
+                $dates = DB::connection('mysql_dev') // ✅ FIXED
+                    ->table('bus_schedule_date')
+                    ->where('bus_schedule_id', $schedule->id)
+                    ->whereDate('entry_date', '>=', $startDate)
+                    ->orderBy('entry_date')
+                    ->pluck('entry_date');
+
+                if ($dates->isEmpty()) continue;
+
+                $bus = DB::connection('mysql_dev') // ✅ FIXED
+                    ->table('bus')
+                    ->where('id', $bus_id)
+                    ->first();
+
+                $data[$bus_id] = [
+                    'bus_name' => $bus->name ?? '',
+                    'bus_number' => $bus->bus_number ?? '',
+                    'dates' => $dates
+                ];
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
