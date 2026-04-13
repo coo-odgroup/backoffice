@@ -26,19 +26,22 @@ class BusCancelController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = request('selStatus');
+            $operator  = request('operator') !== null && request('operator') !== '' ? (int)request('operator') : null;
+            $bus       = request('bus') !== null && request('bus') !== '' ? (int)request('bus') : null;
+            $status    = request('selStatus') !== null && request('selStatus') !== '' ? (int)request('selStatus') : null;
+            $fromDate  = request('fromDate');
+            $toDate    = request('toDate');
 
             $query = DB::connection('mysql_dev')
                 ->table('bus_cancelled as bc')
 
-                // ✅ JOIN CANCELLED DATES
                 ->join('bus_cancelled_date as bcd', function ($join) {
                     $join->on('bcd.bus_cancelled_id', '=', 'bc.id')
                         ->where('bcd.active_status', 1);
                 })
 
                 ->join('bus as b', 'b.id', '=', 'bc.bus_id')
+
 
                 ->join('odbusmaster.users as u', function ($join) {
                     $join->on('u.id', '=', 'bc.bus_operator_id')
@@ -68,18 +71,24 @@ class BusCancelController extends Controller
                     'bc.updated_at'
                 );
 
-            // 🔍 SEARCH
-            if (!empty($txtSearch)) {
-                $query->where(function ($q) use ($txtSearch) {
-                    $q->where('b.name', 'like', "%{$txtSearch}%")
-                        ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
-                        ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
-                });
+            if (!empty($operator)) {
+                $query->where('bc.bus_operator_id', $operator);
             }
 
-            // 🔍 STATUS
-            if ($selStatus !== null && $selStatus !== '') {
-                $query->where('bc.active_status', $selStatus);
+            if (!empty($bus)) {
+                $query->where('bc.bus_id', $bus);
+            }
+
+            if (!empty($fromDate)) {
+                $query->whereDate('bcd.cancelled_date', '>=', $fromDate);
+            }
+
+            if (!empty($toDate)) {
+                $query->whereDate('bcd.cancelled_date', '<=', $toDate);
+            }
+
+            if ($status !== null && $status !== '') {
+                $query->where('bc.active_status', $status);
             }
 
             $rows = $query->orderBy('bc.id', 'desc')->get();
@@ -98,7 +107,7 @@ class BusCancelController extends Controller
 
                     $grouped[$key] = [
                         'id' => $row->id,
-                        'bus_cancel_id ' => $row->id,
+                        'bus_cancel_id' => $row->id,
                         'enc_bus_cancel_id' => Crypt::encryptString($row->id),
 
                         'operator' => $row->operator_name ?? '--',

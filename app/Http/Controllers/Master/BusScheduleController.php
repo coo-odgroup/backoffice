@@ -34,66 +34,51 @@ class BusScheduleController extends Controller
             $start  = request('start', 0);
             $length = request('length', 10);
 
-            $query = DB::connection('mysql_dev')
-                ->table('bus_cancelled as bc')
-                ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
+            $query = DB::table('odbusdev.bus_schedule as bs')
                 ->select(
-                    'bc.id',
-                    'bc.bus_id',
-                    'bc.bus_operator_id',
+                    'bs.id',
+                    'bs.operator_id',
+                    'bs.bus_id',
 
-                    DB::raw('(SELECT name FROM odbusdev.bus WHERE id = bc.bus_id LIMIT 1) as bus_name'),
-                    DB::raw('(SELECT bus_number FROM odbusdev.bus WHERE id = bc.bus_id LIMIT 1) as bus_number'),
+                    DB::raw('(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_name'),
+                    DB::raw('(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_number'),
 
-                    DB::raw('(SELECT organization_name 
-                    FROM odbusmaster.users 
-                    WHERE id = bc.bus_operator_id 
-                    AND user_role = 9 
+                    DB::raw('(SELECT organization_name
+                    FROM odbusmaster.users
+                    WHERE id = bs.operator_id
+                    AND user_role = 9
                     LIMIT 1) as operator_name'),
 
-                    'bc.reason',
-                    'bc.other_reason',
-                    'bc.active_status',
-                    'bc.created_at',
-                    'bc.updated_at',
-                    'bcd.cancelled_date',
+                    'bs.active_status',
+                    'bs.created_at',
+                    'bs.updated_at',
 
-                    DB::raw('(SELECT annexture_name FROM odbusmaster.mst_annexture WHERE id = bc.reason LIMIT 1) as reason_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.updated_by LIMIT 1) as updated_by_name')
+                );
 
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bc.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bc.updated_by LIMIT 1) as updated_by_name')
-                )
-                ->where('bcd.active_status', 1); // 🔥 IMPORTANT
+            $recordsTotal = DB::table('odbusdev.bus_schedule')->count();
 
-            // total
-            $recordsTotal = DB::connection('mysql_dev')
-                ->table('bus_cancelled_date')
-                ->where('active_status', 1)
-                ->count();
-
-            // 🔍 SEARCH
             if (!empty(trim($txtSearch))) {
-
                 $search = trim($txtSearch);
 
                 $query->where(function ($q) use ($search) {
-                    $q->whereRaw("(SELECT name FROM odbusdev.bus WHERE id = bc.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("(SELECT bus_number FROM odbusdev.bus WHERE id = bc.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("(SELECT organization_name FROM odbusmaster.users WHERE id = bc.bus_operator_id LIMIT 1) LIKE ?", ["%{$search}%"]);
+                    $q->whereRaw("(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
+                        ->orWhereRaw("(SELECT organization_name FROM odbusmaster.users WHERE id = bs.operator_id LIMIT 1) LIKE ?", ["%{$search}%"]);
                 });
             }
 
-            // 🔍 FILTERS
             if (!empty($operator)) {
-                $query->where('bc.bus_operator_id', $operator);
+                $query->where('bs.operator_id', $operator);
             }
 
             if (!empty($bus)) {
-                $query->where('bc.bus_id', $bus);
+                $query->where('bs.bus_id', $bus);
             }
 
             if ($status !== null && $status !== '') {
-                $query->where('bc.active_status', $status);
+                $query->where('bs.active_status', $status);
             }
 
             $recordsFiltered = (clone $query)->count();
@@ -102,65 +87,40 @@ class BusScheduleController extends Controller
                 $query->offset($start)->limit($length);
             }
 
-            $rows = $query->orderBy('bc.id', 'desc')->get();
-
-            // 🔥 GROUP BY BUS
-            $grouped = [];
+            $rows = $query->orderBy('bs.id', 'desc')->get();
 
             foreach ($rows as $row) {
 
-                $key = $row->bus_id . '_' . $row->bus_operator_id;
+                $data[] = [
+                    'id' => $row->id,
 
-                if (!isset($grouped[$key])) {
+                    'bus_schedule_id' => $row->id,
+                    'enc_bus_schedule_id' => Crypt::encryptString($row->id),
 
-                    $reasonText = ($row->reason == 77)
-                        ? $row->other_reason
-                        : $row->reason_name;
+                    'operator_name' => $row->operator_name ?? '--',
 
-                    $grouped[$key] = [
-                        'id' => $row->id,
-                        'bus_schedule_id' => $row->id,
-                        'enc_bus_schedule_id' => Crypt::encryptString($row->id),
+                    'bus_name' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
 
-                        'operator_name' => $row->operator_name ?? '--',
+                    'created_date' => $row->created_at
+                        ? date('d-M-Y H:i:s', strtotime($row->created_at))
+                        : null,
 
-                        'bus_name' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
+                    'updated_date' => $row->updated_at
+                        ? date('d-M-Y H:i:s', strtotime($row->updated_at))
+                        : null,
 
-                        'reason' => $reasonText,
+                    'created_by_name' => $row->created_by_name ?? '--',
+                    'updated_by_name' => $row->updated_by_name ?? '--',
 
-                        'dates' => [],
+                    'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
 
-                        'created_date' => $row->created_at
-                            ? date('d-M-Y H:i:s', strtotime($row->created_at))
-                            : null,
-
-                        'updated_date' => $row->updated_at
-                            ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                            : null,
-
-                        'created_by_name' => $row->created_by_name ?? '--',
-                        'updated_by_name' => $row->updated_by_name ?? '--',
-
-                        'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-
-                        'enc_bustype_id' => Crypt::encryptString($row->bus_id),
-                        'layout_name' => $row->bus_name ?? 'Bus'
-                    ];
-                }
-
-                // 🔥 ADD DATES
-                $grouped[$key]['dates'][] = date('d-M-Y', strtotime($row->cancelled_date));
+                    'enc_bustype_id' => Crypt::encryptString($row->bus_id),
+                    'layout_name' => $row->bus_name ?? 'Bus'
+                ];
             }
-
-            // 🔥 FORMAT DATES
-            foreach ($grouped as &$g) {
-                $g['dates'] = implode('<br>', $g['dates']);
-            }
-
-            $data = array_values($grouped);
         } catch (\Throwable $t) {
 
-            Log::error("BusCancelController Error", [
+            Log::error("BusScheduleController Error", [
                 'message' => $t->getMessage()
             ]);
 
@@ -170,7 +130,6 @@ class BusScheduleController extends Controller
                 'data' => []
             ]);
         }
-
         return response()->json([
             'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
@@ -189,201 +148,206 @@ class BusScheduleController extends Controller
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
-            // =======================
-            // 🔹 EDIT LOAD DATA
-            // =======================
+            $row = null;
+            $scheduleDates = [];
+
             if ($id > 0) {
 
                 $data['strPage']   = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = DB::connection('mysql_dev')
-                    ->table('bus_cancelled')
+                $row = DB::table('odbusdev.bus_schedule')
                     ->where('id', $id)
                     ->first();
 
                 if (!$row) {
-                    return redirect()->route('bus-cancel.index');
+                    return redirect("bus-schedule");
                 }
 
-                $selectedDates = DB::connection('mysql_dev')
-                    ->table('bus_cancelled_date')
-                    ->where('bus_cancelled_id', $id)
-                    ->where('active_status', 1)
-                    ->pluck('cancelled_date')
+                $data['row'] = $row;
+
+                $lastDate = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $id)
+                    ->orderByDesc('entry_date')
+                    ->value('entry_date');
+
+                $data['lastDate'] = $lastDate;
+
+                $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $id)
+                    ->orderBy('entry_date', 'asc')
+                    ->pluck('entry_date')
                     ->toArray();
 
-                $data['row'] = $row;
-                $data['selected_dates'] = $selectedDates;
+                $bus_id = $row->bus_id;
+            } else {
+
+                $bus_id = request('bus') ?? old('bus');
+
+                if ($bus_id) {
+
+                    $schedule = DB::table('odbusdev.bus_schedule')
+                        ->where('bus_id', $bus_id)
+                        ->where('active_status', 1)
+                        ->orderByDesc('id')
+                        ->first();
+
+                    if ($schedule) {
+
+                        $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                            ->where('bus_schedule_id', $schedule->id)
+                            ->orderBy('entry_date', 'asc')
+                            ->limit(30)
+                            ->pluck('entry_date')
+                            ->toArray();
+                    }
+                }
             }
 
-            // =======================
-            // 🔹 FORM SUBMIT
-            // =======================
+            $data['scheduleDates'] = $scheduleDates;
+
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'operator' => 'required',
-                    'bus'      => 'required',
-                    'year'     => 'required',
-                    'month'    => 'required',
-                    'reason'   => 'required',
-                    'dates'    => 'required|array|min:1',
-                ], [
-                    'operator.required' => 'Please select operator',
-                    'bus.required'      => 'Please select bus',
-                    'year.required'     => 'Please select year',
-                    'month.required'    => 'Please select month',
-                    'reason.required'   => 'Please select reason',
-                    'dates.required'    => 'Please select at least one date',
+                    'operator'       => 'required|integer',
+                    'bus'            => 'required|integer',
+                    'running_cycle'  => 'required|integer|min:1|max:5',
+                    'date'           => 'required|date',
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 }
 
-                if (request('reason') == 77 && empty(trim(request('other_reason')))) {
-                    return back()->with([
-                        'level' => 'danger',
-                        'message' => 'Please enter other reason'
-                    ])->withInput();
-                }
-
                 DB::beginTransaction();
 
-                $operator_id  = request('operator');
-                $bus_id       = request('bus');
-                $year         = request('year');
-                $month        = request('month');
-                $reason       = request('reason');
-                $other_reason = request('other_reason');
-                $dates        = request('dates');
+                $operator_id   = request('operator');
+                $bus_id        = request('bus');
+                $running_cycle = (int) request('running_cycle');
+                $start_date    = request('date');
 
-                // =======================
-                // 🔹 UPDATE
-                // =======================
                 if ($id > 0) {
 
-                    DB::connection('mysql_dev')
-                        ->table('bus_cancelled')
+                    $oldData = DB::table('odbusdev.bus_schedule')
                         ->where('id', $id)
-                        ->update([
-                            'bus_operator_id' => $operator_id,
-                            'bus_id'          => $bus_id,
-                            'month'           => $month,
-                            'year'            => $year,
-                            'reason'          => $reason,
-                            'other_reason'    => ($reason == 77) ? $other_reason : null,
-                            'updated_at'      => now(),
-                        ]);
+                        ->first();
 
-                    // 🔹 OLD DATES
-                    $existingDates = DB::connection('mysql_dev')
-                        ->table('bus_cancelled_date')
-                        ->where('bus_cancelled_id', $id)
-                        ->pluck('cancelled_date')
-                        ->toArray();
+                    $newData = [
+                        'operator_id'   => $operator_id,
+                        'bus_id'        => $bus_id,
+                        'running_cycle' => $running_cycle,
+                    ];
 
-                    // 🔹 DEACTIVATE UNCHECKED
-                    $toDeactivate = array_diff($existingDates, $dates);
+                    $oldChanged = [];
+                    $newChanged = [];
 
-                    if (!empty($toDeactivate)) {
-                        DB::connection('mysql_dev')
-                            ->table('bus_cancelled_date')
-                            ->where('bus_cancelled_id', $id)
-                            ->whereIn('cancelled_date', $toDeactivate)
-                            ->update([
-                                'active_status' => 0,
-                                'updated_at' => now()
-                            ]);
-                    }
+                    foreach ($newData as $key => $value) {
+                        $oldValue = $oldData->$key ?? null;
 
-                    // 🔹 INSERT / ACTIVATE NEW
-                    foreach ($dates as $date) {
-
-                        $exists = DB::connection('mysql_dev')
-                            ->table('bus_cancelled_date')
-                            ->where('bus_cancelled_id', $id)
-                            ->where('cancelled_date', $date)
-                            ->first();
-
-                        if ($exists) {
-                            DB::connection('mysql_dev')
-                                ->table('bus_cancelled_date')
-                                ->where('id', $exists->id)
-                                ->update([
-                                    'active_status' => 1,
-                                    'updated_at' => now()
-                                ]);
-                        } else {
-                            DB::connection('mysql_dev')
-                                ->table('bus_cancelled_date')
-                                ->insert([
-                                    'bus_cancelled_id' => $id,
-                                    'cancelled_date'   => $date,
-                                    'active_status'    => 1,
-                                    'created_at'       => now(),
-                                ]);
+                        if ((string)$oldValue !== (string)$value) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
                         }
                     }
-                }
-                // =======================
-                // 🔹 INSERT
-                // =======================
-                else {
-
-                    $cancel_id = DB::connection('mysql_dev')
-                        ->table('bus_cancelled')
-                        ->insertGetId([
-                            'bus_id' => $bus_id,
-                            'bus_operator_id' => $operator_id,
-                            'month' => $month,
-                            'year' => $year,
-                            'reason' => $reason,
-                            'other_reason' => ($reason == 77) ? $other_reason : null,
-                            'active_status' => 1,
-                            'created_at' => now(),
-                        ]);
-
-                    $insertDates = [];
-
-                    foreach ($dates as $date) {
-                        $insertDates[] = [
-                            'bus_cancelled_id' => $cancel_id,
-                            'cancelled_date'   => $date,
-                            'active_status'    => 1,
-                            'created_at'       => now(),
-                        ];
+                    if (!empty($newChanged)) {
+                        app(CommonController::class)->auditLog(
+                            'bus_schedule',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
                     }
 
-                    DB::connection('mysql_dev')
-                        ->table('bus_cancelled_date')
-                        ->insert($insertDates);
+                    DB::table('odbusdev.bus_schedule')
+                        ->where('id', $id)
+                        ->update([
+                            'operator_id'   => $operator_id,
+                            'bus_id'        => $bus_id,
+                            'running_cycle' => $running_cycle,
+                            'updated_by'    => 1,
+                            'updated_at'    => now()
+                        ]);
+
+                    DB::table('odbusdev.bus_schedule_date')
+                        ->where('bus_schedule_id', $id)
+                        ->delete();
+
+                    $schedule_id = $id;
+                } else {
+                    $insertData = [
+                        'operator_id'   => $operator_id,
+                        'bus_id'        => $bus_id,
+                        'running_cycle' => $running_cycle,
+                        'active_status' => 1
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'bus_schedule',
+                        null,
+                        'INSERT',
+                        [],
+                        $insertData
+                    );
+
+                    $schedule_id = DB::table('odbusdev.bus_schedule')
+                        ->insertGetId([
+                            ...$insertData,
+                            'created_by' => 1,
+                            'created_at' => now()
+                        ]);
                 }
+
+                $dates = [];
+                $current = \Carbon\Carbon::parse($start_date);
+
+                for ($i = 0; $i < 30; $i++) {
+
+                    $dates[] = [
+                        'bus_schedule_id' => $schedule_id,
+                        'entry_date'      => $current->format('Y-m-d'),
+                        'created_by'      => 1,
+                        'created_at'      => now()
+                    ];
+
+                    $current->addDays($running_cycle);
+                }
+
+                DB::table('odbusdev.bus_schedule_date')->insert($dates);
+
+                DB::table('odbusdev.bus')
+                    ->where('id', $bus_id)
+                    ->update([
+                        'running_cycle' => $running_cycle,
+                        'updated_at'    => now()
+                    ]);
 
                 DB::commit();
 
-                return redirect()->back()->withInput()->with([
-                    'level' => 'success',
-                    'message' => 'Bus Cancel ' . ($id ? 'updated' : 'created') . ' successfully'
-                ]);
+                return redirect()->back()
+                    ->withInput()
+                    ->with([
+                        'level' => 'success',
+                        'message' => 'Bus Schedule ' . ($id ? 'updated' : 'created') . ' successfully'
+                    ]);
             }
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("Bus Cancel Error", [
-                'error' => $t->getMessage()
+            Log::error("BusScheduleController Error", [
+                'method' => $data['strPage'],
+                'error'  => $t->getMessage()
             ]);
 
             return back()->with([
-                'level' => 'danger',
-                'message' => 'Something went wrong'
-            ]);
+                'level'   => 'danger',
+                'message' => config('constants.SERVER_ERROR_MESSAGE')
+            ])->withInput();
         }
 
-        return view('Master.addBusCancel', compact('data'));
+        return view('Master.addBusSchedule', compact('data'));
     }
 
     public function edit($encId)

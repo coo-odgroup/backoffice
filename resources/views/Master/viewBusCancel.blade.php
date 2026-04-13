@@ -180,7 +180,7 @@
                     {{ csrf_field() }}
                     <input name="hdn_ids" id="hdn_ids" type="hidden">
                     <input name="hdn_qs" id="hdn_qs" type="hidden">
-                    <input type="hidden" id="hdn_model" value="Brand">
+                    <input type="hidden" id="hdn_model" value="BusCancel">
 
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <div id="customTableInfo"></div>
@@ -207,7 +207,11 @@
                 commonAjax.initClearableInputs();
                 getDataTableView();
             });
+            commonAjax.loadBusOperatorDropdown();
 
+            $('#operator').change(function() {
+                commonAjax.loadBusListByOperator('#bus', $(this).val());
+            });
 
             $('#btnReset').click(function() {
                 $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
@@ -252,10 +256,18 @@
 
                 let tableId = 'datatable';
                 let orderBy = [2, 'asc'];
+
+                let operator = $('#operator').val();
+                let bus = $('#bus').val();
+                let fromDate = $('#fromDate').val();
+                let toDate = $('#toDate').val();
                 let searchParams = {
                     txtSearch: txtSearch,
                     selStatus: selStatus,
-                    countrySearch: countrySearch
+                    operator: operator,
+                    bus: bus,
+                    fromDate: fromDate,
+                    toDate: toDate
                 };
                 let displayColumns = [1, 2, 3, 4, 5, 6, 7];
                 let dataTableColumns = [{
