@@ -215,6 +215,10 @@
                     margin-left: 6px;
                     cursor: pointer;
                 }
+
+                .bg-light {
+                    background-color: #f8f9fa !important;
+                }
             </style>
         @endsection
 
@@ -228,6 +232,7 @@
                 };
                 let selectedBuses = [];
                 let existing_reason_id = @json($data['row']['reason'] ?? '');
+                let cancelledDatesMap = {};
 
                 $(document).ready(function() {
 
@@ -382,22 +387,42 @@
                         let bus = data[bus_id];
 
                         html += `
-                        <div class="mb-4">
-                            <div class="mb-2">
-                                <strong>${bus.bus_name} | ${bus.bus_number}</strong>
-                            </div>
-                            <div class="row">
-                                `;
+                            <div class="mb-4">
+                                <div class="mb-2">
+                                    <strong>${bus.bus_name} | ${bus.bus_number}</strong>
+                                </div>
+                                <div class="row">
+                                    `;
 
                         bus.dates.forEach(date => {
+
+                            let today = new Date();
+                            today.setHours(0, 0, 0, 0);
+
+                            let currentDate = new Date(date);
+                            currentDate.setHours(0, 0, 0, 0);
+
+                            let isPast = currentDate < today;
+                            let isCancelled = cancelledDatesMap[bus_id]?.includes(date);
+
                             html += `
-                    <div class="col-md-4 mb-2">
-                        <label class="w-100 border rounded p-2 text-center">
-                            <input type="checkbox" name="dates[]" value="${date}">
-                            ${formatDate(date)}
-                        </label>
-                    </div>
-                    `;
+                                <div class="col-md-4 mb-2">
+                                    <label class="w-100 border rounded p-2 text-center 
+                                        ${isPast ? 'bg-light text-muted' : ''}">
+
+                                        <input type="checkbox"
+                                            name="dates[]"
+                                            value="${date}"
+                                            class="schedule-checkbox"
+                                            data-bus="${bus_id}"
+                                            data-date="${date}"
+                                            ${isCancelled ? 'checked' : ''}
+                                            ${isPast ? 'disabled' : ''}>
+
+                                        ${formatDate(date)}
+                                    </label>
+                                </div>
+                            `;
                         });
 
                         html += `
@@ -497,8 +522,16 @@
                                 return;
                             }
 
+                            cancelledDatesMap = {};
+
+                            Object.keys(res.data).forEach(bus_id => {
+                                cancelledDatesMap[bus_id] = res.data[bus_id].dates;
+                            });
+
                             renderCancelledTable(res.data);
                             $('#cancelledTableWrapper').show();
+
+                            loadBusSchedules();
                         }
                     });
                 }
@@ -568,5 +601,37 @@
 
                     // restore will happen after bus loads
                 }
+
+                $(document).on('change', '.schedule-checkbox', function() {
+
+                    let bus_id = $(this).data('bus');
+                    let date = $(this).data('date');
+                    let isChecked = $(this).is(':checked');
+
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    let selectedDate = new Date(date);
+                    selectedDate.setHours(0, 0, 0, 0);
+
+                    if (selectedDate < today) return; // ignore past
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/admin/update-cancel-status",
+                        data: {
+                            bus_id: bus_id,
+                            date: date,
+                            active_status: isChecked ? 1 : 0,
+                            _token: $('meta[name="csrf-token"]').attr("content"),
+                        },
+                        success: function(res) {
+                            console.log("Updated:", res);
+
+                            loadCancelledData(); // refresh UI
+                        }
+                    });
+
+                });
             </script>
         @endpush
