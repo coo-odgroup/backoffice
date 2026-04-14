@@ -1482,49 +1482,17 @@ function getLoadAnnextureList(annexture_type = "", type = "") {
         },
     });
 }
-
-export function loadAnnextureList(annexture_type = "", selected_id = 0) {
+export function loadAnnextureList(key, selected = "", selector = ".annexture") {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-annexture-list",
         data: {
-            annexture_type: annexture_type,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
-        dataType: "json",
-
-        success: function (response) {
-            let options = '<option value="">Select Option</option>';
-
-            if (response.status && response.data.length > 0) {
-                $.each(response.data, function (index, item) {
-                    let selected = selected_id == item.id ? "selected" : "";
-
-                    options += `<option value="${item.id}" ${selected}>
-                                        ${item.annexture_name}
-                                    </option>`;
-                });
-            }
-
-            $(".annexture").html(options);
-        },
-
-        error: function () {
-            console.log("Error loading annexture list");
-        },
-    });
-}
-
-export function loadBusCancelReasons(selector, selected = "") {
-    $.ajax({
-        type: "POST",
-        url: ajaxUrl + "get-bus-cancel-reasons", // ✅ common route
-        data: {
+            annexture_type: key,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
 
         success: function (response) {
-            let html = '<option value="">Select Reason</option>';
+            let html = `<option value="">Select</option>`;
 
             if (response.status && response.data.length > 0) {
                 response.data.forEach((item) => {
@@ -1535,17 +1503,16 @@ export function loadBusCancelReasons(selector, selected = "") {
                              </option>`;
                 });
             } else {
-                html = '<option value="">No Data Found</option>';
+                html = `<option value="">No Data Found</option>`;
             }
 
             $(selector).html(html);
 
-            // re-init select2
-            commonAjax.initSelect2(selector, "Select Reason");
+            commonAjax.initSelect2(selector, "Select");
         },
 
         error: function (err) {
-            console.log("Bus Cancel Reason Error:", err);
+            console.log("Annexure Error:", err);
         },
     });
 }

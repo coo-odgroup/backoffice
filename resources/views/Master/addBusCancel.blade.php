@@ -252,45 +252,65 @@
                         commonAjax.initSelect2('#reason', 'Select Reason');
 
                         commonAjax.loadBusOperatorDropdown();
-                        commonAjax.loadBusCancelReasons('#reason', existing_reason_id || "");
+                        commonAjax.loadAnnextureList('REASON', existing_reason_id, '#reason');
 
                     });
 
                     if (editData.operator) {
 
+                        // Step 1: set operator
                         $('#operator').val(editData.operator).trigger('change');
 
-                        setTimeout(() => {
+                        // Step 2: wait until bus dropdown loads
+                        commonAjax.loadBusListByOperator('#bus', editData.operator, function() {
 
-                            if (editData.bus) {
+                            // Step 3: restore buses
+                            if (editData.bus && editData.bus.length > 0) {
 
-                                let text = $('#bus option[value="' + editData.bus + '"]').text();
+                                selectedBuses = [];
 
-                                selectedBuses = [{
-                                    id: editData.bus,
-                                    text: text
-                                }];
+                                editData.bus.forEach(id => {
+
+                                    let text = $('#bus option[value="' + id + '"]').text();
+
+                                    if (text) {
+                                        selectedBuses.push({
+                                            id,
+                                            text
+                                        });
+                                    }
+
+                                });
 
                                 renderBuses();
-                                $('#bus_ids').val(editData.bus);
-
+                                $('#bus_ids').val(editData.bus.join(','));
                             }
 
+                            // Step 4: restore year & month (IMPORTANT 🔥)
+                            if ("{{ $data['row']->year ?? '' }}") {
+                                $('#year').val("{{ $data['row']->year ?? '' }}");
+                            }
+
+                            if ("{{ $data['row']->month ?? '' }}") {
+                                $('#month').val("{{ $data['row']->month ?? '' }}");
+                            }
+
+                            // Step 5: restore reason
                             if (editData.reason) {
                                 $('#reason').val(editData.reason).trigger('change');
                             }
 
+                            // Step 6: other reason
                             if (editData.reason == 77) {
                                 $('#otherReasonWrapper').show();
                                 $('#other_reason').val(editData.other_reason);
                             }
 
-                            // 🔥 LOAD TABLES AFTER ALL SET
-                            setTimeout(() => {
-                                loadCancelledData();
-                            }, 300);
+                            // Step 7: LOAD EVERYTHING 🔥🔥🔥
+                            loadBusSchedules();
+                            loadCancelledData();
 
-                        }, 500);
+                        });
                     }
 
                     $('#operator').on('change', function() {
@@ -627,7 +647,13 @@
 
                         busArray.forEach(id => {
 
-                            let text = $('#bus option[value="' + id + '"]').text();
+                            let option = $('#bus option[value="' + id + '"]');
+                            if (option.length) {
+                                selectedBuses.push({
+                                    id,
+                                    text: option.text()
+                                });
+                            }
 
                             selectedBuses.push({
                                 id: id,
