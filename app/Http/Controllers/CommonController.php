@@ -155,6 +155,7 @@ class CommonController extends Controller
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
             'BusSchedule' => \App\Models\Bus\BusSchedule::class,
+            'BusCancel' => \App\Models\Bus\BusCancel::class,
             'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
         ];
 
@@ -1133,6 +1134,30 @@ class CommonController extends Controller
                 'data'   => $data
             ]);
         } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+    public function getBusCancelReasons()
+    {
+        try {
+
+            $data = DB::table('mst_annexture')
+                ->select('id', 'annexture_name')
+                ->where('annexture_type_id', 16)
+                ->where('active_status', 1)
+                ->orderBy('annexture_value', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $e) {
 
             return response()->json([
                 'status' => false,

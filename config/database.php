@@ -41,7 +41,7 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-        ],      
+        ],
 
         'mysql' => [
             'driver' => 'mysql',
@@ -62,7 +62,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
- 
+
         'mysql_log' => [
             'driver' => 'mysql',
             'url' => env('LOG_DATABASE_URL'),
@@ -82,7 +82,7 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
- 
+
         'mysql_dev' => [
             'driver' => 'mysql',
             'url' => env('DEV_DATABASE_URL'),
@@ -165,7 +165,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
         ],
 
         'default' => [
