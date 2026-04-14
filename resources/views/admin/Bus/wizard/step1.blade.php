@@ -290,8 +290,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                     <div class="text-center mt-4">
                                         <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                         <input type="hidden" name="param" value="{{$data['param']}}">
+                                        <input type="hidden" name="param2" value="{{$data['param2']}}">
                                         @if ($data['bus_id']!=0)
-                                        <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                        <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id'].'/save') }}" class="btn btn-warning px-5 rounded-pill me-3">
                                             Continue →
                                         </a>
                                         @endif

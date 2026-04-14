@@ -87,7 +87,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                         <th>U-Sleeper</th>
                                                         <th>L-Sleeper</th>
                                                         <th>Close Time</th>
-                                                        <th>Seize Time</th>
+                                                        <th>Seize Time ( In Min )</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -102,13 +102,29 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                         <div class="text-center mt-1">
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                             <input type="hidden" name="param" value="{{$data['param']}}">
-                                            <a href="{{ url($createBusUrl.'step4/'.$data['enc_bus_id'].'/back') }}" class="btn btn-secondary px-5 rounded-pill me-3">
+                                            <input type="hidden" name="param2" value="{{$data['param2']}}">
+                                            @php
+                                            $isSave = ($data['param'] ?? null) === 'save';
+                                            $isBack = ($data['param2'] ?? null) === 'back';
+                                            @endphp
+
+                                            @if ($isSave)
+                                            <a href="{{ url($createBusUrl.'step4/'.$data['enc_bus_id'].'/save/back') }}"
+                                                class="btn btn-secondary px-5 rounded-pill me-3">
                                                 ← Back
                                             </a>
-                                            <a href="{{ url($createBusUrl.'step6/'.$data['enc_bus_id']) }}" class="btn btn-warning px-5 rounded-pill me-3">
+                                            @endif
+
+                                            @if ($isSave && $isBack)
+                                            <a href="{{ url($createBusUrl.'step6/'.$data['enc_bus_id'].'/save') }}"
+                                                class="btn btn-warning px-5 rounded-pill me-3">
                                                 Continue →
                                             </a>
-                                            <button type="submit" class="btn btn-success px-5 rounded-pill">Save & Continue →</button>
+                                            @endif
+
+                                            <button type="submit" class="btn btn-success px-5 rounded-pill">
+                                                Save & Continue →
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -187,79 +203,115 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     let routes = <?= json_encode($data['schedule_data']) ?>;
     let step5Res = <?= json_encode($step5Res) ?>;
 
-    routes.forEach((item, index) => {
+    let step5 = step5Res || [];
+
+    console.log(step5Res);
+
+    if (routes && routes.length > 0) {
+
+        routes.forEach((item, index) => {
+
+            let dayOptionsFrom = [1, 2, 3, 4, 5].map(day => `
+                <option value="${day}" ${step5[index]?.from_journey_day == day ? 'selected' : ''}>${day}</option>
+            `).join('');
+
+            let dayOptionsTo = [1, 2, 3, 4, 5].map(day => `
+                <option value="${day}" ${step5[index]?.to_journey_day == day ? 'selected' : ''}>${day}</option>
+            `).join('');
+
+            let row = `
+                <tr class="text-center">
+                    <td>${index + 1}</td>
+
+                    <td>
+                        <input type="hidden" value="${item.source_id}" name="from_stop_id[]" />
+                        <input type="text" class="form-control form-control-sm" value="${item.source}" disabled />
+                    </td>
+
+                    <td>
+                        <select class="form-select form-select-sm" name="from_journey_day[]">
+                            ${dayOptionsFrom}
+                        </select>
+                    </td>
+
+                    <td>
+                        <input type="hidden" value="${item.destination_id}" name="to_stop_id[]" />
+                        <input type="text" class="form-control form-control-sm" value="${item.destination}" disabled />
+                    </td>
+
+                    <td>
+                        <select class="form-select form-select-sm" name="to_journey_day[]">
+                            ${dayOptionsTo}
+                        </select>
+                    </td>
+
+                    <td>
+                        <input type="number" class="form-control form-control-sm seatFare"
+                            name="seat_fare[]" placeholder="Enter Seat Fare"
+                            value="${step5[index]?.seat_fare ?? ''}">
+                    </td>
+
+                    <td>
+                        <input type="number" class="form-control form-control-sm upperSleeperFare"
+                            name="upper_sleeper_fare[]" placeholder="Enter U-Sleeper Fare"
+                            value="${step5[index]?.upper_sleeper_fare ?? ''}">
+                    </td>
+
+                    <td>
+                        <input type="number" class="form-control form-control-sm lowerSleeperFare"
+                            name="lower_sleeper_fare[]" placeholder="Enter L-Sleeper Fare"
+                            value="${step5[index]?.lower_sleeper_fare ?? ''}">
+                    </td>
+
+                    <td class="closeTimeRow">
+                        <input type="hidden" value="${item.city_id}" class="city_id" />
+                        <input type="time" class="form-control form-control-sm close_time"
+                            name="close_time[]" value="${step5[index]?.close_time ?? ''}">
+                    </td>
+
+                    <td>
+                        <input type="number" class="form-control form-control-sm seize_time"
+                            name="seize_time[]" placeholder="Enter Seize Time" readonly
+                            value="${step5[index]?.seize_time ?? ''}">
+                    </td>
+
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+
+                            <!-- Hidden default (IMPORTANT) -->
+                            <input type="hidden" name="active_status[${index}]" value="0">
+
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                    type="checkbox"
+                                    name="active_status[${index}]"
+                                    value="1"
+                                    ${step5[index]?.active_status == 1 ? 'checked' : ''}>
+                            </div>
+
+                            <button class="btn btn-outline-danger btn-sm removeRow">
+                                ✕
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+
+            tbody.append(row);
+        });
+
+    } else {
 
         let row = `
-            <tr class="text-center">
-                <td>${index + 1}</td>
-
-                <td>
-                    <input type="hidden" value="${item.source_id}" name="from_stop_id[]" />
-                    <input type="text" class="form-control form-control-sm" value="${item.source}" disabled />
+            <tr>
+                <td colspan="11" class="text-center text-muted">
+                    Schedule Not Found
                 </td>
-
-                <td>
-                    <select class="form-select form-select-sm" name="from_journey_day[]">
-                        <option value="1" ${step5Res[index]?.to_journey_day == 1 ? 'selected' : ''}>1</option>
-                        <option value="2" ${step5Res[index]?.to_journey_day == 2 ? 'selected' : ''}>2</option>
-                        <option value="3" ${step5Res[index]?.to_journey_day == 3 ? 'selected' : ''}>3</option>
-                        <option value="4" ${step5Res[index]?.to_journey_day == 4 ? 'selected' : ''}>4</option>
-                        <option value="5" ${step5Res[index]?.to_journey_day == 5 ? 'selected' : ''}>5</option>
-                    </select>
-                </td>
-
-                <td>
-                    <input type="hidden" value="${item.destination_id}" name="to_stop_id[]" />
-                    <input type="text" class="form-control form-control-sm" value="${item.destination}" disabled />
-                </td>
-
-                <td>
-                    <select class="form-select form-select-sm" name="to_journey_day[]">
-                        <option value="1" ${step5Res[index]?.to_journey_day == 1 ? 'selected' : ''}>1</option>
-                        <option value="2" ${step5Res[index]?.to_journey_day == 2 ? 'selected' : ''}>2</option>
-                        <option value="3" ${step5Res[index]?.to_journey_day == 3 ? 'selected' : ''}>3</option>
-                        <option value="4" ${step5Res[index]?.to_journey_day == 4 ? 'selected' : ''}>4</option>
-                        <option value="5" ${step5Res[index]?.to_journey_day == 5 ? 'selected' : ''}>5</option>
-                    </select>
-                </td>
-
-                <td>
-                    <input type="number" class="form-control form-control-sm seatFare" name="seat_fare[]" placeholder="Enter Seat Fare" value="${step5Res[index]?.seat_fare}">
-                </td>
-
-                <td>
-                    <input type="number" class="form-control form-control-sm upperSleeperFare" name="upper_sleeper_fare[]" placeholder="Enter U-Sleeper Fare" value="${step5Res[index]?.upper_sleeper_fare}">
-                </td>
-
-                <td>
-                    <input type="number" class="form-control form-control-sm lowerSleeperFare" name="lower_sleeper_fare[]" placeholder="Enter L-Sleeper Fare" value="${step5Res[index]?.lower_sleeper_fare}">
-                </td>
-
-                <td class="closeTimeRow">
-                    <input type="hidden" value="${item.city_id}" class="city_id" />
-                    <input type="time" class="form-control form-control-sm close_time" name="close_time[]" value="${step5Res[index]?.close_time}">
-                </td>
-
-                <td>
-                    <input type="number" class="form-control form-control-sm seize_time" name="seize_time[]" placeholder="Enter Seize Time" value="${step5Res[index]?.seize_time}">
-                </td>
-
-                <td>
-                    <div class="d-flex justify-content-center gap-2">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" name="active_status[]" value="1" ${step5Res[index]?.active_status == 1 ? 'checked' : ''}>
-                        </div>
-                        <button class="btn btn-outline-danger btn-sm removeRow">
-                            ✕
-                        </button>
-                    </div>
-                </td>
-
             </tr>
         `;
 
         tbody.append(row);
-    });
+    }
 
     $(document).on("click", ".removeRow", function() {
         $(this).closest("tr").remove();
