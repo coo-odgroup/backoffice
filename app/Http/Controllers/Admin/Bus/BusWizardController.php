@@ -206,10 +206,10 @@ class BusWizardController extends Controller
         $data['param'] = $param;
         $data['param2'] = $param2;
 
-        // return $param;
-
         // Edit or Back or Continue
-        if ($param != null && $param == 'edit' || $param == 'back') {
+        // $ifExist = BusRoutesStops::where('bus_id', $busId)->first();
+        // return $ifExist;
+        if ($param == 'save' && $param2 == 'back') {
             $busRouteStops = BusRoutesStops::with('city')
                 ->where('bus_id', $busId)
                 ->get();
@@ -249,7 +249,9 @@ class BusWizardController extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
-        if ($param != null && $param == 'edit' || $param == 'back') {
+        $isExist = BusRoutesStops::where('bus_id', $busId)->exists();
+
+        if (($param == 'save' && $param2 == 'back') || $isExist) {
             $data['step3Res'] = BusRoutesStops::where('bus_id', $busId)->get();
 
             $busRouteStops = BusRoutesStops::with('city')
@@ -262,6 +264,8 @@ class BusWizardController extends Controller
                     $item->city->city_name
                 ];
             })->values();
+
+            $data['existRes'] = 1;
         }
 
         return view('admin.bus.wizard.step3', compact('data'));
@@ -279,6 +283,7 @@ class BusWizardController extends Controller
             $listing_time = $request->time ?? [];
             $bus_id = $request->bus_id;
             $param = $request->param;
+            $param2 = $request->param2;
 
             if (empty($cities)) {
                 throw new \Exception("Cities data is missing.");
@@ -292,20 +297,23 @@ class BusWizardController extends Controller
             $route_signature_string = implode('-', $keys);
             $route_signature = md5($route_signature_string);
 
-            if ($param != null && $param == 'back' || $param == 'edit') {
-                $busR = BusRoutesMap::where('bus_id', $bus_id)->first();
+            $busR = BusRoutesMap::where('bus_id', $bus_id)->first();
+            if (!empty($busR)) {
                 $bus_route_id = $busR->bus_route_id;
                 $bus_routes_map_id = $busR->id;
+            } else {
+                $bus_route_id = 0;
+                $bus_routes_map_id = 0;
             }
 
             // Route Section
-            // $route = new BusRoutes();
-            $route = ($param != null) ? BusRoutes::find($bus_route_id) : new BusRoutes();
+            $route = ($bus_route_id != 0) ? BusRoutes::find($bus_route_id) : new BusRoutes();
             $route->route_name = $route_name;
             $route->boarding_city_id = $boarding_city_id;
             $route->dropping_city_id = $dropping_city_id;
             $route->route_signature = $route_signature;
-            if ($param != null) {
+
+            if ($bus_route_id != 0) {
                 $route->updated_by = 1;
             } else {
                 $route->active_status = 1;
@@ -316,11 +324,10 @@ class BusWizardController extends Controller
             $route_id = $route->id;
 
             // BusRoutesMap Section
-            // $routeMap = new BusRoutesMap();
-            $routeMap = ($param != null) ? BusRoutesMap::find($bus_routes_map_id) : new BusRoutesMap();
+            $routeMap = ($bus_routes_map_id != 0) ? BusRoutesMap::find($bus_routes_map_id) : new BusRoutesMap();
             $routeMap->bus_id = $bus_id;
-            $routeMap->bus_route_id = $route_id;
-            if ($param != null) {
+            $routeMap->bus_route_id = $bus_route_id ? $bus_route_id : $route_id;
+            if ($bus_routes_map_id != 0) {
                 $routeMap->updated_by = 1;
             } else {
                 $routeMap->created_by = 1;
@@ -328,13 +335,12 @@ class BusWizardController extends Controller
             $routeMap->save();
 
             // BusRoutesStops Section
-            $routeStops = [];
-            $stop_order = 1;
-
-            if ($param != null) {
+            if ($param2 == 'back') {
                 BusRoutesStops::where('bus_id', $bus_id)->delete();
             }
-
+                
+            $routeStops = [];
+            $stop_order = 1;
             foreach ($cities as $cityId => $cityName) {
                 $routeStops[] = [
                     'bus_route_id' => $route_id,
@@ -354,10 +360,9 @@ class BusWizardController extends Controller
             DB::commit();
 
             session()->flash('level', 'success');
-            session()->flash('message', 'Boarding & Dropping managed Successfully.');
+            session()->flash('message', 'Boarding & Dropping Timings Created Successfully.');
 
             $enc_bus_id = (!empty($bus_id)) ? Crypt::encryptString($bus_id) : 0;
-            // return redirect()->route('bus.step4', ['encId' => $enc_bus_id]);
             return redirect()->route('bus.step4', [
                 'encId' => $enc_bus_id,
                 'param' => 'save'
@@ -389,9 +394,9 @@ class BusWizardController extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
-        $step4Res = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
+        $data['step4Res'] = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
 
-        return view('admin.bus.wizard.step4', compact('data', 'step4Res'));
+        return view('admin.bus.wizard.step4', compact('data'));
     }
 
     public function postStep4(Request $request)
@@ -399,6 +404,7 @@ class BusWizardController extends Controller
         $busId = $request->bus_id;
         $stations = $request->stations ?? [];
         $param = $request->param;
+        $param2 = $request->param2;
 
         $insertData = [];
 
@@ -423,7 +429,7 @@ class BusWizardController extends Controller
             }
         }
 
-        if ($param != null) {
+        if ($param2 == 'back') {
             BusBoardingDropping::where('bus_id', $busId)->delete();
         }
 
@@ -436,7 +442,10 @@ class BusWizardController extends Controller
         session()->flash('message', 'Stoppage added Successfully.');
 
         $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
-        return redirect()->route('bus.step5', ['encId' => $enc_bus_id]);
+        return redirect()->route('bus.step5', [
+            'encId' => $enc_bus_id,
+            'param' => 'save'
+        ]);
     }
 
     public function step5($bus_id = null, $param = null, $param2 = null)
@@ -489,11 +498,9 @@ class BusWizardController extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
-        $step5Res = BusRouteFares::where('bus_id', $busId)->get();
+        $data['step5Res'] = BusRouteFares::where('bus_id', $busId)->get();
 
-        // return $step5Res;
-
-        return view('admin.bus.wizard.step5', compact('data', 'step5Res'));
+        return view('admin.bus.wizard.step5', compact('data'));
     }
 
     public function postStep5(Request $request)
@@ -503,6 +510,7 @@ class BusWizardController extends Controller
             $count = count($request->from_stop_id);
             $busId = $request->bus_id;
             $param = $request->param;
+            $param2 = $request->param2;
 
             $busData = BusRoutesMap::where('bus_id', $busId)->first();
             $bus_route_id = $busData ? $busData->bus_route_id : null;
@@ -527,7 +535,7 @@ class BusWizardController extends Controller
                 ];
             }
 
-            if ($param != null) {
+            if ($param2 == 'back') {
                 BusRouteFares::where('bus_id', $busId)->delete();
             }
 
@@ -548,7 +556,10 @@ class BusWizardController extends Controller
         }
 
         $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
-        return redirect()->route('bus.step6', ['encId' => $enc_bus_id]);
+        return redirect()->route('bus.step6', [
+            'encId' => $enc_bus_id,
+            'param' => 'save'
+        ]);
     }
 
     public function step6($bus_id = null, $param = null, $param2 = null)
@@ -568,9 +579,9 @@ class BusWizardController extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
-        $step6Res = BusContacts::where('bus_id', $busId)->get();
+        $data['step6Res'] = BusContacts::where('bus_id', $busId)->get();
 
-        return view('admin.bus.wizard.step6', compact('data', 'step6Res'));
+        return view('admin.bus.wizard.step6', compact('data'));
     }
 
     public function postStep6(Request $request)
@@ -579,6 +590,7 @@ class BusWizardController extends Controller
             $contacts = $request->contacts ?? [];
             $busId = $request->bus_id;
             $param = $request->param;
+            $param2 = $request->param2;
 
             $insertData = [];
 
@@ -594,7 +606,7 @@ class BusWizardController extends Controller
                 ];
             }
 
-            if ($param != null) {
+            if ($param2 == 'back') {
                 BusContacts::where('bus_id', $busId)->delete();
             }
 
@@ -614,7 +626,10 @@ class BusWizardController extends Controller
         }
 
         $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
-        return redirect()->route('bus.step7', ['encId' => $enc_bus_id]);
+        return redirect()->route('bus.step7', [
+            'encId' => $enc_bus_id,
+            'param' => 'save'
+        ]);
     }
 
     public function step7($bus_id = null, $param = null, $param2 = null)
@@ -678,7 +693,10 @@ class BusWizardController extends Controller
         }
 
         $enc_bus_id = (!empty($busId)) ? Crypt::encryptString($busId) : 0;
-        return redirect()->route('bus.preview', ['encId' => $enc_bus_id]);
+        return redirect()->route('bus.preview', [
+            'encId' => $enc_bus_id,
+            'param' => 'save'
+        ]);
     }
 
     public function preview($bus_id = null, $param = null, $param2 = null)

@@ -363,7 +363,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $(document).ready(function() {
 
         let selCities = JSON.parse(localStorage.getItem("selCities") || "[]");
-        let step4Res = <?= json_encode($step4Res) ?>;
+        let step4Res = <?= json_encode($data['step4Res']) ?>;
 
         renderStations(selCities, step4Res);
     });

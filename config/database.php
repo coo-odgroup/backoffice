@@ -41,16 +41,16 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-        ],
+        ],      
 
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '127.0.0.1'),
-            'port' => env('DB_PORT', '3306'),
+            'host' => env('DB_HOST', '192.168.29.142'),
+            'port' => env('DB_PORT', '3307'),
             'database' => env('DB_DATABASE', 'odbusmaster'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'username' => env('DB_USERNAME', 'networkuser'),
+            'password' => env('DB_PASSWORD', 'password123'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -62,15 +62,15 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
+ 
         'mysql_log' => [
             'driver' => 'mysql',
             'url' => env('LOG_DATABASE_URL'),
-            'host' => env('LOG_DB_HOST', '127.0.0.1'),
-            'port' => env('LOG_DB_PORT', '3306'),
+            'host' => env('LOG_DB_HOST', '192.168.29.142'),
+            'port' => env('LOG_DB_PORT', '3307'),
             'database' => env('LOG_DB_DATABASE', 'odbuslog'),
-            'username' => env('LOG_DB_USERNAME', 'root'),
-            'password' => env('LOG_DB_PASSWORD', ''),
+            'username' => env('LOG_DB_USERNAME', 'networkuser'),
+            'password' => env('LOG_DB_PASSWORD', 'password123'),
             'unix_socket' => env('LOG_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -82,15 +82,15 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
-
+ 
         'mysql_dev' => [
             'driver' => 'mysql',
             'url' => env('DEV_DATABASE_URL'),
-            'host' => env('DEV_DB_HOST', '127.0.0.1'),
-            'port' => env('DEV_DB_PORT', '3306'),
+            'host' => env('DEV_DB_HOST', '192.168.29.142'),
+            'port' => env('DEV_DB_PORT', '3307'),
             'database' => env('DEV_DB_DATABASE', 'odbusdev'),
-            'username' => env('DEV_DB_USERNAME', 'root'),
-            'password' => env('DEV_DB_PASSWORD', ''),
+            'username' => env('DEV_DB_USERNAME', 'networkuser'),
+            'password' => env('DEV_DB_PASSWORD', 'password123'),
             'unix_socket' => env('DEV_DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -165,7 +165,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
         ],
 
         'default' => [

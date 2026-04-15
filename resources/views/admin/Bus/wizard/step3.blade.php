@@ -102,6 +102,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                 class="btn btn-warning px-5 rounded-pill me-3">
                                                 Continue →
                                             </a>
+                                            @elseif (@$data['existRes'] == 1)
+                                            <a href="{{ url($createBusUrl.'step4/'.$data['enc_bus_id'].'/save') }}"
+                                                class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
                                             @endif
 
                                             <button type="submit" class="btn btn-success px-5 rounded-pill">

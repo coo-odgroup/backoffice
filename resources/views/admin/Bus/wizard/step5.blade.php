@@ -201,11 +201,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     tbody.empty();
 
     let routes = <?= json_encode($data['schedule_data']) ?>;
-    let step5Res = <?= json_encode($step5Res) ?>;
+    let step5Res = <?= json_encode($data['step5Res']) ?>;
 
     let step5 = step5Res || [];
-
-    console.log(step5Res);
 
     if (routes && routes.length > 0) {
 
