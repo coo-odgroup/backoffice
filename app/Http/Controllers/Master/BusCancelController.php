@@ -163,6 +163,7 @@ class BusCancelController extends Controller
         ]);
     }
 
+
     public function add($encId = null)
     {
         $data = [];
@@ -172,151 +173,170 @@ class BusCancelController extends Controller
 
         try {
 
+            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+
+            /*
+        ===================================================
+        EDIT MODE LOAD
+        ===================================================
+        */
+            if ($id > 0) {
+
+                $data['strPage']   = 'Edit';
+                $data['strSubmit'] = 'Update';
+                $data['strReset']  = 'Cancel';
+
+                $row = DB::connection('mysql_dev')
+                    ->table('bus_cancelled')
+                    ->where('id', $id)
+                    ->first();
+
+                if (!$row) {
+                    return redirect()->route('bus-cancel.index');
+                }
+
+                // fetch cancelled dates
+                $row->dates = DB::connection('mysql_dev')
+                    ->table('bus_cancelled_date')
+                    ->where('bus_cancelled_id', $id)
+                    ->where('active_status', 1)
+                    ->pluck('cancelled_date')
+                    ->toArray();
+
+                $data['row'] = $row;
+            }
+
+            /*
+        ===================================================
+        SUBMIT
+        ===================================================
+        */
             if (request()->isMethod('post')) {
-
-                $validator = Validator::make(request()->all(), [
-                    'operator' => 'required',
-                    'bus'      => 'required',
-                    'year'     => 'required',
-                    'month'    => 'required',
-                    'reason'   => 'required',
-                    'dates'    => 'required|array|min:1',
-                ], [
-                    'operator.required' => 'Please select operator',
-                    'bus.required'      => 'Please select at least one bus',
-                    'year.required'     => 'Please select year',
-                    'month.required'    => 'Please select month',
-                    'reason.required'   => 'Please select reason',
-                    'dates.required'    => 'Please select at least one date',
-                    'dates.array'       => 'Invalid date selection',
-                    'dates.min'         => 'Please select at least one date',
-                ]);
-
-                if ($validator->fails()) {
-                    return back()->withErrors($validator)->withInput();
-                }
-
-                if (request('reason') == 77 && empty(trim(request('other_reason')))) {
-                    return back()->with([
-                        'level' => 'danger',
-                        'message' => 'Please enter other reason'
-                    ])->withInput();
-                }
 
                 DB::beginTransaction();
 
-                $operator_id = request('operator');
-                $bus_ids = explode(',', request('bus'));
-                $year = request('year');
-                $month = request('month');
-                $reason = request('reason');
+                $operator_id  = request('operator');
+                $bus_ids      = explode(',', request('bus'));
+                $year         = request('year');
+                $month        = request('month');
+                $reason       = request('reason');
                 $other_reason = request('other_reason');
-                $dates = request('dates');
-
-                // 🔥 NEW: removed cancelled dates
+                $dates        = request('dates') ?? [];
                 $removedDates = json_decode(request('removed_dates'), true) ?? [];
 
-                foreach ($bus_ids as $bus_id) {
+                /*
+            ==========================================
+            UPDATE
+            ==========================================
+            */
+                if ($id > 0) {
 
-                    // 🔹 Insert into bus_cancelled
+                    DB::connection('mysql_dev')
+                        ->table('bus_cancelled')
+                        ->where('id', $id)
+                        ->update([
+                            'bus_operator_id' => $operator_id,
+                            'bus_id'          => implode(',', $bus_ids),
+                            'year'            => $year,
+                            'month'           => $month,
+                            'reason'          => $reason,
+                            'other_reason'    => ($reason == 77) ? $other_reason : null,
+                            'updated_at'      => now()
+                        ]);
+
+                    $cancel_id = $id;
+                } else {
+
+                    /*
+                ==========================================
+                INSERT
+                ==========================================
+                */
                     $cancel_id = DB::connection('mysql_dev')
                         ->table('bus_cancelled')
                         ->insertGetId([
-                            'bus_id' => $bus_id,
                             'bus_operator_id' => $operator_id,
-                            'month' => $month,
-                            'year' => $year,
-                            'reason' => $reason,
-                            'other_reason' => ($reason == 77) ? $other_reason : null,
-                            'active_status' => 1,
-                            'created_at' => now(),
+                            'bus_id'          => implode(',', $bus_ids),
+                            'year'            => $year,
+                            'month'           => $month,
+                            'reason'          => $reason,
+                            'other_reason'    => ($reason == 77) ? $other_reason : null,
+                            'active_status'   => 1,
+                            'created_at'      => now()
                         ]);
+                }
 
-                    $dateInsert = [];
+                /*
+            ==========================================
+            SAVE DATES
+            ==========================================
+            */
+                foreach ($dates as $date) {
 
-                    foreach ($dates as $date) {
+                    $exists = DB::connection('mysql_dev')
+                        ->table('bus_cancelled_date')
+                        ->where('bus_cancelled_id', $cancel_id)
+                        ->whereDate('cancelled_date', $date)
+                        ->first();
 
-                        $existing = DB::connection('mysql_dev')
-                            ->table('bus_cancelled as bc')
-                            ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
-                            ->where('bc.bus_id', $bus_id)
-                            ->whereDate('bcd.cancelled_date', $date)
-                            ->select('bcd.id')
-                            ->first();
+                    if ($exists) {
 
-                        if ($existing) {
-                            DB::connection('mysql_dev')
-                                ->table('bus_cancelled_date')
-                                ->where('id', $existing->id)
-                                ->update([
-                                    'active_status' => 1,
-                                    'updated_at' => now()
-                                ]);
-                        } else {
-                            // 🔹 Insert new
-                            $dateInsert[] = [
-                                'bus_cancelled_id' => $cancel_id,
-                                'cancelled_date' => $date,
-                                'active_status' => 1,
-                                'created_at' => now(),
-                            ];
-                        }
-                    }
-
-                    if (!empty($dateInsert)) {
                         DB::connection('mysql_dev')
                             ->table('bus_cancelled_date')
-                            ->insert($dateInsert);
+                            ->where('id', $exists->id)
+                            ->update([
+                                'active_status' => 1,
+                                'updated_at'    => now()
+                            ]);
+                    } else {
+
+                        DB::connection('mysql_dev')
+                            ->table('bus_cancelled_date')
+                            ->insert([
+                                'bus_cancelled_id' => $cancel_id,
+                                'cancelled_date'   => $date,
+                                'active_status'    => 1,
+                                'created_at'       => now()
+                            ]);
                     }
                 }
 
-                if (!empty($removedDates)) {
+                /*
+            ==========================================
+            REMOVE UNCHECKED
+            ==========================================
+            */
+                foreach ($removedDates as $rd) {
 
-                    foreach ($removedDates as $rd) {
-                        $record = DB::connection('mysql_dev')
-                            ->table('bus_cancelled as bc')
-                            ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
-                            ->where('bc.bus_id', $rd['bus_id'])
-                            ->whereDate('bcd.cancelled_date', $rd['date'])
-                            ->select('bcd.id')
-                            ->first();
-
-                        if ($record) {
-                            DB::connection('mysql_dev')
-                                ->table('bus_cancelled_date')
-                                ->where('id', $record->id)
-                                ->update([
-                                    'active_status' => 0,
-                                    'updated_at' => now()
-                                ]);
-                        }
-                    }
+                    DB::connection('mysql_dev')
+                        ->table('bus_cancelled_date')
+                        ->where('bus_cancelled_id', $cancel_id)
+                        ->whereDate('cancelled_date', $rd['date'])
+                        ->update([
+                            'active_status' => 0,
+                            'updated_at'    => now()
+                        ]);
                 }
 
                 DB::commit();
 
-                return redirect()->back()->withInput()->with([
-                    'level' => 'success',
-                    'message' => 'Bus Cancelled Successfully'
+                return redirect()->route('bus-cancel.index')->with([
+                    'level'   => 'success',
+                    'message' => 'Bus Cancel ' . ($id ? 'updated' : 'created') . ' successfully'
                 ]);
             }
-        } catch (\Throwable $t) {
+            } catch (\Throwable $t) {
 
-            DB::rollBack();
+                DB::rollBack();
 
-            Log::error("Bus Cancel Error", [
-                'error' => $t->getMessage()
-            ]);
-
-            return back()->with([
-                'level' => 'danger',
-                'message' => 'Something went wrong'
-            ]);
-        }
+                return back()->withInput()->with([
+                    'level' => 'danger',
+                    'message' => $t->getMessage()
+                ]);
+            }
 
         return view('Master.addBusCancel', compact('data'));
     }
-
     public function edit($encId)
     {
         return $this->add($encId);
