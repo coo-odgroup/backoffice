@@ -103,6 +103,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                             <input type="hidden" name="param" value="{{$data['param']}}">
                                             <input type="hidden" name="param2" value="{{$data['param2']}}">
+                                            <input type="hidden" name="existRes" value="{{ $data['existRes'] ?? 0 }}">
                                             @php
                                             $isSave = ($data['param'] ?? null) === 'save';
                                             $isBack = ($data['param2'] ?? null) === 'back';
@@ -116,6 +117,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             @endif
 
                                             @if ($isSave && $isBack)
+                                            <a href="{{ url($createBusUrl.'step6/'.$data['enc_bus_id'].'/save') }}"
+                                                class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
+                                            @elseif (@$data['existRes'] == 1)
                                             <a href="{{ url($createBusUrl.'step6/'.$data['enc_bus_id'].'/save') }}"
                                                 class="btn btn-warning px-5 rounded-pill me-3">
                                                 Continue →
@@ -276,7 +282,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                     <td>
                         <div class="d-flex justify-content-center gap-2">
 
-                            <!-- Hidden default (IMPORTANT) -->
                             <input type="hidden" name="active_status[${index}]" value="0">
 
                             <div class="form-check form-switch">

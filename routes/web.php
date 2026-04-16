@@ -74,6 +74,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::prefix('admin/bus')->group(function () {
+    Route::get('/', [BusWizardController::class, 'index'])->name('bus.index');
+    Route::post('dataTableView', [BusWizardController::class, 'dataTableView'])->name('bus.dataTableView');
+});
+
 Route::prefix('admin/bus/create')->group(function () {
 
     Route::get('/step1/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step1'])->name('bus.step1');

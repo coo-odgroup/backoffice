@@ -9,6 +9,7 @@ use App\Models\Master\BusService;
 use App\Models\Master\Cancellationslab;
 use App\Models\Master\MstSeatLayout;
 use App\Models\Master\SeatType;
+use App\Models\User;
 use App\Models\Users;
 use Illuminate\Database\Eloquent\Model;
 
@@ -84,5 +85,15 @@ class Bus extends Model
     public function cancellationslab()
     {
         return $this->belongsTo(Cancellationslab::class, 'cancellationslabs_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }

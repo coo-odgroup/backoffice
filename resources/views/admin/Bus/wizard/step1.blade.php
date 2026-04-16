@@ -315,7 +315,9 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 <script type="module">
     $(document).ready(function() {
         const selAmenities = <?= json_encode(@$step1AmenityRes) ?>;
-        localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
+        if (selAmenities && selAmenities.length > 0) {
+            localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
+        }
 
         let on_edit_slab_id = "{{ @$step1Res->cancellationslabs_id ?? '' }}";
         let on_edit_bus_id = "{{ @$step1Res->id ?? '' }}";
@@ -477,10 +479,12 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         let selAmenities = [];
 
         try {
-            selAmenities = JSON.parse(localStorage.getItem('selAmenities')) || [];
+            selAmenities = JSON.parse(localStorage.getItem('selAmenities'));
         } catch (e) {
             selAmenities = [];
         }
+
+        console.log(selAmenities);
 
         if (selAmenities.length == 0) {
             commonAjax.viewAlert("Please select at least 1 amenities");

@@ -90,6 +90,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                 class="btn btn-warning px-5 rounded-pill me-3">
                                                 Continue →
                                             </a>
+                                            @elseif (@$data['existRes'] == 1)
+                                            <a href="{{ url($createBusUrl.'step5/'.$data['enc_bus_id'].'/save') }}"
+                                                class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
                                             @endif
 
                                             <button type="submit" class="btn btn-success px-5 rounded-pill">
@@ -363,7 +368,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     $(document).ready(function() {
 
         let selCities = JSON.parse(localStorage.getItem("selCities") || "[]");
-        let step4Res = <?= json_encode($data['step4Res']) ?>;
+        let step4Res = <?= json_encode(@$data['step4Res']) ?>;
 
         renderStations(selCities, step4Res);
     });

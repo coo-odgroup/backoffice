@@ -88,6 +88,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                             <input type="hidden" name="param" value="{{$data['param']}}">
                                             <input type="hidden" name="param2" value="{{$data['param2']}}">
+                                            <input type="hidden" name="existRes" value="{{ $data['existRes'] ?? 0 }}">
                                             @php
                                             $isSave = ($data['param'] ?? null) === 'save';
                                             $isBack = ($data['param2'] ?? null) === 'back';
@@ -101,6 +102,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             @endif
 
                                             @if ($isSave && $isBack)
+                                            <a href="{{ url($createBusUrl.'preview/'.$data['enc_bus_id'].'/save') }}"
+                                                class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
+                                            @elseif (@$data['existRes'] == 1)
                                             <a href="{{ url($createBusUrl.'preview/'.$data['enc_bus_id'].'/save') }}"
                                                 class="btn btn-warning px-5 rounded-pill me-3">
                                                 Continue →
