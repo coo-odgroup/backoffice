@@ -33,6 +33,134 @@ class BusWizardController extends Controller
         view()->share('createBusUrl', $this->createBusUrl);
     }
 
+    public function index()
+    {
+        return view('admin.bus.wizard.bus');
+    }
+
+    public function dataTableView()
+    {
+        $recordsTotal     = 0;
+        $recordsFiltered  = 0;
+        $data             = [];
+
+        try {
+
+            $txtSearch = htmlEncode(request('txtSearch'));
+            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+
+            $dataQuery = Bus::with([
+                'brand:id,brand_name',
+                'model:id,model_name',
+                'axleType:id,axle_type',
+                'createdBy:id,name',
+                'updatedBy:id,name'
+            ])
+                ->select(
+                    'id as bus_id',
+                    'name as bus_name',
+                    'via',
+                    'bus_number',
+                    'gen_bus_type',
+                    'created_at',
+                    'created_by',
+                    'updated_at',
+                    'updated_by',
+                    'active_status',
+                    'brand_id',
+                    'model_id',
+                    'axle_type_id'
+                );
+
+            if (!empty($txtSearch)) {
+                $dataQuery->where(function ($q) use ($txtSearch) {
+                    $q->where('name', 'like', "%{$txtSearch}%")
+                        ->orWhere('bus_number', 'like', "%{$txtSearch}%")
+                        ->orWhere('via', 'like', "%{$txtSearch}%")
+
+                        // relation search
+                        ->orWhereHas('brand', function ($q2) use ($txtSearch) {
+                            $q2->where('brand_name', 'like', "%{$txtSearch}%");
+                        })
+                        ->orWhereHas('model', function ($q2) use ($txtSearch) {
+                            $q2->where('model_name', 'like', "%{$txtSearch}%");
+                        });
+                });
+            }
+
+            if ($selStatus !== '' && isset($selStatus)) {
+                $dataQuery->where('active_status', $selStatus);
+            }
+
+            $count = (clone $dataQuery)->count();
+
+            $start  = (int) request()->input('start', 0);
+            $length = (int) request()->input('length', 10);
+
+            $columns = [
+                2 => 'name',
+                3 => 'created_by',
+                4 => 'active_status'
+            ];
+
+            if (!empty(request('order'))) {
+                $orderBy     = request('order');
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'name';
+                $orderType   = $orderBy[0]['dir'];
+            } else {
+                $orderColumn = 'name';
+                $orderType   = 'asc';
+            }
+
+            $dataQuery->orderBy($orderColumn, $orderType);
+
+            if ($length == -1) {
+                $arrRes = $dataQuery->get();
+            } else {
+                $arrRes = $dataQuery->offset($start)
+                    ->limit($length)
+                    ->get();
+            }
+
+            if ($arrRes->count() > 0) {
+                foreach ($arrRes as $val) {
+                    $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date  = $val->updated_at ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
+                    $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
+                    $val->enc_bus_id    = Crypt::encryptString($val->bus_id);
+                }
+            }
+
+            $recordsTotal = $count;
+            $recordsFiltered = $count;
+            $data = $arrRes;
+        } catch (\Throwable $t) {
+
+            Log::info("Exception occurred in BusWizardController@dataTableView", [
+                'error_message' => $t->getMessage(),
+                'trace' => $t->getTraceAsString()
+            ]);
+
+            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
+
+            Log::error("Error", [
+                'Controller' => 'BusWizardController',
+                'Method'     => 'dataTableView',
+                'Error'      => $errorMsg
+            ]);
+
+            $recordsTotal     = 0;
+            $recordsFiltered  = 0;
+            $data            = [];
+        }
+
+        return response()->json([
+            'recordsTotal'    => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data'            => $data,
+        ]);
+    }
+
     public function step1($bus_id = null, $param = null, $param2 = null)
     {
         $data = [];
@@ -338,7 +466,7 @@ class BusWizardController extends Controller
             if ($param2 == 'back') {
                 BusRoutesStops::where('bus_id', $bus_id)->delete();
             }
-                
+
             $routeStops = [];
             $stop_order = 1;
             foreach ($cities as $cityId => $cityName) {
@@ -394,6 +522,11 @@ class BusWizardController extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
+        $isExist = BusBoardingDropping::where('bus_id', $busId)->exists();
+        if (($param == 'save' && $param2 == 'back') || $isExist) {
+            $data['existRes'] = 1;
+        }
+
         $data['step4Res'] = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
 
         return view('admin.bus.wizard.step4', compact('data'));
@@ -498,6 +631,11 @@ class BusWizardController extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
+        $isExist = BusRouteFares::where('bus_id', $busId)->exists();
+        if (($param == 'save' && $param2 == 'back') || $isExist) {
+            $data['existRes'] = 1;
+        }
+
         $data['step5Res'] = BusRouteFares::where('bus_id', $busId)->get();
 
         return view('admin.bus.wizard.step5', compact('data'));
@@ -511,6 +649,7 @@ class BusWizardController extends Controller
             $busId = $request->bus_id;
             $param = $request->param;
             $param2 = $request->param2;
+            $existRes = $request->existRes;
 
             $busData = BusRoutesMap::where('bus_id', $busId)->first();
             $bus_route_id = $busData ? $busData->bus_route_id : null;
@@ -535,7 +674,7 @@ class BusWizardController extends Controller
                 ];
             }
 
-            if ($param2 == 'back') {
+            if ($param2 == 'back' || $existRes == 1) {
                 BusRouteFares::where('bus_id', $busId)->delete();
             }
 
@@ -579,6 +718,11 @@ class BusWizardController extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
+        $isExist = BusContacts::where('bus_id', $busId)->exists();
+        if (($param == 'save' && $param2 == 'back') || $isExist) {
+            $data['existRes'] = 1;
+        }
+
         $data['step6Res'] = BusContacts::where('bus_id', $busId)->get();
 
         return view('admin.bus.wizard.step6', compact('data'));
@@ -591,6 +735,7 @@ class BusWizardController extends Controller
             $busId = $request->bus_id;
             $param = $request->param;
             $param2 = $request->param2;
+            $existRes = $request->existRes;
 
             $insertData = [];
 
@@ -606,10 +751,11 @@ class BusWizardController extends Controller
                 ];
             }
 
-            if ($param2 == 'back') {
+            if ($param2 == 'back' || $existRes == 1) {
                 BusContacts::where('bus_id', $busId)->delete();
             }
 
+            // Batch Insert
             BusContacts::insert($insertData);
 
             session()->flash('level', 'success');
@@ -646,6 +792,12 @@ class BusWizardController extends Controller
         $data['param'] = $param;
         $data['param2'] = $param2;
 
+        // Edit or Back or Continue
+        $isExist = BusSeats::where('bus_id', $busId)->exists();
+        if (($param == 'save' && $param2 == 'back') || $isExist) {
+            $data['existRes'] = 1;
+        }
+
         return view('admin.bus.wizard.step7', compact('data'));
     }
 
@@ -658,6 +810,8 @@ class BusWizardController extends Controller
             $seat_codes = $request->seat_code;
             $seat_ids = $request->seat_id;
             $param = $request->param;
+            $param2 = $request->param2;
+            $existRes = $request->existRes;
 
             $insertData = [];
 
@@ -673,7 +827,7 @@ class BusWizardController extends Controller
                 ];
             }
 
-            if ($param != null) {
+            if ($param2 == 'back' || $existRes == 1) {
                 BusSeats::where('bus_id', $busId)->delete();
             }
 

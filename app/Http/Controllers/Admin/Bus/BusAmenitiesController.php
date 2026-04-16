@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class BusAmenitiesController extends Controller
 {
- public function amenities()
+    public function amenities()
     {
         return view('master.amenities');
     }
