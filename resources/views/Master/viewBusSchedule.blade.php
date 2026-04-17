@@ -37,56 +37,57 @@
         <div class="card">
             <div class="card-body">
                 <!-- FILTER -->
-                <div class="card-body">
-    <div class="row align-items-end">
+                <div class="mb-1 border-bottom d-none" id="filterBox">
+                    <div class="row align-items-end">
 
-        <div class="col-lg-3 col-md-6">
-            <label for="operator">Operator:</label>
-            <select class="form-select form-select-sm" id="operator" name="operator">
-                <option value="">Select Operator</option>
-            </select>
-        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="operator">Operator:</label>
+                            <select class="form-select form-select-sm" id="operator" name="operator">
+                                <option value="">Select Operator</option>
+                            </select>
+                        </div>
 
-        <div class="col-lg-3 col-md-6">
-            <label for="bus">Bus:</label>
-            <select class="form-select form-select-sm" id="bus" name="bus">
-                <option value="">Select Bus:</option>
-            </select>
-        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="bus">Bus:</label>
+                            <select class="form-select form-select-sm" id="bus" name="bus">
+                                <option value="">Select Bus:</option>
+                            </select>
+                        </div>
 
-        <div class="col-lg-3 col-md-6">
-            <label for="runningCycle">Running Cycle:</label>
-            <select class="form-select form-select-sm" id="runningCycle" name="runningCycle">
-                <option value="">Select Running Cycle:</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-            </select>
-        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="runningCycle">Running Cycle:</label>
+                            <select class="form-select form-select-sm" id="runningCycle" name="runningCycle">
+                                <option value="">Select Running Cycle:</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
 
-        <!-- Status -->
-        <div class="col-lg-3 col-md-6">
-            <label for="selStatus">Status:</label>
-            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                <option value="">Select Status</option>
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-            </select>
-        </div>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="selStatus">Status:</label>
+                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                <option value="">Select Status</option>
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
 
-        <!-- Buttons -->
-        <div class="col-lg-12 d-flex justify-content-end flex-wrap action-btns gap-1 mt-2">
-            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                <i class="fa-solid fa-search me-1"></i>Search
-            </button>
-            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                <i class="fa-solid fa-rotate-left me-1"></i>Reset
-            </button>
-        </div>
+                        <!-- Buttons -->
+                        <div class="col-lg-4 col-md-12 d-flex justify-content-end flex-wrap action-btns gap-1">
+                            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
+                                <i class="fa-solid fa-search me-1"></i>Search
+                            </button>
 
-    </div>
-</div>
+                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                <i class="fa-solid fa-rotate-left me-1"></i>Reset
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
                 <!-- Table start -->
                 <div id="tableActions">
                     <div class="d-flex justify-content-between mb-2">
@@ -172,7 +173,10 @@
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Bus Schedule Dates</h5>
+                    <h5 class="modal-title">
+                        Bus Schedule Dates
+                        <span id="modalBusHeading" class="ms-2 fw-bold text- dark"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" style="overflow-y:auto">
@@ -248,7 +252,7 @@
             if ($('#selStatus').val() != '') {
                 selStatus = $('#selStatus').val();
             }
-    
+
 
             let tableId = 'datatable';
             let orderBy = [2, 'asc'];
@@ -372,7 +376,6 @@
 
             loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
         }
-
         $(document).on('click', '.btnViewSchedule', function() {
 
             let id = $(this).data('id');
@@ -397,7 +400,14 @@
                     _token: $('meta[name="csrf-token"]').attr("content")
                 },
                 success: function(response) {
+
                     $('#viewScheduleContainer').html(response);
+
+                    let busTitle = $('#viewScheduleContainer').find('#modalBusTitle').text();
+
+                    if (busTitle !== '') {
+                        $('#modalBusHeading').text(busTitle);
+                    }
                 },
                 error: function() {
                     $('#viewScheduleContainer').html(`
@@ -407,6 +417,7 @@
                     `);
                 }
             });
+
         });
     </script>
     @endpush
