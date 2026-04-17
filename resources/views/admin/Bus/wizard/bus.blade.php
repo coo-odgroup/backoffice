@@ -115,7 +115,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
                     data-url="{{ route('bus.dataTableView') }}"
-                    data-edit-url="{{ route('bus.step1', 'ID') }}">
+                    data-copy-url="{{ route('bus.copy', 'ID') }}"
+                    data-clone-url="{{ route('bus.clone', 'ID') }}"
+                    data-businfo-edit-url="{{ route('bus.step1', 'ID') }}"
+                    data-seats-routes-edit-url="{{ route('bus.step2', 'ID') }}"
+                    data-contact-edit-url="{{ route('bus.step6', 'ID') }}"
+                    data-moreinfo-edit-url="{{ route('bus.step7', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -124,7 +129,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
+                            <th>Bus Operator</th>
                             <th>Bus Name</th>
+                            <th>Bus Number</th>
+                            <th>Source >> Destination</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -225,8 +233,38 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'bus_name',
+                data: null,
+                render: function(data, type, row) {
+                    return `
+                        ${row.operator?.organization_name ?? ''}<br>
+                        [${row.operator?.name ?? ''}]
+                    `;
+                }
+            },
+            {
+                data: null,
+                render: function(data, type, row) {
+                    return `
+                        ${row.bus_name}<br>
+                        (Bus ID : ${row.bus_id})
+                    `;
+                }
+            },
+            {
+                data: 'bus_number',
                 defaultContent: "--"
+            },
+            {
+                data: null,
+                defaultContent: "--",
+                render: function(data, type, row) {
+
+                    if (row.routemap && row.routemap.route && row.routemap.route.boardingcity && row.routemap.route.droppingcity) {
+                        return row.routemap.route.boardingcity.city_name + ' >> ' + row.routemap.route.droppingcity.city_name;
+                    }
+
+                    return "--";
+                }
             },
             {
                 data: null,
@@ -272,24 +310,86 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {
                 data: '',
                 render: function(data, type, row) {
+                    let copyUrl = $('#' + tableId).data('copy-url');
+                    let cloneUrl = $('#' + tableId).data('clone-url');
+                    let businfoEditUrl = $('#' + tableId).data('businfo-edit-url');
+                    let seatsRoutesEditUrl = $('#' + tableId).data('seats-routes-edit-url');
+                    let contactEditUrl = $('#' + tableId).data('contact-edit-url');
+                    let moreinfoEditUrl = $('#' + tableId).data('moreinfo-edit-url');
 
-                    let editUrl = $('#' + tableId).data('edit-url');
+                    if (!copyUrl) return '';
+                    if (!cloneUrl) return '';
+                    if (!businfoEditUrl) return '';
+                    if (!seatsRoutesEditUrl) return '';
+                    if (!contactEditUrl) return '';
+                    if (!moreinfoEditUrl) return '';
 
-                    if (!editUrl) return '';
+                    let copy_url = copyUrl.replace('ID', row.enc_bus_id);
+                    let clone_url = cloneUrl.replace('ID', row.enc_bus_id);
+                    let businfo_url = businfoEditUrl.replace('ID', row.enc_bus_id);
+                    let seatsroutes_url = seatsRoutesEditUrl.replace('ID', row.enc_bus_id);
+                    let contact_url = contactEditUrl.replace('ID', row.enc_bus_id);
+                    let moreinfo_url = moreinfoEditUrl.replace('ID', row.enc_bus_id);
 
                     return `
-                        <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_bus_id)}">
-                        <i class="fa fa-edit"></i> Edit
-                        </a>
+                        <div class="d-inline-flex gap-1">
 
-                        <a href="javascript:void(0);"
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-info text-white dropdown-toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="fa fa-edit"></i> Edit
+                                </button>
+
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${copy_url}">
+                                        <i class="fa fa-clone"></i> Copy
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${clone_url}">
+                                        <i class="fa fa-clone"></i> Clone
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${businfo_url}">
+                                        <i class="fa fa-pen"></i> Edit Bus Info
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${seatsroutes_url}">
+                                        <i class="fa fa-pencil-square"></i> Edit Seats & Routes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${contact_url}">
+                                        <i class="fa fa-phone"></i> Edit Contact
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                        href="${moreinfo_url}">
+                                        <i class="fa fa-pencil-square"></i> Edit More Info
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_amenities"
-                            data-id="${row.enc_bus_id}">
+                            data-table="users"
+                            data-id="${row.enc_users_id}">
                                 <i class="fa fa-history"></i> View Log
-                        </a>
+                            </a>
 
+                        </div>
                     `;
                 },
                 className: "noPrint text-center"

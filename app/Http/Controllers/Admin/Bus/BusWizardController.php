@@ -40,9 +40,9 @@ class BusWizardController extends Controller
 
     public function dataTableView()
     {
-        $recordsTotal     = 0;
-        $recordsFiltered  = 0;
-        $data             = [];
+        $recordsTotal = 0;
+        $recordsFiltered = 0;
+        $data = [];
 
         try {
 
@@ -50,14 +50,18 @@ class BusWizardController extends Controller
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
 
             $dataQuery = Bus::with([
+                'operator:id,name,organization_name',
                 'brand:id,brand_name',
                 'model:id,model_name',
                 'axleType:id,axle_type',
                 'createdBy:id,name',
-                'updatedBy:id,name'
+                'updatedBy:id,name',
+                'routemap.route.boardingcity:id,city_name',
+                'routemap.route.droppingcity:id,city_name'
             ])
                 ->select(
                     'id as bus_id',
+                    'bus_operator_id',
                     'name as bus_name',
                     'via',
                     'bus_number',
@@ -79,11 +83,9 @@ class BusWizardController extends Controller
                         ->orWhere('via', 'like', "%{$txtSearch}%")
 
                         // relation search
-                        ->orWhereHas('brand', function ($q2) use ($txtSearch) {
-                            $q2->where('brand_name', 'like', "%{$txtSearch}%");
-                        })
-                        ->orWhereHas('model', function ($q2) use ($txtSearch) {
-                            $q2->where('model_name', 'like', "%{$txtSearch}%");
+                        ->orWhereHas('operator', function ($q2) use ($txtSearch) {
+                            $q2->where('name', 'like', "%{$txtSearch}%")
+                                ->orWhere('organization_name', 'like', "%{$txtSearch}%");
                         });
                 });
             }
@@ -94,7 +96,7 @@ class BusWizardController extends Controller
 
             $count = (clone $dataQuery)->count();
 
-            $start  = (int) request()->input('start', 0);
+            $start = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
 
             $columns = [
@@ -104,12 +106,12 @@ class BusWizardController extends Controller
             ];
 
             if (!empty(request('order'))) {
-                $orderBy     = request('order');
+                $orderBy = request('order');
                 $orderColumn = $columns[$orderBy[0]['column']] ?? 'name';
-                $orderType   = $orderBy[0]['dir'];
+                $orderType = $orderBy[0]['dir'];
             } else {
                 $orderColumn = 'name';
-                $orderType   = 'asc';
+                $orderType = 'asc';
             }
 
             $dataQuery->orderBy($orderColumn, $orderType);
@@ -124,10 +126,10 @@ class BusWizardController extends Controller
 
             if ($arrRes->count() > 0) {
                 foreach ($arrRes as $val) {
-                    $val->created_date  = date('d-M-Y H:i:s', strtotime($val->created_at));
-                    $val->updated_date  = $val->updated_at ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
-                    $val->is_active     = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_bus_id    = Crypt::encryptString($val->bus_id);
+                    $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
+                    $val->updated_date = $val->updated_at ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
+                    $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
+                    $val->enc_bus_id = Crypt::encryptString($val->bus_id);
                 }
             }
 

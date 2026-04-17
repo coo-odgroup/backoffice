@@ -21,19 +21,19 @@ class Cities extends Model
     // City belongs to state
     public function state()
     {
-        return $this->belongsTo(mst_State::class);
+        return $this->belongsTo(States::class);
     }
 
     // City belongs to district
     public function district()
     {
-        return $this->belongsTo(mst_District::class);
+        return $this->belongsTo(Districts::class);
     }
 
     // City has many synonyms
     public function synonyms()
     {
-        return $this->hasMany(CitySynonym::class);
+        return $this->hasMany(CitiesSynonyms::class);
     }
 
     public function stops()

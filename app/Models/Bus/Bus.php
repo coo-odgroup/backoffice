@@ -96,4 +96,9 @@ class Bus extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function routemap()
+    {
+        return $this->belongsTo(BusRoutesMap::class, 'bus_id');
+    }
 }
