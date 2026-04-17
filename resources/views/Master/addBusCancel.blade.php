@@ -260,14 +260,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.loadBusOperatorDropdown(editData.operator);
         commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
 
-        // store values first
         let operatorId = String(editData.operator).trim();
         let busId = String(editData.bus).trim();
 
-        // load buses
         commonAjax.loadBusListByOperator('#bus', operatorId);
 
-        // wait until options are loaded, then select bus
         setTimeout(function() {
 
             let option = $('#bus option[value="' + busId + '"]');
@@ -285,7 +282,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     
                     renderBuses();
                 }
-
+                                            
                 $('#bus_ids').val(busId);
             }
 

@@ -30,6 +30,8 @@ class BusScheduleController extends Controller
             $operator  = request('operator') !== null && request('operator') !== '' ? (int)request('operator') : null;
             $bus       = request('bus') !== null && request('bus') !== '' ? (int)request('bus') : null;
             $status    = request('selStatus') !== null && request('selStatus') !== '' ? (int)request('selStatus') : null;
+            $runningCycle = request('runningCycle') !== null && request('runningCycle') !== '' ? (int)request('runningCycle') : null;
+
 
             $start  = request('start', 0);
             $length = request('length', 10);
@@ -39,6 +41,7 @@ class BusScheduleController extends Controller
                     'bs.id',
                     'bs.operator_id',
                     'bs.bus_id',
+                    'bs.running_cycle',
 
                     DB::raw('(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_name'),
                     DB::raw('(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_number'),
@@ -77,6 +80,10 @@ class BusScheduleController extends Controller
                 $query->where('bs.bus_id', $bus);
             }
 
+            if (!empty($runningCycle)) {
+                $query->where('bs.running_cycle', $runningCycle);
+            }
+
             if ($status !== null && $status !== '') {
                 $query->where('bs.active_status', $status);
             }
@@ -100,6 +107,7 @@ class BusScheduleController extends Controller
                     'operator_name' => $row->operator_name ?? '--',
 
                     'bus_name' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
+                    'running_cycle' => $row->running_cycle ?? '--',
 
                     'created_date' => $row->created_at
                         ? date('d-M-Y H:i:s', strtotime($row->created_at))
@@ -357,98 +365,146 @@ class BusScheduleController extends Controller
 
     public function getScheduleDates(Request $request)
     {
-        $bus_id = $request->bus_id;
-        $schedule_id = $request->bus_schedule_id;
+        try {
 
-        $scheduleDates = [];
-        $runningCycle = null;
-        $lastDate = null;
+            $bus_id = $request->bus_id;
+            $schedule_id = $request->bus_schedule_id;
 
+            $scheduleDates = [];
+            $runningCycle = null;
+            $lastDate = null;
+            $busName = '';
+            $busNumber = '';
 
+            $today = \Carbon\Carbon::today();
 
-        if (!empty($schedule_id)) {
+            if (!empty($schedule_id)) {
 
-            // get schedule
-            $schedule = DB::table('odbusdev.bus_schedule')
-                ->where('id', $schedule_id)
-                ->first();
+                $schedule = DB::table('odbusdev.bus_schedule')
+                    ->where('id', $schedule_id)
+                    ->first();
 
-            if ($schedule) {
-                $runningCycle = $schedule->running_cycle;
+                if ($schedule) {
+
+                    $runningCycle = $schedule->running_cycle;
+
+                    $bus = DB::table('odbusdev.bus')
+                        ->where('id', $schedule->bus_id)
+                        ->first();
+
+                    if ($bus) {
+                        $busName = ($bus->name ?? '');
+                        $busNumber = ($bus->bus_number ?? '');
+                    }
+
+                    $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                        ->where('bus_schedule_id', $schedule_id)
+                        ->orderBy('entry_date', 'asc')
+                        ->limit(30)
+                        ->pluck('entry_date')
+                        ->toArray();
+
+                    $lastDate = DB::table('odbusdev.bus_schedule_date')
+                        ->where('bus_schedule_id', $schedule_id)
+                        ->orderByDesc('entry_date')
+                        ->value('entry_date');
+                }
+            } elseif (!empty($bus_id)) {
+
+                $schedule = DB::table('odbusdev.bus_schedule')
+                    ->where('bus_id', $bus_id)
+                    ->where('active_status', 1)
+                    ->orderByDesc('id')
+                    ->first();
+
+                if ($schedule) {
+
+                    $runningCycle = $schedule->running_cycle;
+
+                    $bus = DB::table('odbusdev.bus')
+                        ->where('id', $schedule->bus_id)
+                        ->first();
+
+                    if ($bus) {
+                        $busName = ($bus->name ?? '');
+                        $busNumber = ($bus->bus_number ?? '');
+                    }
+
+                    $scheduleDates = DB::table('odbusdev.bus_schedule_date')
+                        ->where('bus_schedule_id', $schedule->id)
+                        ->orderBy('entry_date', 'asc')
+                        ->limit(30)
+                        ->pluck('entry_date')
+                        ->toArray();
+
+                    $lastDate = DB::table('odbusdev.bus_schedule_date')
+                        ->where('bus_schedule_id', $schedule->id)
+                        ->orderByDesc('entry_date')
+                        ->value('entry_date');
+                }
             }
 
-            $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                ->where('bus_schedule_id', $schedule_id)
-                ->orderBy('entry_date', 'asc')
-                ->limit(30)
-                ->pluck('entry_date')
-                ->toArray();
+                        $html = '
+                                <div id="modalBusTitle" style="display:none;"> - (' . $busNumber . ')</div>';
 
-            $lastDate = DB::table('odbusdev.bus_schedule_date')
-                ->where('bus_schedule_id', $schedule_id)
-                ->orderByDesc('entry_date')
-                ->value('entry_date');
-        } elseif (!empty($bus_id)) {
+            if (!empty($scheduleDates)) {
 
-            $schedule = DB::table('odbusdev.bus_schedule')
-                ->where('bus_id', $bus_id)
-                ->where('active_status', 1)
-                ->orderByDesc('id')
-                ->first();
+                $chunkSize = ceil(count($scheduleDates) / 3);
+                $chunks = array_chunk($scheduleDates, $chunkSize);
 
-            if ($schedule) {
+                $html .= '<div class="row">';
 
-                $runningCycle = $schedule->running_cycle;
+                foreach ($chunks as $chunk) {
 
-                $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                    ->where('bus_schedule_id', $schedule->id)
-                    ->orderBy('entry_date', 'asc')
-                    ->limit(30)
-                    ->pluck('entry_date')
-                    ->toArray();
+                    $html .= '<div class="col-md-4">';
 
-                $lastDate = DB::table('odbusdev.bus_schedule_date')
-                    ->where('bus_schedule_id', $schedule->id)
-                    ->orderByDesc('entry_date')
-                    ->value('entry_date');
-            }
-        }
+                    foreach ($chunk as $date) {
 
+                        $dateObj = \Carbon\Carbon::parse($date);
 
-        if (!empty($scheduleDates)) {
+                        $style = '';
 
-            $chunkSize = ceil(count($scheduleDates) / 3);
-            $chunks = array_chunk($scheduleDates, $chunkSize);
+                        if ($dateObj->lt($today)) {
+                            $style = 'color:#6c757d;
+                                  text-decoration:line-through;
+                                  text-decoration-color:red;
+                                  text-decoration-thickness:2px;';
+                        }
 
-            $html = '<div class="row">';
+                        $html .= '
+                            <div class="date-tile text-center mb-2 p-2 border rounded bg-light" style="' . $style . '">
+                                ' . $dateObj->format('d-M-Y') . '
+                            </div>';
+                    }
 
-            foreach ($chunks as $chunk) {
-                $html .= '<div class="col-4">';
-
-                foreach ($chunk as $date) {
-                    $html .= '<div class="date-tile text-center mb-2 p-2 border rounded">'
-                        . \Carbon\Carbon::parse($date)->format('d-M-Y') .
-                        '</div>';
+                    $html .= '</div>';
                 }
 
                 $html .= '</div>';
+            } else {
+
+                $html .= '
+                    <div class="text-center text-muted p-4">
+                        Bus is not scheduled
+                    </div>';
             }
 
-            $html .= '</div>';
-        } else {
-            $html = '<div class="text-center text-muted p-4">Bus is not scheduled</div>';
+            if (!empty($bus_id)) {
+                return response()->json([
+                    'status' => !empty($scheduleDates),
+                    'html' => $html,
+                    'running_cycle' => $runningCycle,
+                    'last_date' => $lastDate
+                ]);
+            }
+
+            return response($html);
+        } catch (\Exception $e) {
+
+            return response('
+                <div class="text-danger text-center p-4">
+                    Failed to load schedule
+                </div>');
         }
-
-
-        if (!empty($bus_id)) {
-            return response()->json([
-                'status' => !empty($scheduleDates),
-                'html' => $html,
-                'running_cycle' => $runningCycle,
-                'last_date' => $lastDate
-            ]);
-        }
-
-        return response($html);
     }
 }
