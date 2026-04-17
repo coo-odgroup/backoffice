@@ -64,7 +64,6 @@ class BusScheduleCron extends Command
                 }
             }
 
-            /* Single batch insert */
             if (!empty($insertData)) {
                 DB::table('odbusdev.bus_schedule_date')->insert($insertData);
             }
