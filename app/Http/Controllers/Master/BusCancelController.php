@@ -175,11 +175,6 @@ class BusCancelController extends Controller
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
-            /*
-        ===================================================
-        EDIT MODE LOAD
-        ===================================================
-        */
             if ($id > 0) {
 
                 $data['strPage']   = 'Edit';
