@@ -2,6 +2,7 @@
 
 namespace App\Models\Bus;
 
+use App\Models\Master\Cities;
 use Illuminate\Database\Eloquent\Model;
 
 class BusRoutes extends Model
@@ -18,5 +19,15 @@ class BusRoutes extends Model
     public function stops()
     {
         return $this->hasMany(BusRoutesStops::class, 'bus_route_id');
+    }
+
+    public function boardingcity()
+    {
+        return $this->belongsTo(Cities::class, 'boarding_city_id');
+    }
+
+    public function droppingcity()
+    {
+        return $this->belongsTo(Cities::class, 'dropping_city_id');
     }
 }

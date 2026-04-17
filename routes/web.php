@@ -77,6 +77,9 @@ Route::get('/', function () {
 Route::prefix('admin/bus')->group(function () {
     Route::get('/', [BusWizardController::class, 'index'])->name('bus.index');
     Route::post('dataTableView', [BusWizardController::class, 'dataTableView'])->name('bus.dataTableView');
+
+    Route::get('/copy', [BusWizardController::class, 'copy'])->name('bus.copy');
+    Route::get('/clone', [BusWizardController::class, 'clone'])->name('bus.clone');
 });
 
 Route::prefix('admin/bus/create')->group(function () {
