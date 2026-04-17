@@ -37,47 +37,56 @@
         <div class="card">
             <div class="card-body">
                 <!-- FILTER -->
-                <div class="mb-1 border-bottom d-none" id="filterBox">
-                    <div class="card-body">
-                        <div class="row align-items-end">
+                <div class="card-body">
+    <div class="row align-items-end">
 
-                            <div class="col-lg-3 col-md-6">
-                                <label for="operator">Operator:</label>
-                                <select class="form-select form-select-sm" id="operator" name="operator">
-                                    <option value="">Select Operator</option>
-                                </select>
-                            </div>
+        <div class="col-lg-3 col-md-6">
+            <label for="operator">Operator:</label>
+            <select class="form-select form-select-sm" id="operator" name="operator">
+                <option value="">Select Operator</option>
+            </select>
+        </div>
 
-                            <div class="col-lg-3 col-md-6">
-                                <label for="bus">Bus:</label>
-                                <select class="form-select form-select-sm" id="bus" name="bus">
-                                    <option value="">Select Bus:</option>
-                                </select>
-                            </div>
+        <div class="col-lg-3 col-md-6">
+            <label for="bus">Bus:</label>
+            <select class="form-select form-select-sm" id="bus" name="bus">
+                <option value="">Select Bus:</option>
+            </select>
+        </div>
 
-                            <!-- Status -->
-                            <div class="col-lg-3 col-md-6">
-                                <label for="selStatus">Status:</label>
-                                <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                                    <option value="">Select Status</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
-                            </div>
+        <div class="col-lg-3 col-md-6">
+            <label for="runningCycle">Running Cycle:</label>
+            <select class="form-select form-select-sm" id="runningCycle" name="runningCycle">
+                <option value="">Select Running Cycle:</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+        </div>
 
-                            <!-- Buttons -->
-                            <div class="col-lg-3 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
-                                <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                    <i class="fa-solid fa-search me-1"></i>Search
-                                </button>
-                                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                    <i class="fa-solid fa-rotate-left me-1"></i>Reset
-                                </button>
-                            </div>
+        <!-- Status -->
+        <div class="col-lg-3 col-md-6">
+            <label for="selStatus">Status:</label>
+            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                <option value="">Select Status</option>
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+            </select>
+        </div>
 
-                        </div>
-                    </div>
-                </div>
+        <!-- Buttons -->
+        <div class="col-lg-12 d-flex justify-content-end flex-wrap action-btns gap-1 mt-2">
+            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
+                <i class="fa-solid fa-search me-1"></i>Search
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                <i class="fa-solid fa-rotate-left me-1"></i>Reset
+            </button>
+        </div>
+
+    </div>
+</div>
                 <!-- Table start -->
                 <div id="tableActions">
                     <div class="d-flex justify-content-between mb-2">
@@ -134,6 +143,7 @@
                                 <th>Opeator</th>
                                 <!-- <th>Route</th> -->
                                 <th>Bus Name/No</th>
+                                <th>Runing Cycle</th>
                                 <th>Last Modified</th>
                                 <th>Status</th>
                                 <th class="no-sort">View Schedule</th>
@@ -230,7 +240,6 @@
             $('#pageSizeDatatable').val(10);
             let txtSearch = '';
             let selStatus = '';
-            let countrySearch = '';
 
             if ($('#txtSearch').val() != '') {
                 txtSearch = $('#txtSearch').val();
@@ -239,9 +248,7 @@
             if ($('#selStatus').val() != '') {
                 selStatus = $('#selStatus').val();
             }
-            if ($('#countrySearch').val() != '') {
-                countrySearch = $('#countrySearch').val();
-            }
+    
 
             let tableId = 'datatable';
             let orderBy = [2, 'asc'];
@@ -250,7 +257,9 @@
                 selStatus: selStatus,
                 operator: operator,
                 bus: bus,
+                runningCycle: runningCycle
             };
+
             let displayColumns = [1, 2, 3, 4, 5, 6, 7];
             let dataTableColumns = [{
                     data: '',
@@ -274,6 +283,9 @@
                 },
                 {
                     data: 'bus_name',
+                    defaultContent: "--"
+                }, {
+                    data: 'running_cycle',
                     defaultContent: "--"
                 },
                 {
@@ -367,17 +379,16 @@
 
             // show loader
             $('#viewScheduleContainer').html(`
-        <div class="text-center p-4">
-            <div class="spinner-border text-primary"></div>
-            <p class="mt-2">Loading schedule...</p>
-        </div>
-     `);
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2">Loading schedule...</p>
+                </div>
+            `);
 
             // open modal
             let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
             modal.show();
 
-            // ajax call
             $.ajax({
                 type: "POST",
                 url: "/admin/get-schedule-dates",
@@ -390,10 +401,10 @@
                 },
                 error: function() {
                     $('#viewScheduleContainer').html(`
-                <div class="text-danger text-center p-4">
-                    Failed to load schedule
-                </div>
-            `);
+                        <div class="text-danger text-center p-4">
+                            Failed to load schedule
+                        </div>
+                    `);
                 }
             });
         });
