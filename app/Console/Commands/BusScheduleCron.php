@@ -19,10 +19,35 @@ class BusScheduleCron extends Command
 
             $deleteBefore = Carbon::today()->subDays(5)->format('Y-m-d');
 
+            $oldDates = DB::table('odbusdev.bus_schedule_date')
+                ->where('entry_date', '<=', $deleteBefore)
+                ->get();
+
+            if ($oldDates->count() > 0) {
+
+                $logData = [];
+
+                foreach ($oldDates as $row) {
+
+                    $logData[] = [
+                        'bus_schedule_date_id' => $row->id,
+                        'bus_schedule_id'      => $row->bus_schedule_id,
+                        'entry_date'           => $row->entry_date,
+                        'created_at'           => $row->created_at,
+                        'created_by'           => $row->created_by,
+                        'updated_at'           => $row->updated_at,
+                        'updated_by'           => $row->updated_by,
+                        'deleted_at'           => now(),
+                        'deleted_by'           => 1
+                    ];
+                }
+
+                DB::table('odbuslog.bus_schedule_date_log')->insert($logData);
+            }
+
             DB::table('odbusdev.bus_schedule_date')
                 ->where('entry_date', '<=', $deleteBefore)
                 ->delete();
-
 
             $schedules = DB::table('odbusdev.bus_schedule')
                 ->where('active_status', 1)
@@ -59,6 +84,7 @@ class BusScheduleCron extends Command
                     $insertData[] = [
                         'bus_schedule_id' => $busScheduleId,
                         'entry_date'      => $date,
+                        'created_at'      => now(),
                         'created_by'      => 1
                     ];
                 }
