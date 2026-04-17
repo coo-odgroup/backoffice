@@ -11,71 +11,72 @@ class BusScheduleCron extends Command
     protected $signature = 'busschedule:cron';
     protected $description = 'Generate future bus schedule dates and delete old dates';
 
-  public function handle()
-{
-    DB::beginTransaction();
+    public function handle()
+    {
+        DB::beginTransaction();
 
-    try {
+        try {
 
-        // Delete old dates (today - 5 days)
-        $deleteBefore = Carbon::today()->subDays(5)->format('Y-m-d');
+            $deleteBefore = Carbon::today()->subDays(5)->format('Y-m-d');
 
-        DB::table('odbusdev.bus_schedule_date')
-            ->where('entry_date', '<=', $deleteBefore)
-            ->delete();
+            DB::table('odbusdev.bus_schedule_date')
+                ->where('entry_date', '<=', $deleteBefore)
+                ->delete();
 
-       // Add ONE next future date daily
-        $schedules = DB::table('odbusdev.bus_schedule')
-            ->where('active_status', 1)
-            ->get();
 
-        foreach ($schedules as $schedule) {
+            $schedules = DB::table('odbusdev.bus_schedule')
+                ->where('active_status', 1)
+                ->get();
 
-            $busScheduleId = $schedule->id;
-            $runningCycle  = (int) $schedule->running_cycle;
+            $insertData = [];
 
-            // Cycle 1 = daily
-            // Cycle 2 = every 2 days
-            // Cycle 5 = every 5 days
-            $gap = ($runningCycle <= 1) ? 1 : $runningCycle;
+            foreach ($schedules as $schedule) {
 
-            $lastDate = DB::table('odbusdev.bus_schedule_date')
-                ->where('bus_schedule_id', $busScheduleId)
-                ->max('entry_date');
+                $busScheduleId = $schedule->id;
+                $runningCycle  = (int) $schedule->running_cycle;
 
-            if ($lastDate) {
-                $nextDate = Carbon::parse($lastDate)->addDays($gap);
-            } else {
-                $nextDate = Carbon::today();
+                $gap = ($runningCycle <= 1) ? 1 : $runningCycle;
+
+                $lastDate = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $busScheduleId)
+                    ->max('entry_date');
+
+                if ($lastDate) {
+                    $nextDate = Carbon::parse($lastDate)->addDays($gap);
+                } else {
+                    $nextDate = Carbon::today();
+                }
+
+                $date = $nextDate->format('Y-m-d');
+
+                $exists = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $busScheduleId)
+                    ->where('entry_date', $date)
+                    ->exists();
+
+                if (!$exists) {
+
+                    $insertData[] = [
+                        'bus_schedule_id' => $busScheduleId,
+                        'entry_date'      => $date,
+                        'created_by'      => 1
+                    ];
+                }
             }
 
-            $date = $nextDate->format('Y-m-d');
-
-            $exists = DB::table('odbusdev.bus_schedule_date')
-                ->where('bus_schedule_id', $busScheduleId)
-                ->where('entry_date', $date)
-                ->exists();
-
-            if (!$exists) {
-
-                DB::table('odbusdev.bus_schedule_date')->insert([
-                    'bus_schedule_id' => $busScheduleId,
-                    'entry_date'      => $date,
-                    'created_at'      => now(),
-                    'created_by'      => 1
-                ]);
+            /* Single batch insert */
+            if (!empty($insertData)) {
+                DB::table('odbusdev.bus_schedule_date')->insert($insertData);
             }
+
+            DB::commit();
+
+            $this->info('Bus schedule cron completed successfully.');
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            $this->error($e->getMessage());
         }
-
-        DB::commit();
-
-        $this->info('Bus schedule cron completed successfully.');
-
-    } catch (\Exception $e) {
-
-        DB::rollBack();
-
-        $this->error($e->getMessage());
     }
-}
 }

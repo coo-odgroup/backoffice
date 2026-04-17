@@ -106,7 +106,7 @@ class BusScheduleController extends Controller
 
                     'operator_name' => $row->operator_name ?? '--',
 
-                    'bus_name' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
+                    'bus_name' => trim(($row->bus_name ?? '') . ' - ( ' . ($row->bus_number ?? '') . ' )'),
                     'running_cycle' => $row->running_cycle ?? '--',
 
                     'created_date' => $row->created_at

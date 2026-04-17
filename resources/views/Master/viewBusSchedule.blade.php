@@ -37,7 +37,7 @@
         <div class="card">
             <div class="card-body">
                 <!-- FILTER -->
-                <div class="mb-1 border-bottom d-none" id="filterBox">
+                <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
                     <div class="row align-items-end">
 
                         <div class="col-lg-2 col-md-6">
@@ -225,19 +225,15 @@
 
         window.getDataTableView = function(reset = true) {
 
-            //  If table already initialized
+
             if (window.dataTableInstance && reset) {
 
-                // Clear saved state
                 window.dataTableInstance.state.clear();
 
-                // Reset length dropdown UI
                 $('#pageSizeDatatable').val(10);
 
-                // Reset page length internally
                 window.dataTableInstance.page.len(10);
 
-                // Force first page
                 window.dataTableInstance.page(0);
             }
 

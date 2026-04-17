@@ -312,7 +312,7 @@
                     if ($('#bus option').length > 1) {
                         clearInterval(checkBusLoaded);
                         $('#pageLoader').remove();
-                    }
+                    }   
 
                 }, 300);
 
