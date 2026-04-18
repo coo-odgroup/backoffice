@@ -97,7 +97,7 @@ class BusCancelController extends Controller
 
             foreach ($rows as $row) {
 
-                $key = $row->bus_id; // 🔥 IMPORTANT (per bus)
+                $key = $row->bus_id; 
 
                 if (!isset($grouped[$key])) {
 
@@ -276,7 +276,7 @@ class BusCancelController extends Controller
                             ]);
                     }
                 }
-
+    
                 foreach ($removedDates as $rd) {
 
                     DB::connection('mysql_dev')
