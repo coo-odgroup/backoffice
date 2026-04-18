@@ -272,6 +272,13 @@ class SeatLayoutController extends Controller
 
         return view('Master.addSeatLayout', compact('data'));
     }
+    
+
+    public function edit($encId)
+    {
+        return $this->add($encId);
+    }
+
     public function checkLayoutName(Request $request)
     {
         $exists = SeatLayoutName::where('layout_name', $request->layout_name)->exists();
@@ -279,11 +286,6 @@ class SeatLayoutController extends Controller
         return response()->json([
             'exists' => $exists
         ]);
-    }
-
-    public function edit($encId)
-    {
-        return $this->add($encId);
     }
 
     public function getSeatLyoutPreview(Request $request)

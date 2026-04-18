@@ -312,8 +312,7 @@
                     if ($('#bus option').length > 1) {
                         clearInterval(checkBusLoaded);
                         $('#pageLoader').remove();
-                    }   
-
+                    }
                 }, 300);
 
                 // fail-safe remove after 5 sec

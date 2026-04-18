@@ -117,80 +117,9 @@
                                                         <strong>Schedule Date List</strong>
                                                     </div>
 
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="mb-3">
-                                                                <strong>DILKHUS | OD 02 AS 5297 | [Bhubaneswar >> Jharsuguda]</strong>
-                                                            </div>
-
-                                                            <!-- Column 1 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 2 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 3 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
+                                                    <div class="card-body" id="scheduleContainer">
+                                                        <div class="text-center text-muted">
+                                                            Please select operator and bus
                                                         </div>
                                                     </div>
                                                 </div>
@@ -486,212 +415,151 @@
 
     @push('scripts')
     <script type="module">
-        let selectedOperators = [];
-
         $(document).ready(function() {
 
-            let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
-
-
-            commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#operator', 'Select Operator');
-            commonAjax.loadTicketFareSlabList('#slab', slab_id);
-            commonAjax.loadBusOperatorList();
-            commonAjax.initClearableInputs();
+            commonAjax.initSelect2('#bus', 'Select Bus');
+            commonAjax.initSelect2('#reason', 'Select Reason');
 
-            $('#operator').on('change', function() {
+            commonAjax.loadBusOperatorDropdown('');
+            commonAjax.loadAnnextureList('REASON', '', '#reason');
 
-                let id = $(this).val();
-                let text = $("#operator option:selected").text();
-
-                if (!id) return;
-                if (selectedOperators.some(op => op.id == id)) return;
-
-                let operator = {
-                    id,
-                    text
-                };
-                selectedOperators.push(operator);
-
-                renderOperators();
-                loadOperatorTable(operator);
-
-                $(this).val('').trigger('change');
-            });
-
-            let existingOperators = @json($data['row']['operators'] ?? []);
-
-            existingOperators.forEach(op => {
-                selectedOperators.push({
-                    id: op.id,
-                    text: op.name
-                });
-
-                loadOperatorTable({
-                    id: op.id,
-                    text: op.name
-                });
-            });
-
-            renderOperators();
         });
 
-        function renderOperators() {
 
-            let html = '';
+        $('#operator').on('change', function() {
 
-            selectedOperators.forEach((op, index) => {
-                html += `<span class="selected-tag" data-index="${index}">${op.text}<span class="remove">×</span></span>`;
-            });
+            let operator_id = $(this).val();
 
-            $('#selectedOperators').html(html);
-            $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
+            $('#bus').html('');
+            $('#scheduleContainer').html(`
+        <div class="text-center text-muted">
+            Please select bus
+        </div>
+    `);
 
-            $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
-        }
+            commonAjax.loadBusListByOperator('#bus', operator_id);
 
-        $(document).on('click', '.remove', function() {
+        });
+ 
 
-            let index = $(this).closest('.selected-tag').data('index');
-            let operator = selectedOperators[index];
+        /* Bus Change */
+        $('#bus').on('change', function() {
 
-            selectedOperators.splice(index, 1);
-            $(`#table_${operator.id}`).remove();
+            loadSeatBlockSchedules();
 
-            renderOperators();
         });
 
-        $('#btnReset').click(function() {
 
-            $('#backoffice-form')[0].reset();
-            $('.form-select').val('').trigger('change');
 
-            selectedOperators = [];
-            renderOperators();
-            $('#operatorTables').html('');
-        });
+        function loadSeatBlockSchedules() {
+            let operator = $('#operator').val();
+            let bus = $('#bus').val();
 
-        $('#backoffice-form').on('submit', function(e) {
-
-            e.preventDefault();
-
-            if (!validator.selectDropdown('slab', 'Select Ticket Fare Slab')) return;
-            commonAjax.confirmAlert('Are you sure to proceed!');
-
-            $('#btnConfirmOk').one('click', () => this.submit());
-        });
-
-        // add/remove rows
-        $(document).on('click', '.btn-add', function() {
-            $('#slabWrapper').append(`
-            <div class="row mb-3 dynamic-item">
-                <div class="col-md-2"><input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="date" name="from_date[]" class="form-control form-control-sm from-date" min="{{ date('Y-m-d') }}"></div>
-                <div class="col-md-2"><input type="date" name="to_date[]" class="form-control form-control-sm to-date" min="{{ date('Y-m-d') }}"></div>
-                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm btn-remove mt-1">-</button></div>
+            if (!operator || !bus) {
+                $('#scheduleContainer').html(`
+            <div class="text-center text-muted">
+                Please select operator and bus
             </div>
         `);
-        });
-
-        $(document).on('click', '.btn-remove', function() {
-            $(this).closest('.dynamic-item').remove();
-        });
-
-        // FROM DATE CHANGE
-        $(document).on('change', '.from-date', function() {
-
-            let fromDate = $(this).val();
-            let row = $(this).closest('.row');
-            let toInput = row.find('.to-date');
-
-            if (fromDate) {
-                toInput.attr('min', fromDate);
-
-                if (toInput.val() && toInput.val() < fromDate) {
-                    toInput.val('');
-                }
+                return;
             }
-        });
 
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth() + 1;
 
+            $('#scheduleContainer').html(`
+        <div class="text-center p-4">
+            <div class="spinner-border text-primary"></div>
+            <p>Loading schedules...</p>
+        </div>
+    `);
 
-
-        // TO DATE CHANGE
-        $(document).on('change', '.to-date', function() {
-
-            let row = $(this).closest('.row');
-            let fromDate = row.find('.from-date').val();
-            let toDate = $(this).val();
-
-            if (fromDate && toDate && toDate < fromDate) {
-                alert('To Date cannot be less than From Date');
-                $(this).val('');
-            }
-        });
-
-
-        // UPDATED: no table if no data
-        function loadOperatorTable(operator) {
 
             $.ajax({
-                url: "/admin/get-operator-slab-data",
-                type: "POST",
+                type: 'POST',
+                url: '/admin/get-bus-schedule-by-month',
                 data: {
-                    operator_id: operator.id,
-                    _token: $('meta[name="csrf-token"]').attr("content"),
+                    operator_id: operator,
+                    bus_ids: bus,
+                    year: year,
+                    month: month,
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 },
 
                 success: function(res) {
-
-                    // skip if no data
-                    if (!res.status || res.data.length === 0) {
-                        $(`#table_${operator.id}`).remove();
+                    if (!res.status || !res.data) {
+                        $('#scheduleContainer').html(`
+                    <div class="text-danger text-center">
+                        No Schedule Found
+                    </div>
+                `);
                         return;
                     }
 
-                    let tableHtml = `
-                    <div class="card mt-3 operator-table" id="table_${operator.id}">
-                        <div class="card-header bg-warning">
-                            <b>${operator.text}</b>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Slab</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th>Commission</th>
-                                        <th>From Date</th>
-                                        <th>To Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
-
-                    res.data.forEach(row => {
-                        tableHtml += `
-                        <tr>
-                            <td>${row.slab_name}</td>
-                            <td>${row.starting_fare}</td>
-                            <td>${row.upto_fare}</td>
-                            <td>${row.commision}</td>
-                            <td>${row.from_date}</td>
-                            <td>${row.to_date}</td>
-                        </tr>`;
-                    });
-
-                    tableHtml += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`;
-
-                    $(`#table_${operator.id}`).remove();
-                    $('#operatorTables').append(tableHtml);
+                    renderSchedule(res.data);
                 }
+            });
+
+        }
+
+
+
+        function renderSchedule(data) {
+            let html = '';
+
+            Object.keys(data).forEach(function(bus_id) {
+
+                let bus = data[bus_id];
+
+                html += `
+            <div class="mb-4">
+                <div class="mb-2">
+                    <strong>${bus.bus_name} | ${bus.bus_number}</strong>
+                </div>
+
+                <div class="row">
+        `;
+
+                bus.dates.forEach(function(date) {
+
+                    html += `
+                <div class="col-md-4 mb-2">
+                    <label class="w-100 border rounded p-2 text-center">
+
+                        <input type="checkbox"
+                               name="dates[]"
+                               value="${date}"
+                               class="schedule-checkbox"
+                               data-bus="${bus_id}">
+
+                        ${formatDate(date)}
+
+                    </label>
+                </div>
+            `;
+                });
+
+                html += `
+                </div>
+            </div>
+        `;
+
+            });
+
+            $('#scheduleContainer').html(html);
+        }
+
+
+
+        function formatDate(dateStr) {
+            let d = new Date(dateStr);
+
+            return d.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
             });
         }
     </script>

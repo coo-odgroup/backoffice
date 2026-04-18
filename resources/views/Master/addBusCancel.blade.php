@@ -258,10 +258,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#bus', 'Select Bus');
         commonAjax.initSelect2('#reason', 'Select Reason');
 
-        commonAjax.loadBusOperatorDropdown(editData.operator);
+        commonAjax.loadBusOperatorDropdown('');
+
         setTimeout(function() {
             $('#operator').val(operatorId).trigger('change');
-        }, 300);
+        }, 300);;
         commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
 
         let operatorId = String(editData.operator).trim();
