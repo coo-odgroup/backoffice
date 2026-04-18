@@ -247,6 +247,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     let existing_reason_id = <?php echo isset($data['row']->reason) ? json_encode($data['row']->reason) : 'null'; ?>;
     let selectedBuses = [];
+    let pageInitializing = true;
 
     let cancelledDatesMap = {};
     let removedCancelledDates = [];
@@ -258,12 +259,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#reason', 'Select Reason');
 
         commonAjax.loadBusOperatorDropdown(editData.operator);
+        setTimeout(function() {
+            $('#operator').val(operatorId).trigger('change');
+        }, 300);
         commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
 
         let operatorId = String(editData.operator).trim();
         let busId = String(editData.bus).trim();
 
-        commonAjax.loadBusListByOperator('#bus', operatorId);
 
         setTimeout(function() {
 
@@ -271,7 +274,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             if (option.length > 0) {
 
-                $('#bus').val(busId).trigger('change');
+                $('#bus').val(busId);
 
                 selectedBuses = [{
                     id: busId,
@@ -279,16 +282,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 }];
 
                 if (selectedBuses) {
-                    
+
                     renderBuses();
                 }
-                                            
+
                 $('#bus_ids').val(busId);
             }
 
-            $('#year').val(editData.year).trigger('change');
-            $('#month').val(editData.month).trigger('change');
-            $('#reason').val(editData.reason).trigger('change');
+            $('#year').val(editData.year);
+            $('#month').val(editData.month);
+            $('#reason').val(editData.reason);
 
             if (editData.reason == 77) {
                 $('#otherReasonWrapper').show();
@@ -296,10 +299,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
 
             editData.loaded = true;
-
-            loadCancelledData();
-            loadBusSchedules();
-
+            pageInitializing = false;
+            refreshAllData();
         }, 1000); // increase to 1500 if slow ajax
     });
 
@@ -308,53 +309,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $('#operator').on('change', function() {
 
         let operator_id = $(this).val();
-
         if (!operator_id) return;
 
-        // always load buses
         commonAjax.loadBusListByOperator('#bus', operator_id, function() {
 
-            // first edit restore only once
-            if (!editData.loaded && editData.bus) {
-
-                let busId = String(editData.bus).trim();
-
-                $('#bus').val(busId).trigger('change');
-
-                let option = $('#bus option:selected');
-
-                if (option.val()) {
-
-                    selectedBuses = [{
-                        id: busId,
-                        text: option.text()
-                    }];
-
-                    renderBuses();
-                    $('#bus_ids').val(busId);
-                }
-
-                $('#year').val(editData.year).trigger('change');
-                $('#month').val(editData.month).trigger('change');
-                $('#reason').val(editData.reason).trigger('change');
-
-                editData.loaded = true;
-
-                loadCancelledData();
-                loadBusSchedules();
+            if (!pageInitializing) {
+                selectedBuses = [];
+                renderBuses();
+                $('#bus_ids').val('');
             }
+
         });
 
-        // manual changes after load complete
-        if (editData.loaded) {
-
-            selectedBuses = [];
-            renderBuses();
-
-            $('#bus_ids').val('');
-            $('#year').val('');
-            $('#month').val('');
-        }
     });
 
 
@@ -376,8 +342,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $(this).val('').trigger('change');
 
-        loadBusSchedules();
-        loadCancelledData();
+        refreshAllData();
     });
 
     $(document).on('click', '#selectedBuses .remove', function() {
@@ -388,8 +353,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         renderBuses();
 
-        loadBusSchedules();
-        loadCancelledData();
+        refreshAllData();
     });
 
     function renderBuses() {
@@ -527,9 +491,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         });
     }
 
+    let refreshTimer;
+
     $('#year, #month').on('change', function() {
-        loadBusSchedules();
-        loadCancelledData();
+
+        if (pageInitializing) return;
+
+        clearTimeout(refreshTimer);
+
+        refreshTimer = setTimeout(function() {
+            refreshAllData();
+        }, 300);
+
     });
 
     $('#reason').on('change', function() {
@@ -619,9 +592,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 renderCancelledTable(res.data);
                 $('#cancelledTableWrapper').show();
 
-                loadBusSchedules();
             }
         });
+    }
+
+
+    function refreshAllData() {
+        loadCancelledData();
+        loadBusSchedules();
     }
 
     function renderCancelledTable(data) {
@@ -677,12 +655,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#year').val(oldData.year);
         $('#month').val(oldData.month);
 
-        loadCancelledData();
-        loadBusSchedules();
+        refreshAllData();
     }
     if (oldData.operator) {
 
-        $('#operator').val(oldData.operator).trigger('change');
+        $('#operator').val(oldData.operator);
 
         // restore will happen after bus loads
     }

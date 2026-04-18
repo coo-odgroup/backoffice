@@ -40,14 +40,14 @@
                 <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
                     <div class="row align-items-end">
 
-                        <div class="col-lg-2 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <label for="operator">Operator:</label>
                             <select class="form-select form-select-sm" id="operator" name="operator">
                                 <option value="">Select Operator</option>
                             </select>
                         </div>
 
-                        <div class="col-lg-2 col-md-6">
+                        <div class="col-lg-3 col-md-6">
                             <label for="bus">Bus:</label>
                             <select class="form-select form-select-sm" id="bus" name="bus">
                                 <option value="">Select Bus:</option>
@@ -76,7 +76,7 @@
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-4 col-md-12 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-2 col-md-12 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>

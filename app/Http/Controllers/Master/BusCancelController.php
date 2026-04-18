@@ -97,7 +97,7 @@ class BusCancelController extends Controller
 
             foreach ($rows as $row) {
 
-                $key = $row->bus_id; // 🔥 IMPORTANT (per bus)
+                $key = $row->bus_id; 
 
                 if (!isset($grouped[$key])) {
 
@@ -201,11 +201,6 @@ class BusCancelController extends Controller
                 $data['row'] = $row;
             }
 
-            /*
-        ===================================================
-        SUBMIT
-        ===================================================
-        */
             if (request()->isMethod('post')) {
 
                 DB::beginTransaction();
@@ -219,11 +214,6 @@ class BusCancelController extends Controller
                 $dates        = request('dates') ?? [];
                 $removedDates = json_decode(request('removed_dates'), true) ?? [];
 
-                /*
-            ==========================================
-            UPDATE
-            ==========================================
-            */
                 if ($id > 0) {
 
                     DB::connection('mysql_dev')
@@ -242,11 +232,6 @@ class BusCancelController extends Controller
                     $cancel_id = $id;
                 } else {
 
-                    /*
-                ==========================================
-                INSERT
-                ==========================================
-                */
                     $cancel_id = DB::connection('mysql_dev')
                         ->table('bus_cancelled')
                         ->insertGetId([
@@ -261,11 +246,7 @@ class BusCancelController extends Controller
                         ]);
                 }
 
-                /*
-            ==========================================
-            SAVE DATES
-            ==========================================
-            */
+
                 foreach ($dates as $date) {
 
                     $exists = DB::connection('mysql_dev')
@@ -295,12 +276,7 @@ class BusCancelController extends Controller
                             ]);
                     }
                 }
-
-                /*
-            ==========================================
-            REMOVE UNCHECKED
-            ==========================================
-            */
+    
                 foreach ($removedDates as $rd) {
 
                     DB::connection('mysql_dev')
