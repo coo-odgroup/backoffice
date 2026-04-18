@@ -444,7 +444,7 @@ class BusScheduleController extends Controller
                 }
             }
 
-                        $html = '
+            $html = '
                                 <div id="modalBusTitle" style="display:none;"> - (' . $busNumber . ')</div>';
 
             if (!empty($scheduleDates)) {
