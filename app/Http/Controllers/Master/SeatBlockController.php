@@ -360,23 +360,204 @@ class SeatBlockController extends Controller
         return $this->add($encId);
     }
 
-    public function getOperatorSlabData(Request $request)
+    public function getSeatLayoutByBus(Request $request)
     {
-        $operator_id = $request->operator_id;
+        try {
 
-        $data = DB::table('mst_ticket_fare_slab_info as t')
-            ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-            ->where('t.bus_operator_id', $operator_id)
-            ->select(
-                't.*',
-                's.slab_name'
-            )
-            ->orderBy('t.starting_fare')
-            ->get();
+            $request->validate([
+                'bus_id' => 'required|integer'
+            ]);
 
-        return response()->json([
-            'status' => true,
-            'data' => $data
-        ]);
+            $bus = DB::connection('mysql_dev')
+                ->table('bus')
+                ->where('id', $request->bus_id)
+                ->whereNull('deleted_at')
+                ->first();
+
+            if (!$bus) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Bus not found'
+                ]);
+            }
+
+
+            $layoutId = $bus->seat_layout_type_id;
+
+            if (!$layoutId) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Seat layout not assigned to this bus'
+                ]);
+            }
+
+            $layout = DB::connection('mysql_dev')
+                ->table('odbusmaster.mst_seat_layout_name')
+                ->where('id', $layoutId)
+                ->where('active_status', 1)
+                ->first();
+
+            if (!$layout) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Seat layout not found'
+                ]);
+            }
+
+
+            $seats = DB::connection('mysql_dev')
+                ->table('odbusmaster.mst_seats')
+                ->where('seat_layout_name_id', $layoutId)
+                ->orderBy('berth_type')
+                ->orderBy('row_number')
+                ->orderBy('col_number')
+                ->get();
+
+            if ($seats->count() == 0) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'No seat mapping found'
+                ]);
+            }
+
+
+            $html = $this->buildSeatLayoutHtml($seats);
+
+
+            return response()->json([
+                'status'      => true,
+                'layout_id'   => $layout->id,
+                'layout_name' => $layout->layout_name,
+                'rows'        => $layout->rows,
+                'cols'        => $layout->cols,
+                'tier'        => $layout->tier,
+                'bus_id'      => $bus->id,
+                'bus_name'    => $bus->name,
+                'bus_number'  => $bus->bus_number,
+                'html'        => $html
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+
+            return response()->json([
+                'status'  => false,
+                'message' => 'Invalid bus id'
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status'  => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+
+
+    private function buildSeatLayoutHtml($seats)
+    {
+        $layout = [
+            'UPPER' => [],
+            'LOWER' => []
+        ];
+
+        foreach ($seats as $seat) {
+            $deck = $seat->berth_type == 1 ? 'LOWER' : 'UPPER';
+            $layout[$deck][$seat->row_number][$seat->col_number] = $seat;
+        }
+
+        foreach ($layout as $deck => $rows) {
+            ksort($rows);
+
+            foreach ($rows as $rowKey => $cols) {
+                ksort($cols);
+                $rows[$rowKey] = $cols;
+            }
+
+            $layout[$deck] = $rows;
+        }
+
+        $maxCols = ['UPPER' => 0, 'LOWER' => 0];
+
+        foreach ($layout as $deck => $rows) {
+            foreach ($rows as $cols) {
+                if (!empty($cols)) {
+                    $maxCols[$deck] = max($maxCols[$deck], max(array_keys($cols)));
+                }
+            }
+        }
+
+        $html = '<div class="bus-layout">';
+
+        foreach (['UPPER', 'LOWER'] as $deck) {
+
+            if (empty($layout[$deck])) continue;
+
+            $html .= '<div class="berth-row">';
+            $html .= '<div class="berth-label">' . ucwords(strtolower($deck)) . ' Berth</div>';
+            $html .= '<div class="layout-box" style="grid-template-columns:repeat(' . $maxCols[$deck] . ',42px)">';
+
+            $skip = [];
+
+            foreach ($layout[$deck] as $rIndex => $row) {
+
+                foreach ($row as $cIndex => $seat) {
+
+                    if (isset($skip[$rIndex][$cIndex])) continue;
+
+                    if ($seat->seat_class == 0 || empty($seat->seat_text)) {
+                        $html .= '<div class="empty-seat"></div>';
+                    } elseif ($seat->seat_class == 3) {
+
+                        $text = strtoupper($seat->seat_text);
+
+                        $class = ($text == 'EXIT')
+                            ? 'vertical_exit_prv'
+                            : (($text == 'TOILET')
+                                ? 'vertical_toilet_prv'
+                                : 'bus-vertical-sleeper');
+
+                        $html .= '
+                    <label class="seat-wrap vertical-sleeper-wrap">
+                        <span class="' . $class . '"></span>
+                        <span class="seat-number">' . $seat->seat_text . '</span>
+                    </label>';
+
+                        $skip[$rIndex + 1][$cIndex] = true;
+                    } elseif ($seat->seat_class == 2) {
+
+                        $text = strtoupper($seat->seat_text);
+
+                        $class = ($text == 'EXIT')
+                            ? 'horizontal_exit_prv'
+                            : (($text == 'TOILET')
+                                ? 'horizontal_toilet_prv'
+                                : 'bus-sleeper');
+
+                        $html .= '
+                    <label class="seat-wrap sleeper-wrap">
+                        <span class="' . $class . '"></span>
+                        <span class="seat-number">' . $seat->seat_text . '</span>
+                    </label>';
+                    } else {
+
+                        $class = strtoupper($seat->seat_text) == 'EXIT'
+                            ? 'seat_exit_prv'
+                            : 'bus-seat';
+
+                        $html .= '
+                    <label class="seat-wrap">
+                        <span class="' . $class . '"></span>
+                        <span class="seat-number">' . $seat->seat_text . '</span>
+                    </label>';
+                    }
+                }
+            }
+
+            $html .= '</div></div>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }
