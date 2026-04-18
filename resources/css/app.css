@@ -2165,3 +2165,14 @@ label.amenity-chip:has(input:checked) {
 .date-tile:hover {
     background-color: #e9ecef;   /* slightly darker grey */
 }
+
+.bpv-next-btn {
+    background: #198754;
+    padding: 9px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: 500;
+    border: none;
+    margin-left: 10px;
+}

@@ -26,8 +26,8 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a href="{{ route('amenities.index') }}" class="btn btn-success btn-sm">
-            View @yield('page_title')
+        <a href="{{ route('bus.index') }}" class="btn btn-success btn-sm">
+            View Bus List
         </a>
     </div>
 </div>
@@ -88,8 +88,20 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             @php
                                             $isSave = ($data['param'] ?? null) === 'save';
                                             $isBack = ($data['param2'] ?? null) === 'back';
+                                            $isEdit = ($data['param2'] ?? null) === 'edit';
                                             @endphp
 
+                                            @if ($data['param2'] == 'edit')
+                                            <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id'].'/save/edit') }}"
+                                                class="btn btn-secondary px-5 rounded-pill me-3">
+                                                ← Back
+                                            </a>
+                                            <a href="{{ url($createBusUrl.'step4/'.$data['enc_bus_id'].'/save/edit') }}"
+                                                class="btn btn-warning px-5 rounded-pill me-3">
+                                                Continue →
+                                            </a>
+                                            <button type="submit" class="btn btn-success px-5 rounded-pill">Update & Continue →</button>
+                                            @else
                                             @if ($isSave)
                                             <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id'].'/save/back') }}"
                                                 class="btn btn-secondary px-5 rounded-pill me-3">
@@ -97,12 +109,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             </a>
                                             @endif
 
-                                            @if ($isSave && $isBack)
-                                            <a href="{{ url($createBusUrl.'step4/'.$data['enc_bus_id'].'/save') }}"
-                                                class="btn btn-warning px-5 rounded-pill me-3">
-                                                Continue →
-                                            </a>
-                                            @elseif (@$data['existRes'] == 1)
+                                            @if (($isSave && $isBack) || @$data['existRes'] == 1)
                                             <a href="{{ url($createBusUrl.'step4/'.$data['enc_bus_id'].'/save') }}"
                                                 class="btn btn-warning px-5 rounded-pill me-3">
                                                 Continue →
@@ -112,6 +119,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             <button type="submit" class="btn btn-success px-5 rounded-pill">
                                                 Save & Continue →
                                             </button>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

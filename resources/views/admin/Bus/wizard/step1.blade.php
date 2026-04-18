@@ -20,8 +20,8 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
-        <a href="{{ route('bus.step1') }}" class="btn btn-success btn-sm">
-            View @yield('page_title')
+        <a href="{{ route('bus.index') }}" class="btn btn-success btn-sm">
+            View Bus List
         </a>
     </div>
 </div>
@@ -291,12 +291,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                         <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                         <input type="hidden" name="param" value="{{$data['param']}}">
                                         <input type="hidden" name="param2" value="{{$data['param2']}}">
+                                        @if ($data['param2'] == 'edit')
+                                        <button type="submit" class="btn btn-success px-5 rounded-pill">Update & Continue →</button>
+                                        @else
                                         @if ($data['bus_id']!=0)
                                         <a href="{{ url($createBusUrl.'step2/'.$data['enc_bus_id'].'/save') }}" class="btn btn-warning px-5 rounded-pill me-3">
                                             Continue →
                                         </a>
                                         @endif
                                         <button type="submit" class="btn btn-success px-5 rounded-pill">Save & Continue →</button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

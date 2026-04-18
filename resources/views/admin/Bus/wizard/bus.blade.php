@@ -324,12 +324,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!contactEditUrl) return '';
                     if (!moreinfoEditUrl) return '';
 
-                    let copy_url = copyUrl.replace('ID', row.enc_bus_id);
-                    let clone_url = cloneUrl.replace('ID', row.enc_bus_id);
-                    let businfo_url = businfoEditUrl.replace('ID', row.enc_bus_id);
-                    let seatsroutes_url = seatsRoutesEditUrl.replace('ID', row.enc_bus_id);
-                    let contact_url = contactEditUrl.replace('ID', row.enc_bus_id);
-                    let moreinfo_url = moreinfoEditUrl.replace('ID', row.enc_bus_id);
+                    let copy_url = copyUrl.replace('ID', row.enc_bus_id) + '/save/edit';
+                    let clone_url = cloneUrl.replace('ID', row.enc_bus_id) + '/save/edit';
+                    let businfo_url = businfoEditUrl.replace('ID', row.enc_bus_id) + '/save/edit';
+                    let seatsroutes_url = seatsRoutesEditUrl.replace('ID', row.enc_bus_id) + '/save/edit';
+                    let contact_url = contactEditUrl.replace('ID', row.enc_bus_id) + '/save/edit';
+                    let moreinfo_url = moreinfoEditUrl.replace('ID', row.enc_bus_id) + '/save/edit';
 
                     return `
                         <div class="d-inline-flex gap-1">

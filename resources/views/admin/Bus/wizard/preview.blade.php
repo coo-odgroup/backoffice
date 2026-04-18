@@ -251,9 +251,23 @@
 
 <!-- BACK BUTTON -->
 <div class="text-center mt-4">
-    <a href="{{ url($createBusUrl.'step7/'.$data['enc_bus_id']) }}" class="bpv-back-btn">
+    <a href="{{ url($createBusUrl.'step7/'.$data['enc_bus_id'].'/save/back') }}" class="bpv-back-btn">
         ← Back
     </a>
+    <button type="button" id="finishBtn" class="bpv-next-btn">
+        Finish →
+    </button>
 </div>
-
 @endsection
+@push('scripts')
+<script>
+    document.getElementById('finishBtn').addEventListener('click', function() {
+        // clear localStorage
+        localStorage.removeItem('selAmenities');
+        localStorage.removeItem('selCities');
+
+        // redirect
+        window.location.href = "{{ url('/admin/bus') }}";
+    });
+</script>
+@endpush
