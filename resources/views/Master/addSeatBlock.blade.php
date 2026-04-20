@@ -159,7 +159,9 @@
                 </div>
             </div>
     </form>
+    <style>/* DEFAULT SEAT LOOK = your original screenshot */
 
+    </style>
     @endsection
 
     @push('scripts')
@@ -201,6 +203,14 @@
         });
 
 
+function toggleSeat(el)
+{
+    $(el).toggleClass('selected-seat');
+
+    let chk = $(el).closest('label').find('.seat-checkbox');
+
+    chk.prop('checked', !chk.prop('checked'));
+}
 
         function loadSeatBlockSchedules() {
             let operator = $('#operator').val();

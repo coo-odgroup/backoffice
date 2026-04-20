@@ -360,6 +360,7 @@ class SeatBlockController extends Controller
         return $this->add($encId);
     }
 
+
     public function getSeatLayoutByBus(Request $request)
     {
         try {
@@ -369,26 +370,26 @@ class SeatBlockController extends Controller
             ]);
 
             $bus = DB::connection('mysql_dev')
-                ->table('bus')
+                ->table('odbusdev.bus')
                 ->where('id', $request->bus_id)
-                ->whereNull('deleted_at')
                 ->first();
 
             if (!$bus) {
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => 'Bus not found'
                 ]);
             }
 
+ 
+            $layoutId = (int) $bus->mst_seat_layout_name_id;
 
-            $layoutId = $bus->seat_layout_type_id;
+            if ($layoutId <= 0) {
+                $layoutId = (int) $bus->seat_layout_type_id;
+            }
 
-            if (!$layoutId) {
-                return response()->json([
-                    'status'  => false,
-                    'message' => 'Seat layout not assigned to this bus'
-                ]);
+            if ($layoutId <= 0) {
+                $layoutId = 1;
             }
 
             $layout = DB::connection('mysql_dev')
@@ -399,11 +400,10 @@ class SeatBlockController extends Controller
 
             if (!$layout) {
                 return response()->json([
-                    'status'  => false,
+                    'status' => false,
                     'message' => 'Seat layout not found'
                 ]);
             }
-
 
             $seats = DB::connection('mysql_dev')
                 ->table('odbusmaster.mst_seats')
@@ -413,16 +413,22 @@ class SeatBlockController extends Controller
                 ->orderBy('col_number')
                 ->get();
 
-            if ($seats->count() == 0) {
-                return response()->json([
-                    'status'  => false,
-                    'message' => 'No seat mapping found'
-                ]);
-            }
+            $activeSeats = DB::connection('mysql_dev')
+                ->table('odbusdev.bus_seats')
+                ->where('bus_id', $bus->id)
+                ->where('active_seats', 1)
+                ->pluck('seat_code')
+                ->map(function ($seat) {
+                    return strtoupper(trim($seat));
+                })
+                ->toArray();
 
-
-            $html = $this->buildSeatLayoutHtml($seats);
-
+            /*
+        ==================================================
+        BUILD HTML
+        ==================================================
+        */
+            $html = $this->buildSeatLayoutHtml($seats, $activeSeats);
 
             return response()->json([
                 'status'      => true,
@@ -436,12 +442,6 @@ class SeatBlockController extends Controller
                 'bus_number'  => $bus->bus_number,
                 'html'        => $html
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-
-            return response()->json([
-                'status'  => false,
-                'message' => 'Invalid bus id'
-            ]);
         } catch (\Throwable $e) {
 
             return response()->json([
@@ -451,9 +451,7 @@ class SeatBlockController extends Controller
         }
     }
 
-
-
-    private function buildSeatLayoutHtml($seats)
+    private function buildSeatLayoutHtml($seats, $activeSeats = [])
     {
         $layout = [
             'UPPER' => [],
@@ -461,16 +459,17 @@ class SeatBlockController extends Controller
         ];
 
         foreach ($seats as $seat) {
-            $deck = $seat->berth_type == 1 ? 'LOWER' : 'UPPER';
+            $deck = ($seat->berth_type == 1) ? 'LOWER' : 'UPPER';
             $layout[$deck][$seat->row_number][$seat->col_number] = $seat;
         }
+
 
         foreach ($layout as $deck => $rows) {
             ksort($rows);
 
-            foreach ($rows as $rowKey => $cols) {
+            foreach ($rows as $r => $cols) {
                 ksort($cols);
-                $rows[$rowKey] = $cols;
+                $rows[$r] = $cols;
             }
 
             $layout[$deck] = $rows;
@@ -493,7 +492,7 @@ class SeatBlockController extends Controller
             if (empty($layout[$deck])) continue;
 
             $html .= '<div class="berth-row">';
-            $html .= '<div class="berth-label">' . ucwords(strtolower($deck)) . ' Berth</div>';
+            $html .= '<div class="berth-label">' . ucfirst(strtolower($deck)) . ' Berth</div>';
             $html .= '<div class="layout-box" style="grid-template-columns:repeat(' . $maxCols[$deck] . ',42px)">';
 
             $skip = [];
@@ -502,52 +501,116 @@ class SeatBlockController extends Controller
 
                 foreach ($row as $cIndex => $seat) {
 
-                    if (isset($skip[$rIndex][$cIndex])) continue;
+                    if (isset($skip[$rIndex][$cIndex])) {
+                        continue;
+                    }
 
+                    /* Empty cell */
                     if ($seat->seat_class == 0 || empty($seat->seat_text)) {
                         $html .= '<div class="empty-seat"></div>';
-                    } elseif ($seat->seat_class == 3) {
+                        continue;
+                    }
+                    /* REPLACE ONLY ACTIVE CHECK BLOCK INSIDE buildSeatLayoutHtml() */
 
-                        $text = strtoupper($seat->seat_text);
+                    $seatNo = trim($seat->seat_text);
+                    $currentSeat = strtoupper($seatNo);
+
+                    $isActive = false;
+
+                    foreach ($activeSeats as $dbSeat) {
+
+                        $dbSeat = strtoupper(trim($dbSeat));
+
+                        /* FULL EXACT MATCH */
+                        if ($dbSeat === $currentSeat) {
+                            $isActive = true;
+                            break;
+                        }
+
+
+
+                        if (
+                            is_numeric($dbSeat) &&
+                            is_numeric($currentSeat) &&
+                            (int)$dbSeat === (int)$currentSeat
+                        ) {
+                            $isActive = true;
+                            break;
+                        }
+                    }
+
+                    $selected = $isActive ? 'selected-seat' : 'blocked-seat';
+                    $click = $isActive ? 'onclick="toggleSeat(this)"' : '';
+                    $checked = $isActive ? 'checked' : 'disabled';
+
+                    /* Vertical Sleeper */
+                    if ($seat->seat_class == 3) {
+
+                        $text = strtoupper($seatNo);
 
                         $class = ($text == 'EXIT')
                             ? 'vertical_exit_prv'
                             : (($text == 'TOILET')
                                 ? 'vertical_toilet_prv'
-                                : 'bus-vertical-sleeper');
+                                : 'bus-vertical-sleeper ' . $selected);
 
                         $html .= '
                     <label class="seat-wrap vertical-sleeper-wrap">
-                        <span class="' . $class . '"></span>
-                        <span class="seat-number">' . $seat->seat_text . '</span>
+                        <input type="checkbox"
+                               class="seat-checkbox"
+                               name="seats[]"
+                               value="' . $seatNo . '"
+                               ' . $checked . '
+                               hidden>
+
+                        <span class="' . $class . '" ' . $click . '></span>
+                        <span class="seat-number">' . $seatNo . '</span>
                     </label>';
 
                         $skip[$rIndex + 1][$cIndex] = true;
-                    } elseif ($seat->seat_class == 2) {
+                    }
 
-                        $text = strtoupper($seat->seat_text);
+                    /* Horizontal Sleeper */ elseif ($seat->seat_class == 2) {
+
+                        $text = strtoupper($seatNo);
 
                         $class = ($text == 'EXIT')
                             ? 'horizontal_exit_prv'
                             : (($text == 'TOILET')
                                 ? 'horizontal_toilet_prv'
-                                : 'bus-sleeper');
+                                : 'bus-sleeper ' . $selected);
 
                         $html .= '
                     <label class="seat-wrap sleeper-wrap">
-                        <span class="' . $class . '"></span>
-                        <span class="seat-number">' . $seat->seat_text . '</span>
-                    </label>';
-                    } else {
+                        <input type="checkbox"
+                               class="seat-checkbox"
+                               name="seats[]"
+                               value="' . $seatNo . '"
+                               ' . $checked . '
+                               hidden>
 
-                        $class = strtoupper($seat->seat_text) == 'EXIT'
+                        <span class="' . $class . '" ' . $click . '></span>
+                        <span class="seat-number">' . $seatNo . '</span>
+                    </label>';
+                    }
+
+                    /* Normal Seat */ else {
+
+                        $class = strtoupper($seatNo) == 'EXIT'
                             ? 'seat_exit_prv'
-                            : 'bus-seat';
+                            : 'bus-seat ' . $selected;
 
                         $html .= '
                     <label class="seat-wrap">
-                        <span class="' . $class . '"></span>
-                        <span class="seat-number">' . $seat->seat_text . '</span>
+                        <input type="checkbox"
+                               class="seat-checkbox"
+                               name="seats[]"
+                               value="' . $seatNo . '"
+                               ' . $checked . '
+                               hidden>
+
+                        <span class="' . $class . '" ' . $click . '></span>
+                        <span class="seat-number">' . $seatNo . '</span>
                     </label>';
                     }
                 }
