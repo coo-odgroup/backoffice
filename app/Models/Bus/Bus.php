@@ -101,4 +101,14 @@ class Bus extends Model
     {
         return $this->belongsTo(BusRoutesMap::class, 'bus_id');
     }
+
+    public function amenities()
+    {
+        return $this->hasMany(BusAmenity::class, 'bus_id');
+    }
+    
+    public function seats()
+    {
+        return $this->hasMany(BusSeats::class, 'bus_id');
+    }
 }

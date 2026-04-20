@@ -14,6 +14,7 @@ use App\Models\Bus\BusContacts;
 use App\Models\Bus\BusSeats;
 use App\Models\Master\Amenity;
 use App\Models\Master\AmenityCategory;
+use App\Models\Master\BoardingDropping;
 use App\Models\Master\Cities;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -1191,5 +1192,81 @@ class BusWizardController extends Controller
             'layout'  => $layout,
             'maxCols' => $maxCols
         ]);
+    }
+
+    public function copy($bus_id = null)
+    {
+        $busId = (!empty($bus_id)) ? Crypt::decryptString($bus_id) : 0;
+
+        DB::beginTransaction();
+
+        try {
+            $bus = Bus::with([
+                'amenities',
+                'seats',
+                'stops'
+            ])->findOrFail($busId);
+
+            $routes = BusRoutesMap::with('route')
+                ->where('bus_id', $busId)
+                ->get();
+
+            // $bd = BoardingDropping::where('bus_id', $busId)->get();
+            $bRouteFare = BusRouteFares::where('bus_id', $busId)->get();
+
+            // return $bRouteFare;
+
+            // Copy Bus
+            $newBus = $bus->replicate();
+            $newBus->created_by = 1;
+            $newBus->save();
+
+            // Copy Seats
+            foreach ($bus->seats as $seat) {
+                $newSeat = $seat->replicate();
+                $newSeat->bus_id = $newBus->id;
+                $newSeat->save();
+            }
+
+            // Copy Routes
+            foreach ($routes as $route) {
+                $newRoute = $route->replicate();
+                $newRoute->bus_id = $newBus->id;
+                $newRoute->save();
+            }
+
+            // Copy Amenities
+            foreach ($bus->amenities as $amenity) {
+                $newAmenity = $amenity->replicate();
+                $newAmenity->bus_id = $newBus->id;
+                $newAmenity->save();
+            }
+
+            // Copy Stops
+            foreach ($bus->stops as $stop) {
+                $newStop = $stop->replicate();
+                $newStop->bus_id = $newBus->id;
+                $newStop->save();
+            }
+
+            // Copy Route Fare
+            foreach ($bRouteFare as $fare) {
+                $newRoutes = $fare->replicate();
+                $newRoutes->bus_id = $newBus->id;
+                $newRoutes->save();
+            }
+
+            DB::commit();
+
+            $enc_bus_id = (!empty($newBus->id)) ? Crypt::encryptString($newBus->id) : 0;
+
+            return redirect()->route('bus.step1', [
+                'encId' => $enc_bus_id,
+                'param' => 'save'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }
