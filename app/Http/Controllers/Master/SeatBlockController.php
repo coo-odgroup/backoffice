@@ -159,190 +159,123 @@ class SeatBlockController extends Controller
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
             if ($id > 0) {
-
-                $redirectPage = "admin/ticketfareslab-info/edit/" . $encId;
-
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
-
-
-                $row = DB::table('mst_ticket_fare_slab_info as t')
-                    ->leftJoin('users as u', 'u.id', '=', 't.bus_operator_id')
-                    ->where('t.slab_id', $id)
-                    ->select(
-                        't.*',
-                        'u.organization_name as operator_name'
-                    )
-                    ->get();
-
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
-                }
-
-                $operators = [];
-                $slabInfo = [];
-
-                foreach ($row as $r) {
-
-                    // operators
-                    $operators[$r->bus_operator_id] = [
-                        'id' => $r->bus_operator_id,
-                        'name' => $r->operator_name
-                    ];
-
-                    // slab rows 
-                    $key = md5(
-                        $r->starting_fare . '|' .
-                            $r->upto_fare . '|' .
-                            $r->commision . '|' .
-                            date('Y-m-d', strtotime($r->from_date)) . '|' .
-                            date('Y-m-d', strtotime($r->to_date))
-                    );
-
-                    if (!isset($slabInfo[$key])) {
-                        $slabInfo[$key] = [
-                            'starting_fare' => (string)$r->starting_fare,
-                            'upto_fare' => (string)$r->upto_fare,
-                            'commision' => (string)$r->commision,
-                            'from_date' => date('Y-m-d', strtotime($r->from_date)),
-                            'to_date' => date('Y-m-d', strtotime($r->to_date)),
-                        ];
-                    }
-                }
-
-
-                $slabInfo = array_values($slabInfo);
-
-                $data['row'] = [
-                    'slab_id' => $id,
-                    'operators' => array_values($operators),
-                    'slabInfo' => $slabInfo
-                ];;
-
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
-                }
-            } else {
-                $id = 0;
-                $redirectPage = "admin/ticketfareslab-info";
             }
+
+            $redirectPage = "admin/seat-block";
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
-
                 $validator = Validator::make(request()->all(), [
-                    'slab_id' => 'bail|required|integer',
-                    'bus_operator_id' => 'nullable',
-
-                    'starting_fare.*' => 'required|numeric|min:0',
-                    'upto_fare.*'     => 'required|numeric',
-                    'commision.*'     => 'required|numeric',
-
-                    'from_date.*' => 'nullable|date',
-                    'to_date.*'   => 'nullable|date',
+                    'operator'        => 'required',
+                    'bus'             => 'required',
+                    'seat_operations' => 'required'
                 ], [
-                    'slab_id.required' => 'Please select slab',
-                    'bus_operator_id.required' => 'Please select at least one operator',
+                    'operator.required'        => 'Please select operator',
+                    'bus.required'             => 'Please select bus',
+                    'seat_operations.required' => 'Please select seats'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 }
 
-                DB::beginTransaction();
+                $seatOperations = json_decode(request('seat_operations'), true);
 
-
-                $slab_id = (int) request('slab_id');
-                $bus_operator_id = request('bus_operator_id');
-
-                $operators = !empty($bus_operator_id)
-                    ? explode(',', $bus_operator_id)
-                    : [0];
-
-                $starting_fare = request('starting_fare');
-                $upto_fare     = request('upto_fare');
-                $commision     = request('commision');
-                $from_date     = request('from_date');
-                $to_date       = request('to_date');
-
-                foreach ($starting_fare as $i => $start) {
-                    if ($upto_fare[$i] < $start) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Fare must be greater than or equal to From Fare'
-                        ])->withInput();
-                    }
-
-                    if ($to_date[$i] < $from_date[$i]) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Date must be after From Date'
-                        ])->withInput();
-                    }
+                if (empty($seatOperations) || !is_array($seatOperations)) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Invalid seat data'
+                    ])->withInput();
                 }
 
-                if ($id > 0) {
-                    DB::table('mst_ticket_fare_slab_info')
-                        ->where('slab_id', $slab_id)
+                DB::connection('mysql_dev')->beginTransaction();
+
+                $userId = session('userid') ?? auth()->id() ?? 1;
+                $now    = now();
+
+
+                $validRows = [];
+
+                foreach ($seatOperations as $seat) {
+
+                    $busSeatId = (int)($seat['bus_seat_id'] ?? 0);
+
+                    if ($busSeatId <= 0) {
+                        Log::warning('Skipped invalid bus seat row', $seat);
+                        continue;
+                    }
+
+                    $operationDate = $seat['operation_date'] ?? null;
+
+                    if (empty($operationDate)) {
+                        Log::warning('Skipped missing operation date', $seat);
+                        continue;
+                    }
+
+                    DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->where('bus_seat_id', $busSeatId)
+                        ->where('operation_date', $operationDate)
                         ->delete();
+
+                    $row = [
+                        'bus_seat_id'    => $busSeatId,
+                        'seat_code'      => trim((string)($seat['seat_code'] ?? '')),
+                        'seat_layout_id' => (int)($seat['seat_layout_id'] ?? 0),
+                        'operation_date' => $operationDate,
+                        'category'       => (int)($seat['category'] ?? 1), //1=open 2=block
+                        'created_at'     => $now,
+                        'created_by'     => $userId,
+                        'updated_at'     => $now,
+                        'updated_by'     => $userId
+                    ];
+
+                    $validRows[] = $row;
+                }
+
+                if (empty($validRows)) {
+                    DB::connection('mysql_dev')->rollBack();
+
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'No valid seat rows found.'
+                    ])->withInput();
                 }
 
 
-                $insertData = [];
+                DB::connection('mysql_dev')
+                    ->table('bus_seat_operation')
+                    ->insert($validRows);
 
-                foreach ($operators as $operator) {
+                foreach ($validRows as $row) {
 
-                    foreach ($starting_fare as $key => $val) {
-
-                        $rowData = [
-                            'slab_id'         => $slab_id,
-                            'bus_operator_id' => (int) $operator,
-                            'starting_fare'   => $starting_fare[$key],
-                            'upto_fare'       => $upto_fare[$key],
-                            'commision'       => $commision[$key],
-                            'from_date'       => $from_date[$key],
-                            'to_date'         => $to_date[$key],
-                            'active_status'   => 1,
-                            'created_at'      => now(),
-                            'updated_at'      => now(),
-                        ];
-
-                        $insertData[] = $rowData;
-
-                        app(CommonController::class)->auditLog(
-                            'mst_ticket_fare_slab_info',
-                            null,
-                            ($id > 0 ? 'UPDATE' : 'INSERT'),
-                            [],
-                            $rowData
-                        );
-                    }
+                    app(CommonController::class)->auditLog(
+                        'bus_seat_operation',
+                        0,
+                        'INSERT',
+                        [],
+                        $row
+                    );
                 }
 
-                DB::table('mst_ticket_fare_slab_info')->insert($insertData);
-
-                DB::commit();
+                DB::connection('mysql_dev')->commit();
 
                 session()->flash('level', 'success');
-                session()->flash(
-                    'message',
-                    'Ticket Fare Slab Info ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
-                );
+                session()->flash('message', 'Seat block data saved successfully.');
 
                 return redirect($redirectPage);
             }
         } catch (\Throwable $t) {
 
-            DB::rollBack();
+            DB::connection('mysql_dev')->rollBack();
 
-            Log::error("Error in TicketFareSlabInfoController@add", [
+            Log::error("Error in SeatBlockController@add", [
                 'method' => $method,
-                'error'  => $t->getMessage()
+                'error'  => $t->getMessage(),
+                'line'   => $t->getLine()
             ]);
 
             return back()->with([
@@ -350,7 +283,6 @@ class SeatBlockController extends Controller
                 'message' => config('constants.SERVER_ERROR_MESSAGE')
             ])->withInput();
         }
-
 
         return view('Master.addSeatBlock', compact('data'));
     }
@@ -381,7 +313,7 @@ class SeatBlockController extends Controller
                 ]);
             }
 
- 
+
             $layoutId = (int) $bus->mst_seat_layout_name_id;
 
             if ($layoutId <= 0) {
@@ -419,16 +351,17 @@ class SeatBlockController extends Controller
                 ->where('active_seats', 1)
                 ->pluck('seat_code')
                 ->map(function ($seat) {
-                    return strtoupper(trim($seat));
+                    return strtoupper(trim(preg_replace('/\s+/', '', $seat)));
                 })
                 ->toArray();
 
-            /*
-        ==================================================
-        BUILD HTML
-        ==================================================
-        */
-            $html = $this->buildSeatLayoutHtml($seats, $activeSeats);
+
+            $html = $this->buildSeatLayoutHtml(
+                $seats,
+                $activeSeats,
+                $bus->id,
+                $layoutId
+            );
 
             return response()->json([
                 'status'      => true,
@@ -451,18 +384,34 @@ class SeatBlockController extends Controller
         }
     }
 
-    private function buildSeatLayoutHtml($seats, $activeSeats = [])
+    private function buildSeatLayoutHtml($seats, $activeSeats = [], $busId = 0, $layoutId = 0)
     {
         $layout = [
-            'UPPER' => [],
-            'LOWER' => []
+            'UPPER'  => [],
+            'LOWER'  => [],
+            'MIDDLE' => []
         ];
 
+        $seatMap = DB::connection('mysql_dev')
+            ->table('bus_seats')
+            ->where('bus_id', $busId)
+            ->get()
+            ->keyBy(function ($row) {
+                return strtoupper(trim(preg_replace('/\s+/', '', $row->seat_code)));
+            });
+
         foreach ($seats as $seat) {
-            $deck = ($seat->berth_type == 1) ? 'LOWER' : 'UPPER';
+
+            if ($seat->berth_type == 1) {
+                $deck = 'LOWER';
+            } elseif ($seat->berth_type == 2) {
+                $deck = 'UPPER';
+            } else {
+                $deck = 'MIDDLE';
+            }
+
             $layout[$deck][$seat->row_number][$seat->col_number] = $seat;
         }
-
 
         foreach ($layout as $deck => $rows) {
             ksort($rows);
@@ -475,7 +424,7 @@ class SeatBlockController extends Controller
             $layout[$deck] = $rows;
         }
 
-        $maxCols = ['UPPER' => 0, 'LOWER' => 0];
+        $maxCols = ['UPPER' => 0, 'LOWER' => 0, 'MIDDLE' => 0];
 
         foreach ($layout as $deck => $rows) {
             foreach ($rows as $cols) {
@@ -485,9 +434,13 @@ class SeatBlockController extends Controller
             }
         }
 
+        $normalizedActiveSeats = array_map(function ($v) {
+            return strtoupper(trim(preg_replace('/\s+/', '', (string)$v)));
+        }, $activeSeats);
+
         $html = '<div class="bus-layout">';
 
-        foreach (['UPPER', 'LOWER'] as $deck) {
+        foreach (['UPPER', 'MIDDLE', 'LOWER'] as $deck) {
 
             if (empty($layout[$deck])) continue;
 
@@ -501,115 +454,93 @@ class SeatBlockController extends Controller
 
                 foreach ($row as $cIndex => $seat) {
 
-                    if (isset($skip[$rIndex][$cIndex])) {
-                        continue;
-                    }
+                    if (isset($skip[$rIndex][$cIndex])) continue;
 
-                    /* Empty cell */
-                    if ($seat->seat_class == 0 || empty($seat->seat_text)) {
+                    $seatNo = trim((string)($seat->seat_text ?: $seat->seat_code));
+
+                    if ((int)$seat->seat_class === 0 || $seatNo === '') {
                         $html .= '<div class="empty-seat"></div>';
                         continue;
                     }
-                    /* REPLACE ONLY ACTIVE CHECK BLOCK INSIDE buildSeatLayoutHtml() */
 
-                    $seatNo = trim($seat->seat_text);
-                    $currentSeat = strtoupper($seatNo);
-
-                    $isActive = false;
-
-                    foreach ($activeSeats as $dbSeat) {
-
-                        $dbSeat = strtoupper(trim($dbSeat));
-
-                        /* FULL EXACT MATCH */
-                        if ($dbSeat === $currentSeat) {
-                            $isActive = true;
-                            break;
-                        }
-
-
-
-                        if (
-                            is_numeric($dbSeat) &&
-                            is_numeric($currentSeat) &&
-                            (int)$dbSeat === (int)$currentSeat
-                        ) {
-                            $isActive = true;
-                            break;
-                        }
-                    }
+                    $currentSeat = strtoupper(trim(preg_replace('/\s+/', '', $seatNo)));
+                    $isActive = in_array($currentSeat, $normalizedActiveSeats, true);
 
                     $selected = $isActive ? 'selected-seat' : 'blocked-seat';
-                    $click = $isActive ? 'onclick="toggleSeat(this)"' : '';
-                    $checked = $isActive ? 'checked' : 'disabled';
+                    $click    = $isActive ? 'onclick="toggleSeat(this)"' : '';
+                    $checked  = $isActive ? 'checked' : '';
 
-                    /* Vertical Sleeper */
+                    /* GET REAL BUS SEAT ID */
+                    $busSeat = DB::connection('mysql_dev')
+                        ->table('bus_seats')
+                        ->where('bus_id', $busId)
+                        ->whereRaw('TRIM(UPPER(seat_code)) = ?', [
+                            trim(strtoupper($seatNo))
+                        ])
+                        ->first();
+
+                    $busSeatId = $busSeat->id ?? 0;
+
                     if ($seat->seat_class == 3) {
 
-                        $text = strtoupper($seatNo);
-
-                        $class = ($text == 'EXIT')
-                            ? 'vertical_exit_prv'
-                            : (($text == 'TOILET')
-                                ? 'vertical_toilet_prv'
-                                : 'bus-vertical-sleeper ' . $selected);
+                        $class = 'bus-vertical-sleeper ' . $selected;
 
                         $html .= '
                     <label class="seat-wrap vertical-sleeper-wrap">
                         <input type="checkbox"
-                               class="seat-checkbox"
-                               name="seats[]"
-                               value="' . $seatNo . '"
-                               ' . $checked . '
-                               hidden>
+                            class="seat-checkbox"
+                            name="seats[]"
+                            value="' . $seatNo . '"
+                            ' . $checked . '
+                            hidden>
 
-                        <span class="' . $class . '" ' . $click . '></span>
+                        <span class="' . $class . '"
+                              data-busseatid="' . $busSeatId . '"
+                              data-layout="' . $layoutId . '"
+                              ' . $click . '></span>
+
                         <span class="seat-number">' . $seatNo . '</span>
                     </label>';
 
                         $skip[$rIndex + 1][$cIndex] = true;
-                    }
+                    } elseif ($seat->seat_class == 2) {
 
-                    /* Horizontal Sleeper */ elseif ($seat->seat_class == 2) {
-
-                        $text = strtoupper($seatNo);
-
-                        $class = ($text == 'EXIT')
-                            ? 'horizontal_exit_prv'
-                            : (($text == 'TOILET')
-                                ? 'horizontal_toilet_prv'
-                                : 'bus-sleeper ' . $selected);
+                        $class = 'bus-sleeper ' . $selected;
 
                         $html .= '
                     <label class="seat-wrap sleeper-wrap">
                         <input type="checkbox"
-                               class="seat-checkbox"
-                               name="seats[]"
-                               value="' . $seatNo . '"
-                               ' . $checked . '
-                               hidden>
+                            class="seat-checkbox"
+                            name="seats[]"
+                            value="' . $seatNo . '"
+                            ' . $checked . '
+                            hidden>
 
-                        <span class="' . $class . '" ' . $click . '></span>
+                        <span class="' . $class . '"
+                              data-busseatid="' . $busSeatId . '"
+                              data-layout="' . $layoutId . '"
+                              ' . $click . '></span>
+
                         <span class="seat-number">' . $seatNo . '</span>
                     </label>';
-                    }
+                    } else {
 
-                    /* Normal Seat */ else {
-
-                        $class = strtoupper($seatNo) == 'EXIT'
-                            ? 'seat_exit_prv'
-                            : 'bus-seat ' . $selected;
+                        $class = 'bus-seat ' . $selected;
 
                         $html .= '
                     <label class="seat-wrap">
                         <input type="checkbox"
-                               class="seat-checkbox"
-                               name="seats[]"
-                               value="' . $seatNo . '"
-                               ' . $checked . '
-                               hidden>
+                            class="seat-checkbox"
+                            name="seats[]"
+                            value="' . $seatNo . '"
+                            ' . $checked . '
+                            hidden>
 
-                        <span class="' . $class . '" ' . $click . '></span>
+                        <span class="' . $class . '"
+                              data-busseatid="' . $busSeatId . '"
+                              data-layout="' . $layoutId . '"
+                              ' . $click . '></span>
+
                         <span class="seat-number">' . $seatNo . '</span>
                     </label>';
                     }
@@ -622,5 +553,92 @@ class SeatBlockController extends Controller
         $html .= '</div>';
 
         return $html;
+    }
+
+    public function getBlockedSeatHistory(Request $request)
+    {
+        try {
+
+            $busId = (int)$request->bus_id;
+
+            if ($busId <= 0) {
+                return response()->json([
+                    'status' => false,
+                    'html' => 'Invalid bus'
+                ]);
+            }
+
+            $rows = DB::connection('mysql_dev')
+                ->table('bus_seat_operation')
+                ->selectRaw("
+                operation_date,
+                GROUP_CONCAT(
+                    CASE WHEN category = 2 THEN seat_code END
+                    ORDER BY seat_code SEPARATOR ', '
+                ) as blocked_seats,
+                MAX(updated_at) as updated_at,
+                MAX(updated_by) as updated_by
+            ")
+                ->where('category', 2)
+                ->whereIn('bus_seat_id', function ($q) use ($busId) {
+                    $q->select('id')
+                        ->from('bus_seats')
+                        ->where('bus_id', $busId);
+                })
+                ->groupBy('operation_date')
+                ->orderByDesc('operation_date')
+                ->get();
+
+            $html = '';
+
+            if ($rows->isEmpty()) {
+                $html = '<div class="text-center text-muted">No blocked history found</div>';
+            } else {
+
+                $html .= '
+            <table class="table table-hover table-bordered table-sm align-middle">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>Date</th>
+                        <th>Seats Blocked</th>
+                        <th>Updated By</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+                $i = 1;
+
+                foreach ($rows as $row) {
+
+                    $html .= '
+                <tr>
+                    <td>' . $i++ . '</td>
+                    <td>' . date('d-M-Y', strtotime($row->operation_date)) . '</td>
+                    <td>' . ($row->blocked_seats ?: '-') . '</td>
+                    <td>User ' . $row->updated_by . '<br>' .
+                        date('d-M-Y H:i:s', strtotime($row->updated_at)) . '</td>
+                </tr>';
+                }
+
+                $html .= '</tbody></table>';
+            }
+
+            return response()->json([
+                'status' => true,
+                'html'   => $html
+            ]);
+        } catch (\Throwable $e) {
+
+            Log::error('Blocked Seat History Error', [
+                'error' => $e->getMessage(),
+                'line'  => $e->getLine()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'html'   => 'Unable to load history'
+            ]);
+        }
     }
 }

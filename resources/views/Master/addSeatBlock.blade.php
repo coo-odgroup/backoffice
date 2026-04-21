@@ -59,6 +59,7 @@
 
                                     <div class="col-12">
                                         <div class="row">
+                                            <input type="hidden" name="seat_operations" id="seat_operations">
 
                                             <!-- LEFT COLUMN -->
                                             <div class="col-md-5">
@@ -80,33 +81,15 @@
                                                 </div>
 
                                                 <div class="p-3 border rounded bg-white mt-2">
-                                                    <table class="table table-hover table-bordered align-middle table-sm table-responsive">
-                                                        <thead class="table-secondary">
-                                                            <tr>
-                                                                <th>Sl No.</th>
-                                                                <th>Date</th>
-                                                                <th>Seats Blocked</th>
-                                                                <th>Reason</th>
-                                                                <th>Cacelled By</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>03-Apr-2026</td>
-                                                                <td>5,6,SL3,SL4,SL5,SL6,SL7</td>
-                                                                <td>Request From Owner</td>
-                                                                <td>John Doe<br>23-Apr-2026 10:45:47</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2</td>
-                                                                <td>03-Apr-2026</td>
-                                                                <td>5,6,SL3,SL4,SL5,SL6,SL7</td>
-                                                                <td>Request From Owner</td>
-                                                                <td>John Doe<br>23-Apr-2026 10:45:47</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <strong>Blocked Seat History</strong>
+                                                    </div>
+
+                                                    <div id="blockedSeatHistoryContainer">
+                                                        <div class="text-center text-muted">
+                                                            Please select Operator and Bus
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -159,9 +142,228 @@
                 </div>
             </div>
     </form>
-    <style>/* DEFAULT SEAT LOOK = your original screenshot */
+    <style>
+        #seatLayoutContainer {
+            overflow-x: auto;
+            padding: 10px;
+        }
 
+        .seat-item,
+        .seat-wrap,
+        label.seat-box {
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            margin: 4px;
+            cursor: pointer;
+            vertical-align: top;
+        }
+
+        .seat-checkbox {
+            display: none !important;
+        }
+
+        .seat-img {
+            display: block;
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+        }
+
+        .seater {
+            width: 42px;
+            height: 42px;
+        }
+
+        .sleeper {
+            width: 72px;
+            height: 34px;
+        }
+
+        .sleeper-vertical {
+            width: 38px;
+            height: 72px;
+        }
+
+        .selected-seat.seater {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+        .selected-seat.sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue.png') !important;
+        }
+
+        .selected-seat.sleeper-vertical {
+            background-image: url('/assets/seats/Sleeper_layout_blue_vertical.png') !important;
+        }
+
+        .seater {
+            background-image: url('/assets/seats/seat_layout.png');
+        }
+
+        .sleeper {
+            background-image: url('/assets/seats/sleeper_layout.png');
+        }
+
+        .sleeper-vertical {
+            background-image: url('/assets/seats/sleeper_layout_vertical.png');
+        }
+
+        .seat-no {
+            display: block;
+            font-size: 10px;
+            margin-top: 2px;
+            color: #001a57;
+            font-weight: 600;
+        }
+
+        .berth-label {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 12px;
+            font-weight: 700;
+            color: #001a57;
+            padding: 10px 4px;
+        }
+
+        .seat-row {
+            white-space: nowrap;
+            margin-bottom: 10px;
+        }
+
+        .seat-box {
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .seat-box.selected-seat {
+            filter: none;
+            opacity: 1;
+        }
+
+        .seat-box.available-seat {
+            filter: grayscale(0) brightness(1.12);
+            opacity: 1;
+        }
+
+        .seat-box.disabled-seat {
+            filter: grayscale(100%);
+            opacity: .55;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .selected-seat {
+            opacity: 1 !important;
+        }
+
+        .selected-seat.bus-seat,
+        .selected-seat.seat-box.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+        .selected-seat.bus-sleeper,
+        .selected-seat.seat-box.bus-sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue.png') !important;
+        }
+
+        .selected-seat.bus-vertical-sleeper,
+        .selected-seat.seat-box.bus-vertical-sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue_vertical.png') !important;
+        }
+
+        .blocked.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_red.png') !important;
+        }
+
+        .blocked.bus-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_red.png') !important;
+        }
+
+        .blocked.bus-vertical-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_red_vertical.png') !important;
+        }
+
+        .seat-box {
+            width: 42px;
+            height: 24px;
+            display: inline-block;
+            cursor: pointer;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .seat-box.vertical {
+            width: 24px;
+            height: 42px;
+        }
+
+        .seat-box.sleeper {
+            width: 72px;
+            height: 28px;
+        }
+
+        .seat-box.sleeper.vertical {
+            width: 34px;
+            height: 72px;
+        }
+
+
+        .seat-box.open.seater {
+            background-image: url('/assets/seats/Seat_layout_blue.png');
+        }
+
+        .seat-box.open.seater.vertical {
+            background-image: url('/assets/seats/Seat_layout_blue_vertical.png');
+        }
+
+        .seat-box.open.sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue.png');
+        }
+
+        .seat-box.open.sleeper.vertical {
+            background-image: url('/assets/seats/Sleeper_layout_blue_vertical.png');
+        }
+
+        .seat-box.blocked.seater {
+            background-image: url('/assets/seats/Seat_layout_red.png');
+        }
+
+        .seat-box.blocked.seater.vertical {
+            background-image: url('/assets/seats/Seat_layout_red_vertical.png');
+        }
+
+        .seat-box.blocked.sleeper {
+            background-image: url('/assets/seats/sleeper_layout_red.png');
+        }
+
+        .seat-box.blocked.sleeper.vertical {
+            background-image: url('/assets/seats/sleeper_layout_red_vertical.png');
+        }
+
+        .seat-box.disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .seat-box.disabled.seater {
+            background-image: url('/assets/seats/Seat_layout_grey.png');
+        }
+
+        .seat-box.disabled.seater.vertical {
+            background-image: url('/assets/seats/Seat_layout_grey_vertical.png');
+        }
+
+        .seat-box.disabled.sleeper {
+            background-image: url('/assets/seats/sleeper_layout_grey.png');
+        }
+
+        .seat-box.disabled.sleeper.vertical {
+            background-image: url('/assets/seats/sleeper_layout_grey_vertical.png');
+        }
     </style>
+
     @endsection
 
     @push('scripts')
@@ -199,18 +401,23 @@
 
             loadSeatBlockSchedules();
             loadSeatLayoutByBus();
-
+            loadBlockedSeatHistory();
         });
 
+        window.toggleSeat = function(el) {
 
-function toggleSeat(el)
-{
-    $(el).toggleClass('selected-seat');
+            const $el = $(el);
 
-    let chk = $(el).closest('label').find('.seat-checkbox');
+            if ($el.hasClass('disabled')) return;
 
-    chk.prop('checked', !chk.prop('checked'));
-}
+            if ($el.hasClass('selected-seat')) {
+                $el.removeClass('selected-seat open')
+                    .addClass('blocked');
+            } else if ($el.hasClass('blocked')) {
+                $el.removeClass('blocked')
+                    .addClass('selected-seat open');
+            }
+        }
 
         function loadSeatBlockSchedules() {
             let operator = $('#operator').val();
@@ -380,6 +587,88 @@ function toggleSeat(el)
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
+            });
+        }
+
+        $('#backoffice-form').on('submit', function () {
+
+    let seatData = [];
+    let selectedDates = [];
+
+    $('.schedule-checkbox:checked').each(function () {
+        selectedDates.push($(this).val());
+    });
+
+    if (selectedDates.length === 0) {
+        alert('Please select schedule date');
+        return false;
+    }
+
+    $('.bus-seat, .bus-sleeper, .bus-vertical-sleeper').each(function () {
+
+        let seatCode = $(this).closest('label').find('.seat-checkbox').val();
+        if (!seatCode) return;
+
+        let busSeatId = $(this).data('busseatid') || 0;
+        let layoutId  = $(this).data('layout') || 0;
+
+        let category = $(this).hasClass('selected-seat') ? 1 : 2;
+
+        selectedDates.forEach(function(date){
+
+            seatData.push({
+                bus_seat_id: busSeatId,
+                seat_code: seatCode,
+                seat_layout_id: layoutId,
+                operation_date: date,
+                category: category
+            });
+
+        });
+
+    });
+
+    $('#seat_operations').val(JSON.stringify(seatData));
+
+});
+
+        function loadBlockedSeatHistory() {
+
+            let operator = $('#operator').val();
+            let bus = $('#bus').val();
+
+            if (!operator || !bus) {
+                $('#blockedSeatHistoryContainer').html(`
+            <div class="text-center text-muted">
+                Please select Operator and Bus
+            </div>
+        `);
+                return;
+            }
+
+            $('#blockedSeatHistoryContainer').html(`
+        <div class="text-center p-3">
+            <div class="spinner-border text-primary"></div>
+        </div>
+    `);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('seat-block.history') }}",
+                data: {
+                    bus_id: bus,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(res) {
+                    $('#blockedSeatHistoryContainer').html(res.html);
+                },
+                error: function() {
+                    $('#blockedSeatHistoryContainer').html(`
+                <div class="text-danger text-center">
+                    Unable to load history
+                </div>
+            `);
+                }
             });
         }
     </script>
