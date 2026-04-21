@@ -590,47 +590,83 @@
             });
         }
 
-        $('#backoffice-form').on('submit', function () {
+        $('#backoffice-form').on('submit', function(e) {
 
-    let seatData = [];
-    let selectedDates = [];
+            e.preventDefault();
 
-    $('.schedule-checkbox:checked').each(function () {
-        selectedDates.push($(this).val());
-    });
+            let operator = $('#operator').val();
+            let bus = $('#bus').val();
+            let reason = $('#reason').val();
 
-    if (selectedDates.length === 0) {
-        alert('Please select schedule date');
-        return false;
-    }
+            let selectedDates = [];
+            let seatData = [];
 
-    $('.bus-seat, .bus-sleeper, .bus-vertical-sleeper').each(function () {
+            /* Operator */
+            if (!operator || operator == 0) {
+                commonAjax.confirmAlert('Please select Operator');
+                $('#operator').focus();
+                return false;
+            }
 
-        let seatCode = $(this).closest('label').find('.seat-checkbox').val();
-        if (!seatCode) return;
+            /* Bus */
+            if (!bus || bus == 0) {
+                commonAjax.confirmAlert('Please select Bus');
+                $('#bus').focus();
+                return false;
+            }
 
-        let busSeatId = $(this).data('busseatid') || 0;
-        let layoutId  = $(this).data('layout') || 0;
+            /* Reason */
+            if (!reason || reason == 0) {
+                commonAjax.confirmAlert('Please select a Reason');
+                $('#reason').focus();
+                return false;
+            }
 
-        let category = $(this).hasClass('selected-seat') ? 1 : 2;
+            /* Dates */
+            $('.schedule-checkbox:checked').each(function() {
+                selectedDates.push($(this).val());
+            });
 
-        selectedDates.forEach(function(date){
+            if (selectedDates.length === 0) {
+                commonAjax.confirmAlert('Please select Schedule Date');
+                return false;
+            }
 
-            seatData.push({
-                bus_seat_id: busSeatId,
-                seat_code: seatCode,
-                seat_layout_id: layoutId,
-                operation_date: date,
-                category: category
+            /* Seats */
+            $('.bus-seat, .bus-sleeper, .bus-vertical-sleeper').each(function() {
+
+                let seatCode = $(this).closest('label').find('.seat-checkbox').val();
+                if (!seatCode) return;
+
+                let busSeatId = $(this).data('busseatid') || 0;
+                let layoutId = $(this).data('layout') || 0;
+
+                let category = $(this).hasClass('selected-seat') ? 1 : 2;
+
+                selectedDates.forEach(function(date) {
+
+                    seatData.push({
+                        bus_seat_id: busSeatId,
+                        seat_code: seatCode,
+                        seat_layout_id: layoutId,
+                        operation_date: date,
+                        category: category
+                    });
+
+                });
+
+            });
+
+            $('#seat_operations').val(JSON.stringify(seatData));
+
+            /* Final confirmation */
+            commonAjax.confirmAlert('Are you sure to proceed ?');
+
+            $('#btnConfirmOk').off('click').on('click', function() {
+                e.currentTarget.submit();
             });
 
         });
-
-    });
-
-    $('#seat_operations').val(JSON.stringify(seatData));
-
-});
 
         function loadBlockedSeatHistory() {
 
