@@ -69,16 +69,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
-                        <!-- Status -->
-                        <div class="col-lg-2 col-md-6">
-                            <label for="selStatus">Status</label>
-                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                                <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
-
                         <div class="col-lg-3 col-md-3 mt-1">
                             <label for="fromDate">From Date</label>
                             <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm" placeholder="From Date">
@@ -184,7 +174,110 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </div>
     </div>
     </div>
+
+    <div class="modal fade" id="deleteReasonModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content seat-delete-modal">
+
+                <div class="modal-header seat-delete-header">
+                    <h5 class="modal-title">
+                        <i class="fa fa-trash text-warning me-2"></i>
+                        Select The Reason For Delete
+                    </h5>
+
+                    <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden" id="delete_enc_id">
+
+                    <label class="fw-bold mb-2 text-primary d-block">
+                        Reason
+                    </label>
+
+                    <select id="delete_reason" class="form-select">
+                        <option value="">Select Reason</option>
+                    </select>
+
+                    <small class="text-muted mt-2 d-block">
+                        Select a valid reason before deleting.
+                    </small>
+
+                </div>
+
+                <div class="modal-footer bg-light">
+
+                    <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="button"
+                        class="btn seat-delete-btn"
+                        onclick="confirmDeleteSeat()">
+                        <i class="fa fa-trash me-1"></i>
+                        Delete
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
 </form>
+<style>
+    .seat-delete-modal {
+        border-radius: 12px !important;
+        overflow: hidden;
+        border: none !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
+    }
+
+    .seat-delete-header {
+        background: #1f2660 !important;
+        color: #fff !important;
+        padding: 14px 18px;
+    }
+
+    .seat-delete-header h5 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    #deleteReasonModal .modal-body {
+        background: #f8f9fc;
+        padding: 22px;
+    }
+
+    #deleteReasonModal select {
+        border: 2px solid #1f2660;
+        min-height: 42px;
+    }
+
+    .seat-delete-btn {
+        background: #dc3545 !important;
+        color: #fff !important;
+        border: none !important;
+        font-weight: 600;
+        padding: 8px 18px;
+    }
+
+    .seat-delete-btn:hover {
+        background: #bb2d3b !important;
+    }
+
+    #deleteReasonModal .btn-secondary {
+        background: #ffc107 !important;
+        border: none !important;
+        color: #000 !important;
+        font-weight: 600;
+    }
+</style>
 
 
 @endsection
@@ -195,16 +288,31 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         commonAjax.initSelect2('#operator', 'Select Operator');
         commonAjax.initSelect2('#bus', 'Select Bus');
-        commonAjax.initSelect2('#source', 'Select Source');
-        commonAjax.initSelect2('#destination', 'Select Destination');
         commonAjax.initSelect2('#reason', 'Select Reason');
+
+        commonAjax.loadBusOperatorDropdown('');
+        commonAjax.loadAnnextureList('REASON', '', '#reason');
 
         commonAjax.initClearableInputs();
 
         getDataTableView();
+    });
+
+    $('#operator').on('change', function() {
+
+        let operator_id = $(this).val();
+
+        $('#bus').html('');
+        $('#scheduleContainer').html(`
+                <div class="text-center text-muted">
+                    Please select bus
+                </div>
+            `);
+
+        commonAjax.loadBusListByOperator('#bus', operator_id);
+
     });
 
     $('#btnReset').click(function() {
@@ -227,17 +335,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         let tableId = 'datatable';
 
+        let todayDate = new Date().toISOString().split('T')[0];
+
         let searchParams = {
-            txtSearch: $('#txtSearch').val(),
-            selStatus: $('#selStatus').val(),
+            txtSearch: $('#txtSearch').length ? $('#txtSearch').val() : '',
             operator: $('#operator').val(),
             bus: $('#bus').val(),
-            fromDate: $('#fromDate').val(),
-            toDate: $('#toDate').val(),
+
+            fromDate: $('#fromDate').val() || todayDate,
+            toDate: $('#toDate').val() || '',
+
             reason: $('#reason').val()
         };
 
-        let orderBy = [0, 'desc'];
+        let orderBy = [4, 'asc'];
 
         let displayColumns = [0, 1, 2, 3, 4];
 
@@ -288,7 +399,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         <th style="width:500px; min-width:500px;">Seats/Sleeper</th>
                                         <th style="width:180px; min-width:180px;">Reason</th>
                                         <th style="width:220px; min-width:220px;">Created By</th>
-                                        <th style="width:90px; min-width:90px;" class="text-center">Action</th>
+                                        <th style="width:90px; min-width:90px;" class="text-center noPrint">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -313,19 +424,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <small>${item.created_at}</small>
                     </td>
 
-                    <td style="width:90px;" class="text-center">
-                    
-                        <a class="btn btn-sm btn-info"
-                                href="${editUrl.replace('ID', item.enc_id)}">
-                                <i class="fa fa-edit"></i>
-                        </a>
-
-                        <a class="btn btn-sm btn-danger"
-                                href="javascript:void(0)"
-                                onclick="deleteSingleRecord('${item.enc_id}')"
-                                title="Delete">
-                                <i class="fa fa-trash"></i>
-                        </a>
+                    <td style="width:90px;" class="text-center noPrint">
+                        ${renderSeatAction(item, editUrl)}
                     </td>
 
                     
@@ -344,7 +444,235 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         ];
 
+        window.renderSeatAction = function(item, editUrl) {
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let rowDate = parseSeatDate(item.date);
+
+            if (rowDate < today) {
+                return `
+                    <a class="btn btn-sm btn-secondary disabled me-1">
+                        <i class="fa fa-edit"></i>
+                    </a>
+
+                    <a class="btn btn-sm btn-secondary disabled">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                `;
+            }
+
+            return `
+                    <a class="btn btn-sm btn-info me-1"
+                    href="${editUrl.replace('ID', item.enc_id)}">
+                    <i class="fa fa-edit"></i>
+                    </a>
+
+                    <a class="btn btn-sm btn-danger"
+                    href="javascript:void(0)"
+                    onclick="deleteSingleRecord('${item.enc_id}')">
+                    <i class="fa fa-trash"></i>
+                    </a>
+                `;
+        }
+
+        window.parseSeatDate = function(str) {
+            if (!str) return new Date();
+
+            let parts = str.split('-');
+
+            let months = {
+                Jan: 0,
+                Feb: 1,
+                Mar: 2,
+                Apr: 3,
+                May: 4,
+                Jun: 5,
+                Jul: 6,
+                Aug: 7,
+                Sep: 8,
+                Oct: 9,
+                Nov: 10,
+                Dec: 11
+            };
+
+            return new Date(parts[2], months[parts[1]], parts[0]);
+        };
+
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+    };
+
+    window.deleteSingleRecord = function(encId) {
+
+        $('#delete_enc_id').val(encId);
+
+        $('#delete_reason').html('<option value="">Select Reason</option>');
+
+        commonAjax.loadAnnextureList(
+            'REASON',
+            '',
+            '#delete_reason'
+        );
+
+        let modal = new bootstrap.Modal(
+            document.getElementById('deleteReasonModal')
+        );
+
+        modal.show();
+    };
+
+    window.confirmDeleteSeat = function() {
+
+        let encId = $('#delete_enc_id').val();
+        let reason = $('#delete_reason').val();
+
+        if (reason == '') {
+
+            showAjaxAlert(
+                'warning',
+                'Please select reason'
+            );
+
+            return;
+        }
+
+
+
+        $.ajax({
+            url: "{{ route('seat-block.delete') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: encId,
+                reason: reason
+            },
+            success: function(res) {
+
+                $('#deleteReasonModal').modal('hide');
+
+                getDataTableView(false);
+            },
+            error: function() {
+
+                showAjaxAlert(
+                    'danger',
+                    'Something went wrong'
+                );
+            }
+        });
+    };
+
+    window.confirmDeleteSeat = function() {
+
+        let encId = $('#delete_enc_id').val();
+        let reason = $('#delete_reason').val();
+
+        if (reason == '') {
+
+            showAjaxAlert('warning', 'Please select reason');
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('seat-block.delete') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: encId,
+                reason: reason
+            },
+
+            beforeSend: function() {
+
+                $('.seat-delete-btn').prop('disabled', true)
+                    .html('<i class="fa fa-spinner fa-spin me-1"></i>Deleting...');
+            },
+
+            success: function(res) {
+
+                let modalEl = document.getElementById('deleteReasonModal');
+                let modal = bootstrap.Modal.getInstance(modalEl);
+
+                if (modal) {
+                    modal.hide();
+                }
+
+                $('#delete_reason').val('');
+                $('#delete_enc_id').val('');
+
+
+                getDataTableView(false);
+            },
+
+            error: function(xhr) {
+
+                showAjaxAlert('danger', 'Delete failed');
+                console.log(xhr.responseText);
+            },
+
+            complete: function() {
+
+                $('.seat-delete-btn').prop('disabled', false)
+                    .html('<i class="fa fa-trash me-1"></i>Delete');
+            }
+        });
+    };
+
+    window.confirmDeleteSeat = function() {
+
+        let encId = $('#delete_enc_id').val();
+        let reason = $('#delete_reason').val();
+
+        if (reason == '') {
+            alert('Please select reason');
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('seat-block.delete') }}",
+            type: "POST",
+            dataType: "json",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: encId,
+                reason: reason
+            },
+
+            beforeSend: function() {
+
+                $('.seat-delete-btn')
+                    .prop('disabled', true)
+                    .html('<i class="fa fa-spinner fa-spin me-1"></i>Deleting...');
+            },
+
+            success: function(res) {
+
+                let modalEl = document.getElementById('deleteReasonModal');
+                let modal = bootstrap.Modal.getInstance(modalEl);
+
+                if (modal) {
+                    modal.hide();
+                }
+
+                $('#delete_reason').val('');
+                $('#delete_enc_id').val('');
+
+                getDataTableView(false);
+            },
+
+            error: function(xhr) {
+
+                console.log(xhr.responseText);
+                alert('Delete failed');
+            },
+
+            complete: function() {
+
+                $('.seat-delete-btn')
+                    .prop('disabled', false)
+                    .html('<i class="fa fa-trash me-1"></i>Delete');
+            }
+        });
     };
 </script>
 @endpush

@@ -384,12 +384,12 @@
 
             let operator_id = $(this).val();
 
-            $('#bus').html('');
-            $('#scheduleContainer').html(`
-        <div class="text-center text-muted">
-            Please select bus
-        </div>
-    `);
+                    $('#bus').html('');
+                    $('#scheduleContainer').html(`
+                <div class="text-center text-muted">
+                    Please select bus
+                </div>
+            `);
 
             commonAjax.loadBusListByOperator('#bus', operator_id);
 

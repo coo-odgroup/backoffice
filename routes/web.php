@@ -517,6 +517,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seat-block/edit/{encId}', [SeatBlockController::class, 'edit'])->name('seat-block.edit');
     Route::post('get-seat-layout-by-bus',[SeatBlockController::class, 'getSeatLayoutByBus'])->name('seat-block.layout.by.bus');
     Route::post('seat-block/history',[SeatBlockController::class, 'getBlockedSeatHistory'])->name('seat-block.history');
+    Route::post('seat-block/delete',[SeatBlockController::class, 'delete'])->name('seat-block.delete');
 
     Route::get('/seat-open', [SeatOpenController::class, 'index'])->name('seat-open.index');
     Route::match(['get', 'post'], 'seat-open/add', [SeatOpenController::class, 'add'])->name('seat-open.add');

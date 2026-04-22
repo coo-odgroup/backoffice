@@ -35,11 +35,6 @@ class SeatBlockController extends Controller
             $toDate   = request('toDate');
             $reason   = request('reason');
 
-            /*
-        |--------------------------------------------------------------------------
-        | QUERY
-        |--------------------------------------------------------------------------
-        */
             $query = DB::connection('mysql_dev')
                 ->table('bus_seat_operation as bso')
                 ->join('bus_seats as bs', 'bs.id', '=', 'bso.bus_seat_id')
@@ -54,6 +49,7 @@ class SeatBlockController extends Controller
                     'bso.operation_date',
                     'bso.seat_code',
                     'bso.category',
+                    'bso.reason',
                     'bso.created_at',
                     'bso.updated_at',
                     DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bso.created_by LIMIT 1) as created_by_name'),
@@ -67,11 +63,7 @@ class SeatBlockController extends Controller
                 )
             ");
 
-            /*
-        |--------------------------------------------------------------------------
-        | SEARCH
-        |--------------------------------------------------------------------------
-        */
+
             if (!empty($txtSearch)) {
 
                 $query->where(function ($q) use ($txtSearch) {
@@ -83,14 +75,14 @@ class SeatBlockController extends Controller
                 });
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | FILTERS
-        |--------------------------------------------------------------------------
-        */
             if ($selStatus !== null && $selStatus !== '') {
                 $query->where('bso.category', $selStatus == 1 ? 2 : 1);
             }
+
+            if (!empty($reason)) {
+                $query->whereRaw('TRIM(LOWER(bso.reason)) = ?', [strtolower(trim($reason))]);
+            }
+
 
             if (!empty($operator)) {
                 $query->where('b.bus_operator_id', $operator);
@@ -100,24 +92,29 @@ class SeatBlockController extends Controller
                 $query->where('bs.bus_id', $bus);
             }
 
-            if (!empty($fromDate)) {
-                $query->whereDate('bso.operation_date', '>=', $fromDate);
-            }
+            $today = date('Y-m-d');
 
-            if (!empty($toDate)) {
-                $query->whereDate('bso.operation_date', '<=', $toDate);
+
+            if (empty($fromDate) && empty($toDate)) {
+
+                $query->whereDate('bso.operation_date', '>=', $today);
+            } else {
+
+
+                if (!empty($fromDate)) {
+                    $query->whereDate('bso.operation_date', '>=', $fromDate);
+                }
+
+                if (!empty($toDate)) {
+                    $query->whereDate('bso.operation_date', '<=', $toDate);
+                }
             }
 
             $rows = $query
-                ->orderBy('bso.operation_date', 'desc')
-                ->orderBy('bs.bus_id', 'desc')
+                ->orderBy('bso.operation_date', 'asc')
+                ->orderBy('bs.bus_id', 'asc')
                 ->get();
 
-            /*
-        |--------------------------------------------------------------------------
-        | GROUP DATE WISE
-        |--------------------------------------------------------------------------
-        */
             $grouped = [];
 
             foreach ($rows as $row) {
@@ -143,8 +140,8 @@ class SeatBlockController extends Controller
                     $grouped[$key]['block_info'][$dateKey] = [
                         'date'       => $dateKey,
                         'seat_list'  => [],
-                        'reason'     => $row->category == 2 ? 'Blocked By Owner' : 'Open',
-                        'created_by' => $row->created_by_name ?: '--',
+                        'reason' => $row->reason ?: '--',
+                        'created_by' => $row->updated_by_name ?: $row->created_by_name ?: '--',
                         'created_at' => date('d-M-Y H:i:s', strtotime($row->created_at)),
                         'enc_id'     => Crypt::encryptString($row->bus_id)
                     ];
@@ -153,11 +150,7 @@ class SeatBlockController extends Controller
                 $grouped[$key]['block_info'][$dateKey]['seat_list'][] = $row->seat_code;
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | FINAL FORMAT
-        |--------------------------------------------------------------------------
-        */
+
             foreach ($grouped as &$item) {
 
                 $formatted = [];
@@ -214,11 +207,26 @@ class SeatBlockController extends Controller
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
 
             if ($id > 0) {
+
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
-            }
 
+                $editRow = DB::connection('mysql_dev')
+                    ->table('bus_seat_operation as bso')
+                    ->join('bus_seats as bs', 'bs.id', '=', 'bso.bus_seat_id')
+                    ->join('bus as b', 'b.id', '=', 'bs.bus_id')
+                    ->select(
+                        'bso.id',
+                        'bso.reason',
+                        'b.bus_operator_id',
+                        'bs.bus_id'
+                    )
+                    ->where('bso.id', $id)
+                    ->first();
+
+                $data['editData'] = $editRow;
+            }
             $redirectPage = "admin/seat-block";
 
             if (request()->isMethod('post')) {
@@ -226,10 +234,13 @@ class SeatBlockController extends Controller
                 $validator = Validator::make(request()->all(), [
                     'operator'        => 'required',
                     'bus'             => 'required',
-                    'seat_operations' => 'required'
+                    'reason'          => 'required',
+                    'seat_operations' => 'required',
+
                 ], [
                     'operator.required'        => 'Please select operator',
                     'bus.required'             => 'Please select bus',
+                    'reason.required'          => 'Please select reason',
                     'seat_operations.required' => 'Please select seats'
                 ]);
 
@@ -250,6 +261,7 @@ class SeatBlockController extends Controller
 
                 $userId = session('userid') ?? auth()->id() ?? 1;
                 $now    = now();
+                $reason = trim(request('reason'));
 
 
                 $validRows = [];
@@ -282,6 +294,7 @@ class SeatBlockController extends Controller
                         'seat_layout_id' => (int)($seat['seat_layout_id'] ?? 0),
                         'operation_date' => $operationDate,
                         'category'       => (int)($seat['category'] ?? 1), //1=open 2=block
+                        'reason'         => $reason,
                         'created_at'     => $now,
                         'created_by'     => $userId,
                         'updated_at'     => $now,
@@ -340,6 +353,34 @@ class SeatBlockController extends Controller
         }
 
         return view('Master.addSeatBlock', compact('data'));
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+
+            $id = Crypt::decryptString($request->id);
+
+            DB::connection('mysql_dev')
+                ->table('bus_seat_operation')
+                ->where('id', $id)
+                ->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Deleted successfully'
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error('SeatBlock delete error', [
+                'message' => $t->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Delete failed'
+            ], 500);
+        }
     }
 
     public function edit($encId)
@@ -525,7 +566,6 @@ class SeatBlockController extends Controller
                     $click    = $isActive ? 'onclick="toggleSeat(this)"' : '';
                     $checked  = $isActive ? 'checked' : '';
 
-                    /* GET REAL BUS SEAT ID */
                     $busSeat = DB::connection('mysql_dev')
                         ->table('bus_seats')
                         ->where('bus_id', $busId)
