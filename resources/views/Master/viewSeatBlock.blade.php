@@ -41,12 +41,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div class="card-body">
                     <div class="row align-items-end">
 
-                         <div class="col-lg-3 col-md-3">
+                        <div class="col-lg-3 col-md-3">
                             <label for="operator">Operator</label>
                             <select class="form-select form-select-sm" id="operator" name="operator">
                                 <option value="">Select Operator</option>
                             </select>
-                         </div>
+                        </div>
 
                         <div class="col-lg-3 col-md-3">
                             <label for="bus">Bus</label>
@@ -62,7 +62,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
-                         <div class="col-lg-2 col-md-2">
+                        <div class="col-lg-2 col-md-2">
                             <label for="destination">Destination</label>
                             <select class="form-select form-select-sm" id="destination" name="destination">
                                 <option value="">Select Destination</option>
@@ -79,17 +79,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
-                         <div class="col-lg-3 col-md-3 mt-1">
+                        <div class="col-lg-3 col-md-3 mt-1">
                             <label for="fromDate">From Date</label>
                             <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm" placeholder="From Date">
-                         </div>
+                        </div>
 
                         <div class="col-lg-3 col-md-3">
                             <label for="toDate">To Date</label>
                             <input type="date" id="toDate" name="toDate" class="form-control form-control-sm" placeholder="To Date">
                         </div>
 
-                         <div class="col-lg-2 col-md-6">
+                        <div class="col-lg-2 col-md-6">
                             <label for="reason">Reason</label>
                             <select class="form-select form-select-sm" id="reason" name="reason">
                             </select>
@@ -193,158 +193,158 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
 
-    $('#backoffice-form').on('submit', function(e) {
-        e.preventDefault();
-    });
-
     $(document).ready(function() {
+
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         commonAjax.initSelect2('#operator', 'Select Operator');
         commonAjax.initSelect2('#bus', 'Select Bus');
         commonAjax.initSelect2('#source', 'Select Source');
         commonAjax.initSelect2('#destination', 'Select Destination');
         commonAjax.initSelect2('#reason', 'Select Reason');
-        commonAjax.loadCountryList();
+
         commonAjax.initClearableInputs();
+
         getDataTableView();
     });
 
-
     $('#btnReset').click(function() {
-        $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
-        $('.form-select').val(0);
+
+        $('#backoffice-form')[0].reset();
         $('.form-select').val('').trigger('change');
+
         getDataTableView(true);
     });
 
-    window.getDataTableView = function(reset = true) {
 
-        //  If table already initialized
+    window.getDataTableView = function(reset = true) {
         if (window.dataTableInstance && reset) {
 
-            // Clear saved state
             window.dataTableInstance.state.clear();
-
-            // Reset length dropdown UI
             $('#pageSizeDatatable').val(10);
-
-            // Reset page length internally
             window.dataTableInstance.page.len(10);
-
-            // Force first page
             window.dataTableInstance.page(0);
         }
 
-        $('#pageSizeDatatable').val(10);
-        let txtSearch = '';
-        let selStatus = '';
-        let countrySearch = '';
-
-        if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
-        }
-
-        if ($('#selStatus').val() != '') {
-            selStatus = $('#selStatus').val();
-        }
-        if ($('#countrySearch').val() != '') {
-            countrySearch = $('#countrySearch').val();
-        }
-
         let tableId = 'datatable';
-        let orderBy = [2, 'asc'];
+
         let searchParams = {
-            txtSearch: txtSearch,
-            selStatus: selStatus,
-            countrySearch: countrySearch
+            txtSearch: $('#txtSearch').val(),
+            selStatus: $('#selStatus').val(),
+            operator: $('#operator').val(),
+            bus: $('#bus').val(),
+            fromDate: $('#fromDate').val(),
+            toDate: $('#toDate').val(),
+            reason: $('#reason').val()
         };
-        let displayColumns = [1, 2, 3, 4, 5, 6, 7];
+
+        let orderBy = [0, 'desc'];
+
+        let displayColumns = [0, 1, 2, 3, 4];
+
         let dataTableColumns = [
+
             {
-                data: 'slNo',
+                data: null,
                 render: function(data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 },
                 className: "text-center"
             },
+
             {
-                data: 'brand_name',
-                defaultContent: "--"
+                data: 'operator_name',
+                defaultContent: '--'
             },
+
             {
-                data: 'brand_name',
-                defaultContent: "--"
+                data: 'bus_name',
+                defaultContent: '--'
             },
+
             {
-                data: 'brand_name',
-                defaultContent: "--"
+                data: 'route_name',
+                defaultContent: '--'
             },
+
             {
-                data: 'brand_name',
+                data: 'block_info',
+                orderable: false,
+                searchable: false,
+
                 render: function(data, type, row) {
 
-                     let editUrl = $('#' + tableId).data('edit-url');
+                    if (!data || data.length === 0) {
+                        return '--';
+                    }
 
-                    // if (!data || data.length === 0) return "--";
+                    let editUrl = $('#' + tableId).data('edit-url');
 
-                    let table = `<div class="inner-table-hdr">
-                                    <table class="table mb-0 table-hover table-sm">
-                                        <thead class="table-secondary">
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Seats/Sleeper</th>
-                                                <th>Reason</th>
-                                                <th>Created By</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>`;
-
-                    // data.forEach(row => {
-                        table += `<tr>
-                                        <td class="align-middle">26-Apr-2026</td>
-                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
-                                        <td class="align-middle">Blocked By Owner</td>
-                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
-                                        <td class="align-middle"> <a class="btn btn-sm btn-info"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-edit"></i>
-                                             </a>
-                                             <a class="btn btn-sm btn-danger"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-trash"></i>
-                                             </a>
-                                        </td>
+                    let html = `
+                        <div class="inner-table-hdr table-responsive">
+                            <table class="table table-bordered table-hover table-sm mb-0 fixed-inner-table">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th style="width:120px; min-width:120px;">Date</th>
+                                        <th style="width:500px; min-width:500px;">Seats/Sleeper</th>
+                                        <th style="width:180px; min-width:180px;">Reason</th>
+                                        <th style="width:220px; min-width:220px;">Created By</th>
+                                        <th style="width:90px; min-width:90px;" class="text-center">Action</th>
                                     </tr>
-                                     <tr>
-                                       <td class="align-middle">26-Apr-2026</td>
-                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB, US11UB, 16SS, 18SS, 20SS, 22SS, 24SS, 15SS, 17SS, 19SS, 21SS, 23SS</td>
-                                        <td class="align-middle">Blocked By Owner</td>
-                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
-                                        <td class="align-middle">
-                                             <a class="btn btn-sm btn-info"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-edit"></i>
-                                             </a>
-                                             <a class="btn btn-sm btn-danger"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-trash"></i>
-                                             </a>
-                                        </td>
-                                    </tr>`;
-                    // });
+                                </thead>
+                                <tbody>
+                        `;
 
-                                    table += `</tbody>
-                                             </table>
-                                            </div> `;
+                    data.forEach(function(item) {
 
-                    return table;
-                },
-                className: ""
+                        html += `
+                <tr>
+                    <td style="width:120px;">${item.date}</td>
+
+                    <td style="width:500px; white-space:normal; word-break:break-word;">
+                        ${item.seat_code}
+                    </td>
+
+                    <td style="width:180px;">
+                        ${item.reason}
+                    </td>
+
+                    <td style="width:220px;">
+                        ${item.created_by}<br>
+                        <small>${item.created_at}</small>
+                    </td>
+
+                    <td style="width:90px;" class="text-center">
+                    
+                        <a class="btn btn-sm btn-info"
+                                href="${editUrl.replace('ID', item.enc_id)}">
+                                <i class="fa fa-edit"></i>
+                        </a>
+
+                        <a class="btn btn-sm btn-danger"
+                                href="javascript:void(0)"
+                                onclick="deleteSingleRecord('${item.enc_id}')"
+                                title="Delete">
+                                <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+
+                    
+                </tr>
+                `;
+                    });
+
+                    html += `
+                    </tbody>
+                </table>
+            </div>
+            `;
+
+                    return html;
+                }
             }
-        ]
+        ];
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
-    }
+    };
 </script>
 @endpush

@@ -26,101 +26,155 @@ class SeatBlockController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtsearch'));
-            $selStatus = request('selstatus');
+            $txtSearch = htmlEncode(request('txtSearch'));
+            $selStatus = request('selStatus');
 
-            $query = DB::table('mst_ticket_fare_slab_info as t')
-                ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-                ->leftJoin('users as u', function ($join) {
-                    $join->on('u.id', '=', 't.bus_operator_id')
-                        ->where('u.user_role', 9);
-                })
+            $operator = request('operator');
+            $bus      = request('bus');
+            $fromDate = request('fromDate');
+            $toDate   = request('toDate');
+            $reason   = request('reason');
+
+            /*
+        |--------------------------------------------------------------------------
+        | QUERY
+        |--------------------------------------------------------------------------
+        */
+            $query = DB::connection('mysql_dev')
+                ->table('bus_seat_operation as bso')
+                ->join('bus_seats as bs', 'bs.id', '=', 'bso.bus_seat_id')
+                ->join('bus as b', 'b.id', '=', 'bs.bus_id')
+                ->leftJoin('odbusmaster.users as u', 'u.id', '=', 'b.bus_operator_id')
                 ->select(
-                    't.id',
-                    't.slab_id',
-                    's.slab_name',
+                    'bso.id',
+                    'bs.bus_id',
                     'u.organization_name as operator_name',
-                    't.starting_fare',
-                    't.upto_fare',
-                    't.commision',
-                    't.from_date',
-                    't.to_date',
-                    't.active_status',
-                    't.created_at',
-                    't.updated_at',
-                    DB::raw('(SELECT name FROM users WHERE id = t.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
-                );
+                    'b.name as bus_name',
+                    'b.bus_number as bus_registration_no',
+                    'bso.operation_date',
+                    'bso.seat_code',
+                    'bso.category',
+                    'bso.created_at',
+                    'bso.updated_at',
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bso.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bso.updated_by LIMIT 1) as updated_by_name')
+                )
+                ->whereRaw("
+                bso.id IN (
+                    SELECT MAX(id)
+                    FROM bus_seat_operation
+                    GROUP BY bus_seat_id, operation_date
+                )
+            ");
 
+            /*
+        |--------------------------------------------------------------------------
+        | SEARCH
+        |--------------------------------------------------------------------------
+        */
             if (!empty($txtSearch)) {
+
                 $query->where(function ($q) use ($txtSearch) {
-                    $q->where('s.slab_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
+
+                    $q->where('u.organization_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('b.name', 'like', "%{$txtSearch}%")
+                        ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
+                        ->orWhere('bso.seat_code', 'like', "%{$txtSearch}%");
                 });
             }
 
+            /*
+        |--------------------------------------------------------------------------
+        | FILTERS
+        |--------------------------------------------------------------------------
+        */
             if ($selStatus !== null && $selStatus !== '') {
-                $query->where('t.active_status', $selStatus);
+                $query->where('bso.category', $selStatus == 1 ? 2 : 1);
             }
 
-            $rows = $query->orderBy('t.id', 'desc')->get();
+            if (!empty($operator)) {
+                $query->where('b.bus_operator_id', $operator);
+            }
 
+            if (!empty($bus)) {
+                $query->where('bs.bus_id', $bus);
+            }
+
+            if (!empty($fromDate)) {
+                $query->whereDate('bso.operation_date', '>=', $fromDate);
+            }
+
+            if (!empty($toDate)) {
+                $query->whereDate('bso.operation_date', '<=', $toDate);
+            }
+
+            $rows = $query
+                ->orderBy('bso.operation_date', 'desc')
+                ->orderBy('bs.bus_id', 'desc')
+                ->get();
+
+            /*
+        |--------------------------------------------------------------------------
+        | GROUP DATE WISE
+        |--------------------------------------------------------------------------
+        */
             $grouped = [];
 
             foreach ($rows as $row) {
 
-                $slabId = $row->slab_id;
+                $key = $row->bus_id;
 
-                if (!isset($grouped[$slabId])) {
+                if (!isset($grouped[$key])) {
 
-                    $grouped[$slabId] = [
-                        'id' => $row->id,
-                        'slab_id' => $row->slab_id,
-                        'slab_name' => $row->slab_name,
-                        'operators' => [],
-                        'slab_info' => [],
-                        'created_date' => date('d-M-Y H:i:s', strtotime($row->created_at)),
-                        'updated_date' => $row->updated_at
-                            ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                            : null,
-                        'created_by_name' => $row->created_by_name,
-                        'updated_by_name' => $row->updated_by_name,
-                        'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-                        'enc_id' => Crypt::encryptString($row->slab_id),
+                    $grouped[$key] = [
+                        'id'            => $row->id,
+                        'operator_name' => $row->operator_name ?: '--',
+                        'bus_name'      => trim($row->bus_name . ' / ' . $row->bus_registration_no),
+                        'route_name'    => '--',
+                        'block_info'    => [],
+                        'enc_id'        => Crypt::encryptString($row->bus_id),
                     ];
                 }
 
-                if (
-                    !empty($row->operator_name) &&
-                    !in_array($row->operator_name, $grouped[$slabId]['operators'])
-                ) {
+                $dateKey = date('d-M-Y', strtotime($row->operation_date));
 
-                    $grouped[$slabId]['operators'][] = $row->operator_name;
-                }
+                if (!isset($grouped[$key]['block_info'][$dateKey])) {
 
-                $key = md5(
-                    $row->starting_fare . '|' .
-                        $row->upto_fare . '|' .
-                        $row->commision . '|' .
-                        date('Y-m-d', strtotime($row->from_date)) . '|' .
-                        date('Y-m-d', strtotime($row->to_date))
-                );
-
-                if (!isset($grouped[$slabId]['slab_info'][$key])) {
-
-                    $grouped[$slabId]['slab_info'][$key] = [
-                        'starting_fare' => $row->starting_fare,
-                        'upto_fare' => $row->upto_fare,
-                        'commision' => $row->commision,
-                        'from_date' => $row->from_date,
-                        'to_date' => $row->to_date,
+                    $grouped[$key]['block_info'][$dateKey] = [
+                        'date'       => $dateKey,
+                        'seat_list'  => [],
+                        'reason'     => $row->category == 2 ? 'Blocked By Owner' : 'Open',
+                        'created_by' => $row->created_by_name ?: '--',
+                        'created_at' => date('d-M-Y H:i:s', strtotime($row->created_at)),
+                        'enc_id'     => Crypt::encryptString($row->bus_id)
                     ];
                 }
+
+                $grouped[$key]['block_info'][$dateKey]['seat_list'][] = $row->seat_code;
             }
 
-            // ✅ MOVE THIS OUTSIDE LOOP (VERY IMPORTANT)
-            foreach ($grouped as &$slab) {
-                $slab['slab_info'] = array_values($slab['slab_info']);
+            /*
+        |--------------------------------------------------------------------------
+        | FINAL FORMAT
+        |--------------------------------------------------------------------------
+        */
+            foreach ($grouped as &$item) {
+
+                $formatted = [];
+
+                foreach ($item['block_info'] as $r) {
+
+                    $formatted[] = [
+                        'date'       => $r['date'],
+                        'seat_code'  => implode(', ', $r['seat_list']),
+                        'reason'     => $r['reason'],
+                        'created_by' => $r['created_by'],
+                        'created_at' => $r['created_at'],
+                        'enc_id'     => $r['enc_id']
+                    ];
+                }
+
+                $item['block_info'] = $formatted;
             }
 
             $data = array_values($grouped);
@@ -129,14 +183,15 @@ class SeatBlockController extends Controller
             $recordsFiltered = $recordsTotal;
         } catch (\Throwable $t) {
 
-            Log::error("TicketFareSlabInfoController Error", [
-                'message' => $t->getMessage()
+            Log::error("SeatBlockController@DataTable", [
+                'message' => $t->getMessage(),
+                'line'    => $t->getLine()
             ]);
 
             return response()->json([
-                'recordsTotal' => 0,
+                'recordsTotal'    => 0,
                 'recordsFiltered' => 0,
-                'data' => []
+                'data'            => []
             ]);
         }
 
