@@ -34,9 +34,9 @@ class SeatBlockController extends Controller
             $fromDate = request('fromDate');
             $toDate   = request('toDate');
             $reason   = request('reason');
-
             $query = DB::connection('mysql_dev')
                 ->table('bus_seat_operation as bso')
+                ->whereNull('bso.deleted_at')
                 ->join('bus_seats as bs', 'bs.id', '=', 'bso.bus_seat_id')
                 ->join('bus as b', 'b.id', '=', 'bs.bus_id')
                 ->leftJoin('odbusmaster.users as u', 'u.id', '=', 'b.bus_operator_id')
@@ -57,11 +57,12 @@ class SeatBlockController extends Controller
                 )
                 ->whereRaw("
                 bso.id IN (
-                    SELECT MAX(id)
+                                    SELECT MAX(id)
                     FROM bus_seat_operation
+                    WHERE deleted_at IS NULL
                     GROUP BY bus_seat_id, operation_date
-                )
-            ");
+                        )
+                    ");
 
 
             if (!empty($txtSearch)) {
@@ -80,7 +81,20 @@ class SeatBlockController extends Controller
             }
 
             if (!empty($reason)) {
-                $query->whereRaw('TRIM(LOWER(bso.reason)) = ?', [strtolower(trim($reason))]);
+
+                $reasonName = DB::connection('mysql_dev')
+                    ->table('odbusmaster.mst_annexture')
+                    ->where('id', $reason)
+                    ->where('annexture_type_id', 16)
+                    ->where('active_status', 1)
+                    ->value('annexture_name');
+
+                if (!empty($reasonName)) {
+                    $query->whereRaw(
+                        'TRIM(LOWER(bso.reason)) = ?',
+                        [strtolower(trim($reasonName))]
+                    );
+                }
             }
 
 
@@ -129,7 +143,7 @@ class SeatBlockController extends Controller
                         'bus_name'      => trim($row->bus_name . ' / ' . $row->bus_registration_no),
                         'route_name'    => '--',
                         'block_info'    => [],
-                        'enc_id'        => Crypt::encryptString($row->bus_id),
+                        'enc_id' => Crypt::encryptString($row->bus_id),
                     ];
                 }
 
@@ -143,7 +157,7 @@ class SeatBlockController extends Controller
                         'reason' => $row->reason ?: '--',
                         'created_by' => $row->updated_by_name ?: $row->created_by_name ?: '--',
                         'created_at' => date('d-M-Y H:i:s', strtotime($row->created_at)),
-                        'enc_id'     => Crypt::encryptString($row->bus_id)
+                        'enc_id' => Crypt::encryptString($row->bus_id . '|' . $row->operation_date)
                     ];
                 }
 
@@ -223,10 +237,12 @@ class SeatBlockController extends Controller
                         'bs.bus_id'
                     )
                     ->where('bso.id', $id)
+                    ->whereNull('bso.deleted_at')
                     ->first();
 
                 $data['editData'] = $editRow;
             }
+
             $redirectPage = "admin/seat-block";
 
             if (request()->isMethod('post')) {
@@ -235,8 +251,7 @@ class SeatBlockController extends Controller
                     'operator'        => 'required',
                     'bus'             => 'required',
                     'reason'          => 'required',
-                    'seat_operations' => 'required',
-
+                    'seat_operations' => 'required'
                 ], [
                     'operator.required'        => 'Please select operator',
                     'bus.required'             => 'Please select bus',
@@ -259,74 +274,89 @@ class SeatBlockController extends Controller
 
                 DB::connection('mysql_dev')->beginTransaction();
 
-                $userId = session('userid') ?? auth()->id() ?? 1;
-                $now    = now();
-                $reason = trim(request('reason'));
+                $userId   = session('userid') ?? auth()->id() ?? 1;
+                $now      = now();
+                $reasonId = request('reason');
 
+                $reason = DB::connection('mysql_dev')
+                    ->table('odbusmaster.mst_annexture')
+                    ->where('id', $reasonId)
+                    ->where('annexture_type_id', 16)
+                    ->where('active_status', 1)
+                    ->value('annexture_name');
+
+                $reason = $reason ?: 'Other';
 
                 $validRows = [];
 
                 foreach ($seatOperations as $seat) {
 
                     $busSeatId = (int)($seat['bus_seat_id'] ?? 0);
-
-                    if ($busSeatId <= 0) {
-                        Log::warning('Skipped invalid bus seat row', $seat);
-                        continue;
-                    }
-
                     $operationDate = $seat['operation_date'] ?? null;
 
-                    if (empty($operationDate)) {
-                        Log::warning('Skipped missing operation date', $seat);
+                    if ($busSeatId <= 0 || empty($operationDate)) {
                         continue;
                     }
+
+                    $seatCode = trim((string)($seat['seat_code'] ?? ''));
+                    $layoutId = (int)($seat['seat_layout_id'] ?? 0);
+                    $category = (int)($seat['category'] ?? 2);
+
+                    $existing = DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->where('bus_seat_id', $busSeatId)
+                        ->whereDate('operation_date', $operationDate)
+                        ->orderByDesc('id')
+                        ->first();
+
+                    if ($existing) {
+
+                        DB::connection('mysql_dev')
+                            ->table('bus_seat_operation')
+                            ->where('id', $existing->id)
+                            ->update([
+                                'seat_code'      => $seatCode,
+                                'seat_layout_id' => $layoutId,
+                                'category'       => $category,
+                                'reason'         => $reason,
+                                'deleted_at'     => null,
+                                'deleted_by'     => null,
+                                'updated_at'     => $now,
+                                'updated_by'     => $userId
+                            ]);
+                    } else {
+
+                        $validRows[] = [
+                            'bus_seat_id'    => $busSeatId,
+                            'seat_code'      => $seatCode,
+                            'seat_layout_id' => $layoutId,
+                            'operation_date' => $operationDate,
+                            'category'       => $category,
+                            'reason'         => $reason,
+                            'created_at'     => $now,
+                            'created_by'     => $userId,
+                            'updated_at'     => $now,
+                            'updated_by'     => $userId
+                        ];
+                    }
+                }
+
+                if (!empty($validRows)) {
 
                     DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
-                        ->where('bus_seat_id', $busSeatId)
-                        ->where('operation_date', $operationDate)
-                        ->delete();
+                        ->insert($validRows);
 
-                    $row = [
-                        'bus_seat_id'    => $busSeatId,
-                        'seat_code'      => trim((string)($seat['seat_code'] ?? '')),
-                        'seat_layout_id' => (int)($seat['seat_layout_id'] ?? 0),
-                        'operation_date' => $operationDate,
-                        'category'       => (int)($seat['category'] ?? 1), //1=open 2=block
-                        'reason'         => $reason,
-                        'created_at'     => $now,
-                        'created_by'     => $userId,
-                        'updated_at'     => $now,
-                        'updated_by'     => $userId
-                    ];
+                    foreach ($validRows as $row) {
 
-                    $validRows[] = $row;
-                }
-
-                if (empty($validRows)) {
-                    DB::connection('mysql_dev')->rollBack();
-
-                    return back()->with([
-                        'level'   => 'danger',
-                        'message' => 'No valid seat rows found.'
-                    ])->withInput();
-                }
-
-
-                DB::connection('mysql_dev')
-                    ->table('bus_seat_operation')
-                    ->insert($validRows);
-
-                foreach ($validRows as $row) {
-
-                    app(CommonController::class)->auditLog(
-                        'bus_seat_operation',
-                        0,
-                        'INSERT',
-                        [],
-                        $row
-                    );
+                        app(CommonController::class)->auditLog(
+                            'bus_seat_operation',
+                            0,
+                            'INSERT',
+                            [],
+                            $row
+                        );
+                    }
                 }
 
                 DB::connection('mysql_dev')->commit();
@@ -359,12 +389,34 @@ class SeatBlockController extends Controller
     {
         try {
 
-            $id = Crypt::decryptString($request->id);
+            $decoded = Crypt::decryptString($request->id);
 
-            DB::connection('mysql_dev')
+            $parts = explode('|', $decoded);
+
+            if (count($parts) < 2) {
+                throw new \Exception('Invalid delete payload');
+            }
+
+            $busId = $parts[0];
+            $operationDate = $parts[1];
+
+            $userId = session('userid') ?? auth()->id() ?? 1;
+
+            $updated = DB::connection('mysql_dev')
                 ->table('bus_seat_operation')
-                ->where('id', $id)
-                ->delete();
+                ->whereNull('deleted_at')
+                ->whereDate('operation_date', $operationDate)
+                ->whereIn('bus_seat_id', function ($q) use ($busId) {
+                    $q->select('id')
+                        ->from('bus_seats')
+                        ->where('bus_id', $busId);
+                })
+                ->update([
+                    'deleted_at' => now(),
+                    'deleted_by' => $userId,
+                    'updated_at' => now(),
+                    'updated_by' => $userId
+                ]);
 
             return response()->json([
                 'status' => true,
@@ -373,7 +425,8 @@ class SeatBlockController extends Controller
         } catch (\Throwable $t) {
 
             Log::error('SeatBlock delete error', [
-                'message' => $t->getMessage()
+                'message' => $t->getMessage(),
+                'line' => $t->getLine()
             ]);
 
             return response()->json([
@@ -665,6 +718,7 @@ class SeatBlockController extends Controller
 
             $rows = DB::connection('mysql_dev')
                 ->table('bus_seat_operation')
+                ->whereNull('deleted_at')
                 ->selectRaw("
                 operation_date,
                 GROUP_CONCAT(

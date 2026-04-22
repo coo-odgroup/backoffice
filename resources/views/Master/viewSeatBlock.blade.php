@@ -506,19 +506,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $('#delete_enc_id').val(encId);
 
-        $('#delete_reason').html('<option value="">Select Reason</option>');
-
-        commonAjax.loadAnnextureList(
-            'REASON',
-            '',
-            '#delete_reason'
-        );
+        $('#delete_reason').html('<option value="">Loading...</option>');
 
         let modal = new bootstrap.Modal(
             document.getElementById('deleteReasonModal')
         );
 
         modal.show();
+
+        commonAjax.loadAnnextureList('REASON', '', '#delete_reason');
+
+        setTimeout(function() {
+            $('#delete_reason').trigger('change');
+        }, 300);
     };
 
     window.confirmDeleteSeat = function() {
@@ -528,10 +528,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         if (reason == '') {
 
-            showAjaxAlert(
-                'warning',
-                'Please select reason'
-            );
+           commonAjax.viewAlert(
+                'Please select reason');
 
             return;
         }
@@ -554,8 +552,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             error: function() {
 
-                showAjaxAlert(
-                    'danger',
+                commonAjax.viewAlert(
+
                     'Something went wrong'
                 );
             }
@@ -569,7 +567,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         if (reason == '') {
 
-            showAjaxAlert('warning', 'Please select reason');
+           commonAjax.viewAlert('Please select reason');
             return;
         }
 
@@ -606,7 +604,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             error: function(xhr) {
 
-                showAjaxAlert('danger', 'Delete failed');
+                commonAjax.viewAlert('Delete failed');
                 console.log(xhr.responseText);
             },
 
@@ -624,7 +622,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let reason = $('#delete_reason').val();
 
         if (reason == '') {
-            alert('Please select reason');
+           commonAjax.viewAlert('Please select reason');
             return;
         }
 
@@ -663,7 +661,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             error: function(xhr) {
 
                 console.log(xhr.responseText);
-                alert('Delete failed');
+                 commonAjax.viewAlert('Delete failed');
             },
 
             complete: function() {

@@ -384,8 +384,8 @@
 
             let operator_id = $(this).val();
 
-                    $('#bus').html('');
-                    $('#scheduleContainer').html(`
+            $('#bus').html('');
+            $('#scheduleContainer').html(`
                 <div class="text-center text-muted">
                     Please select bus
                 </div>
@@ -411,11 +411,14 @@
             if ($el.hasClass('disabled')) return;
 
             if ($el.hasClass('selected-seat')) {
+
                 $el.removeClass('selected-seat open')
-                    .addClass('blocked');
+                    .addClass('blocked changed-seat');
+
             } else if ($el.hasClass('blocked')) {
+
                 $el.removeClass('blocked')
-                    .addClass('selected-seat open');
+                    .addClass('selected-seat open changed-seat');
             }
         }
 
@@ -603,21 +606,21 @@
 
             /* Operator */
             if (!operator || operator == 0) {
-                commonAjax.confirmAlert('Please select Operator');
+               commonAjax.viewAlert('Please select Operator');
                 $('#operator').focus();
                 return false;
             }
 
             /* Bus */
             if (!bus || bus == 0) {
-                commonAjax.confirmAlert('Please select Bus');
+                commonAjax.viewAlert('Please select Bus');
                 $('#bus').focus();
                 return false;
             }
 
             /* Reason */
             if (!reason || reason == 0) {
-                commonAjax.confirmAlert('Please select a Reason');
+                commonAjax.viewAlert('Please select a Reason');
                 $('#reason').focus();
                 return false;
             }
@@ -628,12 +631,13 @@
             });
 
             if (selectedDates.length === 0) {
-                commonAjax.confirmAlert('Please select Schedule Date');
+                commonAjax.viewAlert('Please select Schedule Date');
                 return false;
             }
 
             /* Seats */
-            $('.bus-seat, .bus-sleeper, .bus-vertical-sleeper').each(function() {
+            /* Seats */
+            $('.changed-seat').each(function() {
 
                 let seatCode = $(this).closest('label').find('.seat-checkbox').val();
                 if (!seatCode) return;
@@ -641,7 +645,7 @@
                 let busSeatId = $(this).data('busseatid') || 0;
                 let layoutId = $(this).data('layout') || 0;
 
-                let category = $(this).hasClass('selected-seat') ? 1 : 2;
+                let category = $(this).hasClass('blocked') ? 2 : 1;
 
                 selectedDates.forEach(function(date) {
 
