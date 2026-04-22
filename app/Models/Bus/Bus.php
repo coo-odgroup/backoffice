@@ -29,6 +29,7 @@ class Bus extends Model
         'seat_type_id',
         'seat_layout_type_id',
         'gen_bus_type',
+        'mst_seat_layout_name_id',
         'cancellationslabs_id',
         'running_cycle',
         'popularity',
@@ -97,9 +98,14 @@ class Bus extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    // public function routemap()
+    // {
+    //     return $this->belongsTo(BusRoutesMap::class, 'bus_id');
+    // }
+
     public function routemap()
     {
-        return $this->belongsTo(BusRoutesMap::class, 'bus_id');
+        return $this->hasMany(BusRoutesMap::class, 'bus_id', 'id');
     }
 
     public function amenities()

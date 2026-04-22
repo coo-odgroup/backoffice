@@ -200,7 +200,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                                 <div class="col-md-3">
                                                                                     <label class="amenity-chip">
                                                                                         <input type="checkbox" class="amenity-checkbox" name="amenities_id[]"
-                                                                                            value="{{ $amenity->id }}">
+                                                                                            value="{{ $amenity->id }}" {{ in_array($amenity->id, $selectedAmenities ?? []) ? 'checked' : '' }}>
 
                                                                                         <span class="amenity-label">
                                                                                             {{ $amenity->amenity_name }}
@@ -318,6 +318,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
 <script type="module">
     $(document).ready(function() {
+        localStorage.removeItem('selAmenities');
         const selAmenities = <?= json_encode(@$step1AmenityRes) ?>;
         if (selAmenities && selAmenities.length > 0) {
             localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
@@ -394,6 +395,10 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
         commonAjax.initSelect2('#selAmenity', 'Select Amenity');
 
+        commonAjax.initSelect2('.users', 'Select Bus Operator');
+        let user_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
+        commonAjax.loadUsersList('OPERATOR', user_id);
+
         // let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
         let selectedBrand = "{{ @$step1Res->brand_id ?? '' }}";
         commonAjax.loadBrandList(selectedBrand);
@@ -436,14 +441,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
 
         commonAjax.loadAmenityList();
-
-        // Jagan
-        // commonAjax.initSelect2('#busOperator', 'Select Bus Operator');
-        // let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
-        // commonAjax.loadBusOperatorList(bus_operator_id);
-        commonAjax.initSelect2('.users', 'Select Bus Operator');
-        let user_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
-        commonAjax.loadUsersList('OPERATOR', user_id);
 
         commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
         // let slab_id = "{{ $data['row']->slab_id ?? '' }}";
@@ -589,33 +586,33 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                         let collapseId = `cat${category.id}_${index}`;
 
                         html += `
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#${collapseId}">
-                                ${category.category_name}
-                            </button>
-                        </h2>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#${collapseId}">
+                                    ${category.category_name}
+                                </button>
+                            </h2>
 
-                        <div id="${collapseId}" class="accordion-collapse collapse show">
-                            <div class="accordion-body">
-                                <div class="row g-1">
-                    `;
+                            <div id="${collapseId}" class="accordion-collapse collapse show">
+                                <div class="accordion-body">
+                                    <div class="row g-1">
+                        `;
 
                         category.amenities.forEach(function(amenity) {
 
                             let checked = selectedAmenities.has(String(amenity.id)) ? 'checked' : '';
 
                             html += `
-                            <div class="col-md-3">
-                                <label class="amenity-chip">
-                                    <input type="checkbox" class="amenity-checkbox"
-                                        value="${amenity.id}" ${checked}>
-                                    <span class="amenity-label">${amenity.amenity_name}</span>
-                                </label>
-                            </div>
-                        `;
+                                <div class="col-md-3">
+                                    <label class="amenity-chip">
+                                        <input type="checkbox" class="amenity-checkbox"
+                                            value="${amenity.id}" ${checked}>
+                                        <span class="amenity-label">${amenity.amenity_name}</span>
+                                    </label>
+                                </div>
+                            `;
                         });
 
                         html += `

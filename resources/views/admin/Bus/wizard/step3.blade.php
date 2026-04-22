@@ -164,16 +164,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 return false;
             }
 
-            if (!$time.val()) {
-                isValid = false;
-                city = cityName;
-                return false;
-            }
+            // if (!$time.val()) {
+            //     isValid = false;
+            //     city = cityName;
+            //     return false;
+            // }
 
         });
 
         if (!isValid) {
-            commonAjax.viewAlert('Boarding / Dropping and time for ' + city + ' cannot be left blank');
+            commonAjax.viewAlert('Boarding / Dropping for ' + city + ' cannot be left blank');
             return;
         }
 
