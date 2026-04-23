@@ -479,6 +479,8 @@ class SeatBlockController extends Controller
                 ]);
             }
 
+            $operationDate = $request->operation_date ?? null;
+
             $seats = DB::connection('mysql_dev')
                 ->table('odbusmaster.mst_seats')
                 ->where('seat_layout_name_id', $layoutId)
@@ -497,12 +499,34 @@ class SeatBlockController extends Controller
                 })
                 ->toArray();
 
+            $blockedSeats = [];
+
+            if (!empty($operationDate)) {
+
+                $blockedSeats = DB::connection('mysql_dev')
+                    ->table('bus_seat_operation')
+                    ->whereNull('deleted_at')
+                    ->where('category', 2)
+                    ->whereDate('operation_date', $operationDate)
+                    ->whereIn('bus_seat_id', function ($q) use ($bus) {
+                        $q->select('id')
+                            ->from('bus_seats')
+                            ->where('bus_id', $bus->id);
+                    })
+                    ->pluck('seat_code')
+                    ->map(function ($seat) {
+                        return strtoupper(trim(preg_replace('/\s+/', '', $seat)));
+                    })
+                    ->toArray();
+            }
+
 
             $html = $this->buildSeatLayoutHtml(
                 $seats,
                 $activeSeats,
                 $bus->id,
-                $layoutId
+                $layoutId,
+                $blockedSeats
             );
 
             return response()->json([
@@ -526,7 +550,7 @@ class SeatBlockController extends Controller
         }
     }
 
-    private function buildSeatLayoutHtml($seats, $activeSeats = [], $busId = 0, $layoutId = 0)
+    private function buildSeatLayoutHtml($seats, $activeSeats = [], $busId = 0, $layoutId = 0, $blockedSeats = [])
     {
         $layout = [
             'UPPER'  => [],
@@ -606,11 +630,27 @@ class SeatBlockController extends Controller
                     }
 
                     $currentSeat = strtoupper(trim(preg_replace('/\s+/', '', $seatNo)));
-                    $isActive = in_array($currentSeat, $normalizedActiveSeats, true);
 
-                    $selected = $isActive ? 'selected-seat' : 'blocked-seat';
-                    $click    = $isActive ? 'onclick="toggleSeat(this)"' : '';
-                    $checked  = $isActive ? 'checked' : '';
+                    $isActive  = in_array($currentSeat, $normalizedActiveSeats, true);
+                    $isBlocked = in_array($currentSeat, $blockedSeats, true);
+
+                    if ($isBlocked) {
+
+                        $selected = 'blocked';
+                        $checked  = '';
+                        $click    = 'onclick="toggleSeat(this)"';
+                    } elseif ($isActive) {
+
+                        $selected = 'selected-seat';
+                        $checked  = 'checked';
+                        $click    = 'onclick="toggleSeat(this)"';
+                    } else {
+
+                        $selected = 'disabled';
+                        $checked  = '';
+                        $click    = '';
+                    }
+
 
                     $busSeat = DB::connection('mysql_dev')
                         ->table('bus_seats')
@@ -700,33 +740,41 @@ class SeatBlockController extends Controller
     {
         try {
 
-            $busId = (int)$request->bus_id;
+            $busId = (int) $request->bus_id;
+            $operationDate = $request->operation_date;
 
             if ($busId <= 0) {
                 return response()->json([
                     'status' => false,
-                    'html' => 'Invalid bus'
+                    'html'   => 'Invalid bus'
                 ]);
             }
 
-            $rows = DB::connection('mysql_dev')
+            $query = DB::connection('mysql_dev')
                 ->table('bus_seat_operation')
                 ->whereNull('deleted_at')
-                ->selectRaw("
-                operation_date,
-                GROUP_CONCAT(
-                    CASE WHEN category = 2 THEN seat_code END
-                    ORDER BY seat_code SEPARATOR ', '
-                ) as blocked_seats,
-                MAX(updated_at) as updated_at,
-                MAX(updated_by) as updated_by
-            ")
                 ->where('category', 2)
                 ->whereIn('bus_seat_id', function ($q) use ($busId) {
                     $q->select('id')
                         ->from('bus_seats')
                         ->where('bus_id', $busId);
                 })
+                ->selectRaw("
+                operation_date,
+                GROUP_CONCAT(
+                    seat_code
+                    ORDER BY seat_code SEPARATOR ', '
+                ) as blocked_seats,
+                MAX(updated_at) as updated_at,
+                MAX(updated_by) as updated_by
+            ");
+
+            /* EDIT MODE -> only selected date */
+            if (!empty($operationDate)) {
+                $query->whereDate('operation_date', $operationDate);
+            }
+
+            $rows = $query
                 ->groupBy('operation_date')
                 ->orderByDesc('operation_date')
                 ->get();
@@ -734,6 +782,7 @@ class SeatBlockController extends Controller
             $html = '';
 
             if ($rows->isEmpty()) {
+
                 $html = '<div class="text-center text-muted">No blocked history found</div>';
             } else {
 

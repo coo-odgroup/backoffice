@@ -362,6 +362,10 @@
         .seat-box.disabled.sleeper.vertical {
             background-image: url('/assets/seats/sleeper_layout_grey_vertical.png');
         }
+
+        .selected-seat.bus-seat {
+   background-image:url('/assets/seats/Seat_layout_blue.png') !important;
+}
     </style>
 
     @endsection
@@ -373,9 +377,14 @@
         let selectedOperator = "{{ $data['editData']->bus_operator_id ?? (old('operator') ?? '') }}";
         let selectedBus = "{{ $data['editData']->bus_id ?? (old('bus') ?? '') }}";
         let selectedReason = "{{ $data['editData']->reason ?? (old('reason') ?? '') }}";
-        console.log('Selected Operator:', selectedOperator);
-        console.log('Selected Bus:', selectedBus);
-        console.log('Selected Reason:', selectedReason);
+
+        let selectedEditDate = "{{ $data['editDate'] ?? '' }}";
+
+        // console.log('Selected Operator:', selectedOperator);
+        // console.log('Selected Bus:', selectedBus);
+        // console.log('Selected Reason:', selectedReason);
+
+
 
         $(document).ready(function() {
 
@@ -402,34 +411,26 @@
 
             $('#operator').val(selectedOperator).trigger('change');
 
-            commonAjax.loadBusListByOperator(
-                '#bus',
-                selectedOperator,
-                selectedBus
-            );
+            commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
 
             setTimeout(() => {
 
-                if (selectedBus) {
-                    $('#bus').val(selectedBus).trigger('change');
-                }
+                $('#bus').val(selectedBus).trigger('change');
 
-                /* Reason Auto Select */
-                setTimeout(() => {
+                $('#reason option').each(function() {
+                    if ($(this).text().trim() == selectedReason.trim()) {
+                        $('#reason').val($(this).val()).trigger('change');
+                    }
+                });
 
-                    $('#reason option').each(function() {
-
-                        if ($(this).text().trim() == selectedReason.trim()) {
-                            $('#reason').val($(this).val()).trigger('change');
-                        }
-
-                    });
-
-                }, 500);
+                /* LOAD ALL TABLES LIKE NORMAL FLOW */
+                loadSeatBlockSchedules(true);
+                loadSeatLayoutByBus(selectedEditDate);
+                loadBlockedSeatHistory();
 
                 isRestoring = false;
 
-            }, 500);
+            }, 800);
         }
 
         function waitForOptions(selector, callback, retry = 0) {
@@ -496,7 +497,7 @@
             }
         }
 
-        function loadSeatBlockSchedules() {
+        function loadSeatBlockSchedules(isEditMode = false) {
             let operator = $('#operator').val();
             let bus = $('#bus').val();
 
@@ -542,7 +543,7 @@
                         return;
                     }
 
-                    renderSchedule(res.data);
+                    renderSchedule(res.data, isEditMode);
                 }
             });
 
@@ -550,7 +551,7 @@
 
 
 
-        function renderSchedule(data) {
+        function renderSchedule(data, isEditMode = false) {
             let html = '';
 
             Object.keys(data).forEach(function(bus_id) {
@@ -593,10 +594,21 @@
             });
 
             $('#scheduleContainer').html(html);
+            if (isEditMode && selectedEditDate) {
+
+                $('.schedule-checkbox').each(function() {
+
+                    if ($(this).val() == selectedEditDate) {
+                        $(this).prop('checked', true);
+                    }
+
+                });
+
+            }
         }
 
 
-        function loadSeatLayoutByBus() {
+        function loadSeatLayoutByBus(operationDate = '') {
             let bus_id = $('#bus').val();
 
             if (!bus_id) {
@@ -621,6 +633,7 @@
                 url: "{{ route('seat-block.layout.by.bus') }}",
                 data: {
                     bus_id: bus_id,
+                    operation_date: operationDate,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
 
@@ -771,6 +784,7 @@
                 url: "{{ route('seat-block.history') }}",
                 data: {
                     bus_id: bus,
+                    operation_date: selectedEditDate,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(res) {

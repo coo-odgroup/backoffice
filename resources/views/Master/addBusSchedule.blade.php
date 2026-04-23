@@ -226,6 +226,7 @@
 
             $(document).ready(function() {
 
+                // Select2 init (ONLY ONCE)
                 $('#operator').select2({
                     placeholder: "Select Bus Operator",
                     dropdownParent: $('body')
