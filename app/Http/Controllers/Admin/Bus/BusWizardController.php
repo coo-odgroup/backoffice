@@ -48,7 +48,10 @@ class BusWizardController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
+            $operator = (request('operator') !== null && request('operator') !== '') ? (int)request('operator') : '';
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $source = (request('source') !== null && request('source') !== '') ? (int)request('source') : '';
+            $destination = (request('destination') !== null && request('destination') !== '') ? (int)request('destination') : '';
 
             $dataQuery = Bus::with([
                 'operator:id,name,organization_name',
@@ -57,10 +60,13 @@ class BusWizardController extends Controller
                 'axleType:id,axle_type',
                 'createdBy:id,name',
                 'updatedBy:id,name',
+                'routemap:id,bus_id,bus_route_id',
+                'routemap.route:id,boarding_city_id,dropping_city_id',
                 'routemap.route.boardingcity:id,city_name',
                 'routemap.route.droppingcity:id,city_name'
             ])
                 ->select(
+                    'id',
                     'id as bus_id',
                     'bus_operator_id',
                     'name as bus_name',
@@ -82,17 +88,38 @@ class BusWizardController extends Controller
                     $q->where('name', 'like', "%{$txtSearch}%")
                         ->orWhere('bus_number', 'like', "%{$txtSearch}%")
                         ->orWhere('via', 'like', "%{$txtSearch}%")
-
-                        // relation search
                         ->orWhereHas('operator', function ($q2) use ($txtSearch) {
-                            $q2->where('name', 'like', "%{$txtSearch}%")
-                                ->orWhere('organization_name', 'like', "%{$txtSearch}%");
+                            $q2->where('organization_name', 'like', "%{$txtSearch}%");
                         });
+                });
+            }
+
+            if (!empty($operator)) {
+                $dataQuery->whereHas('operator', function ($q2) use ($operator) {
+                    $q2->where('id', $operator);
                 });
             }
 
             if ($selStatus !== '' && isset($selStatus)) {
                 $dataQuery->where('active_status', $selStatus);
+            }
+
+            if (!empty($source) || !empty($destination)) {
+
+                $dataQuery->where(function ($q) use ($source, $destination) {
+
+                    if (!empty($source)) {
+                        $q->orWhereHas('routemap.route.boardingcity', function ($q3) use ($source) {
+                            $q3->where('id', $source);
+                        });
+                    }
+
+                    if (!empty($destination)) {
+                        $q->orWhereHas('routemap.route.droppingcity', function ($q4) use ($destination) {
+                            $q4->where('id', $destination);
+                        });
+                    }
+                });
             }
 
             $count = (clone $dataQuery)->count();
@@ -187,6 +214,7 @@ class BusWizardController extends Controller
         // Edit or Back or Continue
         $step1Res = [];
         $step1AmenityRes = [];
+        $selectedAmenities = [];
         if ($busId != 0) {
             $step1Res = Bus::where('id', $busId)->first();
             $step1AmenityRes = BusAmenity::with('amenity')
@@ -199,9 +227,14 @@ class BusWizardController extends Controller
                     ];
                 })
                 ->values();
+
+            $selectedAmenities = BusAmenity::with('amenity')
+                ->where('bus_id', $busId)
+                ->pluck('amenities_id')
+                ->toArray();
         }
 
-        return view('admin.bus.wizard.step1', compact('data', 'step1Res', 'step1AmenityRes'));
+        return view('admin.bus.wizard.step1', compact('data', 'step1Res', 'step1AmenityRes', 'selectedAmenities'));
     }
 
     public function postStep1(Request $request)
@@ -882,6 +915,10 @@ class BusWizardController extends Controller
             }
 
             BusSeats::insert($insertData);
+
+            $obj = Bus::find($busId);
+            $obj->mst_seat_layout_name_id = $seat_layout_id;
+            $obj->save();
 
             session()->flash('level', 'success');
             session()->flash('message', 'Seat Layout Created Successfully.');

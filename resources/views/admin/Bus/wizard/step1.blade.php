@@ -200,7 +200,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                                                                 <div class="col-md-3">
                                                                                     <label class="amenity-chip">
                                                                                         <input type="checkbox" class="amenity-checkbox" name="amenities_id[]"
-                                                                                            value="{{ $amenity->id }}">
+                                                                                            value="{{ $amenity->id }}" {{ in_array($amenity->id, $selectedAmenities ?? []) ? 'checked' : '' }}>
 
                                                                                         <span class="amenity-label">
                                                                                             {{ $amenity->amenity_name }}
@@ -318,6 +318,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
 <script type="module">
     $(document).ready(function() {
+        localStorage.removeItem('selAmenities');
         const selAmenities = <?= json_encode(@$step1AmenityRes) ?>;
         if (selAmenities && selAmenities.length > 0) {
             localStorage.setItem('selAmenities', JSON.stringify(selAmenities));
@@ -383,72 +384,73 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         $('#busTypeVal').val(fullName);
     }
 
-    $(document).ready(function() {
-        commonAjax.initClearableInputs();
-        commonAjax.initSelect2('#brand', 'Select Brand');
-        commonAjax.initSelect2('#busModel', 'Select Model');
-        commonAjax.initSelect2('#axleType', 'Select Axxle Type');
-        commonAjax.initSelect2('#busService', 'Select Bus Service');
-        commonAjax.initSelect2('.annexture', 'Select AC Type');
-        commonAjax.initSelect2('#seatType', 'Select Seat Type');
-        commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
-        commonAjax.initSelect2('#selAmenity', 'Select Amenity');
+    $(document).ready(async function() {
 
-        // let selectedBrand = "{{ $data['row']->brand_id ?? '' }}";
-        let selectedBrand = "{{ @$step1Res->brand_id ?? '' }}";
-        commonAjax.loadBrandList(selectedBrand);
+        try {
+            commonAjax.initClearableInputs();
 
-        // let model_id = "{{ $data['row']->model_id ?? '' }}";
-        let model_id = "{{ @$step1Res->model_id ?? '' }}";
-        commonAjax.loadBusModelsList(model_id);
+            // Init Select2 first
+            commonAjax.initSelect2('.users', 'Select Bus Operator');
 
-        $('#brand').on('change', function() {
+            let user_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
 
-            let brandId = $(this).val();
+            // ✅ STEP 1: Load Bus Operator FIRST
+            await commonAjax.loadUsersList('OPERATOR', user_id);
 
-            // Reset model dropdown
-            $('#model').html('<option value="">Select Model</option>');
+            // ✅ STEP 2: Now run everything else
 
-            if (brandId) {
-                // Load models based on selected brand
-                commonAjax.loadBusModelsList('', brandId);
-            }
-        });
+            commonAjax.initSelect2('#brand', 'Select Brand');
+            commonAjax.initSelect2('#busModel', 'Select Model');
+            commonAjax.initSelect2('#axleType', 'Select Axxle Type');
+            commonAjax.initSelect2('#busService', 'Select Bus Service');
+            commonAjax.initSelect2('.annexture', 'Select AC Type');
+            commonAjax.initSelect2('#seatType', 'Select Seat Type');
+            commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
+            commonAjax.initSelect2('#selAmenity', 'Select Amenity');
 
-        // let axle_id = "{{ $data['row']->axle_id ?? '' }}";
-        let axle_type_id = "{{ @$step1Res->axle_type_id ?? '' }}";
-        commonAjax.loadAxleTypeList(axle_type_id);
+            // Users already done above
 
-        // let bus_service_id = "{{ $data['row']->bus_service_id ?? '' }}";
-        let service_id = "{{ @$step1Res->service_id ?? '' }}";
-        commonAjax.loadBusServicesList(service_id);
+            let selectedBrand = "{{ @$step1Res->brand_id ?? '' }}";
+            await commonAjax.loadBrandList(selectedBrand);
 
-        // let seat_type_id = "{{ $data['row']->seat_type_id ?? '' }}";
-        let seat_type_id = "{{ @$step1Res->seat_type_id ?? '' }}";
-        commonAjax.loadSeatTypeList(seat_type_id);
+            let model_id = "{{ @$step1Res->model_id ?? '' }}";
+            await commonAjax.loadBusModelsList(model_id);
 
-        // let seat_layout_id = "{{ $data['row']->seat_layout_id ?? '' }}";
-        let seat_layout_id = "{{ @$step1Res->seat_layout_type_id ?? '' }}";
-        commonAjax.loadSeatLayoutList(seat_layout_id);
+            $('#brand').on('change', function() {
+                let brandId = $(this).val();
+                $('#model').html('<option value="">Select Model</option>');
 
-        // let annexture_type_id = "{{ $data['row']->annexture_type_id ?? '' }}";
-        let annexture_type_id = "{{ @$step1Res->ac_type_id ?? '' }}";
-        commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
+                if (brandId) {
+                    commonAjax.loadBusModelsList('', brandId);
+                }
+            });
 
-        commonAjax.loadAmenityList();
+            let axle_type_id = "{{ @$step1Res->axle_type_id ?? '' }}";
+            await commonAjax.loadAxleTypeList(axle_type_id);
 
-        // Jagan
-        // commonAjax.initSelect2('#busOperator', 'Select Bus Operator');
-        // let bus_operator_id = "{{ $data['row']->bus_operator_id ?? '' }}";
-        // commonAjax.loadBusOperatorList(bus_operator_id);
-        commonAjax.initSelect2('.users', 'Select Bus Operator');
-        let user_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
-        commonAjax.loadUsersList('OPERATOR', user_id);
+            let service_id = "{{ @$step1Res->service_id ?? '' }}";
+            await commonAjax.loadBusServicesList(service_id);
 
-        commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
-        // let slab_id = "{{ $data['row']->slab_id ?? '' }}";
-        let slab_id = "{{ @$step1Res->cancellationslabs_id ?? '' }}";
-        commonAjax.loadCancellationslabList(slab_id);
+            let seat_type_id = "{{ @$step1Res->seat_type_id ?? '' }}";
+            await commonAjax.loadSeatTypeList(seat_type_id);
+
+            let seat_layout_id = "{{ @$step1Res->seat_layout_type_id ?? '' }}";
+            await commonAjax.loadSeatLayoutList(seat_layout_id);
+
+            let annexture_type_id = "{{ @$step1Res->ac_type_id ?? '' }}";
+            await commonAjax.loadAnnextureList('AC_TYPE', annexture_type_id);
+
+            await commonAjax.loadAmenityList();
+
+            commonAjax.initSelect2('#slab', 'Select Cancellation Slab');
+
+            let slab_id = "{{ @$step1Res->cancellationslabs_id ?? '' }}";
+            await commonAjax.loadCancellationslabList(slab_id);
+
+        } catch (error) {
+            console.error('Error loading data:', error);
+        }
+
     });
 
     $('#backoffice-form').on('submit', function(e) {
@@ -589,33 +591,33 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                         let collapseId = `cat${category.id}_${index}`;
 
                         html += `
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button" type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#${collapseId}">
-                                ${category.category_name}
-                            </button>
-                        </h2>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#${collapseId}">
+                                    ${category.category_name}
+                                </button>
+                            </h2>
 
-                        <div id="${collapseId}" class="accordion-collapse collapse show">
-                            <div class="accordion-body">
-                                <div class="row g-1">
-                    `;
+                            <div id="${collapseId}" class="accordion-collapse collapse show">
+                                <div class="accordion-body">
+                                    <div class="row g-1">
+                        `;
 
                         category.amenities.forEach(function(amenity) {
 
                             let checked = selectedAmenities.has(String(amenity.id)) ? 'checked' : '';
 
                             html += `
-                            <div class="col-md-3">
-                                <label class="amenity-chip">
-                                    <input type="checkbox" class="amenity-checkbox"
-                                        value="${amenity.id}" ${checked}>
-                                    <span class="amenity-label">${amenity.amenity_name}</span>
-                                </label>
-                            </div>
-                        `;
+                                <div class="col-md-3">
+                                    <label class="amenity-chip">
+                                        <input type="checkbox" class="amenity-checkbox"
+                                            value="${amenity.id}" ${checked}>
+                                        <span class="amenity-label">${amenity.amenity_name}</span>
+                                    </label>
+                                </div>
+                            `;
                         });
 
                         html += `

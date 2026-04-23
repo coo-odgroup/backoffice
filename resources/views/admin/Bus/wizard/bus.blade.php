@@ -44,11 +44,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="col-6 col-sm-6 col-md-6 col-lg-6 mb-2">
                             <label for="txtSearch">Search</label>
                             <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Search">
+                                placeholder="Bus Name / Bus No / Via">
+                        </div>
+
+                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-2">
+                            <label for="operator">Operator</label>
+                            <select class="form-select form-select-sm users" id="operator" name="operator">
+                                <option value="">Select Operator</option>
+                            </select>
                         </div>
 
                         <!-- Status -->
-                        <div class="col-6 col-sm-6 col-md-6 col-lg-2 mb-2">
+                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-2">
                             <label for="selStatus">Status</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
@@ -57,8 +64,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
+                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-2">
+                            <label for="source">Source</label>
+                            <select class="form-select form-select-sm selCity" id="source" name="source">
+                                <option value="">Select Source</option>
+                            </select>
+                        </div>
+
+                        <div class="col-6 col-sm-6 col-md-6 col-lg-3 mb-2">
+                            <label for="destination">Destination</label>
+                            <select class="form-select form-select-sm selCity" id="destination" name="destination">
+                                <option value="">Select Destination</option>
+                            </select>
+                        </div>
+
                         <!-- Buttons -->
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -170,6 +191,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initClearableInputs();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         getDataTableView();
+
+        commonAjax.initSelect2('.selCity', 'Select City');
+        commonAjax.loadCityList(0);
+        commonAjax.loadCityList(0);
+
+        commonAjax.initSelect2('.users', 'Select Operator');
+        commonAjax.loadUsersList('OPERATOR', 0);
     });
 
 
@@ -201,19 +229,38 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
+        let operator = '';
+        let source = '';
+        let destination = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
         }
+
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
 
+        if ($('#operator').val() != '') {
+            operator = $('#operator').val();
+        }
+
+        if ($('#source').val() != '') {
+            source = $('#source').val();
+        }
+
+        if ($('#destination').val() != '') {
+            destination = $('#destination').val();
+        }
+
         let tableId = 'datatable';
-        let orderBy = [2, 'asc'];
+        let orderBy = [2, 'desc'];
         let searchParams = {
             txtsearch: txtSearch,
-            selstatus: selStatus
+            selstatus: selStatus,
+            operator: operator,
+            source: source,
+            destination: destination
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -259,8 +306,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--",
                 render: function(data, type, row) {
 
-                    if (row.routemap && row.routemap.route && row.routemap.route.boardingcity && row.routemap.route.droppingcity) {
-                        return row.routemap.route.boardingcity.city_name + ' >> ' + row.routemap.route.droppingcity.city_name;
+                    if (row.routemap && row.routemap.length > 0) {
+
+                        let routes = row.routemap.map(function(item) {
+
+                            if (item.route && item.route.boardingcity && item.route.droppingcity) {
+                                return item.route.boardingcity.city_name +
+                                    ' >> ' +
+                                    item.route.droppingcity.city_name;
+                            }
+
+                            return null;
+
+                        }).filter(Boolean);
+
+                        return routes.length ? routes.join('<br>') : "--";
                     }
 
                     return "--";
@@ -398,12 +458,5 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
-
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#amenityCategory', 'Select Amenity Category');
-
-        commonAjax.loadAmenityCategory(0);
-    });
 </script>
 @endpush

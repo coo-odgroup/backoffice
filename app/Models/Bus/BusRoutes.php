@@ -21,13 +21,23 @@ class BusRoutes extends Model
         return $this->hasMany(BusRoutesStops::class, 'bus_route_id');
     }
 
+    // public function boardingcity()
+    // {
+    //     return $this->belongsTo(Cities::class, 'boarding_city_id');
+    // }
+
+    // public function droppingcity()
+    // {
+    //     return $this->belongsTo(Cities::class, 'dropping_city_id');
+    // }
+
     public function boardingcity()
     {
-        return $this->belongsTo(Cities::class, 'boarding_city_id');
+        return $this->belongsTo(Cities::class, 'boarding_city_id', 'id');
     }
 
     public function droppingcity()
     {
-        return $this->belongsTo(Cities::class, 'dropping_city_id');
+        return $this->belongsTo(Cities::class, 'dropping_city_id', 'id');
     }
 }

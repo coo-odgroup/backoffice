@@ -13,9 +13,14 @@ class BusRoutesMap extends Model
         'active_status'
     ];
 
+    // public function route()
+    // {
+    //     return $this->belongsTo(BusRoutes::class, 'bus_route_id');
+    // }
+
     public function route()
     {
-        return $this->belongsTo(BusRoutes::class, 'bus_route_id');
+        return $this->belongsTo(BusRoutes::class, 'bus_route_id', 'id');
     }
 
     public function bus()
