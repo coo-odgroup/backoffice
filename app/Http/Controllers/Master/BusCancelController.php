@@ -308,6 +308,7 @@ class BusCancelController extends Controller
 
         return view('Master.addBusCancel', compact('data'));
     }
+    
     public function edit($encId)
     {
         return $this->add($encId);

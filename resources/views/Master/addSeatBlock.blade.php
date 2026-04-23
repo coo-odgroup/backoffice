@@ -395,12 +395,6 @@
         }
 
 
-
-
-
-
-
-
         .bus-seat,
         .bus-sleeper,
         .bus-vertical-sleeper {
@@ -410,9 +404,6 @@
             background-position: center;
             cursor: pointer;
         }
-
-
-
 
         .blocked.bus-seat,
         .blocked.bus-sleeper,
@@ -479,6 +470,200 @@
 
         .legend-grey {
             background: #adb5bd;
+        }
+
+        /* ===== Schedule Date Tiles (override) ===== */
+
+        #scheduleContainer .row>.col-md-4 {
+            display: flex;
+        }
+
+        #scheduleContainer .schedule-tile,
+        #scheduleContainer .cancelled-date-box {
+            width: 100%;
+            height: 56px;
+            min-height: 56px;
+            max-height: 56px;
+
+            border: 1px solid #adb5bd !important;
+            border-radius: 4px;
+            background: #fff !important;
+
+            box-sizing: border-box;
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            padding: 6px 10px;
+            margin: 0;
+        }
+
+        /* normal tile */
+        #scheduleContainer label.schedule-tile {
+            cursor: pointer;
+        }
+
+        /* remove any hover/focus red/fade */
+        #scheduleContainer label.schedule-tile:hover,
+        #scheduleContainer label.schedule-tile:focus,
+        #scheduleContainer .cancelled-date-box:hover {
+            background: #fff !important;
+            border-color: #adb5bd !important;
+            box-shadow: none !important;
+        }
+
+        /* checkbox left center */
+        #scheduleContainer .schedule-checkbox {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* date text */
+        #scheduleContainer .tile-date {
+            font-size: 14px;
+            font-weight: 500;
+            color: #212529;
+            line-height: 1.1;
+        }
+
+        /* cancelled text */
+        #scheduleContainer .tile-note {
+            font-size: 11px;
+            color: #dc3545;
+            margin-top: 3px;
+            line-height: 1;
+        }
+
+
+        /* same thin size for all */
+        .schedule-tile {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #adb5bd;
+            border-radius: 4px;
+            background: #fff;
+            box-sizing: border-box;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            padding: 0 10px;
+        }
+
+        /* normal */
+        .normal-inline-tile {
+            cursor: pointer;
+        }
+
+        .normal-inline-tile .schedule-checkbox {
+            margin: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* cancelled */
+        .cancelled-inline-tile {
+            cursor: not-allowed;
+        }
+
+        .cancel-x {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .cancel-note {
+            color: #dc3545;
+            font-size: 12px;
+        }
+
+        /* text */
+        .tile-date {
+            font-size: 14px;
+            font-weight: 500;
+            color: #212529;
+        }
+
+        /* FINAL FIX - FORCE SINGLE LINE THIN TILES */
+
+        #scheduleContainer .schedule-tile {
+            width: 100% !important;
+            height: 38px !important;
+            min-height: 38px !important;
+            max-height: 38px !important;
+
+            border: 1px solid #adb5bd !important;
+            border-radius: 4px;
+            background: #fff !important;
+
+            display: flex !important;
+            flex-direction: row !important;
+            /* single line */
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+
+            padding: 0 10px !important;
+            box-sizing: border-box;
+        }
+
+        /* checkbox */
+        #scheduleContainer .schedule-checkbox {
+            position: static !important;
+            transform: none !important;
+            margin: 0 !important;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* cancelled tile */
+        #scheduleContainer .cancelled-inline-tile {
+            cursor: not-allowed;
+        }
+
+        /* cancelled note inline */
+        #scheduleContainer .cancel-note {
+            color: #dc3545 !important;
+            font-size: 12px !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        /* X */
+        #scheduleContainer .cancel-x {
+            color: #dc3545 !important;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* date */
+        #scheduleContainer .tile-date {
+            font-size: 14px !important;
+            font-weight: 500;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        /* grey disabled past dates */
+        .disabled-date-tile {
+            background: #e9ecef !important;
+            border: 1px solid #ced4da !important;
+            color: #6c757d !important;
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .disabled-date-tile .tile-date {
+            color: #6c757d !important;
         }
     </style>
 
@@ -670,59 +855,117 @@
 
 
         function renderSchedule(data, isEditMode = false) {
-            let html = '';
 
-            Object.keys(data).forEach(function(bus_id) {
+            let operator = $('#operator').val();
+            let busId = $('#bus').val();
 
-                let bus = data[bus_id];
+            $.ajax({
+                type: 'POST',
+                url: '/admin/get-bus-cancelled-dates',
+                data: {
+                    operator_id: operator,
+                    bus_id: busId,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
 
-                html += `
-                        <div class="mb-4">
-                            <div class="mb-2">
-                                <strong>${bus.bus_name} | ${bus.bus_number}</strong>
-                            </div>
+                success: function(cancelRes) {
 
-                            <div class="row">
-                    `;
+                    let cancelledDates = cancelRes.data || [];
+                    let html = '';
 
-                bus.dates.forEach(function(date) {
+                    Object.keys(data).forEach(function(bus_id) {
 
-                    html += `
-                        <div class="col-md-4 mb-2">
-                            <label class="w-100 border rounded p-2 text-center">
+                        let bus = data[bus_id];
 
-                                <input type="checkbox"
-                                    name="dates[]"
-                                    value="${date}"
-                                    class="schedule-checkbox"
-                                    data-bus="${bus_id}">
+                        html += `
+                            <div class="mb-4">
+                                <div class="mb-2">
+                                    <strong>${bus.bus_name} | ${bus.bus_number}</strong>
+                                </div>
+                                <div class="row">
+                        `;
 
-                                ${formatDate(date)}
+                        bus.dates.forEach(function(date) {
 
-                            </label>
-                        </div>
-                    `;
-                });
+                            let isCancelled = cancelledDates.includes(date);
 
-                html += `
+                            let today = new Date();
+                            today.setHours(0, 0, 0, 0);
+
+                            let currentDate = new Date(date);
+                            currentDate.setHours(0, 0, 0, 0);
+
+                            let isPastDate = currentDate < today;
+
+                            /* 1. Bus Cancelled */
+                            if (isCancelled) {
+
+                                html += `
+                                <div class="col-md-4 mb-2">
+                                    <div class="schedule-tile cancelled-inline-tile">
+                                        <span class="cancel-x">X</span>
+                                        <span class="tile-date">${formatDate(date)}</span>
+                                        <span class="cancel-note">Bus Cancelled</span>
+                                    </div>
+                                </div>
+                                `;
+
+                            }
+
+                            /* 2. Past Date Disabled */
+                            else if (isPastDate) {
+
+                                html += `
+    <div class="col-md-4 mb-2">
+        <div class="schedule-tile disabled-date-tile">
+            <span class="tile-date">${formatDate(date)}</span>
+        </div>
+    </div>
+    `;
+
+                            }
+
+                            /* 3. Active Selectable Date */
+                            else {
+
+                                html += `
+                                <div class="col-md-4 mb-2">
+                                    <label class="schedule-tile normal-inline-tile">
+                                        <input type="checkbox"
+                                            name="dates[]"
+                                            value="${date}"
+                                            class="schedule-checkbox"
+                                            data-bus="${bus_id}"
+                                            data-date="${date}">
+                                        <span class="tile-date">${formatDate(date)}</span>
+                                    </label>
+                                </div>
+                                `;
+
+                            }
+
+                        });
+
+                        html += `
                         </div>
                     </div>
                 `;
+                    });
 
-            });
+                    $('#scheduleContainer').html(html);
 
-            $('#scheduleContainer').html(html);
-            if (isEditMode && selectedEditDate) {
+                    if (isEditMode && selectedEditDate) {
 
-                $('.schedule-checkbox').each(function() {
+                        $('.schedule-checkbox').each(function() {
+                            if ($(this).val() == selectedEditDate) {
+                                $(this).prop('checked', true);
+                            }
+                        });
 
-                    if ($(this).val() == selectedEditDate) {
-                        $(this).prop('checked', true);
                     }
 
-                });
-
-            }
+                }
+            });
         }
 
 

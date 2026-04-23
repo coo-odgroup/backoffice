@@ -24,10 +24,6 @@ class SeatBlockController extends Controller
         $recordsFiltered = 0;
         $data = [];
 
-        Log::info('SeatBlock Filter', [
-            'reason' => request('reason')
-        ]);
-
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
@@ -283,11 +279,12 @@ class SeatBlockController extends Controller
                 $reasonId = request('reason');
 
                 $reason = DB::connection('mysql_dev')
-                    ->table('odbusmaster.mst_annexture')
-                    ->where('id', $reasonId)
-                    ->where('annexture_type_id', 16)
-                    ->where('active_status', 1)
-                    ->value('annexture_name');
+                    ->table('odbusmaster.mst_annexture as ma')
+                    ->join('odbusmaster.mst_annexture_type as mat', 'mat.id', '=', 'ma.annexture_type_id')
+                    ->where('ma.id', $reasonId)
+                    ->where('mat.annexture_type', 'REASON')
+                    ->where('ma.active_status', 1)
+                    ->value('ma.annexture_name');
 
                 $reason = $reason ?: 'Other';
 
@@ -316,18 +313,7 @@ class SeatBlockController extends Controller
                         ->first();
 
                     if ($existing) {
-
-                        DB::connection('mysql_dev')
-                            ->table('bus_seat_operation')
-                            ->where('id', $existing->id)
-                            ->update([
-                                'seat_code'      => $seatCode,
-                                'seat_layout_id' => $layoutId,
-                                'category'       => $category,
-                                'reason'         => $reason,
-                                'updated_at'     => $now,
-                                'updated_by'     => $userId
-                            ]);
+                        continue;
                     } else {
 
                         $validRows[] = [
@@ -864,5 +850,29 @@ class SeatBlockController extends Controller
                 'html'   => 'Unable to load history'
             ]);
         }
+    }
+
+    public function getBusCancelledDates(Request $request)
+    {
+        $busId = $request->bus_id;
+
+        $dates = DB::connection('mysql_dev')
+            ->table('bus_cancelled_date as bcd')
+            ->join('bus_cancelled as bc', 'bc.id', '=', 'bcd.bus_cancelled_id')
+            ->where('bc.bus_id', $busId)
+            ->where('bc.active_status', 1)
+            ->where('bcd.active_status', 1)
+            ->whereNull('bc.deleted_at')
+            ->whereNull('bcd.deleted_at')
+            ->pluck('bcd.cancelled_date')
+            ->map(function ($d) {
+                return date('Y-m-d', strtotime($d));
+            })
+            ->toArray();
+
+        return response()->json([
+            'status' => true,
+            'data'   => $dates
+        ]);
     }
 }
