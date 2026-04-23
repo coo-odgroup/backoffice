@@ -448,4 +448,28 @@ class BusCancelController extends Controller
             ]);
         }
     }
+
+    public function getCancelledDates(Request $request)
+    {
+        $bus_ids = explode(',', $request->bus_ids);
+
+        $data = DB::connection('mysql_dev')
+            ->table('bus_cancelled as bc')
+            ->join('bus_cancelled_date as bcd', 'bcd.bus_cancelled_id', '=', 'bc.id')
+            ->whereIn('bc.bus_id', $bus_ids)
+            ->where('bcd.active_status', 1)
+            ->select('bc.bus_id', 'bcd.cancelled_date')
+            ->get();
+
+        $map = [];
+
+        foreach ($data as $row) {
+            $map[$row->bus_id][] = $row->cancelled_date;
+        }
+
+        return response()->json([
+            'status' => true,
+            'data' => $map
+        ]);
+    }
 }
