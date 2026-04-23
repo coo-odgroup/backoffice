@@ -368,6 +368,15 @@
 
     @push('scripts')
     <script type="module">
+        let isRestoring = false;
+
+        let selectedOperator = "{{ $data['editData']->bus_operator_id ?? (old('operator') ?? '') }}";
+        let selectedBus = "{{ $data['editData']->bus_id ?? (old('bus') ?? '') }}";
+        let selectedReason = "{{ $data['editData']->reason ?? (old('reason') ?? '') }}";
+        console.log('Selected Operator:', selectedOperator);
+        console.log('Selected Bus:', selectedBus);
+        console.log('Selected Reason:', selectedReason);
+
         $(document).ready(function() {
 
             commonAjax.initSelect2('#operator', 'Select Operator');
@@ -377,31 +386,96 @@
             commonAjax.loadBusOperatorDropdown('');
             commonAjax.loadAnnextureList('REASON', '', '#reason');
 
+            setTimeout(() => {
+                restoreSelection();
+            }, 1000);
+
+            commonAjax.initClearableInputs();
+
         });
+
+        function restoreSelection() {
+
+            if (!selectedOperator) return;
+
+            isRestoring = true;
+
+            $('#operator').val(selectedOperator).trigger('change');
+
+            commonAjax.loadBusListByOperator(
+                '#bus',
+                selectedOperator,
+                selectedBus
+            );
+
+            setTimeout(() => {
+
+                if (selectedBus) {
+                    $('#bus').val(selectedBus).trigger('change');
+                }
+
+                /* Reason Auto Select */
+                setTimeout(() => {
+
+                    $('#reason option').each(function() {
+
+                        if ($(this).text().trim() == selectedReason.trim()) {
+                            $('#reason').val($(this).val()).trigger('change');
+                        }
+
+                    });
+
+                }, 500);
+
+                isRestoring = false;
+
+            }, 500);
+        }
+
+        function waitForOptions(selector, callback, retry = 0) {
+
+            if ($(selector + ' option').length > 1) {
+                callback();
+                return;
+            }
+
+            if (retry > 30) return;
+
+            setTimeout(function() {
+                waitForOptions(selector, callback, retry + 1);
+            }, 200);
+        }
 
 
         $('#operator').on('change', function() {
 
             let operator_id = $(this).val();
 
+            if (!operator_id || isRestoring) return;
+
             $('#bus').html('');
+
             $('#scheduleContainer').html(`
-                <div class="text-center text-muted">
-                    Please select bus
-                </div>
-            `);
+        <div class="text-center text-muted">
+            Please select bus
+        </div>
+    `);
 
             commonAjax.loadBusListByOperator('#bus', operator_id);
 
         });
 
 
-        /* Bus Change */
         $('#bus').on('change', function() {
+
+            let bus_id = $(this).val();
+
+            if (!bus_id || isRestoring) return;
 
             loadSeatBlockSchedules();
             loadSeatLayoutByBus();
             loadBlockedSeatHistory();
+
         });
 
         window.toggleSeat = function(el) {
@@ -606,7 +680,7 @@
 
             /* Operator */
             if (!operator || operator == 0) {
-               commonAjax.viewAlert('Please select Operator');
+                commonAjax.viewAlert('Please select Operator');
                 $('#operator').focus();
                 return false;
             }

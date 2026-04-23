@@ -81,20 +81,7 @@ class SeatBlockController extends Controller
             }
 
             if (!empty($reason)) {
-
-                $reasonName = DB::connection('mysql_dev')
-                    ->table('odbusmaster.mst_annexture')
-                    ->where('id', $reason)
-                    ->where('annexture_type_id', 16)
-                    ->where('active_status', 1)
-                    ->value('annexture_name');
-
-                if (!empty($reasonName)) {
-                    $query->whereRaw(
-                        'TRIM(LOWER(bso.reason)) = ?',
-                        [strtolower(trim($reasonName))]
-                    );
-                }
+                $query->whereRaw('TRIM(LOWER(bso.reason)) = ?', [strtolower(trim($reason))]);
             }
 
 
@@ -217,10 +204,14 @@ class SeatBlockController extends Controller
         $data['strReset']  = 'Reset';
 
         try {
+            $value = (!empty($encId)) ? Crypt::decryptString($encId) : '';
 
-            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+            if (!empty($value)) {
 
-            if ($id > 0) {
+                $arr = explode('|', $value);
+
+                $busId  = $arr[0] ?? 0;
+                $opDate = $arr[1] ?? '';
 
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
@@ -231,15 +222,17 @@ class SeatBlockController extends Controller
                     ->join('bus_seats as bs', 'bs.id', '=', 'bso.bus_seat_id')
                     ->join('bus as b', 'b.id', '=', 'bs.bus_id')
                     ->select(
-                        'bso.id',
                         'bso.reason',
                         'b.bus_operator_id',
                         'bs.bus_id'
                     )
-                    ->where('bso.id', $id)
+                    ->where('bs.bus_id', $busId)
+                    ->whereDate('bso.operation_date', $opDate)
                     ->whereNull('bso.deleted_at')
+                    ->orderByDesc('bso.id')
                     ->first();
 
+                $data['editDate'] = $opDate;
                 $data['editData'] = $editRow;
             }
 
@@ -291,8 +284,8 @@ class SeatBlockController extends Controller
 
                 foreach ($seatOperations as $seat) {
 
-                    $busSeatId = (int)($seat['bus_seat_id'] ?? 0);
-                    $operationDate = $seat['operation_date'] ?? null;
+                    $busSeatId      = (int)($seat['bus_seat_id'] ?? 0);
+                    $operationDate  = $seat['operation_date'] ?? null;
 
                     if ($busSeatId <= 0 || empty($operationDate)) {
                         continue;
@@ -302,10 +295,12 @@ class SeatBlockController extends Controller
                     $layoutId = (int)($seat['seat_layout_id'] ?? 0);
                     $category = (int)($seat['category'] ?? 2);
 
+                    /* ONLY CHECK ACTIVE ROWS */
                     $existing = DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
                         ->where('bus_seat_id', $busSeatId)
                         ->whereDate('operation_date', $operationDate)
+                        ->whereNull('deleted_at')
                         ->orderByDesc('id')
                         ->first();
 
@@ -319,8 +314,6 @@ class SeatBlockController extends Controller
                                 'seat_layout_id' => $layoutId,
                                 'category'       => $category,
                                 'reason'         => $reason,
-                                'deleted_at'     => null,
-                                'deleted_by'     => null,
                                 'updated_at'     => $now,
                                 'updated_by'     => $userId
                             ]);

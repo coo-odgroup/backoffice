@@ -181,7 +181,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                 <div class="modal-header seat-delete-header">
                     <h5 class="modal-title">
-                        <i class="fa fa-trash text-warning me-2"></i>
                         Select The Reason For Delete
                     </h5>
 
