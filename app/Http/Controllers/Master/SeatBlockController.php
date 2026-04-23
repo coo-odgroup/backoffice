@@ -24,6 +24,10 @@ class SeatBlockController extends Controller
         $recordsFiltered = 0;
         $data = [];
 
+        Log::info('SeatBlock Filter', [
+            'reason' => request('reason')
+        ]);
+
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
@@ -81,9 +85,16 @@ class SeatBlockController extends Controller
             }
 
             if (!empty($reason)) {
-                $query->whereRaw('TRIM(LOWER(bso.reason)) = ?', [strtolower(trim($reason))]);
-            }
 
+                $reasonName = DB::connection('mysql_dev')
+                    ->table('odbusmaster.mst_annexture')
+                    ->where('id', $reason)
+                    ->value('annexture_name');
+
+                if (!empty($reasonName)) {
+                    $query->where('bso.reason', trim($reasonName));
+                }
+            }
 
             if (!empty($operator)) {
                 $query->where('b.bus_operator_id', $operator);
@@ -601,8 +612,26 @@ class SeatBlockController extends Controller
         }
 
         $normalizedActiveSeats = array_map(function ($v) {
-            return strtoupper(trim(preg_replace('/\s+/', '', (string)$v)));
+
+            $v = strtoupper(trim(preg_replace('/\s+/', '', (string)$v)));
+
+            if (is_numeric($v)) {
+                $v = (string)(int)$v;
+            }
+
+            return $v;
         }, $activeSeats);
+
+        $normalizedBlockedSeats = array_map(function ($v) {
+
+            $v = strtoupper(trim(preg_replace('/\s+/', '', (string)$v)));
+
+            if (is_numeric($v)) {
+                $v = (string)(int)$v;
+            }
+
+            return $v;
+        }, $blockedSeats);
 
         $html = '<div class="bus-layout">';
 
@@ -631,8 +660,12 @@ class SeatBlockController extends Controller
 
                     $currentSeat = strtoupper(trim(preg_replace('/\s+/', '', $seatNo)));
 
+                    if (is_numeric($currentSeat)) {
+                        $currentSeat = (string)(int)$currentSeat;
+                    }
+
                     $isActive  = in_array($currentSeat, $normalizedActiveSeats, true);
-                    $isBlocked = in_array($currentSeat, $blockedSeats, true);
+                    $isBlocked = in_array($currentSeat, $normalizedBlockedSeats, true);
 
                     if ($isBlocked) {
 

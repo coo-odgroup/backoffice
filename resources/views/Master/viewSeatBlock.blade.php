@@ -229,53 +229,169 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 <style>
-    .seat-delete-modal {
-        border-radius: 12px !important;
-        overflow: hidden;
-        border: none !important;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, .25);
+/* ===== Delete Reason Modal (Matches Admin Page Style) ===== */
+
+.seat-delete-modal {
+    border: 1px solid #d8dde6;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+}
+
+/* Header */
+.seat-delete-header {
+    background: #0d6efd;
+    color: #ffffff;
+    border-bottom: 1px solid #0b5ed7;
+    padding: 12px 16px;
+}
+
+.seat-delete-header .modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.seat-delete-header .btn-close {
+    filter: brightness(0) invert(1);
+    opacity: 1;
+}
+
+/* Body */
+.seat-delete-modal .modal-body {
+    padding: 18px 16px;
+    background: #ffffff;
+}
+
+.seat-delete-modal label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #001a57;
+    margin-bottom: 6px;
+}
+
+.seat-delete-modal .form-select {
+    height: 38px;
+    border: 1px solid #cfd6df;
+    border-radius: 4px;
+    font-size: 13px;
+    box-shadow: none;
+}
+
+.seat-delete-modal .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.12rem rgba(13, 110, 253, 0.12);
+}
+
+.seat-delete-modal small {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 6px;
+}
+
+/* Footer */
+.seat-delete-modal .modal-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e5e8ec;
+    padding: 10px 16px;
+}
+
+/* Buttons */
+.seat-delete-modal .btn-secondary {
+    font-size: 13px;
+    border-radius: 4px;
+    padding: 6px 14px;
+}
+
+.seat-delete-btn {
+    background: #dc3545;
+    border: 1px solid #dc3545;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 6px 14px;
+}
+
+.seat-delete-btn:hover {
+    background: #bb2d3b;
+    border-color: #b02a37;
+    color: #ffffff;
+}
+
+/* Modal backdrop look */
+.modal-content {
+    font-family: inherit;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .seat-delete-modal .modal-footer {
+        flex-direction: column-reverse;
+        gap: 8px;
     }
 
-    .seat-delete-header {
-        background: #1f2660 !important;
-        color: #fff !important;
-        padding: 14px 18px;
+    .seat-delete-modal .btn {
+        width: 100%;
     }
+}
 
-    .seat-delete-header h5 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 700;
-    }
 
-    #deleteReasonModal .modal-body {
-        background: #f8f9fc;
-        padding: 22px;
-    }
 
-    #deleteReasonModal select {
-        border: 2px solid #1f2660;
-        min-height: 42px;
-    }
 
-    .seat-delete-btn {
-        background: #dc3545 !important;
-        color: #fff !important;
-        border: none !important;
-        font-weight: 600;
-        padding: 8px 18px;
-    }
 
-    .seat-delete-btn:hover {
-        background: #bb2d3b !important;
-    }
 
-    #deleteReasonModal .btn-secondary {
-        background: #ffc107 !important;
-        border: none !important;
-        color: #000 !important;
-        font-weight: 600;
-    }
+
+
+.bus-seat,
+.bus-sleeper,
+.bus-vertical-sleeper{
+    display:inline-block;
+    background-size:100% 100%;
+    background-repeat:no-repeat;
+    background-position:center;
+    cursor:pointer;
+}
+
+/* sizes */
+.bus-seat{width:42px;height:24px;}
+.bus-sleeper{width:72px;height:28px;}
+.bus-vertical-sleeper{width:34px;height:72px;}
+
+/* BLUE */
+.selected-seat.bus-seat{
+    background-image:url('/assets/seats/Seat_layout_blue.png') !important;
+}
+.selected-seat.bus-sleeper{
+    background-image:url('/assets/seats/Sleeper_layout_blue.png') !important;
+}
+.selected-seat.bus-vertical-sleeper{
+    background-image:url('/assets/seats/Sleeper_layout_blue_vertical.png') !important;
+}
+
+/* RED */
+.blocked.bus-seat{
+    background-image:url('/assets/seats/Seat_layout_red.png') !important;
+}
+.blocked.bus-sleeper{
+    background-image:url('/assets/seats/sleeper_layout_red.png') !important;
+}
+.blocked.bus-vertical-sleeper{
+    background-image:url('/assets/seats/sleeper_layout_red_vertical.png') !important;
+}
+
+/* GREY */
+.disabled.bus-seat{
+    background-image:url('/assets/seats/Seat_layout_grey.png') !important;
+}
+.disabled.bus-sleeper{
+    background-image:url('/assets/seats/sleeper_layout_grey.png') !important;
+}
+.disabled.bus-vertical-sleeper{
+    background-image:url('/assets/seats/sleeper_layout_grey_vertical.png') !important;
+    cursor:not-allowed;
+}
 </style>
 
 

@@ -112,10 +112,37 @@
                                                         <strong id="layoutTitle">Seat Layout</strong>
                                                     </div>
 
-                                                    <div class="card-body" id="seatLayoutContainer">
-                                                        <div class="text-center text-muted">
-                                                            Please select bus
+                                                    <div class=" rounded bg-white mt-2">
+
+                                                        <!-- STATIC LEGEND -->
+                                                        <div class="px-3 py-2  bg-light">
+                                                            <div class="seat-legend d-flex flex-wrap gap-3">
+
+                                                                <div class="legend-item">
+                                                                    <span class="legend-box" style="background:#001a57;"></span>
+                                                                    <small>Active Seat</small>
+                                                                </div>
+
+                                                                <div class="legend-item">
+                                                                    <span class="legend-box legend-red"></span>
+                                                                    <small>Blocked Seat</small>
+                                                                </div>
+
+                                                                <div class="legend-item">
+                                                                    <span class="legend-box legend-grey"></span>
+                                                                    <small>Unavailable</small>
+                                                                </div>
+
+                                                            </div>
                                                         </div>
+
+                                                        <!-- AJAX ONLY CHANGES THIS -->
+                                                        <div class="card-body" id="seatLayoutContainer">
+                                                            <div class="text-center text-muted">
+                                                                Please select bus
+                                                            </div>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -364,8 +391,95 @@
         }
 
         .selected-seat.bus-seat {
-   background-image:url('/assets/seats/Seat_layout_blue.png') !important;
-}
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+
+
+
+
+
+
+
+        .bus-seat,
+        .bus-sleeper,
+        .bus-vertical-sleeper {
+            display: inline-block;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+
+
+
+
+        .blocked.bus-seat,
+        .blocked.bus-sleeper,
+        .blocked.bus-vertical-sleeper {
+            background-image: url('/assets/seats/Seat_layout_red.png') !important;
+        }
+
+        .selected-seat.bus-seat,
+        .selected-seat.bus-sleeper,
+        .selected-seat.bus-vertical-sleeper {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+
+        /* ===== Final Seat Colors ===== */
+
+        .disabled.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_grey.png') !important;
+        }
+
+        .disabled.bus-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_grey.png') !important;
+        }
+
+        .disabled.bus-vertical-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_grey_vertical.png') !important;
+        }
+
+        .disabled {
+            cursor: not-allowed !important;
+            opacity: 1 !important;
+            pointer-events: none;
+        }
+
+        /* ===== Legend ===== */
+
+        .seat-legend {
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            display: inline-block;
+        }
+
+        .legend-blue {
+            background: #0d6efd;
+        }
+
+        .legend-red {
+            background: #dc3545;
+        }
+
+        .legend-grey {
+            background: #adb5bd;
+        }
     </style>
 
     @endsection
@@ -485,15 +599,19 @@
 
             if ($el.hasClass('disabled')) return;
 
+            /* BLUE -> RED */
             if ($el.hasClass('selected-seat')) {
 
-                $el.removeClass('selected-seat open')
+                $el.removeClass('selected-seat')
                     .addClass('blocked changed-seat');
 
-            } else if ($el.hasClass('blocked')) {
+            }
+
+            /* RED -> BLUE */
+            else if ($el.hasClass('blocked')) {
 
                 $el.removeClass('blocked')
-                    .addClass('selected-seat open changed-seat');
+                    .addClass('selected-seat changed-seat');
             }
         }
 
