@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class BoardingDropping extends Model
 {
     protected $table = 'mst_boarding_droping';
-  
-    
-        protected $fillable = [
+
+
+    protected $fillable = [
         'cities_id',
         'type',
         'brd_drp_point',
@@ -21,7 +21,8 @@ class BoardingDropping extends Model
         'created_by',
         'updated_by'
     ];
-       public function city()
+
+    public function city()
     {
         return $this->belongsTo(Cities::class, 'cities_id', 'id');
     }
