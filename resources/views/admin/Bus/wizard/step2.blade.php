@@ -130,7 +130,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             </div>
         </div>
     </div>
-    </div>
 </form>
 @endsection
 @push('scripts')
