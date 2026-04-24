@@ -825,7 +825,7 @@ class CommonController extends Controller
 
             // Step 2: Get annexture list using type_id
             $data = DB::table('mst_annexture')
-                ->select('id', 'annexture_name')
+                ->select('id', 'annexture_name', 'annexture_value')
                 ->where('annexture_type_id', $type->id)
                 ->where('active_status', 1)
                 ->orderBy('annexture_value', 'asc')

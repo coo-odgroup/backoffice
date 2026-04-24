@@ -268,14 +268,14 @@ export function viewLogs(table, id) {
                                          ${formatDate(log.created_at)}
                                     </span>
                                 </div>
-                                   <div class="card-body">                             
+                                   <div class="card-body">
                                      <table class="table table-bordered table-hover mb-0 align-middle table-md">
                                         <thead class="table-secondary">
                                             <tr>
                                                 <th>Field</th>
                                                 <th>Old Value</th>
                                                 <th>New Value</th>
-                                                <th>Changed By</th>                                                
+                                                <th>Changed By</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -292,7 +292,7 @@ export function viewLogs(table, id) {
                                         <td class="text-success">
                                             ${change.new ?? "-"}
                                         </td>
-                                        <td>${log.created_by ?? "-"}</td>                                        
+                                        <td>${log.created_by ?? "-"}</td>
                                     </tr>
                                 `;
                         });
@@ -309,7 +309,7 @@ export function viewLogs(table, id) {
                     html += `
                                         </tbody>
                                     </table>
-                                </div>                           
+                                </div>
                             </div>
                         `;
                 });
@@ -1440,7 +1440,49 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
     });
 }
 
-export function loadAnnextureList(key, selected = "", selector = ".annexture") {
+function getLoadAnnextureList(annexture_type = "", type = "") {
+    let container = document.getElementById("offerValuesContainer");
+    container.innerHTML = "";
+
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-annexture-list",
+        data: {
+            annexture_type: annexture_type,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        success: function (response) {
+            if (response.status && response.data.length > 0) {
+                response.data.forEach((item) => {
+                    let div = document.createElement("div");
+                    div.className = "offer-chip";
+
+                    div.innerText =
+                        type === "PERCENTAGE"
+                            ? item.annexture_name + "%"
+                            : "₹" + item.annexture_name;
+
+                    div.onclick = function () {
+                        document
+                            .querySelectorAll(".offer-chip")
+                            .forEach((c) => c.classList.remove("active"));
+
+                        div.classList.add("active");
+
+                        document.querySelector(
+                            'input[name="offer_value"]',
+                        ).value = item.annexture_name;
+                    };
+
+                    container.appendChild(div);
+                });
+            } else {
+                container.innerHTML = "<p>No Data Found</p>";
+            }
+        },
+    });
+}
+export function loadAnnextureList_bk(key, selected = "", selector = ".annexture") {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-annexture-list",
@@ -1471,6 +1513,38 @@ export function loadAnnextureList(key, selected = "", selector = ".annexture") {
 
         error: function (err) {
             console.log("Annexure Error:", err);
+        },
+    });
+}
+
+export function loadAnnextureList(annexture_type = "", selected_id = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-annexture-list",
+        data: {
+            annexture_type: annexture_type,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+            let options = '<option value="">Select Option</option>';
+
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, item) {
+                    let selected = selected_id == item.annexture_value ? "selected" : "";
+
+                    options += `<option value="${item.annexture_value}" ${selected}>
+                                        ${item.annexture_name}
+                                    </option>`;
+                });
+            }
+
+            $(".annexture").html(options);
+        },
+
+        error: function () {
+            console.log("Error loading annexture list");
         },
     });
 }
@@ -1563,7 +1637,7 @@ export function initClearableInputs() {
         input.wrap('<div class="position-relative"></div>');
 
         input.after(`
-                <span class="clear-btn position-absolute top-50 end-0 translate-middle-y me-2 text-muted" 
+                <span class="clear-btn position-absolute top-50 end-0 translate-middle-y me-2 text-muted"
                     style="cursor:pointer; display:none;">
                     &times;
                 </span>

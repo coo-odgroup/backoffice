@@ -389,15 +389,11 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
         try {
             commonAjax.initClearableInputs();
 
-            // Init Select2 first
             commonAjax.initSelect2('.users', 'Select Bus Operator');
 
             let user_id = "{{ @$step1Res->bus_operator_id ?? '' }}";
 
-            // ✅ STEP 1: Load Bus Operator FIRST
             await commonAjax.loadUsersList('OPERATOR', user_id);
-
-            // ✅ STEP 2: Now run everything else
 
             commonAjax.initSelect2('#brand', 'Select Brand');
             commonAjax.initSelect2('#busModel', 'Select Model');
@@ -407,8 +403,6 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             commonAjax.initSelect2('#seatType', 'Select Seat Type');
             commonAjax.initSelect2('#seatLayout', 'Select Seat Layout');
             commonAjax.initSelect2('#selAmenity', 'Select Amenity');
-
-            // Users already done above
 
             let selectedBrand = "{{ @$step1Res->brand_id ?? '' }}";
             await commonAjax.loadBrandList(selectedBrand);

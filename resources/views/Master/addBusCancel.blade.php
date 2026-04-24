@@ -124,7 +124,7 @@
                                                     <div class="mb-2">
                                                         <label for="reason">Reason <span
                                                                 class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm"
+                                                        <select class="form-select form-select-sm annexture"
                                                             id="reason" name="reason"></select>
                                                     </div>
 
@@ -262,8 +262,9 @@
 
             setTimeout(function() {
                 $('#operator').val(operatorId).trigger('change');
-            }, 300);;
-            commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
+            }, 300);
+            // commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
+            commonAjax.loadAnnextureList('REASON', editData.reason);
 
             let operatorId = String(editData.operator).trim();
             let busId = String(editData.bus).trim();
@@ -294,8 +295,9 @@
                 $('#month').val(editData.month);
                 $('#reason').val(editData.reason);
 
-                if (editData.reason == 77) {
+                if (editData.reason == 7) {
                     $('#otherReasonWrapper').show();
+                    console.log('sahil', editData.other_reason);
                     $('#other_reason').val(editData.other_reason);
                 }
 
@@ -457,7 +459,7 @@
 
                     html += `
                             <div class="col-md-4 mb-2">
-                                <label class="w-100 border rounded p-2 text-center 
+                                <label class="w-100 border rounded p-2 text-center
                                     ${isPast ? 'bg-light text-muted' : ''}">
 
                                     <input type="checkbox"
@@ -510,7 +512,7 @@
 
             let val = $(this).val();
 
-            if (val == 77) {
+            if (val == 7) {
                 $('#otherReasonWrapper').show();
             } else {
                 $('#otherReasonWrapper').hide();
@@ -535,7 +537,7 @@
             if (!month) return commonAjax.viewAlert("Please select month", "warning");
             if (!reason) return commonAjax.viewAlert("Please select reason", "warning");
 
-            if (reason == 77 && !otherReason.trim()) {
+            if (reason == 7 && !otherReason.trim()) {
                 return commonAjax.viewAlert("Please enter other reason", "warning");
             }
 

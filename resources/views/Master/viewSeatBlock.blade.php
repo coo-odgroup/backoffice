@@ -81,7 +81,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <div class="col-lg-2 col-md-6">
                             <label for="reason">Reason</label>
-                            <select class="form-select form-select-sm" id="reason" name="reason">
+                            <select class="form-select form-select-sm annexture" id="reason" name="reason">
                             </select>
                         </div>
 
@@ -193,7 +193,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         Reason
                     </label>
 
-                    <select id="delete_reason" class="form-select">
+                    <select class="form-select form-select-sm annexture" id="delete_reason" class="form-select">
                         <option value="">Select Reason</option>
                     </select>
 
@@ -424,7 +424,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
         commonAjax.loadBusOperatorDropdown('');
-        commonAjax.loadAnnextureList('REASON', '', '#reason');
+        commonAjax.loadAnnextureList('REASON',  '#reason');
 
         setTimeout(function() {
             commonAjax.loadCityList('#source');

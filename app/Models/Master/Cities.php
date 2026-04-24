@@ -40,4 +40,9 @@ class Cities extends Model
     {
         return $this->hasMany(BusRoutesStops::class, 'city_id');
     }
+
+    public function boardingdroppings()
+    {
+        return $this->hasMany(BoardingDropping::class, 'cities_id');
+    }
 }

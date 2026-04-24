@@ -76,7 +76,7 @@
 
                                                     <div class="mb-2">
                                                         <label for="reason">Reason <span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm" id="reason" name="reason"></select>
+                                                        <select class="form-select form-select-sm annexture" id="reason" name="reason"></select>
                                                     </div>
                                                 </div>
 

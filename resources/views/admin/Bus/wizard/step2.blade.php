@@ -130,13 +130,13 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             </div>
         </div>
     </div>
-    </div>
 </form>
 @endsection
 @push('scripts')
 
 <script type="module">
     $(document).ready(function() {
+        // localStorage.removeItem('selCities');
         const stops = <?= json_encode(@$data['step2Res']) ?>;
         if (stops && stops.length > 0) {
             localStorage.setItem('selCities', JSON.stringify(stops));

@@ -97,11 +97,11 @@ class BusCancelController extends Controller
 
             foreach ($rows as $row) {
 
-                $key = $row->bus_id; 
+                $key = $row->bus_id;
 
                 if (!isset($grouped[$key])) {
 
-                    $reasonText = ($row->reason == 77)
+                    $reasonText = ($row->reason == 7)
                         ? $row->other_reason
                         : $row->annexture_name;
 
@@ -225,7 +225,7 @@ class BusCancelController extends Controller
                             'year'            => $year,
                             'month'           => $month,
                             'reason'          => $reason,
-                            'other_reason'    => ($reason == 77) ? $other_reason : null,
+                            'other_reason'    => ($reason == 7) ? $other_reason : null,
                             'updated_at'      => now()
                         ]);
 
@@ -240,7 +240,7 @@ class BusCancelController extends Controller
                             'year'            => $year,
                             'month'           => $month,
                             'reason'          => $reason,
-                            'other_reason'    => ($reason == 77) ? $other_reason : null,
+                            'other_reason'    => ($reason == 7) ? $other_reason : null,
                             'active_status'   => 1,
                             'created_at'      => now()
                         ]);
@@ -276,7 +276,7 @@ class BusCancelController extends Controller
                             ]);
                     }
                 }
-    
+
                 foreach ($removedDates as $rd) {
 
                     DB::connection('mysql_dev')
@@ -404,7 +404,7 @@ class BusCancelController extends Controller
 
             foreach ($data as $row) {
 
-                $reasonText = ($row->reason == 77)
+                $reasonText = ($row->reason == 7)
                     ? $row->other_reason
                     : $row->annexture_name;
 
