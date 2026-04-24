@@ -217,7 +217,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                     stops.forEach(stop => {
                         options += `
-                        <option value="${stop.id}" 
+                        <option value="${stop.id}"
                             ${stop.id == item.stop_id ? 'selected' : ''}>
                             ${stop.brd_drp_point}
                         </option>
@@ -228,13 +228,13 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                     <div class="row stationRow align-items-center mb-2">
 
                         <div class="col-md-1">
-                            <input type="checkbox" 
+                            <input type="checkbox"
                                 name="stations[${id}][${i}][checked]"
                                 ${item.active_status == 1 ? 'checked' : ''}>
                         </div>
 
                         <div class="col-md-2">
-                            <select class="form-select form-select-sm typeSelect" 
+                            <select class="form-select form-select-sm typeSelect"
                                     name="stations[${id}][${i}][type]">
 
                                 <option value="">Select Type</option>
@@ -245,16 +245,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                         </div>
 
                         <div class="col-md-4">
-                            <select class="form-select form-select-sm stationSelect" 
+                            <select class="form-select form-select-sm stationSelect"
                                     name="stations[${id}][${i}][stop_id]">
                                 ${options}
                             </select>
                         </div>
 
                         <div class="col-md-2">
-                            <input type="time" 
-                                name="stations[${id}][${i}][time]" 
-                                value="${item.timing ? item.timing.substring(0,5) : ''}" 
+                            <input type="time"
+                                name="stations[${id}][${i}][time]"
+                                value="${item.timing ? item.timing.substring(0,5) : ''}"
                                 class="form-control form-control-sm time">
                         </div>
 
@@ -310,16 +310,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
             <div class="accordion-item">
 
                 <h2 class="accordion-header">
-                    <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" 
-                            type="button" 
-                            data-bs-toggle="collapse" 
+                    <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}"
+                            type="button"
+                            data-bs-toggle="collapse"
                             data-bs-target="#${collapseId}">
                         ${index + 1}. ${name}
                     </button>
                 </h2>
 
-                <div id="${collapseId}" 
-                    class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
+                <div id="${collapseId}"
+                    class="accordion-collapse collapse ${index === 0 ? 'show' : ''}"
                     data-bs-parent="#stationAccordion">
 
                     <div class="accordion-body">
