@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Master\TicketFareSlabInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -28,42 +27,63 @@ class SeatBlockController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = request('selStatus');
-
             $operator = request('operator');
             $bus      = request('bus');
+            $source      = request('source');
+            $destination = request('destination');
             $fromDate = request('fromDate');
             $toDate   = request('toDate');
             $reason   = request('reason');
+
+
             $query = DB::connection('mysql_dev')
                 ->table('bus_seat_operation as bso')
                 ->whereNull('bso.deleted_at')
+
                 ->join('bus_seats as bs', 'bs.id', '=', 'bso.bus_seat_id')
                 ->join('bus as b', 'b.id', '=', 'bs.bus_id')
+
                 ->leftJoin('odbusmaster.users as u', 'u.id', '=', 'b.bus_operator_id')
+
+                ->leftJoin('bus_routes_map as brm', function ($join) {
+                    $join->on('brm.bus_id', '=', 'b.id');
+                })
+
+                ->leftJoin('bus_routes as br', function ($join) {
+                    $join->on('br.id', '=', 'brm.bus_route_id')
+                        ->whereNull('br.deleted_at');
+                })
+
                 ->select(
                     'bso.id',
                     'bs.bus_id',
+
                     'u.organization_name as operator_name',
+
                     'b.name as bus_name',
                     'b.bus_number as bus_registration_no',
+
+                    'br.route_name as route_name',
+
                     'bso.operation_date',
                     'bso.seat_code',
                     'bso.category',
                     'bso.reason',
                     'bso.created_at',
                     'bso.updated_at',
+
                     DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bso.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bso.updated_by LIMIT 1) as updated_by_name')
                 )
-                ->whereRaw("
-                bso.id IN (
-                                    SELECT MAX(id)
-                    FROM bus_seat_operation
-                    WHERE deleted_at IS NULL
-                    GROUP BY bus_seat_id, operation_date
-                        )
-                    ");
 
+                ->whereRaw("
+        bso.id IN (
+            SELECT MAX(id)
+            FROM bus_seat_operation
+            WHERE deleted_at IS NULL
+            GROUP BY bus_seat_id, operation_date
+        )
+    ");
 
             if (!empty($txtSearch)) {
 
@@ -94,6 +114,14 @@ class SeatBlockController extends Controller
 
             if (!empty($operator)) {
                 $query->where('b.bus_operator_id', $operator);
+            }
+
+            if (!empty($source)) {
+                $query->where('br.boarding_city_id', $source);
+            }
+
+            if (!empty($destination)) {
+                $query->where('br.dropping_city_id', $destination);
             }
 
             if (!empty($bus)) {
@@ -135,7 +163,7 @@ class SeatBlockController extends Controller
                         'id'            => $row->id,
                         'operator_name' => $row->operator_name ?: '--',
                         'bus_name'      => trim($row->bus_name . ' / ' . $row->bus_registration_no),
-                        'route_name'    => '--',
+                        'route_name'    => $row->route_name ?: '--',
                         'block_info'    => [],
                         'enc_id' => Crypt::encryptString($row->bus_id),
                     ];
@@ -679,7 +707,7 @@ class SeatBlockController extends Controller
                         ])
                         ->first();
 
-                    $busSeatId = $busSeat->id ?? 0;
+                    $busSeatId = $seatMap[$currentSeat]->id ?? 0;
 
                     if ($seat->seat_class == 3) {
 

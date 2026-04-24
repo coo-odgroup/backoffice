@@ -155,7 +155,10 @@
                                             <button class="btn btn-primary btn-sm" type="submit">
                                                 {{ $data['strSubmit'] }}
                                             </button>
-                                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                            <button class="btn btn-secondary btn-sm"
+                                                id="btnReset"
+                                                type="button"
+                                                onclick="handlePageCancel()">
                                                 {{ $data['strReset'] }}
                                             </button>
                                         </div>
@@ -478,28 +481,8 @@
             display: flex;
         }
 
-        #scheduleContainer .schedule-tile,
-        #scheduleContainer .cancelled-date-box {
-            width: 100%;
-            height: 56px;
-            min-height: 56px;
-            max-height: 56px;
 
-            border: 1px solid #adb5bd !important;
-            border-radius: 4px;
-            background: #fff !important;
 
-            box-sizing: border-box;
-            position: relative;
-
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-
-            padding: 6px 10px;
-            margin: 0;
-        }
 
         /* normal tile */
         #scheduleContainer label.schedule-tile {
@@ -544,21 +527,7 @@
 
 
         /* same thin size for all */
-        .schedule-tile {
-            width: 100%;
-            height: 38px;
-            border: 1px solid #adb5bd;
-            border-radius: 4px;
-            background: #fff;
-            box-sizing: border-box;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-
-            padding: 0 10px;
-        }
 
         /* normal */
         .normal-inline-tile {
@@ -595,25 +564,79 @@
 
         /* FINAL FIX - FORCE SINGLE LINE THIN TILES */
 
-        #scheduleContainer .schedule-tile {
-            width: 100% !important;
-            height: 38px !important;
-            min-height: 38px !important;
-            max-height: 38px !important;
+        /* schedule tiles */
+        #scheduleContainer .row>.col-md-4,
+        #scheduleContainer .row>.col-md-12 {
+            display: flex;
+        }
 
-            border: 1px solid #adb5bd !important;
+        #scheduleContainer .schedule-tile,
+        #scheduleContainer .cancelled-inline-tile,
+        #scheduleContainer .disabled-date-tile {
+            width: 100%;
+            height: 38px;
+            min-height: 38px;
+            max-height: 38px;
+
+            border: 1px solid #adb5bd;
             border-radius: 4px;
-            background: #fff !important;
+            background: #fff;
 
-            display: flex !important;
-            flex-direction: row !important;
-            /* single line */
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 6px !important;
-
-            padding: 0 10px !important;
             box-sizing: border-box;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            padding: 0 10px;
+            margin: 0;
+        }
+
+        /* checkbox */
+        #scheduleContainer .schedule-checkbox {
+            margin: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* normal */
+        #scheduleContainer .normal-inline-tile {
+            cursor: pointer;
+        }
+
+        /* cancelled */
+        #scheduleContainer .cancelled-inline-tile {
+            cursor: not-allowed;
+        }
+
+        #scheduleContainer .cancel-x {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        #scheduleContainer .cancel-note {
+            color: #dc3545;
+            font-size: 12px;
+        }
+
+        /* disabled past */
+        #scheduleContainer .disabled-date-tile {
+            background: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        #scheduleContainer .disabled-date-tile .tile-date {
+            color: #6c757d;
+        }
+
+        /* text */
+        #scheduleContainer .tile-date {
+            font-size: 14px;
+            font-weight: 500;
+            color: #212529;
         }
 
         /* checkbox */
@@ -756,10 +779,10 @@
             $('#bus').html('');
 
             $('#scheduleContainer').html(`
-        <div class="text-center text-muted">
-            Please select bus
-        </div>
-    `);
+                    <div class="text-center text-muted">
+                        Please select bus
+                    </div>
+                `);
 
             commonAjax.loadBusListByOperator('#bus', operator_id);
 
@@ -853,6 +876,20 @@
         }
 
 
+        window.handlePageCancel = function() {
+
+            let isEditPage = @json(request()->routeIs('seat-block.edit'));
+
+            if (isEditPage) {
+                window.location.href = "{{ route('seat-block.index') }}";
+                return;
+            }
+
+            document.getElementById('backoffice-form').reset();
+
+            $('.form-select').val('').trigger('change');
+        };
+
 
         function renderSchedule(data, isEditMode = false) {
 
@@ -885,71 +922,87 @@
                                 <div class="row">
                         `;
 
-                        bus.dates.forEach(function(date) {
+                        /* EDIT MODE = SHOW ONLY ONE DATE */
+                        if (isEditMode && selectedEditDate) {
 
-                            let isCancelled = cancelledDates.includes(date);
-
-                            let today = new Date();
-                            today.setHours(0, 0, 0, 0);
-
-                            let currentDate = new Date(date);
-                            currentDate.setHours(0, 0, 0, 0);
-
-                            let isPastDate = currentDate < today;
-
-                            /* 1. Bus Cancelled */
-                            if (isCancelled) {
-
-                                html += `
-                                <div class="col-md-4 mb-2">
-                                    <div class="schedule-tile cancelled-inline-tile">
-                                        <span class="cancel-x">X</span>
-                                        <span class="tile-date">${formatDate(date)}</span>
-                                        <span class="cancel-note">Bus Cancelled</span>
+                            html += `
+                                <div class="col-md-12 mb-2">
+                                        <label class="schedule-tile normal-inline-tile">
+                                            <input type="checkbox"
+                                                checked
+                                                name="dates[]"
+                                                value="${selectedEditDate}"
+                                                class="schedule-checkbox"
+                                                data-bus="${bus_id}"
+                                                data-date="${selectedEditDate}">
+                                            <span class="tile-date">${formatDate(selectedEditDate)}</span>
+                                        </label>
                                     </div>
-                                </div>
-                                `;
+                                    `;
 
-                            }
+                        }
 
-                            /* 2. Past Date Disabled */
-                            else if (isPastDate) {
+                        /* ADD MODE = SHOW FULL LIST */
+                        else {
 
-                                html += `
-    <div class="col-md-4 mb-2">
-        <div class="schedule-tile disabled-date-tile">
-            <span class="tile-date">${formatDate(date)}</span>
-        </div>
-    </div>
-    `;
+                            bus.dates.forEach(function(date) {
 
-                            }
+                                let isCancelled = cancelledDates.includes(date);
 
-                            /* 3. Active Selectable Date */
-                            else {
+                                let today = new Date();
+                                today.setHours(0, 0, 0, 0);
 
-                                html += `
-                                <div class="col-md-4 mb-2">
-                                    <label class="schedule-tile normal-inline-tile">
-                                        <input type="checkbox"
-                                            name="dates[]"
-                                            value="${date}"
-                                            class="schedule-checkbox"
-                                            data-bus="${bus_id}"
-                                            data-date="${date}">
-                                        <span class="tile-date">${formatDate(date)}</span>
-                                    </label>
-                                </div>
-                                `;
+                                let currentDate = new Date(date);
+                                currentDate.setHours(0, 0, 0, 0);
 
-                            }
+                                let isPastDate = currentDate < today;
 
-                        });
+                                if (isCancelled) {
+
+                                    html += `
+                                        <div class="col-md-4 mb-2">
+                                            <div class="schedule-tile cancelled-inline-tile">
+                                                <span class="cancel-x">X</span>
+                                                <span class="tile-date">${formatDate(date)}</span>
+                                                <span class="cancel-note">Bus Cancelled</span>
+                                            </div>
+                                        </div>
+                                        `;
+
+                                } else if (isPastDate) {
+
+                                    html += `
+                                    <div class="col-md-4 mb-2">
+                                        <div class="schedule-tile disabled-date-tile">
+                                            <span class="tile-date">${formatDate(date)}</span>
+                                        </div>
+                                    </div>
+                                    `;
+
+                                } else {
+
+                                    html += `
+                                    <div class="col-md-4 mb-2">
+                                        <label class="schedule-tile normal-inline-tile">
+                                            <input type="checkbox"
+                                                name="dates[]"
+                                                value="${date}"
+                                                class="schedule-checkbox"
+                                                data-bus="${bus_id}"
+                                                data-date="${date}">
+                                            <span class="tile-date">${formatDate(date)}</span>
+                                        </label>
+                                    </div>
+                                    `;
+                                }
+
+                            });
+                        }
 
                         html += `
-                        </div>
-                    </div>
-                `;
+                                </div>
+                            </div>
+                        `;
                     });
 
                     $('#scheduleContainer').html(html);
@@ -1052,28 +1105,24 @@
             let selectedDates = [];
             let seatData = [];
 
-            /* Operator */
             if (!operator || operator == 0) {
                 commonAjax.viewAlert('Please select Operator');
                 $('#operator').focus();
                 return false;
             }
 
-            /* Bus */
             if (!bus || bus == 0) {
                 commonAjax.viewAlert('Please select Bus');
                 $('#bus').focus();
                 return false;
             }
 
-            /* Reason */
             if (!reason || reason == 0) {
                 commonAjax.viewAlert('Please select a Reason');
                 $('#reason').focus();
                 return false;
             }
 
-            /* Dates */
             $('.schedule-checkbox:checked').each(function() {
                 selectedDates.push($(this).val());
             });
@@ -1083,8 +1132,6 @@
                 return false;
             }
 
-            /* Seats */
-            /* Seats */
             $('.changed-seat').each(function() {
 
                 let seatCode = $(this).closest('label').find('.seat-checkbox').val();
@@ -1111,7 +1158,6 @@
 
             $('#seat_operations').val(JSON.stringify(seatData));
 
-            /* Final confirmation */
             commonAjax.confirmAlert('Are you sure to proceed ?');
 
             $('#btnConfirmOk').off('click').on('click', function() {
@@ -1127,18 +1173,18 @@
 
             if (!operator || !bus) {
                 $('#blockedSeatHistoryContainer').html(`
-            <div class="text-center text-muted">
-                Please select Operator and Bus
-            </div>
-        `);
+                    <div class="text-center text-muted">
+                        Please select Operator and Bus
+                    </div>
+                `);
                 return;
             }
 
             $('#blockedSeatHistoryContainer').html(`
-        <div class="text-center p-3">
-            <div class="spinner-border text-primary"></div>
-        </div>
-    `);
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                `);
 
             $.ajax({
                 type: 'POST',
@@ -1153,10 +1199,10 @@
                 },
                 error: function() {
                     $('#blockedSeatHistoryContainer').html(`
-                <div class="text-danger text-center">
-                    Unable to load history
-                </div>
-            `);
+                            <div class="text-danger text-center">
+                                Unable to load history
+                            </div>
+                        `);
                 }
             });
         }

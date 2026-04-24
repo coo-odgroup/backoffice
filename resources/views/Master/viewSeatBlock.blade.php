@@ -57,14 +57,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <div class="col-lg-2 col-md-2">
                             <label for="source">Source</label>
-                            <select class="form-select form-select-sm" id="source" name="source">
+                            <select class="form-select form-select-sm selCity" id="source" name="source">
                                 <option value="">Select Source</option>
                             </select>
                         </div>
 
                         <div class="col-lg-2 col-md-2">
                             <label for="destination">Destination</label>
-                            <select class="form-select form-select-sm" id="destination" name="destination">
+                            <select class="form-select form-select-sm selCity " id="destination" name="destination">
                                 <option value="">Select Destination</option>
                             </select>
                         </div>
@@ -146,14 +146,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     data-edit-url="{{ route('seat-block.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
-                            <!-- <th class="noPrint no-sort">
-                                <div class="checkbox">
-                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
-                                </div>
-                            </th> -->
+
                             <th>Sl No</th>
                             <th>Opeator</th>
-                            <th>Bus Name/No</th>
+                            <th>Bus Name / No</th>
                             <th>Route</th>
                             <th class="no-sort">Seat Block Info</th>
                         </tr>
@@ -229,113 +225,113 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 <style>
-/* ===== Delete Reason Modal (Matches Admin Page Style) ===== */
+    /* ===== Delete Reason Modal (Matches Admin Page Style) ===== */
 
-.seat-delete-modal {
-    border: 1px solid #d8dde6;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    background: #ffffff;
-}
+    .seat-delete-modal {
+        border: 1px solid #d8dde6;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        background: #ffffff;
+    }
 
-/* Header */
-.seat-delete-header {
-    background: #0d6efd;
-    color: #ffffff;
-    border-bottom: 1px solid #0b5ed7;
-    padding: 12px 16px;
-}
+    /* Header */
+    .seat-delete-header {
+        background: #0d6efd;
+        color: #ffffff;
+        border-bottom: 1px solid #0b5ed7;
+        padding: 12px 16px;
+    }
 
-.seat-delete-header .modal-title {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0;
-}
+    .seat-delete-header .modal-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0;
+    }
 
-.seat-delete-header .btn-close {
-    filter: brightness(0) invert(1);
-    opacity: 1;
-}
+    .seat-delete-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 1;
+    }
 
-/* Body */
-.seat-delete-modal .modal-body {
-    padding: 18px 16px;
-    background: #ffffff;
-}
+    /* Body */
+    .seat-delete-modal .modal-body {
+        padding: 18px 16px;
+        background: #ffffff;
+    }
 
-.seat-delete-modal label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #001a57;
-    margin-bottom: 6px;
-}
+    .seat-delete-modal label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #001a57;
+        margin-bottom: 6px;
+    }
 
-.seat-delete-modal .form-select {
-    height: 38px;
-    border: 1px solid #cfd6df;
-    border-radius: 4px;
-    font-size: 13px;
-    box-shadow: none;
-}
+    .seat-delete-modal .form-select {
+        height: 38px;
+        border: 1px solid #cfd6df;
+        border-radius: 4px;
+        font-size: 13px;
+        box-shadow: none;
+    }
 
-.seat-delete-modal .form-select:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.12rem rgba(13, 110, 253, 0.12);
-}
+    .seat-delete-modal .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.12rem rgba(13, 110, 253, 0.12);
+    }
 
-.seat-delete-modal small {
-    font-size: 12px;
-    color: #6c757d;
-    margin-top: 6px;
-}
+    .seat-delete-modal small {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 6px;
+    }
 
-/* Footer */
-.seat-delete-modal .modal-footer {
-    background: #f8f9fa;
-    border-top: 1px solid #e5e8ec;
-    padding: 10px 16px;
-}
-
-/* Buttons */
-.seat-delete-modal .btn-secondary {
-    font-size: 13px;
-    border-radius: 4px;
-    padding: 6px 14px;
-}
-
-.seat-delete-btn {
-    background: #dc3545;
-    border: 1px solid #dc3545;
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 4px;
-    padding: 6px 14px;
-}
-
-.seat-delete-btn:hover {
-    background: #bb2d3b;
-    border-color: #b02a37;
-    color: #ffffff;
-}
-
-/* Modal backdrop look */
-.modal-content {
-    font-family: inherit;
-}
-
-/* Mobile */
-@media (max-width: 576px) {
+    /* Footer */
     .seat-delete-modal .modal-footer {
-        flex-direction: column-reverse;
-        gap: 8px;
+        background: #f8f9fa;
+        border-top: 1px solid #e5e8ec;
+        padding: 10px 16px;
     }
 
-    .seat-delete-modal .btn {
-        width: 100%;
+    /* Buttons */
+    .seat-delete-modal .btn-secondary {
+        font-size: 13px;
+        border-radius: 4px;
+        padding: 6px 14px;
     }
-}
+
+    .seat-delete-btn {
+        background: #dc3545;
+        border: 1px solid #dc3545;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 4px;
+        padding: 6px 14px;
+    }
+
+    .seat-delete-btn:hover {
+        background: #bb2d3b;
+        border-color: #b02a37;
+        color: #ffffff;
+    }
+
+    /* Modal backdrop look */
+    .modal-content {
+        font-family: inherit;
+    }
+
+    /* Mobile */
+    @media (max-width: 576px) {
+        .seat-delete-modal .modal-footer {
+            flex-direction: column-reverse;
+            gap: 8px;
+        }
+
+        .seat-delete-modal .btn {
+            width: 100%;
+        }
+    }
 
 
 
@@ -344,54 +340,71 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
 
-.bus-seat,
-.bus-sleeper,
-.bus-vertical-sleeper{
-    display:inline-block;
-    background-size:100% 100%;
-    background-repeat:no-repeat;
-    background-position:center;
-    cursor:pointer;
-}
+    .bus-seat,
+    .bus-sleeper,
+    .bus-vertical-sleeper {
+        display: inline-block;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: pointer;
+    }
 
-/* sizes */
-.bus-seat{width:42px;height:24px;}
-.bus-sleeper{width:72px;height:28px;}
-.bus-vertical-sleeper{width:34px;height:72px;}
+    /* sizes */
+    .bus-seat {
+        width: 42px;
+        height: 24px;
+    }
 
-/* BLUE */
-.selected-seat.bus-seat{
-    background-image:url('/assets/seats/Seat_layout_blue.png') !important;
-}
-.selected-seat.bus-sleeper{
-    background-image:url('/assets/seats/Sleeper_layout_blue.png') !important;
-}
-.selected-seat.bus-vertical-sleeper{
-    background-image:url('/assets/seats/Sleeper_layout_blue_vertical.png') !important;
-}
+    .bus-sleeper {
+        width: 72px;
+        height: 28px;
+    }
 
-/* RED */
-.blocked.bus-seat{
-    background-image:url('/assets/seats/Seat_layout_red.png') !important;
-}
-.blocked.bus-sleeper{
-    background-image:url('/assets/seats/sleeper_layout_red.png') !important;
-}
-.blocked.bus-vertical-sleeper{
-    background-image:url('/assets/seats/sleeper_layout_red_vertical.png') !important;
-}
+    .bus-vertical-sleeper {
+        width: 34px;
+        height: 72px;
+    }
 
-/* GREY */
-.disabled.bus-seat{
-    background-image:url('/assets/seats/Seat_layout_grey.png') !important;
-}
-.disabled.bus-sleeper{
-    background-image:url('/assets/seats/sleeper_layout_grey.png') !important;
-}
-.disabled.bus-vertical-sleeper{
-    background-image:url('/assets/seats/sleeper_layout_grey_vertical.png') !important;
-    cursor:not-allowed;
-}
+    /* BLUE */
+    .selected-seat.bus-seat {
+        background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+    }
+
+    .selected-seat.bus-sleeper {
+        background-image: url('/assets/seats/Sleeper_layout_blue.png') !important;
+    }
+
+    .selected-seat.bus-vertical-sleeper {
+        background-image: url('/assets/seats/Sleeper_layout_blue_vertical.png') !important;
+    }
+
+    /* RED */
+    .blocked.bus-seat {
+        background-image: url('/assets/seats/Seat_layout_red.png') !important;
+    }
+
+    .blocked.bus-sleeper {
+        background-image: url('/assets/seats/sleeper_layout_red.png') !important;
+    }
+
+    .blocked.bus-vertical-sleeper {
+        background-image: url('/assets/seats/sleeper_layout_red_vertical.png') !important;
+    }
+
+    /* GREY */
+    .disabled.bus-seat {
+        background-image: url('/assets/seats/Seat_layout_grey.png') !important;
+    }
+
+    .disabled.bus-sleeper {
+        background-image: url('/assets/seats/sleeper_layout_grey.png') !important;
+    }
+
+    .disabled.bus-vertical-sleeper {
+        background-image: url('/assets/seats/sleeper_layout_grey_vertical.png') !important;
+        cursor: not-allowed;
+    }
 </style>
 
 
@@ -406,9 +419,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#operator', 'Select Operator');
         commonAjax.initSelect2('#bus', 'Select Bus');
         commonAjax.initSelect2('#reason', 'Select Reason');
+        commonAjax.initSelect2('#source', 'Select Source');
+        commonAjax.initSelect2('#destination', 'Select Destination');
+
 
         commonAjax.loadBusOperatorDropdown('');
         commonAjax.loadAnnextureList('REASON', '', '#reason');
+
+        setTimeout(function() {
+            commonAjax.loadCityList('#source');
+            commonAjax.loadCityList('#destination');
+        }, 300);
+        
+        console.log(commonAjax.loadCityList.toString())
 
         commonAjax.initClearableInputs();
 
@@ -456,6 +479,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             txtSearch: $('#txtSearch').length ? $('#txtSearch').val() : '',
             operator: $('#operator').val(),
             bus: $('#bus').val(),
+
+            source: $('#source').val(),
+            destination: $('#destination').val(),
 
             fromDate: $('#fromDate').val() || todayDate,
             toDate: $('#toDate').val() || '',
@@ -511,7 +537,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <thead class="table-secondary">
                                     <tr>
                                         <th style="width:120px; min-width:120px;">Date</th>
-                                        <th style="width:500px; min-width:500px;">Seats/Sleeper</th>
+                                        <th style="width:500px; min-width:500px;">Seats / Sleeper</th>
                                         <th style="width:180px; min-width:180px;">Reason</th>
                                         <th style="width:220px; min-width:220px;">Created By</th>
                                         <th style="width:90px; min-width:90px;" class="text-center noPrint">Action</th>
@@ -643,7 +669,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         if (reason == '') {
 
-           commonAjax.viewAlert(
+            commonAjax.viewAlert(
                 'Please select reason');
 
             return;
@@ -682,7 +708,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         if (reason == '') {
 
-           commonAjax.viewAlert('Please select reason');
+            commonAjax.viewAlert('Please select reason');
             return;
         }
 
@@ -737,7 +763,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let reason = $('#delete_reason').val();
 
         if (reason == '') {
-           commonAjax.viewAlert('Please select reason');
+            commonAjax.viewAlert('Please select reason');
             return;
         }
 
@@ -776,7 +802,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             error: function(xhr) {
 
                 console.log(xhr.responseText);
-                 commonAjax.viewAlert('Delete failed');
+                commonAjax.viewAlert('Delete failed');
             },
 
             complete: function() {

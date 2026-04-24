@@ -1440,48 +1440,6 @@ export function loadSeatLayoutList(seat_layout_id = 0) {
     });
 }
 
-function getLoadAnnextureList(annexture_type = "", type = "") {
-    let container = document.getElementById("offerValuesContainer");
-    container.innerHTML = "";
-
-    $.ajax({
-        type: "POST",
-        url: ajaxUrl + "get-annexture-list",
-        data: {
-            annexture_type: annexture_type,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
-        success: function (response) {
-            if (response.status && response.data.length > 0) {
-                response.data.forEach((item) => {
-                    let div = document.createElement("div");
-                    div.className = "offer-chip";
-
-                    div.innerText =
-                        type === "PERCENTAGE"
-                            ? item.annexture_name + "%"
-                            : "₹" + item.annexture_name;
-
-                    div.onclick = function () {
-                        document
-                            .querySelectorAll(".offer-chip")
-                            .forEach((c) => c.classList.remove("active"));
-
-                        div.classList.add("active");
-
-                        document.querySelector(
-                            'input[name="offer_value"]',
-                        ).value = item.annexture_name;
-                    };
-
-                    container.appendChild(div);
-                });
-            } else {
-                container.innerHTML = "<p>No Data Found</p>";
-            }
-        },
-    });
-}
 export function loadAnnextureList(key, selected = "", selector = ".annexture") {
     $.ajax({
         type: "POST",

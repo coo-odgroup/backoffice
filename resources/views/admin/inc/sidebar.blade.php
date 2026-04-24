@@ -187,17 +187,17 @@
 
             <a href="{{ url('admin/reviewcategory') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/reviewcategory*') ? 'active' : '' }}">
-                <i class="fa-solid fa-star me-2"></i> Review Category
+                <i class="fa-solid fa-comments me-2"></i> Review Category
             </a>
 
             <a href="{{ url('admin/cancellationslab') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/cancellationslab*') ? 'active' : '' }}">
-                <i class="fa-solid fa-star me-2"></i> Cancellation Slab
+                <i class="fa-solid fa-ban me-2"></i> Cancellation Slab
             </a>
 
             <a href="{{ url('admin/cancellationslab-info') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/cancellationslab-info*') ? 'active' : '' }}">
-                <i class="fa-solid fa-star me-2"></i> Cancellation Slab Info
+                <i class="fa-solid fa-circle-info me-2"></i> Cancellation Slab Info
             </a>
 
         </div>

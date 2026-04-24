@@ -831,13 +831,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if (!validator.blankCheck('offer_value', 'Offer Value is required'))
             return false;
 
-        // ✅ Numeric check (manual)
         if (!isNumeric($('#offer_value').val())) {
             commonAjax.viewAlert('Offer Value must be numeric');
             return false;
         }
 
-        // Optional numeric
         if ($('#min_ticket_value').val() !== '') {
             if (!isNumeric($('#min_ticket_value').val())) {
                 commonAjax.viewAlert('Min Ticket Value must be numeric');
@@ -869,13 +867,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         }
 
-        // ================= DURATION =================
         if (validityType === 'DURATION') {
 
             if (!validator.blankCheck('duration_value', 'Duration Value is required'))
                 return false;
 
-            // ✅ Numeric check
             if (!isNumeric($('#duration_value').val())) {
                 commonAjax.viewAlert('Duration Value must be numeric');
                 return false;
