@@ -210,18 +210,22 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                 cityData.forEach((item, i) => {
 
                     let stops = item.city && item.city.boardingdroppings ?
-                        item.city.boardingdroppings : [];
+                        item.city.boardingdroppings :
+                        [];
 
-                    // ✅ Build dropdown options
+                    if (item.type) {
+                        stops = stops.filter(stop => stop.type == item.type);
+                    }
+
                     let options = '<option value="">Select Station</option>';
 
                     stops.forEach(stop => {
                         options += `
-                        <option value="${stop.id}"
-                            ${stop.id == item.stop_id ? 'selected' : ''}>
-                            ${stop.brd_drp_point}
-                        </option>
-                    `;
+                            <option value="${stop.id}"
+                                ${stop.id == item.stop_id ? 'selected' : ''}>
+                                ${stop.brd_drp_point}
+                            </option>
+                        `;
                     });
 
                     rowsHtml += `
