@@ -318,6 +318,34 @@ class SeatBlockController extends Controller
 
                 $validRows = [];
 
+                if ($method == 'Edit' && !empty($seatOperations)) {
+
+                    $editDate = $seatOperations[0]['operation_date'];
+                    $busId = request('bus');
+
+                    $submittedIds = collect($seatOperations)
+                        ->pluck('bus_seat_id')
+                        ->map(fn($v) => (int)$v)
+                        ->toArray();
+
+                    DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->whereNull('deleted_at')
+                        ->whereDate('operation_date', $editDate)
+                        ->whereIn('bus_seat_id', function ($q) use ($busId) {
+                            $q->select('id')
+                                ->from('bus_seats')
+                                ->where('bus_id', $busId);
+                        })
+                        ->whereNotIn('bus_seat_id', $submittedIds)
+                        ->update([
+                            'deleted_at' => $now,
+                            'deleted_by' => $userId,
+                            'updated_at' => $now,
+                            'updated_by' => $userId
+                        ]);
+                }
+
                 foreach ($seatOperations as $seat) {
 
                     $busSeatId      = (int)($seat['bus_seat_id'] ?? 0);
@@ -329,9 +357,7 @@ class SeatBlockController extends Controller
 
                     $seatCode = trim((string)($seat['seat_code'] ?? ''));
                     $layoutId = (int)($seat['seat_layout_id'] ?? 0);
-                    $category = (int)($seat['category'] ?? 2);
-
-                    /* ONLY CHECK ACTIVE ROWS */
+                    $category = (int)($seat['category'] ?? 2);  
                     $existing = DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
                         ->where('bus_seat_id', $busSeatId)
@@ -341,6 +367,30 @@ class SeatBlockController extends Controller
                         ->first();
 
                     if ($existing) {
+                        continue;
+                    }
+
+                    $old = DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->where('bus_seat_id', $busSeatId)
+                        ->whereDate('operation_date', $operationDate)
+                        ->orderByDesc('id')
+                        ->first();
+
+                    if ($old) {
+
+                        DB::connection('mysql_dev')
+                            ->table('bus_seat_operation')
+                            ->where('id', $old->id)
+                            ->update([
+                                'deleted_at' => null,
+                                'deleted_by' => null,
+                                'category' => 2,
+                                'reason' => $reason,
+                                'updated_at' => $now,
+                                'updated_by' => $userId
+                            ]);
+
                         continue;
                     } else {
 

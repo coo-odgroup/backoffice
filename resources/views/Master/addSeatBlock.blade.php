@@ -878,7 +878,7 @@
 
         window.handlePageCancel = function() {
 
-            let isEditPage = @json(request()->routeIs('seat-block.edit'));
+            let isEditPage = @json(request()-> routeIs('seat-block.edit'));
 
             if (isEditPage) {
                 window.location.href = "{{ route('seat-block.index') }}";
@@ -1132,15 +1132,13 @@
                 return false;
             }
 
-            $('.changed-seat').each(function() {
+            $('.blocked').each(function() {
 
                 let seatCode = $(this).closest('label').find('.seat-checkbox').val();
                 if (!seatCode) return;
 
                 let busSeatId = $(this).data('busseatid') || 0;
                 let layoutId = $(this).data('layout') || 0;
-
-                let category = $(this).hasClass('blocked') ? 2 : 1;
 
                 selectedDates.forEach(function(date) {
 
@@ -1149,7 +1147,7 @@
                         seat_code: seatCode,
                         seat_layout_id: layoutId,
                         operation_date: date,
-                        category: category
+                        category: 2
                     });
 
                 });
