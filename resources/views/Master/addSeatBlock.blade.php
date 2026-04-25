@@ -149,7 +149,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Buttons -->
                                     <div class="row mt-2">
                                         <div class="col-12 d-flex gap-2">
                                             <button class="btn btn-primary btn-sm" type="submit">
@@ -699,13 +698,7 @@
         let selectedOperator = "{{ $data['editData']->bus_operator_id ?? (old('operator') ?? '') }}";
         let selectedBus = "{{ $data['editData']->bus_id ?? (old('bus') ?? '') }}";
         let selectedReason = "{{ $data['editData']->reason ?? (old('reason') ?? '') }}";
-
         let selectedEditDate = "{{ $data['editDate'] ?? '' }}";
-
-        // console.log('Selected Operator:', selectedOperator);
-        // console.log('Selected Bus:', selectedBus);
-        // console.log('Selected Reason:', selectedReason);
-
 
 
         $(document).ready(function() {
