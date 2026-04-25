@@ -759,7 +759,7 @@
                 return;
             }
 
-            if (retry > 30) return;
+            if (retry > 50) return;
 
             setTimeout(function() {
                 waitForOptions(selector, callback, retry + 1);
