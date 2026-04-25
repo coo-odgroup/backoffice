@@ -186,13 +186,16 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
     });
 
     $(document).ready(function() {
-        const stops = <?= json_encode(@$data['stopRes']) ?>;
+        const stops = <?= json_encode(@$data['stopRes'] ?? []) ?>;
 
-        if (stops && stops.length > 0) {
-            localStorage.setItem('selCities', JSON.stringify(stops));
+        let localCities = JSON.parse(localStorage.getItem("selCities")) || [];
+        let cities = [];
+        if (stops.length === localCities.length) {
+            cities = stops;
+        } else {
+            cities = localCities;
         }
 
-        let cities = JSON.parse(localStorage.getItem("selCities") || "[]");
         let step3Res = <?= json_encode(@$data['step3Res']) ?>;
 
         let html = "";

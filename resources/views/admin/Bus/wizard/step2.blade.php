@@ -1,11 +1,6 @@
 @extends('admin.layouts.master')
 @section('page_title', 'City Selection')
 @section('content')
-
-<style>
-
-</style>
-
 <?php
 $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 ?>

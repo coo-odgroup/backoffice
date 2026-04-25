@@ -38,6 +38,13 @@ use App\Http\Controllers\Admin\Blog\BlogTagsController;
 use App\Http\Controllers\Admin\Blog\BlogPreviewController;
 use App\Http\Controllers\Admin\Bus\BusAmenitiesController;
 use App\Http\Controllers\Admin\Bus\BusSeatLayoutController;
+use App\Http\Controllers\Admin\Bus\BusStep1Controller;
+use App\Http\Controllers\Admin\Bus\BusStep2Controller;
+use App\Http\Controllers\Admin\Bus\BusStep3Controller;
+use App\Http\Controllers\Admin\Bus\BusStep4Controller;
+use App\Http\Controllers\Admin\Bus\BusStep5Controller;
+use App\Http\Controllers\Admin\Bus\BusStep6Controller;
+use App\Http\Controllers\Admin\Bus\BusStep7Controller;
 use App\Http\Controllers\Admin\Campaign\CampaignMasterController;
 use App\Http\Controllers\Admin\Campaign\CampaignController;
 use App\Http\Controllers\Master\BusInfoController;
@@ -84,26 +91,26 @@ Route::prefix('admin/bus')->group(function () {
 
 Route::prefix('admin/bus/create')->group(function () {
 
-    Route::get('/step1/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step1'])->name('bus.step1');
-    Route::post('/step1/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'postStep1']);
+    Route::get('/step1/{encId?}/{param?}/{param2?}', [BusStep1Controller::class, 'step1'])->name('bus.step1');
+    Route::post('/step1/{encId?}/{param?}/{param2?}', [BusStep1Controller::class, 'postStep1']);
 
-    Route::get('/step2/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step2'])->name('bus.step2');
-    Route::post('/step2/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'postStep2']);
+    Route::get('/step2/{encId?}/{param?}/{param2?}', [BusStep2Controller::class, 'step2'])->name('bus.step2');
+    Route::post('/step2/{encId?}/{param?}/{param2?}', [BusStep2Controller::class, 'postStep2']);
 
-    Route::get('/step3/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step3'])->name('bus.step3');
-    Route::post('/step3/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'postStep3']);
+    Route::get('/step3/{encId?}/{param?}/{param2?}', [BusStep3Controller::class, 'step3'])->name('bus.step3');
+    Route::post('/step3/{encId?}/{param?}/{param2?}', [BusStep3Controller::class, 'postStep3']);
 
-    Route::get('/step4/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step4'])->name('bus.step4');
-    Route::post('/step4/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'postStep4']);
+    Route::get('/step4/{encId?}/{param?}/{param2?}', [BusStep4Controller::class, 'step4'])->name('bus.step4');
+    Route::post('/step4/{encId?}/{param?}/{param2?}', [BusStep4Controller::class, 'postStep4']);
 
-    Route::get('/step5/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step5'])->name('bus.step5');
-    Route::post('/step5/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'postStep5']);
+    Route::get('/step5/{encId?}/{param?}/{param2?}', [BusStep5Controller::class, 'step5'])->name('bus.step5');
+    Route::post('/step5/{encId?}/{param?}/{param2?}', [BusStep5Controller::class, 'postStep5']);
 
-    Route::get('/step6/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step6'])->name('bus.step6');
-    Route::post('/step6/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'postStep6']);
+    Route::get('/step6/{encId?}/{param?}/{param2?}', [BusStep6Controller::class, 'step6'])->name('bus.step6');
+    Route::post('/step6/{encId?}/{param?}/{param2?}', [BusStep6Controller::class, 'postStep6']);
 
-    Route::get('/step7/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'step7'])->name('bus.step7');
-    Route::post('/step7/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'postStep7']);
+    Route::get('/step7/{encId?}/{param?}/{param2?}', [BusStep7Controller::class, 'step7'])->name('bus.step7');
+    Route::post('/step7/{encId?}/{param?}/{param2?}', [BusStep7Controller::class, 'postStep7']);
 
     Route::get('/preview/{encId?}/{param?}/{param2?}', [BusWizardController::class, 'preview'])->name('bus.preview');
 });
