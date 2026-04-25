@@ -77,13 +77,13 @@ class SeatBlockController extends Controller
                 )
 
                 ->whereRaw("
-        bso.id IN (
-            SELECT MAX(id)
-            FROM bus_seat_operation
-            WHERE deleted_at IS NULL
-            GROUP BY bus_seat_id, operation_date
-        )
-    ");
+                    bso.id IN (
+                        SELECT MAX(id)
+                        FROM bus_seat_operation
+                        WHERE deleted_at IS NULL
+                        GROUP BY bus_seat_id, operation_date
+                        )
+                    ");
 
             if (!empty($txtSearch)) {
 
@@ -293,7 +293,33 @@ class SeatBlockController extends Controller
 
                 $seatOperations = json_decode(request('seat_operations'), true);
 
-                if (empty($seatOperations) || !is_array($seatOperations)) {
+                /* Edit mode: no seat selected = unblock all */
+                if ($method == 'Edit' && empty($seatOperations)) {
+
+                    DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->whereNull('deleted_at')
+                        ->whereDate('operation_date', $opDate)
+                        ->whereIn('bus_seat_id', function ($q) use ($busId) {
+                            $q->select('id')
+                                ->from('bus_seats')
+                                ->where('bus_id', $busId);
+                        })
+                        ->update([
+                            'deleted_at' => now(),
+                            'deleted_by' => session('userid') ?? auth()->id() ?? 1,
+                            'updated_at' => now(),
+                            'updated_by' => session('userid') ?? auth()->id() ?? 1
+                        ]);
+
+                    session()->flash('level', 'success');
+                    session()->flash('message', 'All blocked seats removed successfully.');
+
+                    return redirect($redirectPage);
+                }
+
+                /* Add mode validation */
+                if ($method == 'Add' && (empty($seatOperations) || !is_array($seatOperations))) {
                     return back()->with([
                         'level'   => 'danger',
                         'message' => 'Invalid seat data'
@@ -357,7 +383,7 @@ class SeatBlockController extends Controller
 
                     $seatCode = trim((string)($seat['seat_code'] ?? ''));
                     $layoutId = (int)($seat['seat_layout_id'] ?? 0);
-                    $category = (int)($seat['category'] ?? 2);  
+                    $category = (int)($seat['category'] ?? 2);
                     $existing = DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
                         ->where('bus_seat_id', $busSeatId)
