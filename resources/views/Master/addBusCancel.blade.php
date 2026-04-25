@@ -263,8 +263,8 @@
             setTimeout(function() {
                 $('#operator').val(operatorId).trigger('change');
             }, 300);
-            // commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
-            commonAjax.loadAnnextureList('REASON', editData.reason);
+            commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
+            //commonAjax.loadAnnextureList('REASON', editData.reason);
 
             let operatorId = String(editData.operator).trim();
             let busId = String(editData.bus).trim();
