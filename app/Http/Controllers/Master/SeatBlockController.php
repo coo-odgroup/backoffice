@@ -104,7 +104,6 @@ class SeatBlockController extends Controller
 
                 $reasonName = DB::connection('mysql_dev')
                     ->table('odbusmaster.mst_annexture')
-                    ->where('id', $reason)
                     ->value('annexture_name');
 
                 if (!empty($reasonName)) {
@@ -318,7 +317,6 @@ class SeatBlockController extends Controller
                     return redirect($redirectPage);
                 }
 
-                /* Add mode validation */
                 if ($method == 'Add' && (empty($seatOperations) || !is_array($seatOperations))) {
                     return back()->with([
                         'level'   => 'danger',
@@ -335,11 +333,9 @@ class SeatBlockController extends Controller
                 $reason = DB::connection('mysql_dev')
                     ->table('odbusmaster.mst_annexture as ma')
                     ->join('odbusmaster.mst_annexture_type as mat', 'mat.id', '=', 'ma.annexture_type_id')
-                    ->where('ma.id', $reasonId)
                     ->where('mat.annexture_type', 'REASON')
                     ->where('ma.active_status', 1)
                     ->value('ma.annexture_name');
-
                 $reason = $reason ?: 'Other';
 
                 $validRows = [];

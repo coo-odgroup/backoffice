@@ -706,16 +706,13 @@
             commonAjax.initSelect2('#operator', 'Select Operator');
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#reason', 'Select Reason');
-
             commonAjax.loadBusOperatorDropdown('');
             commonAjax.loadAnnextureList('REASON', '', '#reason');
 
-            setTimeout(() => {
+            waitForOptions('#operator', function() {
                 restoreSelection();
-            }, 1000);
-
+            });
             commonAjax.initClearableInputs();
-
         });
 
         function restoreSelection() {
@@ -724,11 +721,20 @@
 
             isRestoring = true;
 
+
+
             $('#operator').val(selectedOperator).trigger('change');
+
+            $('#seatLayoutContainer').html(`
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary"></div>
+                        <p>Loading seat layout...</p>
+                    </div>
+             `);
 
             commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
 
-            setTimeout(() => {
+            waitForOptions('#bus', function() {
 
                 $('#bus').val(selectedBus).trigger('change');
 
@@ -738,14 +744,12 @@
                     }
                 });
 
-                /* LOAD ALL TABLES LIKE NORMAL FLOW */
                 loadSeatBlockSchedules(true);
                 loadSeatLayoutByBus(selectedEditDate);
                 loadBlockedSeatHistory();
 
                 isRestoring = false;
-
-            }, 800);
+            });
         }
 
         function waitForOptions(selector, callback, retry = 0) {
