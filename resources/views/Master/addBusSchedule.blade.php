@@ -224,9 +224,23 @@
                 }
             });
 
+            function waitForOptions(selector, callback, retry = 0) {
+
+                if ($(selector + ' option').length > 1) {
+                    callback();
+                    return;
+                }
+
+                if (retry >= 80) return;
+
+                setTimeout(function() {
+                    waitForOptions(selector, callback, retry + 1);
+                }, 100);
+            }
+
             $(document).ready(function() {
 
-                // Select2 init (ONLY ONCE)
+                // Select2 init 
                 $('#operator').select2({
                     placeholder: "Select Bus Operator",
                     dropdownParent: $('body')
@@ -239,9 +253,9 @@
 
                 commonAjax.loadBusOperatorDropdown();
 
-                setTimeout(() => {
+                waitForOptions('#operator', function() {
                     restoreSelection();
-                }, 500);
+                });
 
                 commonAjax.initClearableInputs();
 
@@ -265,17 +279,7 @@
                     $('#scheduleContainer').html('');
                 });
 
-                setTimeout(() => {
 
-                    if (selectedCycle) {
-                        $('#running_cycle').val(selectedCycle).trigger('change');
-                    }
-
-                    if (lastScheduleDate) {
-                        $('#date').val(lastScheduleDate);
-                    }
-
-                }, 800);
 
             });
 
@@ -382,38 +386,46 @@
             let lastScheduleDate = "{{ $data['lastDate'] ?? '' }}";
             let selectedCycle = "{{ $data['row']->running_cycle ?? '' }}";
 
-            function restoreSelection() {
 
-                if (!selectedOperator) return;
+         function restoreSelection() {
 
-                isRestoring = true;
+    if (!selectedOperator) return;
 
-                $('#operator').val(selectedOperator).trigger('change');
+    isRestoring = true;
 
-                commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
+    $('#operator').val(selectedOperator).trigger('change.select2');
 
-                setTimeout(() => {
+    commonAjax.loadBusListByOperator('#bus', selectedOperator);
 
-                    if (selectedBus) {
-                        $('#bus').val(selectedBus).trigger('change');
-                    }
+    waitForOptions('#bus', function () {
 
-                    isRestoring = false;
+        if (selectedBus) {
+            $('#bus').val(selectedBus).trigger('change.select2');
+            loadSchedule(selectedBus);
+        }
 
-                }, 500);
-            }
+        if (selectedCycle) {
+            $('#running_cycle').val(selectedCycle);
+        }
+
+        if (lastScheduleDate) {
+            $('#date').val(lastScheduleDate);
+        }
+
+        isRestoring = false;
+    });
+}
 
             @if(session('level') == 'success')
 
-            setTimeout(() => {
+            let bus_id = "{{ old('bus') }}";
 
-                let bus_id = "{{ old('bus') }}";
-
-                if (bus_id) {
+            if (bus_id) {
+                waitForOptions('#bus', function() {
                     loadSchedule(bus_id);
-                }
+                });
+            }
 
-            }, 500);
             @endif
 
             function renderOperators() {

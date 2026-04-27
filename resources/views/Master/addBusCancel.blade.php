@@ -252,6 +252,21 @@
         let cancelledDatesMap = {};
         let removedCancelledDates = [];
 
+
+        function waitForOptions(selector, callback, retry = 0) {
+
+            if ($(selector + ' option').length > 1) {
+                callback();
+                return;
+            }
+
+            if (retry >= 60) return;
+
+            setTimeout(function() {
+                waitForOptions(selector, callback, retry + 1);
+            }, 100);
+        }
+
         $(document).ready(function() {
 
             commonAjax.initSelect2('#operator', 'Select Operator');
@@ -260,17 +275,20 @@
 
             commonAjax.loadBusOperatorDropdown('');
 
-            setTimeout(function() {
-                $('#operator').val(operatorId).trigger('change');
-            }, 300);
-            commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
-            //commonAjax.loadAnnextureList('REASON', editData.reason);
 
             let operatorId = String(editData.operator).trim();
             let busId = String(editData.bus).trim();
 
+            waitForOptions('#operator', function() {
+                $('#operator').val(operatorId).trigger('change');
+            });
+            commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
+            //commonAjax.loadAnnextureList('REASON', editData.reason);
 
-            setTimeout(function() {
+
+
+
+            waitForOptions('#bus', function() {
 
                 let option = $('#bus option[value="' + busId + '"]');
 
@@ -283,11 +301,7 @@
                         text: option.text()
                     }];
 
-                    if (selectedBuses) {
-
-                        renderBuses();
-                    }
-
+                    renderBuses();
                     $('#bus_ids').val(busId);
                 }
 
@@ -297,14 +311,13 @@
 
                 if (editData.reason == 7) {
                     $('#otherReasonWrapper').show();
-                    console.log('sahil', editData.other_reason);
                     $('#other_reason').val(editData.other_reason);
                 }
 
                 editData.loaded = true;
                 pageInitializing = false;
                 refreshAllData();
-            }, 1000); // increase to 1500 if slow ajax
+            });
         });
 
 
