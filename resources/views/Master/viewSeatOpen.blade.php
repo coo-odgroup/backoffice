@@ -41,12 +41,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div class="card-body">
                     <div class="row align-items-end">
 
-                         <div class="col-lg-3 col-md-3">
+                        <div class="col-lg-3 col-md-3">
                             <label for="operator">Operator</label>
                             <select class="form-select form-select-sm" id="operator" name="operator">
                                 <option value="">Select Operator</option>
                             </select>
-                         </div>
+                        </div>
 
                         <div class="col-lg-3 col-md-3">
                             <label for="bus">Bus</label>
@@ -62,7 +62,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
-                         <div class="col-lg-2 col-md-2">
+                        <div class="col-lg-2 col-md-2">
                             <label for="destination">Destination</label>
                             <select class="form-select form-select-sm" id="destination" name="destination">
                                 <option value="">Select Destination</option>
@@ -79,10 +79,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
-                         <div class="col-lg-3 col-md-3 mt-1">
+                        <div class="col-lg-3 col-md-3 mt-1">
                             <label for="fromDate">From Date</label>
                             <input type="date" id="fromDate" name="fromDate" class="form-control form-control-sm" placeholder="From Date">
-                         </div>
+                        </div>
 
                         <div class="col-lg-3 col-md-3">
                             <label for="toDate">To Date</label>
@@ -151,8 +151,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('seat-block.dataTableView') }}"
-                    data-edit-url="{{ route('seat-block.edit', 'ID') }}">
+                    data-url="{{ route('seat-open.dataTableView') }}"
+                    data-edit-url="{{ route('seat-open.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <!-- <th class="noPrint no-sort">
@@ -183,7 +183,120 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </div>
     </div>
     </div>
-</form>
+    <div class="modal fade" id="deleteReasonModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content seat-delete-modal">
+
+                <div class="modal-header seat-delete-header">
+                    <h5 class="modal-title">
+                        Select The Reason For Delete
+                    </h5>
+
+                    <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden" id="delete_enc_id">
+
+                    <label class="fw-bold mb-2 text-primary d-block">
+                        Reason
+                    </label>
+
+                    <select class="form-select form-select-sm annexture"
+                        id="delete_reason">
+                        <option value="">Select Reason</option>
+                    </select>
+
+                    <small class="text-muted mt-2 d-block">
+                        Select a valid reason before deleting.
+                    </small>
+
+                </div>
+
+                <div class="modal-footer bg-light">
+
+                    <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="button"
+                        class="btn seat-delete-btn"
+                        onclick="confirmDeleteSeat()">
+                        <i class="fa fa-trash me-1"></i>
+                        Delete
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>\
+
+<style>
+    .seat-delete-modal {
+        border: 1px solid #d8dde6;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+        background: #fff;
+    }
+
+    .seat-delete-header {
+        background: #0d6efd;
+        color: #fff;
+        border-bottom: 1px solid #0b5ed7;
+        padding: 12px 16px;
+    }
+
+    .seat-delete-header .modal-title {
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .seat-delete-header .btn-close {
+        filter: brightness(0) invert(1);
+        opacity: 1;
+    }
+
+    .seat-delete-modal .modal-body {
+        padding: 18px 16px;
+    }
+
+    .seat-delete-modal label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #001a57;
+    }
+
+    .seat-delete-modal .form-select {
+        height: 38px;
+        border: 1px solid #cfd6df;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .seat-delete-modal .modal-footer {
+        background: #f8f9fa;
+        border-top: 1px solid #e5e8ec;
+    }
+
+    .seat-delete-btn {
+        background: #dc3545;
+        border: 1px solid #dc3545;
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .seat-delete-btn:hover {
+        background: #bb2d3b;
+    }
+</style>
 
 
 @endsection
@@ -192,244 +305,284 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
 
-    $('#backoffice-form').on('submit', function(e) {
-        e.preventDefault();
-    });
-
     $(document).ready(function() {
-        commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+
         commonAjax.initSelect2('#operator', 'Select Operator');
         commonAjax.initSelect2('#bus', 'Select Bus');
+        commonAjax.initSelect2('#reason', 'Select Reason');
         commonAjax.initSelect2('#source', 'Select Source');
         commonAjax.initSelect2('#destination', 'Select Destination');
-        commonAjax.loadCountryList();
+
+        commonAjax.loadBusOperatorDropdown('');
+        commonAjax.loadAnnextureList('REASON', '#reason');
+
+        setTimeout(function() {
+            commonAjax.loadCityList('#source');
+            commonAjax.loadCityList('#destination');
+        }, 300);
+
         commonAjax.initClearableInputs();
+
         getDataTableView();
     });
 
+    $('#operator').on('change', function() {
+
+        let operator_id = $(this).val();
+        $('#bus').html('<option value="">Select Bus</option>');
+        commonAjax.loadBusListByOperator('#bus', operator_id);
+    });
 
     $('#btnReset').click(function() {
-        $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
-        $('.form-select').val(0);
+
+        $('#backoffice-form')[0].reset();
         $('.form-select').val('').trigger('change');
+
         getDataTableView(true);
     });
 
+    window.deleteSingleRecord = function(encId) {
+
+        $('#delete_enc_id').val(encId);
+
+        $('#delete_reason').html('<option value="">Loading...</option>');
+
+        let modal = new bootstrap.Modal(
+            document.getElementById('deleteReasonModal')
+        );
+
+        modal.show();
+
+        commonAjax.loadAnnextureList('REASON', '', '#delete_reason');
+
+        setTimeout(function() {
+            $('#delete_reason').trigger('change');
+        }, 300);
+    };
+
+    window.confirmDeleteSeat = function() {
+
+    let encId  = $('#delete_enc_id').val();
+    let reason = $('#delete_reason').val();
+
+    if (reason == '') {
+        commonAjax.viewAlert('Please select reason');
+        return;
+    }
+
+    $.ajax({
+        url: "{{ route('seat-open.delete') }}",
+        type: "POST",
+        dataType: "json",
+
+        data: {
+            _token: "{{ csrf_token() }}",
+            id: encId,
+            reason: reason
+        },
+
+        beforeSend: function() {
+
+            $('.seat-delete-btn')
+                .prop('disabled', true)
+                .html('<i class="fa fa-spinner fa-spin me-1"></i>Deleting...');
+        },
+
+        success: function(res) {
+
+            let modalEl = document.getElementById('deleteReasonModal');
+            let modal = bootstrap.Modal.getInstance(modalEl);
+
+            if (modal) {
+                modal.hide();
+            }
+
+            $('#delete_reason').val('').trigger('change');
+            $('#delete_enc_id').val('');
+
+            getDataTableView(false);
+        },
+
+        error: function(xhr) {
+
+            console.log(xhr.responseText);
+            commonAjax.viewAlert('Delete failed');
+        },
+
+        complete: function() {
+
+            $('.seat-delete-btn')
+                .prop('disabled', false)
+                .html('<i class="fa fa-trash me-1"></i>Delete');
+        }
+    });
+};
+
     window.getDataTableView = function(reset = true) {
 
-        //  If table already initialized
         if (window.dataTableInstance && reset) {
-
-            // Clear saved state
             window.dataTableInstance.state.clear();
-
-            // Reset length dropdown UI
             $('#pageSizeDatatable').val(10);
-
-            // Reset page length internally
             window.dataTableInstance.page.len(10);
-
-            // Force first page
             window.dataTableInstance.page(0);
         }
 
-        $('#pageSizeDatatable').val(10);
-        let txtSearch = '';
-        let selStatus = '';
-        let countrySearch = '';
+        let todayDate = new Date().toISOString().split('T')[0];
 
-        if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
-        }
-
-        if ($('#selStatus').val() != '') {
-            selStatus = $('#selStatus').val();
-        }
-        if ($('#countrySearch').val() != '') {
-            countrySearch = $('#countrySearch').val();
-        }
+        let searchParams = {
+            txtSearch: $('#txtSearch').val() || '',
+            operator: $('#operator').val(),
+            bus: $('#bus').val(),
+            source: $('#source').val(),
+            destination: $('#destination').val(),
+            fromDate: $('#fromDate').val() || todayDate,
+            toDate: $('#toDate').val(),
+            reason: $('#reason').val(),
+            selStatus: $('#selStatus').val()
+        };
 
         let tableId = 'datatable';
-        let orderBy = [2, 'asc'];
-        let searchParams = {
-            txtSearch: txtSearch,
-            selStatus: selStatus,
-            countrySearch: countrySearch
-        };
-        let displayColumns = [1, 2, 3, 4, 5, 6, 7];
+        let orderBy = [4, 'asc'];
+        let displayColumns = [0, 1, 2, 3, 4];
+
         let dataTableColumns = [
-            // {
-            //     data: '',
-            //     render: function(data, type, row) {
-            //         return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
-            //             '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
-            //             '" ></div>';
-            //     },
-            //     className: "noPrint text-center"
-            // },
+
             {
-                data: 'slNo',
+                data: null,
                 render: function(data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 },
                 className: "text-center"
             },
+
             {
-                data: 'brand_name',
-                defaultContent: "--"
+                data: 'operator_name',
+                defaultContent: '--'
             },
+
             {
-                data: 'brand_name',
-                defaultContent: "--"
+                data: 'bus_name',
+                defaultContent: '--'
             },
+
             {
-                data: 'brand_name',
-                defaultContent: "--"
+                data: 'route_name',
+                defaultContent: '--'
             },
-           {
-                data: 'brand_name',
+
+            {
+                data: 'block_info',
+                orderable: false,
+                searchable: false,
+
                 render: function(data, type, row) {
 
-                     let editUrl = $('#' + tableId).data('edit-url');
+                    if (!data || data.length === 0) {
+                        return '--';
+                    }
 
-                    if (!editUrl) return '';
+                    let editUrl = $('#' + tableId).data('edit-url');
 
-                    // if (!data || data.length === 0) return "--";
+                    let html = `
+                    <div class="inner-table-hdr table-responsive">
+                        <table class="table table-bordered table-hover table-sm mb-0 fixed-inner-table">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th style="width:120px;">Date</th>
+                                    <th style="width:500px;">Seats / Sleeper</th>
+                                    <th style="width:180px;">Reason</th>
+                                    <th style="width:220px;">Created By</th>
+                                    <th style="width:90px;" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
 
-                    let table = `<div class="inner-table-hdr">
-                                    <table class="table table-sm mb-0 table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Seats/Sleeper</th>
-                                                <th>Reason</th>
-                                                <th>Created By</th>
-                                                <th class="noPrint">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>`;
+                    data.forEach(function(item) {
 
-                    // data.forEach(row => {
-                       table += `<tr>
-                                        <td class="align-middle">26-Apr-2026</td>
-                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB</td>
-                                        <td class="align-middle">Blocked By Owner</td>
-                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
-                                        <td class="align-middle"> <a class="btn btn-sm btn-info"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-edit"></i>
-                                             </a>
-                                             <a class="btn btn-sm btn-danger"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-trash"></i>
-                                             </a>
-                                        </td>
-                                    </tr>
-                                     <tr>
-                                       <td class="align-middle">27-Apr-2026</td>
-                                        <td class="align-middle">LB5, LB6, U5UB, U6UB, US10UB, US12UB, US9UB</td>
-                                        <td class="align-middle">Blocked By Owner</td>
-                                        <td>John Doe<br>03-Apr-2026 12:25:12</td>
-                                        <td class="align-middle">
-                                             <a class="btn btn-sm btn-info"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-edit"></i>
-                                             </a>
-                                             <a class="btn btn-sm btn-danger"
-                                                href="${editUrl.replace('ID', row.enc_brand_id)}">
-                                                <i class="fa fa-trash"></i>
-                                             </a>
-                                        </td>
-                                    </tr>`;
-                    // });
+                        html += `
+                        <tr>
+                            <td>${item.date}</td>
+                            <td>${item.seat_code}</td>
+                            <td>${item.reason}</td>
+                            <td>
+                                ${item.created_by}<br>
+                                <small>${item.created_at}</small>
+                            </td>
+                           <td class="text-center">
+                                ${renderSeatAction(item, editUrl)}
+                        </td>
+                        </tr>
+                    `;
+                    });
 
-                                    table += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
+                    html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
 
-                    return table;
-                },
-                className: ""
-            },
-            // {
-            //     data: 'country',
-            //     render: function(data) {
-            //         if (!data || data === null) {
-            //             return "--";
-            //         }
-            //         return data;
-            //     }
-            // },
-            // {
-            //     data: null,
-            //     render: function(data, type, row) {
+                    return html;
+                }
+            }
+        ];
 
-            //         let createdBy = row.created_by_name ?? '--';
-            //         let createdAt = row.created_date ?? '--';
+        window.renderSeatAction = function(item, editUrl) {
 
-            //         let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
-            //         let updatedAt = (row.updated_date) ? row.updated_date : '--';
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            //         // Show updated date if exists, else created date
-            //         let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
+            let rowDate = parseSeatDate(item.date);
 
-            //         return `
-            //             <span
-            //                 class="fw-semibold text-decoration-underline cursor-pointer"
-            //                 data-bs-toggle="tooltip"
-            //                 data-bs-placement="top"
-            //                 data-bs-html="true"
-            //                 title="
-            //                     <div class='audit-box'>
-            //                         <div><strong>Created By:</strong> ${createdBy}</div>
-            //                         <div><strong>Created At:</strong> ${createdAt}</div>
-            //                         <hr class='my-1'>
-            //                         <div><strong>Updated By:</strong> ${updatedBy}</div>
-            //                         <div><strong>Updated At:</strong> ${updatedAt}</div>
-            //                     </div>
-            //                 ">
-            //                 ${displayDate}
-            //             </span>
-            //         `;
-            //     }
-            // },
-            // {
-            //     data: 'is_active',
-            //     render: function(data, type, row) {
-            //         var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-            //         return '<span class="' + cls + '">' + row.is_active + '</span>';
-            //     },
-            //     className: "text-center"
-            // },
-            // {
-            //     data: '',
-            //     render: function(data, type, row) {
+            if (rowDate < today) {
+                return `
+                    <a class="btn btn-sm btn-secondary disabled me-1">
+                        <i class="fa fa-edit"></i>
+                    </a>
 
-            //         let editUrl = $('#' + tableId).data('edit-url');
+                    <a class="btn btn-sm btn-secondary disabled">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                `;
+            }
 
-            //         if (!editUrl) return '';
+            return `
+                <a class="btn btn-sm btn-info me-1"
+                href="${editUrl.replace('ID', item.enc_id)}">
+                <i class="fa fa-edit"></i>
+                </a>
 
-            //         return `
-            //             <a class="btn btn-sm btn-info"
-            //             href="${editUrl.replace('ID', row.enc_brand_id)}">
-            //             <i class="fa fa-edit"></i> Edit
-            //             </a>
+                <a class="btn btn-sm btn-danger"
+                href="javascript:void(0)"
+                onclick="deleteSingleRecord('${item.enc_id}')">
+                <i class="fa fa-trash"></i>
+                </a>
+            `;
+        };
 
-            //             <a href="javascript:void(0);"
-            //                 class="btn btn-sm btn-success btn-view-log"
-            //                 data-table="mst_bus_brand"
-            //                 data-id="${row.enc_brand_id}">
-            //                     <i class="fa fa-history"></i> View Log
-            //             </a>
-            //         `;
-            //     },
-            //     className: "noPrint text-center"
-            // }
-        ]
+        window.parseSeatDate = function(str) {
+
+            let parts = str.split('-');
+
+            let months = {
+                Jan: 0,
+                Feb: 1,
+                Mar: 2,
+                Apr: 3,
+                May: 4,
+                Jun: 5,
+                Jul: 6,
+                Aug: 7,
+                Sep: 8,
+                Oct: 9,
+                Nov: 10,
+                Dec: 11
+            };
+
+            return new Date(parts[2], months[parts[1]], parts[0]);
+        };
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
-    }
+    };
 </script>
 @endpush

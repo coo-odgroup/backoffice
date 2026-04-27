@@ -20,7 +20,7 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h5 id="page_title">@yield('page_title')</h5>
         <div>
-            <a href="{{ route('seat-open.index') }}" class="btn btn-success btn-sm">
+            <a href="{{route('seat-open.index') }}" class="btn btn-success btn-sm">
                 View @yield('page_title')
             </a>
         </div>
@@ -59,6 +59,7 @@
 
                                     <div class="col-12">
                                         <div class="row">
+                                            <input type="hidden" name="seat_operations" id="seat_operations">
 
                                             <!-- LEFT COLUMN -->
                                             <div class="col-md-5">
@@ -75,38 +76,20 @@
 
                                                     <div class="mb-2">
                                                         <label for="reason">Reason <span class="text-danger">*</span></label>
-                                                        <select class="form-select form-select-sm" id="reason" name="reason"></select>
+                                                        <select class="form-select form-select-sm annexture" id="reason" name="reason"></select>
                                                     </div>
                                                 </div>
 
                                                 <div class="p-3 border rounded bg-white mt-2">
-                                                    <table class="table table-hover table-bordered align-middle table-sm table-responsive">
-                                                        <thead class="table-secondary">
-                                                            <tr>
-                                                                <th>Sl No.</th>
-                                                                <th>Date</th>
-                                                                <th>Seats Blocked</th>
-                                                                <th>Reason</th>
-                                                                <th>Cacelled By</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>03-Apr-2026</td>
-                                                                <td>5,6,SL3,SL4,SL5,SL6,SL7</td>
-                                                                <td>Request From Owner</td>
-                                                                <td>John Doe<br>23-Apr-2026 10:45:47</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>2</td>
-                                                                <td>03-Apr-2026</td>
-                                                                <td>5,6,SL3,SL4,SL5,SL6,SL7</td>
-                                                                <td>Request From Owner</td>
-                                                                <td>John Doe<br>23-Apr-2026 10:45:47</td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <strong>Opened Seat History</strong>
+                                                    </div>
+
+                                                    <div id="blockedSeatHistoryContainer">
+                                                        <div class="text-center text-muted">
+                                                            Please select Operator and Bus
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -117,341 +100,48 @@
                                                         <strong>Schedule Date List</strong>
                                                     </div>
 
-                                                    <div class="card-body">
-                                                        <div class="row">
-                                                            <div class="mb-3">
-                                                                <strong>DILKHUS | OD 02 AS 5297 | [Bhubaneswar >> Jharsuguda]</strong>
-                                                            </div>
-
-                                                            <!-- Column 1 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 2 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
-
-                                                            <!-- Column 3 -->
-                                                            <div class="col-4">
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">10-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">12-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">14-Apr-2026</span>
-                                                                </div>
-
-                                                                <div class="checkbox mb-2">
-                                                                    <input type="checkbox">
-                                                                    <span class="form-check-label">16-Apr-2026</span>
-                                                                </div>
-                                                            </div>
+                                                    <div class="card-body" id="scheduleContainer">
+                                                        <div class="text-center text-muted">
+                                                            Please select Operator and Bus
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="border rounded bg-white mt-2">
                                                     <div class="card-header">
-                                                        <strong>Seat layout: [ Seat layout Name ]</strong>
+                                                        <strong id="layoutTitle">Seat Layout</strong>
                                                     </div>
 
-                                                    <div class="card-body">
+                                                    <div class=" rounded bg-white mt-2">
 
-                                                        <div class="bus-layout">
-                                                            <div class="berth-row">
-                                                                <div class="berth-label">Upper Berth</div>
-                                                                <div class="layout-box" style="grid-template-columns: repeat(10, 42px);">
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL11</span>
-                                                                    </label>
+                                                        <!-- STATIC LEGEND -->
+                                                        <div class="px-3 py-2  bg-light">
+                                                            <div class="seat-legend d-flex flex-wrap gap-3">
 
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL12</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL13</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL14</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL15</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL6</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL7</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL8</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL9</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL10</span>
-                                                                    </label>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL1</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL2</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL3</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL4</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="bus-sleeper"></span>
-                                                                        <span class="seat-number">SL5</span>
-                                                                    </label>
+                                                                <div class="legend-item">
+                                                                    <span class="legend-box" style="background:#001a57;"></span>
+                                                                    <small>Open Seat</small>
                                                                 </div>
+
+
+                                                                <div class="legend-item">
+                                                                    <span class="legend-box legend-grey"></span>
+                                                                    <small>Unavailable</small>
+                                                                </div>
+
+
+                                                                <div class="legend-item">
+                                                                    <span class="legend-box legend-white"></span>
+                                                                    <small>Available For Open</small>
+                                                                </div>
+
                                                             </div>
-                                                            <div class="berth-row">
-                                                                <div class="berth-label">Lower Berth</div>
-                                                                <div class="layout-box" style="grid-template-columns: repeat(10, 42px);">
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">20</span>
-                                                                    </label>
+                                                        </div>
 
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">21</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">22</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">23</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">24</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">25</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">26</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">27</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">28</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">29</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">10</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">11</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">12</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">13</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">14</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">15</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">16</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">17</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">18</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">19</span>
-                                                                    </label>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <div class="empty-seat"></div>
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">9</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">1</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">2</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">3</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">4</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">5</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">6</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">7</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap">
-                                                                        <span class="bus-seat"></span>
-                                                                        <span class="seat-number">8</span>
-                                                                    </label>
-
-                                                                    <label class="seat-wrap sleeper-wrap">
-                                                                        <span class="horizontal_exit_prv"></span>
-                                                                        <span class="seat-number">EXIT</span>
-                                                                    </label>
-                                                                </div>
+                                                        <!-- AJAX ONLY CHANGES THIS -->
+                                                        <div class="card-body" id="seatLayoutContainer">
+                                                            <div class="text-center text-muted">
+                                                                Please select bus
                                                             </div>
                                                         </div>
 
@@ -461,13 +151,15 @@
                                         </div>
                                     </div>
 
-                                    <!-- Buttons -->
                                     <div class="row mt-2">
                                         <div class="col-12 d-flex gap-2">
                                             <button class="btn btn-primary btn-sm" type="submit">
                                                 {{ $data['strSubmit'] }}
                                             </button>
-                                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                            <button class="btn btn-secondary btn-sm"
+                                                id="btnReset"
+                                                type="button"
+                                                onclick="handlePageCancel()">
                                                 {{ $data['strReset'] }}
                                             </button>
                                         </div>
@@ -481,216 +173,1068 @@
                 </div>
             </div>
     </form>
+    <style>
+        #seatLayoutContainer {
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .seat-item,
+        .seat-wrap,
+        label.seat-box {
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            margin: 4px;
+            cursor: pointer;
+            vertical-align: top;
+        }
+
+        .seat-checkbox {
+            display: none !important;
+        }
+
+        .seat-img {
+            display: block;
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+        }
+
+        .seater {
+            width: 42px;
+            height: 42px;
+        }
+
+        .sleeper {
+            width: 72px;
+            height: 34px;
+        }
+
+        .sleeper-vertical {
+            width: 38px;
+            height: 72px;
+        }
+
+        .selected-seat.seater {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+        .selected-seat.sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue.png') !important;
+        }
+
+        .selected-seat.sleeper-vertical {
+            background-image: url('/assets/seats/Sleeper_layout_blue_vertical.png') !important;
+        }
+
+        .seater {
+            background-image: url('/assets/seats/seat_layout.png');
+        }
+
+        .sleeper {
+            background-image: url('/assets/seats/sleeper_layout.png');
+        }
+
+        .sleeper-vertical {
+            background-image: url('/assets/seats/sleeper_layout_vertical.png');
+        }
+
+        .seat-no {
+            display: block;
+            font-size: 10px;
+            margin-top: 2px;
+            color: #001a57;
+            font-weight: 600;
+        }
+
+        .berth-label {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 12px;
+            font-weight: 700;
+            color: #001a57;
+            padding: 10px 4px;
+        }
+
+        .seat-row {
+            white-space: nowrap;
+            margin-bottom: 10px;
+        }
+
+        .seat-box {
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .seat-box.selected-seat {
+            filter: none;
+            opacity: 1;
+        }
+
+        .seat-box.available-seat {
+            filter: grayscale(0) brightness(1.12);
+            opacity: 1;
+        }
+
+        .seat-box.disabled-seat {
+            filter: grayscale(100%);
+            opacity: .55;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .selected-seat {
+            opacity: 1 !important;
+        }
+
+        .selected-seat.bus-seat,
+        .selected-seat.seat-box.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+        .selected-seat.bus-sleeper,
+        .selected-seat.seat-box.bus-sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue.png') !important;
+        }
+
+        .selected-seat.bus-vertical-sleeper,
+        .selected-seat.seat-box.bus-vertical-sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue_vertical.png') !important;
+        }
+
+        .blocked.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_red.png') !important;
+        }
+
+        .blocked.bus-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_red.png') !important;
+        }
+
+        .blocked.bus-vertical-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_red_vertical.png') !important;
+        }
+
+        .seat-box {
+            width: 42px;
+            height: 24px;
+            display: inline-block;
+            cursor: pointer;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .seat-box.vertical {
+            width: 24px;
+            height: 42px;
+        }
+
+        .seat-box.sleeper {
+            width: 72px;
+            height: 28px;
+        }
+
+        .seat-box.sleeper.vertical {
+            width: 34px;
+            height: 72px;
+        }
+
+
+        .seat-box.open.seater {
+            background-image: url('/assets/seats/Seat_layout_blue.png');
+        }
+
+        .seat-box.open.seater.vertical {
+            background-image: url('/assets/seats/Seat_layout_blue_vertical.png');
+        }
+
+        .seat-box.open.sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_blue.png');
+        }
+
+        .seat-box.open.sleeper.vertical {
+            background-image: url('/assets/seats/Sleeper_layout_blue_vertical.png');
+        }
+
+        .seat-box.blocked.seater {
+            background-image: url('/assets/seats/Seat_layout_red.png');
+        }
+
+        .seat-box.blocked.seater.vertical {
+            background-image: url('/assets/seats/Seat_layout_red_vertical.png');
+        }
+
+        .seat-box.blocked.sleeper {
+            background-image: url('/assets/seats/sleeper_layout_red.png');
+        }
+
+        .seat-box.blocked.sleeper.vertical {
+            background-image: url('/assets/seats/sleeper_layout_red_vertical.png');
+        }
+
+        .seat-box.disabled {
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .seat-box.disabled.seater {
+            background-image: url('/assets/seats/Seat_layout_grey.png');
+        }
+
+        .seat-box.disabled.seater.vertical {
+            background-image: url('/assets/seats/Seat_layout_grey_vertical.png');
+        }
+
+        .seat-box.disabled.sleeper {
+            background-image: url('/assets/seats/sleeper_layout_grey.png');
+        }
+
+        .seat-box.disabled.sleeper.vertical {
+            background-image: url('/assets/seats/sleeper_layout_grey_vertical.png');
+        }
+
+        .selected-seat.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+
+        .bus-seat,
+        .bus-sleeper,
+        .bus-vertical-sleeper {
+            display: inline-block;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            cursor: pointer;
+        }
+
+        .blocked.bus-seat,
+        .blocked.bus-sleeper,
+        .blocked.bus-vertical-sleeper {
+            background-image: url('/assets/seats/Seat_layout_red.png') !important;
+        }
+
+        .selected-seat.bus-seat,
+        .selected-seat.bus-sleeper,
+        .selected-seat.bus-vertical-sleeper {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
+
+
+        /* ===== Final Seat Colors ===== */
+
+        .disabled.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_grey.png') !important;
+        }
+
+        .disabled.bus-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_grey.png') !important;
+        }
+
+        .disabled.bus-vertical-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_grey_vertical.png') !important;
+        }
+
+        .disabled {
+            cursor: not-allowed !important;
+            opacity: 1 !important;
+            pointer-events: none;
+        }
+
+        /* ===== Legend ===== */
+
+        .seat-legend {
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .legend-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            display: inline-block;
+        }
+
+        .legend-blue {
+            background: #0d6efd;
+        }
+
+        .legend-red {
+            background: #dc3545;
+        }
+
+        .legend-grey {
+            background: #adb5bd;
+        }
+
+        /* ===== Schedule Date Tiles (override) ===== */
+
+        #scheduleContainer .row>.col-md-4 {
+            display: flex;
+        }
+
+
+
+
+        /* normal tile */
+        #scheduleContainer label.schedule-tile {
+            cursor: pointer;
+        }
+
+        /* remove any hover/focus red/fade */
+        #scheduleContainer label.schedule-tile:hover,
+        #scheduleContainer label.schedule-tile:focus,
+        #scheduleContainer .cancelled-date-box:hover {
+            background: #fff !important;
+            border-color: #adb5bd !important;
+            box-shadow: none !important;
+        }
+
+        /* checkbox left center */
+        #scheduleContainer .schedule-checkbox {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            margin: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* date text */
+        #scheduleContainer .tile-date {
+            font-size: 14px;
+            font-weight: 500;
+            color: #212529;
+            line-height: 1.1;
+        }
+
+        /* cancelled text */
+        #scheduleContainer .tile-note {
+            font-size: 11px;
+            color: #dc3545;
+            margin-top: 3px;
+            line-height: 1;
+        }
+
+
+        /* same thin size for all */
+
+
+        /* normal */
+        .normal-inline-tile {
+            cursor: pointer;
+        }
+
+        .normal-inline-tile .schedule-checkbox {
+            margin: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* cancelled */
+        .cancelled-inline-tile {
+            cursor: not-allowed;
+        }
+
+        .cancel-x {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .cancel-note {
+            color: #dc3545;
+            font-size: 12px;
+        }
+
+        /* text */
+        .tile-date {
+            font-size: 14px;
+            font-weight: 500;
+            color: #212529;
+        }
+
+        /* FINAL FIX - FORCE SINGLE LINE THIN TILES */
+
+        /* schedule tiles */
+        #scheduleContainer .row>.col-md-4,
+        #scheduleContainer .row>.col-md-12 {
+            display: flex;
+        }
+
+        #scheduleContainer .schedule-tile,
+        #scheduleContainer .cancelled-inline-tile,
+        #scheduleContainer .disabled-date-tile {
+            width: 100%;
+            height: 38px;
+            min-height: 38px;
+            max-height: 38px;
+
+            border: 1px solid #adb5bd;
+            border-radius: 4px;
+            background: #fff;
+
+            box-sizing: border-box;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+
+            padding: 0 10px;
+            margin: 0;
+        }
+
+        /* checkbox */
+        #scheduleContainer .schedule-checkbox {
+            margin: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* normal */
+        #scheduleContainer .normal-inline-tile {
+            cursor: pointer;
+        }
+
+        /* cancelled */
+        #scheduleContainer .cancelled-inline-tile {
+            cursor: not-allowed;
+        }
+
+        #scheduleContainer .cancel-x {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        #scheduleContainer .cancel-note {
+            color: #dc3545;
+            font-size: 12px;
+        }
+
+        /* disabled past */
+        #scheduleContainer .disabled-date-tile {
+            background: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        #scheduleContainer .disabled-date-tile .tile-date {
+            color: #6c757d;
+        }
+
+        /* text */
+        #scheduleContainer .tile-date {
+            font-size: 14px;
+            font-weight: 500;
+            color: #212529;
+        }
+
+        /* checkbox */
+        #scheduleContainer .schedule-checkbox {
+            position: static !important;
+            transform: none !important;
+            margin: 0 !important;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* cancelled tile */
+        #scheduleContainer .cancelled-inline-tile {
+            cursor: not-allowed;
+        }
+
+        /* cancelled note inline */
+        #scheduleContainer .cancel-note {
+            color: #dc3545 !important;
+            font-size: 12px !important;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        /* X */
+        #scheduleContainer .cancel-x {
+            color: #dc3545 !important;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* date */
+        #scheduleContainer .tile-date {
+            font-size: 14px !important;
+            font-weight: 500;
+            margin: 0 !important;
+            line-height: 1 !important;
+        }
+
+        /* grey disabled past dates */
+        .disabled-date-tile {
+            background: #e9ecef !important;
+            border: 1px solid #ced4da !important;
+            color: #6c757d !important;
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .disabled-date-tile .tile-date {
+            color: #6c757d !important;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .openable.bus-seat {
+            background-image: url('/assets/seats/Seat_layout.png') !important;
+        }
+
+        .openable.bus-sleeper {
+            background-image: url('/assets/seats/Sleeper_layout.png') !important;
+        }
+
+        .openable.bus-vertical-sleeper {
+            background-image: url('/assets/seats/Sleeper_layout_vertical.png') !important;
+        }
+    </style>
 
     @endsection
 
     @push('scripts')
     <script type="module">
-        let selectedOperators = [];
+        let isRestoring = false;
+
+        let selectedOperator = "{{ $data['editData']->bus_operator_id ?? (old('operator') ?? '') }}";
+        let selectedBus = "{{ $data['editData']->bus_id ?? (old('bus') ?? '') }}";
+        let selectedReason = "{{ $data['editData']->reason ?? (old('reason') ?? '') }}";
+        let selectedEditDate = "{{ $data['editDate'] ?? '' }}";
+
 
         $(document).ready(function() {
 
-            let slab_id = "{{ $data['row']['slab_id'] ?? '' }}";
-
-
-            commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#operator', 'Select Operator');
-            commonAjax.loadTicketFareSlabList('#slab', slab_id);
-            commonAjax.loadBusOperatorList();
+            commonAjax.initSelect2('#bus', 'Select Bus');
+            commonAjax.initSelect2('#reason', 'Select Reason');
+            commonAjax.loadBusOperatorDropdown('');
+            commonAjax.loadAnnextureList('REASON', '', '#reason');
+
+            waitForOptions('#operator', function() {
+                restoreSelection();
+            });
             commonAjax.initClearableInputs();
-
-            $('#operator').on('change', function() {
-
-                let id = $(this).val();
-                let text = $("#operator option:selected").text();
-
-                if (!id) return;
-                if (selectedOperators.some(op => op.id == id)) return;
-
-                let operator = {
-                    id,
-                    text
-                };
-                selectedOperators.push(operator);
-
-                renderOperators();
-                loadOperatorTable(operator);
-
-                $(this).val('').trigger('change');
-            });
-
-            let existingOperators = @json($data['row']['operators'] ?? []);
-
-            existingOperators.forEach(op => {
-                selectedOperators.push({
-                    id: op.id,
-                    text: op.name
-                });
-
-                loadOperatorTable({
-                    id: op.id,
-                    text: op.name
-                });
-            });
-
-            renderOperators();
         });
 
-        function renderOperators() {
+        function restoreSelection() {
 
-            let html = '';
+            if (!selectedOperator) return;
 
-            selectedOperators.forEach((op, index) => {
-                html += `<span class="selected-tag" data-index="${index}">${op.text}<span class="remove">×</span></span>`;
+            isRestoring = true;
+
+
+
+            $('#operator').val(selectedOperator).trigger('change');
+
+            $('#seatLayoutContainer').html(`
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary"></div>
+                        <p>Loading seat layout...</p>
+                    </div>
+             `);
+
+            commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
+
+            waitForOptions('#bus', function() {
+
+                $('#bus').val(selectedBus).trigger('change');
+
+                $('#reason option').each(function() {
+                    if ($(this).text().trim() == selectedReason.trim()) {
+                        $('#reason').val($(this).val()).trigger('change');
+                    }
+                });
+
+                loadSeatBlockSchedules(true);
+                loadSeatLayoutByBus(selectedEditDate);
+                loadBlockedSeatHistory();
+
+                isRestoring = false;
             });
-
-            $('#selectedOperators').html(html);
-            $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
-
-            $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
         }
 
-        $(document).on('click', '.remove', function() {
+        function waitForOptions(selector, callback, retry = 0) {
 
-            let index = $(this).closest('.selected-tag').data('index');
-            let operator = selectedOperators[index];
+            if ($(selector + ' option').length > 1) {
+                callback();
+                return;
+            }
 
-            selectedOperators.splice(index, 1);
-            $(`#table_${operator.id}`).remove();
+            if (retry > 50) return;
 
-            renderOperators();
+            setTimeout(function() {
+                waitForOptions(selector, callback, retry + 1);
+            }, 200);
+        }
+
+
+        $('#operator').on('change', function() {
+
+            let operator_id = $(this).val();
+
+            if (!operator_id || isRestoring) return;
+
+            $('#bus').html('');
+
+            $('#scheduleContainer').html(`
+                    <div class="text-center text-muted">
+                        Please select bus
+                    </div>
+                `);
+
+            commonAjax.loadBusListByOperator('#bus', operator_id);
+
         });
 
-        $('#btnReset').click(function() {
 
-            $('#backoffice-form')[0].reset();
+        $('#bus').on('change', function() {
+
+            let bus_id = $(this).val();
+
+            if (!bus_id || isRestoring) return;
+
+            loadSeatBlockSchedules();
+            loadSeatLayoutByBus();
+            loadBlockedSeatHistory();
+
+        });
+        window.toggleSeat = function(el) {
+
+            const $el = $(el);
+
+            // grey locked seats
+            if ($el.hasClass('disabled')) return;
+
+            // blue selected -> white
+            if ($el.hasClass('selected-seat')) {
+
+                $el.removeClass('selected-seat changed-seat')
+                    .addClass('openable');
+
+            }
+
+            // white -> blue selected
+            else if ($el.hasClass('openable')) {
+
+                $el.removeClass('openable')
+                    .addClass('selected-seat changed-seat');
+            }
+        }
+
+        function loadSeatBlockSchedules(isEditMode = false) {
+            let operator = $('#operator').val();
+            let bus = $('#bus').val();
+
+            if (!operator || !bus) {
+                $('#scheduleContainer').html(`
+                    <div class="text-center text-muted">
+                        Please select operator and bus
+                    </div>
+                `);
+                return;
+            }
+
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth() + 1;
+
+            $('#scheduleContainer').html(`
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary"></div>
+                        <p>Loading schedules...</p>
+                    </div>
+                `);
+
+
+            $.ajax({
+                type: 'POST',
+                url: '/admin/get-bus-schedule-by-month',
+                data: {
+                    operator_id: operator,
+                    bus_ids: bus,
+                    year: year,
+                    month: month,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+
+                success: function(res) {
+                    if (!res.status || !res.data) {
+                        $('#scheduleContainer').html(`
+                            <div class="text-danger text-center">
+                                No Schedule Found
+                            </div>
+                        `);
+                        return;
+                    }
+
+                    renderSchedule(res.data, isEditMode);
+                }
+            });
+
+        }
+
+
+        window.handlePageCancel = function() {
+
+            let isEditPage = @json(request()-> routeIs('seat-open.edit'));
+
+            if (isEditPage) {
+                window.location.href = "{{route('seat-open.index') }}";
+                return;
+            }
+
+            document.getElementById('backoffice-form').reset();
+
             $('.form-select').val('').trigger('change');
+        };
 
-            selectedOperators = [];
-            renderOperators();
-            $('#operatorTables').html('');
-        });
+
+        function renderSchedule(data, isEditMode = false) {
+
+            let operator = $('#operator').val();
+            let busId = $('#bus').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/admin/get-bus-cancelled-dates',
+                data: {
+                    operator_id: operator,
+                    bus_id: busId,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+
+                success: function(cancelRes) {
+
+                    let cancelledDates = cancelRes.data || [];
+                    let html = '';
+
+                    Object.keys(data).forEach(function(bus_id) {
+
+                        let bus = data[bus_id];
+
+                        html += `
+                            <div class="mb-4">
+                                <div class="mb-2">
+                                    <strong>${bus.bus_name} | ${bus.bus_number}</strong>
+                                </div>
+                                <div class="row">
+                        `;
+
+                        /* EDIT MODE = SHOW ONLY ONE DATE */
+                        if (isEditMode && selectedEditDate) {
+
+                            html += `
+                                <div class="col-md-12 mb-2">
+                                        <label class="schedule-tile normal-inline-tile">
+                                            <input type="checkbox"
+                                                checked
+                                                name="dates[]"
+                                                value="${selectedEditDate}"
+                                                class="schedule-checkbox"
+                                                data-bus="${bus_id}"
+                                                data-date="${selectedEditDate}">
+                                            <span class="tile-date">${formatDate(selectedEditDate)}</span>
+                                        </label>
+                                    </div>
+                                    `;
+
+                        }
+
+                        /* ADD MODE = SHOW FULL LIST */
+                        else {
+
+                            bus.dates.forEach(function(date) {
+
+                                let isCancelled = cancelledDates.includes(date);
+
+                                let today = new Date();
+                                today.setHours(0, 0, 0, 0);
+
+                                let currentDate = new Date(date);
+                                currentDate.setHours(0, 0, 0, 0);
+
+                                let isPastDate = currentDate < today;
+
+                                if (isCancelled) {
+
+                                    html += `
+                                        <div class="col-md-4 mb-2">
+                                            <div class="schedule-tile cancelled-inline-tile">
+                                                <span class="cancel-x">X</span>
+                                                <span class="tile-date">${formatDate(date)}</span>
+                                                <span class="cancel-note">Bus Cancelled</span>
+                                            </div>
+                                        </div>
+                                        `;
+
+                                } else if (isPastDate) {
+
+                                    html += `
+                                    <div class="col-md-4 mb-2">
+                                        <div class="schedule-tile disabled-date-tile">
+                                            <span class="tile-date">${formatDate(date)}</span>
+                                        </div>
+                                    </div>
+                                    `;
+
+                                } else {
+
+                                    html += `
+                                    <div class="col-md-4 mb-2">
+                                        <label class="schedule-tile normal-inline-tile">
+                                            <input type="checkbox"
+                                                name="dates[]"
+                                                value="${date}"
+                                                class="schedule-checkbox"
+                                                data-bus="${bus_id}"
+                                                data-date="${date}">
+                                            <span class="tile-date">${formatDate(date)}</span>
+                                        </label>
+                                    </div>
+                                    `;
+                                }
+
+                            });
+                        }
+
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    $('#scheduleContainer').html(html);
+
+                    if (isEditMode && selectedEditDate) {
+
+                        $('.schedule-checkbox').each(function() {
+                            if ($(this).val() == selectedEditDate) {
+                                $(this).prop('checked', true);
+                            }
+                        });
+
+                    }
+
+                }
+            });
+        }
+
+
+        function loadSeatLayoutByBus(operationDate = '') {
+            let bus_id = $('#bus').val();
+
+            if (!bus_id) {
+                $('#layoutTitle').text('Seat Layout');
+                $('#seatLayoutContainer').html(`
+                    <div class="text-center text-muted">
+                        Please select bus
+                    </div>
+                `);
+                return;
+            }
+
+            $('#seatLayoutContainer').html(`
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary"></div>
+                        <p>Loading seat layout...</p>
+                    </div>
+                `);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('seat-open.layout.by.bus') }}",
+                data: {
+                    bus_id: bus_id,
+                    operation_date: operationDate,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+
+                success: function(res) {
+                    if (!res.status) {
+                        $('#layoutTitle').text('Seat Layout');
+
+                        $('#seatLayoutContainer').html(`
+                            <div class="text-danger text-center">
+                                ${res.message}
+                            </div>
+                        `);
+
+                        return;
+                    }
+
+                    $('#layoutTitle').text(
+                        'Seat Layout : ' + res.layout_name +
+                        ' | ' + res.bus_name +
+                        ' | ' + res.bus_number
+                    );
+
+                    $('#seatLayoutContainer').html(res.html);
+                },
+
+                error: function() {
+                    $('#seatLayoutContainer').html(`
+                <div class="text-danger text-center">
+                    Unable to load layout
+                </div>
+            `);
+                }
+            });
+        }
+
+
+        function formatDate(dateStr) {
+            let d = new Date(dateStr);
+
+            return d.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
 
         $('#backoffice-form').on('submit', function(e) {
 
             e.preventDefault();
 
-            if (!validator.selectDropdown('slab', 'Select Ticket Fare Slab')) return;
-            commonAjax.confirmAlert('Are you sure to proceed!');
+            let operator = $('#operator').val();
+            let bus = $('#bus').val();
+            let reason = $('#reason').val();
 
-            $('#btnConfirmOk').one('click', () => this.submit());
-        });
+            let selectedDates = [];
+            let seatData = [];
 
-        // add/remove rows
-        $(document).on('click', '.btn-add', function() {
-            $('#slabWrapper').append(`
-            <div class="row mb-3 dynamic-item">
-                <div class="col-md-2"><input type="number" name="starting_fare[]" placeholder="From Fare" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="number" name="upto_fare[]" placeholder="To Fare" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="number" name="commision[]" placeholder="Commission" class="form-control form-control-sm"></div>
-                <div class="col-md-2"><input type="date" name="from_date[]" class="form-control form-control-sm from-date" min="{{ date('Y-m-d') }}"></div>
-                <div class="col-md-2"><input type="date" name="to_date[]" class="form-control form-control-sm to-date" min="{{ date('Y-m-d') }}"></div>
-                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm btn-remove mt-1">-</button></div>
-            </div>
-        `);
-        });
-
-        $(document).on('click', '.btn-remove', function() {
-            $(this).closest('.dynamic-item').remove();
-        });
-
-        // FROM DATE CHANGE
-        $(document).on('change', '.from-date', function() {
-
-            let fromDate = $(this).val();
-            let row = $(this).closest('.row');
-            let toInput = row.find('.to-date');
-
-            if (fromDate) {
-                toInput.attr('min', fromDate);
-
-                if (toInput.val() && toInput.val() < fromDate) {
-                    toInput.val('');
-                }
+            if (!operator || operator == 0) {
+                commonAjax.viewAlert('Please select Operator');
+                $('#operator').focus();
+                return false;
             }
-        });
 
-
-
-
-        // TO DATE CHANGE
-        $(document).on('change', '.to-date', function() {
-
-            let row = $(this).closest('.row');
-            let fromDate = row.find('.from-date').val();
-            let toDate = $(this).val();
-
-            if (fromDate && toDate && toDate < fromDate) {
-                alert('To Date cannot be less than From Date');
-                $(this).val('');
+            if (!bus || bus == 0) {
+                commonAjax.viewAlert('Please select Bus');
+                $('#bus').focus();
+                return false;
             }
+
+            if (!reason || reason == 0) {
+                commonAjax.viewAlert('Please select a Reason');
+                $('#reason').focus();
+                return false;
+            }
+
+            $('.schedule-checkbox:checked').each(function() {
+                selectedDates.push($(this).val());
+            });
+
+            if (selectedDates.length === 0) {
+                commonAjax.viewAlert('Please select Schedule Date');
+                return false;
+            }
+
+            console.log(seatData);
+
+            $('.selected-seat').each(function() {
+
+                let seatCode =
+                    $(this).data('seatcode') ||
+                    $(this).attr('data-seatcode') ||
+                    $(this).find('.seat-checkbox').val() ||
+                    $(this).closest('label').find('.seat-checkbox').val() ||
+                    $(this).next('.seat-no').text().trim() ||
+                    $(this).closest('.seat-wrap').find('.seat-no').text().trim();
+
+                if (!seatCode) return;
+
+                let busSeatId = $(this).data('busseatid') || 0;
+                let layoutId = $(this).data('layout') || 0;
+
+                selectedDates.forEach(function(date) {
+                    seatData.push({
+                        bus_seat_id: busSeatId,
+                        seat_code: seatCode,
+                        seat_layout_id: layoutId,
+                        operation_date: date,
+                        category: 1
+                    });
+                });
+
+            });
+
+
+            console.log(seatData);
+
+            $('#seat_operations').val(JSON.stringify(seatData));
+
+            commonAjax.confirmAlert('Are you sure to proceed ?');
+
+            $('#btnConfirmOk').off('click').on('click', function() {
+                e.currentTarget.submit();
+            });
+
         });
 
+        function loadBlockedSeatHistory() {
 
-        // UPDATED: no table if no data
-        function loadOperatorTable(operator) {
+            let operator = $('#operator').val();
+            let bus = $('#bus').val();
+
+            if (!operator || !bus) {
+                $('#blockedSeatHistoryContainer').html(`
+                    <div class="text-center text-muted">
+                        Please select Operator and Bus
+                    </div>
+                `);
+                return;
+            }
+
+            $('#blockedSeatHistoryContainer').html(`
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                `);
 
             $.ajax({
-                url: "/admin/get-operator-slab-data",
-                type: "POST",
+                type: 'POST',
+                url: "{{ route('seat-open.history') }}",
                 data: {
-                    operator_id: operator.id,
-                    _token: $('meta[name="csrf-token"]').attr("content"),
+                    bus_id: bus,
+                    operation_date: selectedEditDate,
+                    _token: $('meta[name="csrf-token"]').attr('content')
                 },
-
                 success: function(res) {
-
-                    // skip if no data
-                    if (!res.status || res.data.length === 0) {
-                        $(`#table_${operator.id}`).remove();
-                        return;
-                    }
-
-                    let tableHtml = `
-                    <div class="card mt-3 operator-table" id="table_${operator.id}">
-                        <div class="card-header bg-warning">
-                            <b>${operator.text}</b>
-                        </div>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Slab</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th>Commission</th>
-                                        <th>From Date</th>
-                                        <th>To Date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
-
-                    res.data.forEach(row => {
-                        tableHtml += `
-                        <tr>
-                            <td>${row.slab_name}</td>
-                            <td>${row.starting_fare}</td>
-                            <td>${row.upto_fare}</td>
-                            <td>${row.commision}</td>
-                            <td>${row.from_date}</td>
-                            <td>${row.to_date}</td>
-                        </tr>`;
-                    });
-
-                    tableHtml += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>`;
-
-                    $(`#table_${operator.id}`).remove();
-                    $('#operatorTables').append(tableHtml);
+                    $('#blockedSeatHistoryContainer').html(res.html);
+                },
+                error: function() {
+                    $('#blockedSeatHistoryContainer').html(`
+                            <div class="text-danger text-center">
+                                Unable to load history
+                            </div>
+                        `);
                 }
             });
         }
