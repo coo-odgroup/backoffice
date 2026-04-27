@@ -1826,7 +1826,7 @@ export function loadUsersList(user_code = "", selected_id = 0) {
                     let selected = selected_id == item.id ? "selected" : "";
 
                     options += `<option value="${item.id}" ${selected}>
-                                    ${item.name}
+                                    ${item.name}${item.organization_name ? ` ( ${item.organization_name} )` : ''}
                                 </option>`;
                 });
             }

@@ -40,6 +40,12 @@ class BusStep7Controller extends Controller
         $isExist = BusSeats::where('bus_id', $busId)->exists();
         if (($param == 'save' && $param2 == 'back') || $isExist) {
             $data['existRes'] = 1;
+
+            $data['step7Res'] = BusSeats::where('bus_id', $busId)->get();
+            $data['step7BusRes'] = Bus::where('id', $busId)
+                ->value('mst_seat_layout_name_id');
+
+            // return $data['step7Res'];
         }
 
         return view('admin.bus.wizard.step7', compact('data'));

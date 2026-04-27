@@ -207,15 +207,17 @@ class BusWizardController extends Controller
 
         $busRoutesStops = BusRoutesStops::with('city')->where('bus_id', $busId)->orderBy('stop_order', 'ASC')->get();
         $busBoardingDropping = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
+        // $busBoardingDropping = BusBoardingDropping::with(['city.boardingdroppings'])->where('bus_id', $busId)->get();
+        // return $busBoardingDropping;
         $busRouteFares = BusRouteFares::with('source', 'destination')->where('bus_id', $busId)->get();
         $busContacts = BusContacts::where('bus_id', $busId)->get();
 
         $seat_layout_id = Bus::where('id', $busId)
-                        ->select('mst_seat_layout_name_id')
-                        ->first();
-              log::info($seat_layout_id->mst_seat_layout_name_id);
+            ->select('mst_seat_layout_name_id')
+            ->first()
+            ->mst_seat_layout_name_id;
 
-        $seatLayout = $this->genSeatLayout($seat_layout_id->mst_seat_layout_name_id,$busId);
+        $seatLayout = $this->genSeatLayout($seat_layout_id, $busId);
 
         $data['bus_id'] = $busId;
         $data['enc_bus_id'] = $bus_id;
@@ -225,7 +227,7 @@ class BusWizardController extends Controller
         return view('admin.bus.wizard.preview', compact('data', 'bus_record', 'amennity_records', 'busRoutesStops', 'busBoardingDropping', 'busRouteFares', 'busContacts', 'seatLayout'));
     }
 
-    public function genSeatLayout($seatLayoutId,$busId)
+    public function genSeatLayout($seatLayoutId, $busId)
     {
         $busSeats = BusSeats::where('bus_id', $busId)->get();
 

@@ -72,7 +72,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <select class="form-select form-select-sm" name="seat_layout_id" id="seatLayout">
                                                     <option value="">Select Seat Layout</option>
                                                     @foreach($data['seat_layout'] as $layout)
-                                                    <option value="{{ $layout->id }}">
+                                                    <option value="{{ $layout->id }}" {{ ($data['step7BusRes']==$layout->id) ? 'selected' : '' }}>
                                                         {{ $layout->layout_name }}
                                                     </option>
                                                     @endforeach
@@ -153,34 +153,52 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
-    $('#seatLayout').on('change', function() {
+    $(document).ready(function() {
 
-        let layoutId = $(this).val();
+        let selectedSeats = {};
 
-        if (!layoutId) {
-            $('#seatContainer').html('');
-            return;
+        // edit data
+        let editData = <?= json_encode(@$data['step7Res']) ?>;
+
+        if (editData && editData.length > 0) {
+            editData.forEach(item => {
+                selectedSeats[item.seat_id] = true;
+            });
         }
 
-        $('#seatContainer').html('Loading...');
+        $('#seatLayout').on('change', function() {
 
-        $.ajax({
-            url: '/admin/get-seats-by-layout',
-            type: 'GET',
-            data: {
-                layout_id: layoutId
-            },
+            let layoutId = $(this).val();
 
-            success: function(response) {
-
-                let fullHTML = generateFullLayout(response);
-
-                $('#seatContainer').html(fullHTML);
+            if (!layoutId) {
+                $('#seatContainer').html('');
+                return;
             }
+
+            $('#seatContainer').html('Loading...');
+
+            $.ajax({
+                url: '/admin/get-seats-by-layout',
+                type: 'GET',
+                data: {
+                    layout_id: layoutId
+                },
+                success: function(response) {
+
+                    let fullHTML = generateFullLayout(response, selectedSeats);
+
+                    $('#seatContainer').html(fullHTML);
+                }
+            });
         });
+
+        if ($('#seatLayout').val()) {
+            $('#seatLayout').trigger('change');
+        }
+
     });
 
-    function generateFullLayout(response) {
+    function generateFullLayout(response, selectedSeats = {}) {
 
         let upperExists = response.layout.UPPER && Object.keys(response.layout.UPPER).length > 0;
         let lowerExists = response.layout.LOWER && Object.keys(response.layout.LOWER).length > 0;
@@ -189,18 +207,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let lowerHTML = '';
         let tabsHTML = '';
 
-        // Generate sections only if exists
         if (upperExists) {
             upperHTML = generateSection(
                 response.layout.UPPER,
                 response.maxCols.UPPER,
                 'UPPER',
                 'upper-berth-box',
-                true
+                true,
+                selectedSeats
             );
 
             tabsHTML += `
-                <button type="button" class="seat-tab-btn ${!lowerExists ? 'active' : 'active'}" data-target="upper-berth-box">
+                <button type="button" class="seat-tab-btn active" data-target="upper-berth-box">
                     Upper Berth
                 </button>
             `;
@@ -212,7 +230,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 response.maxCols.LOWER,
                 'LOWER',
                 'lower-berth-box',
-                !upperExists
+                !upperExists,
+                selectedSeats
             );
 
             tabsHTML += `
@@ -227,11 +246,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="seat-left">
 
-                ${ (upperExists || lowerExists) ? `
+                ${(upperExists || lowerExists) ? `
                     <div class="seat-tabs">
                         ${tabsHTML}
                     </div>
-                ` : '' }
+                ` : ''}
 
                 <div class="bus-layout">
                     ${upperHTML}
@@ -243,7 +262,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         `;
     }
 
-    function generateSection(layoutData, maxCols, type, id, isActive) {
+    function generateSection(layoutData, maxCols, type, id, isActive, selectedSeats) {
 
         let html = `
         <div class="berth-row berth-section ${isActive ? 'active' : ''}" id="${id}">
@@ -265,10 +284,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     let seat = row[cIndex];
 
-                    // Skip logic (for vertical sleeper)
-                    if (skip[rIndex] && skip[rIndex][cIndex]) {
-                        return;
-                    }
+                    // Skip logic
+                    if (skip[rIndex] && skip[rIndex][cIndex]) return;
+
+                    let checked = selectedSeats[seat.id] ? 'checked' : '';
+                    let selected = selectedSeats[seat.id] ? 'selected' : '';
 
                     // EMPTY
                     if (seat.seat_class == 0 || !seat.seat_text) {
@@ -277,18 +297,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     }
 
-                    // VERTICAL SLEEPER (LOWER)
+                    // VERTICAL SLEEPER
                     else if (seat.seat_class == 3) {
 
                         let text = (seat.seat_text || '').toUpperCase();
-
                         let iconClass = 'bus-vertical-sleeper';
 
-                        if (text === 'EXIT') {
-                            iconClass = 'vertical_exit_prv';
-                        } else if (text === 'TOILET') {
-                            iconClass = 'vertical_toilet_prv';
-                        }
+                        if (text === 'EXIT') iconClass = 'vertical_exit_prv';
+                        else if (text === 'TOILET') iconClass = 'vertical_toilet_prv';
 
                         html += `
                         <label class="seat-wrap vertical-sleeper-wrap">
@@ -297,7 +313,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </label>
                         `;
 
-                        // Skip next row same column
+                        // Skip next row
                         if (!skip[parseInt(rIndex) + 1]) {
                             skip[parseInt(rIndex) + 1] = {};
                         }
@@ -309,9 +325,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         html += `
                         <label class="seat-wrap sleeper-wrap">
-                            <input type="checkbox" class="seat-checkbox" name="seat_id[]" value="${seat.id}">
-                            <input type="checkbox" class="seat-checkbox" name="seat_code[]" value="${seat.seat_text}">
-                            <span class="bus-sleeper"></span>
+                            <input type="checkbox" class="seat-checkbox" name="seat_id[]" value="${seat.id}" ${checked}>
+                            <input type="checkbox" class="seat-checkbox" name="seat_code[]" value="${seat.seat_text}" ${checked}>
+                            <span class="bus-sleeper ${selected}"></span>
                             <span class="seat-number">${seat.seat_text}</span>
                         </label>
                         `;
@@ -322,9 +338,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         html += `
                         <label class="seat-wrap">
-                            <input type="checkbox" class="seat-checkbox" name="seat_id[]" value="${seat.id}">
-                            <input type="checkbox" class="seat-checkbox" name="seat_code[]" value="${seat.seat_text}">
-                            <span class="bus-seat"></span>
+                            <input type="checkbox" class="seat-checkbox" name="seat_id[]" value="${seat.id}" ${checked}>
+                            <input type="checkbox" class="seat-checkbox" name="seat_code[]" value="${seat.seat_text}" ${checked}>
+                            <span class="bus-seat ${selected}"></span>
                             <span class="seat-number">${seat.seat_text}</span>
                         </label>
                         `;
@@ -341,8 +357,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     }
 
     $(document).on('click', '.seat-wrap', function() {
-
-        console.log("hello");
 
         const checkbox = $(this).find('.seat-checkbox');
         const seat = $(this).find('.bus-seat, .bus-sleeper');

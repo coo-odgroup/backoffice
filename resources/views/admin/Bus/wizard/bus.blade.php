@@ -444,9 +444,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                             <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="users"
-                            data-id="${row.enc_users_id}">
+                            data-table="bus"
+                            data-id="${row.enc_bus_id}">
                                 <i class="fa fa-history"></i> View Log
+                            </a>
+
+                            <a href="javascript:void(0);"
+                            class="btn btn-sm btn-primary btn-view-log"
+                            data-table="bus"
+                            data-id="${row.enc_bus_id}">
+                                <i class="fa fa-eye"></i>
                             </a>
 
                         </div>
