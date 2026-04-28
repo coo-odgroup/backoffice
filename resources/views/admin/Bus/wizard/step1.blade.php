@@ -267,7 +267,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                 <!-- YES -->
                                                 <label class="radio-box">
-                                                    <input type="radio" name="irctc_module" value="1">
+                                                    <input type="radio" name="is_irctc_model" value="1" {{ @$step1Res->is_irctc_model == 1 ? 'checked' : '' }}>
                                                     <div class="box">
                                                         Yes
                                                     </div>
@@ -275,7 +275,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 
                                                 <!-- NO -->
                                                 <label class="radio-box">
-                                                    <input type="radio" name="irctc_module" value="0" checked>
+                                                    <input type="radio" name="is_irctc_model" value="0" {{ @$step1Res->is_irctc_model == 0 ? 'checked' : '' }}>
                                                     <div class="box">
                                                         No
                                                     </div>

@@ -1751,6 +1751,25 @@ export function allowOnlyNumbers(ids) {
     });
 }
 
+export function allowNumbersWithComma(ids) {
+    ids.forEach(function (id) {
+        $(document).on("input", "#" + id, function () {
+            let value = $(this).val();
+
+            // Allow only digits and commas
+            value = value.replace(/[^0-9,]/g, "");
+
+            // Split by comma, limit each number to 10 digits
+            let numbers = value.split(",").map(num => num.slice(0, 10));
+
+            // Join back with comma
+            value = numbers.join(",");
+
+            $(this).val(value);
+        });
+    });
+}
+
 export function loadTicketFareSlabList(selector, selected = null) {
     $.ajax({
         type: "GET",

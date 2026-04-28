@@ -61,6 +61,7 @@ class BusStep4Controller extends Controller
         $busId = $request->bus_id;
         $stations = $request->stations ?? [];
         $param2 = $request->param2;
+        $existRes = $request->existRes;
 
         $insertData = [];
 
@@ -85,7 +86,7 @@ class BusStep4Controller extends Controller
             }
         }
 
-        if ($param2 == 'back' || $param2 == 'edit') {
+        if ($param2 == 'back' || $param2 == 'edit' || $existRes == 1) {
             BusBoardingDropping::where('bus_id', $busId)->delete();
         }
 

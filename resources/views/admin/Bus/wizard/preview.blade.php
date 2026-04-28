@@ -148,13 +148,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($busBoardingDropping as $k => $val)
+                    @foreach($busBoardingDropping as $city => $stops)
+                    @foreach($stops as $stop)
                     <tr>
-                        <td>{{$val['city']['city_name']}}</td>
-                        <td>{{($val['type']==1)?'Boarding':'Dropping'}}</td>
-                        <td>{{(@$val['stop']['city_name']!='')?$val['stop']['city_name']:'--'}}</td>
-                        <td>{{ date('g:i A', strtotime($val['timing'])) }}</td>
+                        <td>{{ $city }}</td>
+                        <td>{{ $stop['type'] == 1 ? 'Boarding' : 'Dropping' }}</td>
+                        <td>{{ $stop['location'] }}</td>
+                        <td>{{ \Carbon\Carbon::parse($stop['time'])->format('h:i A') }}</td>
                     </tr>
+                    @endforeach
                     @endforeach
                 </tbody>
             </table>

@@ -70,6 +70,7 @@ class BusStep3Controller extends Controller
             $listing_time = $request->time ?? [];
             $bus_id = $request->bus_id;
             $param2 = $request->param2;
+            $existRes = $request->existRes;
 
             if (empty($cities)) {
                 throw new \Exception("Cities data is missing.");
@@ -125,7 +126,7 @@ class BusStep3Controller extends Controller
             $routeMap->save();
 
             // BusRoutesStops Section
-            if ($param2 == 'back' || $param2 == 'edit') {
+            if ($param2 == 'back' || $param2 == 'edit' || $existRes == 1) {
                 BusRoutesStops::where('bus_id', $bus_id)
                     ->where('bus_route_id', $route_id)
                     ->delete();

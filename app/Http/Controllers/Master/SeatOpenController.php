@@ -311,7 +311,6 @@ class SeatOpenController extends Controller
 
                 $layoutId = $seatOperations[0]['seat_layout_id'] ?? 0;
 
-                /* EDIT MODE -> remove previous rows first */
                 if ($method == 'Edit') {
 
                     $editDate = $seatOperations[0]['operation_date'] ?? null;
