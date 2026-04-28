@@ -39,11 +39,8 @@ class SeatOpenController extends Controller
                 ->whereNull('bso.deleted_at')
                 ->where('bso.category', 1)
 
-                /* BUS COMES FROM bso.bus_id */
                 ->leftJoin('bus as b', 'b.id', '=', 'bso.bus_id')
-
                 ->leftJoin('bus_routes_map as brm', 'brm.bus_id', '=', 'b.id')
-
                 ->leftJoin('bus_routes as br', function ($join) {
                     $join->on('br.id', '=', 'brm.bus_route_id')
                         ->whereNull('br.deleted_at');
@@ -138,15 +135,16 @@ class SeatOpenController extends Controller
             }
 
             $rows = $query
-                ->orderBy('bso.operation_date', 'asc')
                 ->orderBy('bso.bus_id', 'asc')
+                ->orderBy('bso.operation_date', 'asc')
                 ->get();
 
             $grouped = [];
 
             foreach ($rows as $row) {
 
-                $key = $row->bus_id . '_' . $row->operation_date;
+                /* GROUP ONLY BY BUS */
+                $key = $row->bus_id;
 
                 if (!isset($grouped[$key])) {
 
@@ -219,6 +217,7 @@ class SeatOpenController extends Controller
             'data'            => $data,
         ]);
     }
+
     public function add($encId = null)
     {
         $data = [];
@@ -465,52 +464,38 @@ class SeatOpenController extends Controller
         return view('Master.addSeatOpen', compact('data'));
     }
 
-
     public function delete(Request $request)
     {
         try {
 
             $decoded = Crypt::decryptString($request->id);
-
             $parts = explode('|', $decoded);
 
             if (count($parts) < 2) {
-                throw new \Exception('Invalid delete payload');
+                throw new \Exception('Invalid payload');
             }
 
             $busId = $parts[0];
             $operationDate = $parts[1];
 
             $userId = session('userid') ?? auth()->id() ?? 1;
+            $now = now();
 
-            $query = DB::connection('mysql_dev')
+            $updated = DB::connection('mysql_dev')
                 ->table('bus_seat_operation')
                 ->whereNull('deleted_at')
-                ->where('category', 1)                 // Seat Open only
-                ->where('bus_id', $busId)             // Direct bus match
-                ->whereDate('operation_date', $operationDate);
-
-            if (!empty($request->reason)) {
-
-                $reasonName = DB::connection('mysql_dev')
-                    ->table('odbusmaster.mst_annexture')
-                    ->where('id', $request->reason)
-                    ->value('annexture_name');
-
-                if (!empty($reasonName)) {
-                    $query->where('reason', $reasonName);
-                }
-            }
-
-            $updated = $query->update([
-                'deleted_at' => now(),
-                'deleted_by' => $userId,
-                'updated_at' => now(),
-                'updated_by' => $userId
-            ]);
+                ->where('category', 1)
+                ->where('bus_id', $busId)
+                ->whereDate('operation_date', $operationDate)
+                ->update([
+                    'deleted_at' => $now,
+                    'deleted_by' => $userId,
+                    'updated_at' => $now,
+                    'updated_by' => $userId
+                ]);
 
             return response()->json([
-                'status'  => true,
+                'status' => $updated > 0,
                 'message' => $updated > 0
                     ? 'Deleted successfully'
                     : 'No matching records found'
@@ -519,11 +504,11 @@ class SeatOpenController extends Controller
 
             Log::error('SeatOpen delete error', [
                 'message' => $t->getMessage(),
-                'line'    => $t->getLine()
+                'line' => $t->getLine()
             ]);
 
             return response()->json([
-                'status'  => false,
+                'status' => false,
                 'message' => 'Delete failed'
             ], 500);
         }
@@ -881,23 +866,20 @@ class SeatOpenController extends Controller
             $query = DB::connection('mysql_dev')
                 ->table('bus_seat_operation')
                 ->whereNull('deleted_at')
-                ->where('category', 1)
-                ->whereIn('bus_seat_id', function ($q) use ($busId) {
-                    $q->select('id')
-                        ->from('bus_seats')
-                        ->where('bus_id', $busId);
-                })
+                ->where('category', 1) // Seat Open
+                ->where('bus_id', $busId)
                 ->selectRaw("
                 operation_date,
                 GROUP_CONCAT(
                     seat_code
                     ORDER BY seat_code SEPARATOR ', '
-                ) as blocked_seats,
+                ) as opened_seats,
+                MAX(reason) as reason,
                 MAX(updated_at) as updated_at,
                 MAX(updated_by) as updated_by
             ");
 
-            /* EDIT MODE -> only selected date */
+            /* EDIT MODE */
             if (!empty($operationDate)) {
                 $query->whereDate('operation_date', $operationDate);
             }
@@ -911,7 +893,11 @@ class SeatOpenController extends Controller
 
             if ($rows->isEmpty()) {
 
-                $html = '<div class="text-center text-muted">No blocked history found</div>';
+                $html = '
+                <div class="text-center text-muted">
+                    No opened history found
+                </div>
+            ';
             } else {
 
                 $html .= '
@@ -920,11 +906,13 @@ class SeatOpenController extends Controller
                     <tr>
                         <th>Sl No.</th>
                         <th>Date</th>
-                        <th>Seats Blocked</th>
+                        <th>Seats Opened</th>
+                        <th>Reason</th>
                         <th>Updated By</th>
                     </tr>
                 </thead>
-                <tbody>';
+                <tbody>
+            ';
 
                 $i = 1;
 
@@ -933,14 +921,30 @@ class SeatOpenController extends Controller
                     $html .= '
                 <tr>
                     <td>' . $i++ . '</td>
-                    <td>' . date('d-M-Y', strtotime($row->operation_date)) . '</td>
-                    <td>' . ($row->blocked_seats ?: '-') . '</td>
-                    <td>User ' . $row->updated_by . '<br>' .
-                        date('d-M-Y H:i:s', strtotime($row->updated_at)) . '</td>
+
+                    <td>' .
+                        date('d-M-Y', strtotime($row->operation_date))
+                        . '</td>
+
+                    <td>' .
+                        ($row->opened_seats ?: '-')
+                        . '</td>
+
+                    <td>' .
+                        ($row->reason ?: '-')
+                        . '</td>
+
+                    <td>User ' .
+                        $row->updated_by .
+                        '<br>' .
+                        date('d-M-Y H:i:s', strtotime($row->updated_at))
+                        . '</td>
                 </tr>';
                 }
 
-                $html .= '</tbody></table>';
+                $html .= '
+                </tbody>
+            </table>';
             }
 
             return response()->json([
@@ -949,7 +953,7 @@ class SeatOpenController extends Controller
             ]);
         } catch (\Throwable $e) {
 
-            Log::error('Blocked Seat History Error', [
+            Log::error('Opened Seat History Error', [
                 'error' => $e->getMessage(),
                 'line'  => $e->getLine()
             ]);
