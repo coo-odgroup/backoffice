@@ -295,31 +295,42 @@ class SeatOpenController extends Controller
                 $reasonId = request('reason');
 
                 $reason = DB::connection('mysql_dev')
-                    ->table('odbusmaster.mst_annexture')
-                    ->where('id', $reasonId)
-                    ->value('annexture_name');
+                    ->table('odbusmaster.mst_annexture as ma')
+                    ->join(
+                        'odbusmaster.mst_annexture_type as mat',
+                        'mat.id',
+                        '=',
+                        'ma.annexture_type_id'
+                    )
+                    ->where('mat.annexture_type', 'REASON')
+                    ->where('ma.annexture_value', $reasonId)
+                    ->where('ma.active_status', 1)
+                    ->value('ma.annexture_name');
 
-                $reason = $reason ?: 'Custom Other';
+                $reason = $reason ?: 'Other';
 
                 $layoutId = $seatOperations[0]['seat_layout_id'] ?? 0;
 
                 /* EDIT MODE -> remove previous rows first */
                 if ($method == 'Edit') {
 
-                    $editDate = $seatOperations[0]['operation_date'];
+                    $editDate = $seatOperations[0]['operation_date'] ?? null;
 
-                    DB::connection('mysql_dev')
-                        ->table('bus_seat_operation')
-                        ->where('category', 1)
-                        ->where('bus_id', $busId)
-                        ->whereDate('operation_date', $editDate)
-                        ->whereNull('deleted_at')
-                        ->update([
-                            'deleted_at' => $now,
-                            'deleted_by' => $userId,
-                            'updated_at' => $now,
-                            'updated_by' => $userId
-                        ]);
+                    if ($editDate) {
+
+                        DB::connection('mysql_dev')
+                            ->table('bus_seat_operation')
+                            ->where('category', 1)
+                            ->where('bus_id', $busId)
+                            ->whereDate('operation_date', $editDate)
+                            ->whereNull('deleted_at')
+                            ->update([
+                                'deleted_at' => $now,
+                                'deleted_by' => $userId,
+                                'updated_at' => $now,
+                                'updated_by' => $userId
+                            ]);
+                    }
                 }
 
                 $validRows = [];
@@ -327,66 +338,45 @@ class SeatOpenController extends Controller
                 foreach ($seatOperations as $seat) {
 
                     $operationDate = $seat['operation_date'] ?? null;
-                    $seatCode      = trim((string) ($seat['seat_code'] ?? ''));
+                    $seatCode      = trim((string)($seat['seat_code'] ?? ''));
 
-                    if (empty($operationDate) || $seatCode == '') {
+                    if (!$operationDate || $seatCode == '') {
                         continue;
                     }
 
-                    /*
-                Step 1:
-                Find seat inside bus_seats
-                */
-                    $busSeatId = DB::connection('mysql_dev')
-                        ->table('bus_seats')
-                        ->where('bus_id', $busId)
-                        ->whereRaw('TRIM(CAST(seat_code AS CHAR)) = ?', [$seatCode])
+
+                    $mstSeatId = DB::connection('mysql_dev')
+                        ->table('odbusmaster.mst_seats')
+                        ->where('seat_layout_name_id', $layoutId)
+                        ->where(function ($q) use ($seatCode) {
+                            $q->whereRaw('TRIM(CAST(seat_text AS CHAR)) = ?', [$seatCode])
+                                ->orWhereRaw('TRIM(CAST(seat_code AS CHAR)) = ?', [$seatCode]);
+                        })
                         ->value('id');
 
-                    /*
-                Step 2:
-                If not found create bus_seats row first
-                */
-                    if (!$busSeatId) {
-
-                        $mstSeat = DB::connection('mysql_dev')
-                            ->table('odbusmaster.mst_seats')
-                            ->where('seat_layout_name_id', $layoutId)
-                            ->where(function ($q) use ($seatCode) {
-                                $q->whereRaw('TRIM(CAST(seat_text AS CHAR)) = ?', [$seatCode])
-                                    ->orWhereRaw('TRIM(CAST(seat_code AS CHAR)) = ?', [$seatCode]);
-                            })
-                            ->first();
-
-                        if (!$mstSeat) {
-                            continue;
-                        }
-
-                        $busSeatId = DB::connection('mysql_dev')
-                            ->table('bus_seats')
-                            ->insertGetId([
-                                'seat_id'        => $mstSeat->id,
-                                'bus_id'         => $busId,
-                                'type'           => 0,
-                                'active_seats'   => 0,
-                                'seat_layout_id' => $layoutId,
-                                'seat_code'      => $seatCode,
-                                'created_at'     => $now,
-                                'created_by'     => $userId
-                            ]);
+                    if (!$mstSeatId) {
+                        continue;
                     }
 
-                    /*
-                Avoid duplicate insert
-                */
+                    $isPermanent = DB::connection('mysql_dev')
+                        ->table('bus_seats')
+                        ->where('bus_id', $busId)
+                        ->where('active_seats', 1)
+                        ->whereRaw('TRIM(CAST(seat_code AS CHAR)) = ?', [$seatCode])
+                        ->exists();
+
+                    if ($isPermanent) {
+                        continue;
+                    }
+
+
                     $exists = DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
-                        ->where('bus_id', $busId)
-                        ->where('bus_seat_id', $busSeatId)
-                        ->where('seat_code', $seatCode)
-                        ->where('category', 1)
-                        ->whereDate('operation_date', $operationDate)
                         ->whereNull('deleted_at')
+                        ->where('bus_id', $busId)
+                        ->where('category', 1)
+                        ->where('seat_code', $seatCode)
+                        ->whereDate('operation_date', $operationDate)
                         ->exists();
 
                     if ($exists) {
@@ -395,7 +385,7 @@ class SeatOpenController extends Controller
 
                     $validRows[] = [
                         'bus_id'         => $busId,
-                        'bus_seat_id'    => $busSeatId,
+                        'bus_seat_id'    => $mstSeatId,   // now mst_seats.id
                         'seat_code'      => $seatCode,
                         'seat_layout_id' => $layoutId,
                         'operation_date' => $operationDate,
@@ -451,7 +441,7 @@ class SeatOpenController extends Controller
 
         return view('Master.addSeatOpen', compact('data'));
     }
-    
+
     public function delete(Request $request)
     {
         try {

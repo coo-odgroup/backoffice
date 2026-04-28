@@ -716,17 +716,17 @@
         }
 
 
-        .seat-box.selected-seat.bus-seat{
-    background-image:url('/assets/seats/Seat_layout_blue.png') !important;
-}
+        .seat-box.selected-seat.bus-seat {
+            background-image: url('/assets/seats/Seat_layout_blue.png') !important;
+        }
 
-.seat-box.selected-seat.bus-sleeper{
-    background-image:url('/assets/seats/sleeper_layout_blue.png') !important;
-}
+        .seat-box.selected-seat.bus-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_blue.png') !important;
+        }
 
-.seat-box.selected-seat.bus-vertical-sleeper{
-    background-image:url('/assets/seats/sleeper_layout_blue_vertical.png') !important;
-}
+        .seat-box.selected-seat.bus-vertical-sleeper {
+            background-image: url('/assets/seats/sleeper_layout_blue_vertical.png') !important;
+        }
     </style>
 
     @endsection
@@ -915,7 +915,7 @@
 
         window.handlePageCancel = function() {
 
-            let isEditPage = @json(request()-> routeIs('seat-open.edit'));
+            let isEditPage = @json(request() -> routeIs('seat-open.edit'));
 
             if (isEditPage) {
                 window.location.href = "{{route('seat-open.index') }}";
