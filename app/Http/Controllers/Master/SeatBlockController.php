@@ -39,6 +39,7 @@ class SeatBlockController extends Controller
             $query = DB::connection('mysql_dev')
                 ->table('bus_seat_operation as bso')
                 ->whereNull('bso.deleted_at')
+                ->where('bso.category', 2)
 
                 ->join('bus_seats as bs', 'bs.id', '=', 'bso.bus_seat_id')
                 ->join('bus as b', 'b.id', '=', 'bs.bus_id')

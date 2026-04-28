@@ -25,101 +25,172 @@ class SeatOpenController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtsearch'));
-            $selStatus = request('selstatus');
+            $txtSearch   = htmlEncode(request('txtSearch'));
+            $operator    = request('operator');
+            $bus         = request('bus');
+            $source      = request('source');
+            $destination = request('destination');
+            $fromDate    = request('fromDate');
+            $toDate      = request('toDate');
+            $reason      = request('reason');
 
-            $query = DB::table('mst_ticket_fare_slab_info as t')
-                ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-                ->leftJoin('users as u', function ($join) {
-                    $join->on('u.id', '=', 't.bus_operator_id')
-                        ->where('u.user_role', 9);
+            $query = DB::connection('mysql_dev')
+                ->table('bus_seat_operation as bso')
+                ->whereNull('bso.deleted_at')
+                ->where('bso.category', 1)
+
+                ->leftJoin('bus as b', 'b.id', '=', 'bso.bus_id')
+                ->leftJoin('bus_routes_map as brm', 'brm.bus_id', '=', 'b.id')
+                ->leftJoin('bus_routes as br', function ($join) {
+                    $join->on('br.id', '=', 'brm.bus_route_id')
+                        ->whereNull('br.deleted_at');
                 })
+
                 ->select(
-                    't.id',
-                    't.slab_id',
-                    's.slab_name',
-                    'u.organization_name as operator_name',
-                    't.starting_fare',
-                    't.upto_fare',
-                    't.commision',
-                    't.from_date',
-                    't.to_date',
-                    't.active_status',
-                    't.created_at',
-                    't.updated_at',
-                    DB::raw('(SELECT name FROM users WHERE id = t.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = t.updated_by LIMIT 1) as updated_by_name')
+                    'bso.id',
+                    'bso.bus_id',
+
+                    DB::raw("(
+                    SELECT organization_name
+                    FROM odbusmaster.users
+                    WHERE id = b.bus_operator_id
+                    LIMIT 1
+                ) as operator_name"),
+
+                    'b.name as bus_name',
+                    'b.bus_number as bus_registration_no',
+                    'br.route_name',
+                    'bso.operation_date',
+                    'bso.seat_code',
+                    'bso.reason',
+                    'bso.created_at',
+
+                    DB::raw("(
+                    SELECT name
+                    FROM odbusmaster.users
+                    WHERE id = bso.created_by
+                    LIMIT 1
+                ) as created_by_name")
                 );
 
             if (!empty($txtSearch)) {
+
                 $query->where(function ($q) use ($txtSearch) {
-                    $q->where('s.slab_name', 'like', "%{$txtSearch}%")
-                        ->orWhere('u.organization_name', 'like', "%{$txtSearch}%");
+
+                    $q->whereRaw("(
+                    SELECT organization_name
+                    FROM odbusmaster.users
+                    WHERE id = b.bus_operator_id
+                    LIMIT 1
+                ) like ?", ["%{$txtSearch}%"])
+
+                        ->orWhere('b.name', 'like', "%{$txtSearch}%")
+                        ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
+                        ->orWhere('bso.seat_code', 'like', "%{$txtSearch}%");
                 });
             }
 
-            if ($selStatus !== null && $selStatus !== '') {
-                $query->where('t.active_status', $selStatus);
+            if (!empty($operator)) {
+                $query->where('b.bus_operator_id', $operator);
             }
 
-            $rows = $query->orderBy('t.id', 'desc')->get();
+            if (!empty($bus)) {
+                $query->where('bso.bus_id', $bus);
+            }
+
+            if (!empty($source)) {
+                $query->where('br.boarding_city_id', $source);
+            }
+
+            if (!empty($destination)) {
+                $query->where('br.dropping_city_id', $destination);
+            }
+
+            if (!empty($reason)) {
+
+                $reasonName = DB::connection('mysql_dev')
+                    ->table('odbusmaster.mst_annexture')
+                    ->where('id', $reason)
+                    ->value('annexture_name');
+
+                if (!empty($reasonName)) {
+                    $query->where('bso.reason', $reasonName);
+                }
+            }
+
+            $today = date('Y-m-d');
+
+            if (empty($fromDate) && empty($toDate)) {
+
+                $query->whereDate('bso.operation_date', '>=', $today);
+            } else {
+
+                if (!empty($fromDate)) {
+                    $query->whereDate('bso.operation_date', '>=', $fromDate);
+                }
+
+                if (!empty($toDate)) {
+                    $query->whereDate('bso.operation_date', '<=', $toDate);
+                }
+            }
+
+            $rows = $query
+                ->orderBy('bso.bus_id', 'asc')
+                ->orderBy('bso.operation_date', 'asc')
+                ->get();
 
             $grouped = [];
 
             foreach ($rows as $row) {
 
-                $slabId = $row->slab_id;
+                /* GROUP ONLY BY BUS */
+                $key = $row->bus_id;
 
-                if (!isset($grouped[$slabId])) {
+                if (!isset($grouped[$key])) {
 
-                    $grouped[$slabId] = [
-                        'id' => $row->id,
-                        'slab_id' => $row->slab_id,
-                        'slab_name' => $row->slab_name,
-                        'operators' => [],
-                        'slab_info' => [],
-                        'created_date' => date('d-M-Y H:i:s', strtotime($row->created_at)),
-                        'updated_date' => $row->updated_at
-                            ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                            : null,
-                        'created_by_name' => $row->created_by_name,
-                        'updated_by_name' => $row->updated_by_name,
-                        'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-                        'enc_id' => Crypt::encryptString($row->slab_id),
+                    $grouped[$key] = [
+                        'id'            => $row->id,
+                        'operator_name' => $row->operator_name ?: '--',
+                        'bus_name'      => trim(($row->bus_name ?: '--') . ' / ' . ($row->bus_registration_no ?: '--')),
+                        'route_name'    => $row->route_name ?: '--',
+                        'block_info'    => [],
                     ];
                 }
 
-                if (
-                    !empty($row->operator_name) &&
-                    !in_array($row->operator_name, $grouped[$slabId]['operators'])
-                ) {
+                $dateKey = date('d-M-Y', strtotime($row->operation_date));
 
-                    $grouped[$slabId]['operators'][] = $row->operator_name;
-                }
+                if (!isset($grouped[$key]['block_info'][$dateKey])) {
 
-                $key = md5(
-                    $row->starting_fare . '|' .
-                        $row->upto_fare . '|' .
-                        $row->commision . '|' .
-                        date('Y-m-d', strtotime($row->from_date)) . '|' .
-                        date('Y-m-d', strtotime($row->to_date))
-                );
-
-                if (!isset($grouped[$slabId]['slab_info'][$key])) {
-
-                    $grouped[$slabId]['slab_info'][$key] = [
-                        'starting_fare' => $row->starting_fare,
-                        'upto_fare' => $row->upto_fare,
-                        'commision' => $row->commision,
-                        'from_date' => $row->from_date,
-                        'to_date' => $row->to_date,
+                    $grouped[$key]['block_info'][$dateKey] = [
+                        'date'       => $dateKey,
+                        'seat_list'  => [],
+                        'reason'     => $row->reason ?: '--',
+                        'created_by' => $row->created_by_name ?: '--',
+                        'created_at' => date('d-M-Y H:i:s', strtotime($row->created_at)),
+                        'enc_id'     => Crypt::encryptString($row->bus_id . '|' . $row->operation_date),
                     ];
                 }
+
+                $grouped[$key]['block_info'][$dateKey]['seat_list'][] = $row->seat_code;
             }
 
-            // ✅ MOVE THIS OUTSIDE LOOP (VERY IMPORTANT)
-            foreach ($grouped as &$slab) {
-                $slab['slab_info'] = array_values($slab['slab_info']);
+            foreach ($grouped as &$item) {
+
+                $formatted = [];
+
+                foreach ($item['block_info'] as $r) {
+
+                    $formatted[] = [
+                        'date'       => $r['date'],
+                        'seat_code'  => implode(', ', $r['seat_list']),
+                        'reason'     => $r['reason'],
+                        'created_by' => $r['created_by'],
+                        'created_at' => $r['created_at'],
+                        'enc_id'     => $r['enc_id'],
+                    ];
+                }
+
+                $item['block_info'] = $formatted;
             }
 
             $data = array_values($grouped);
@@ -128,14 +199,15 @@ class SeatOpenController extends Controller
             $recordsFiltered = $recordsTotal;
         } catch (\Throwable $t) {
 
-            Log::error("TicketFareSlabInfoController Error", [
-                'message' => $t->getMessage()
+            Log::error("SeatOpenController@DataTable", [
+                'message' => $t->getMessage(),
+                'line'    => $t->getLine()
             ]);
 
             return response()->json([
-                'recordsTotal' => 0,
+                'recordsTotal'    => 0,
                 'recordsFiltered' => 0,
-                'data' => []
+                'data'            => []
             ]);
         }
 
@@ -155,193 +227,220 @@ class SeatOpenController extends Controller
 
         try {
 
-            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+            $value = (!empty($encId)) ? Crypt::decryptString($encId) : '';
 
-            if ($id > 0) {
+            if (!empty($value)) {
 
-                $redirectPage = "admin/ticketfareslab-info/edit/" . $encId;
+                $arr = explode('|', $value);
+
+                $busId  = $arr[0] ?? 0;
+                $opDate = $arr[1] ?? '';
 
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
+                $editRow = DB::connection('mysql_dev')
+                    ->table('bus_seat_operation')
+                    ->select('reason')
+                    ->where('category', 1)
+                    ->where('bus_id', $busId)
+                    ->whereDate('operation_date', $opDate)
+                    ->whereNull('deleted_at')
+                    ->first();
 
-                $row = DB::table('mst_ticket_fare_slab_info as t')
-                    ->leftJoin('users as u', 'u.id', '=', 't.bus_operator_id')
-                    ->where('t.slab_id', $id)
-                    ->select(
-                        't.*',
-                        'u.organization_name as operator_name'
-                    )
-                    ->get();
+                $busInfo = DB::connection('mysql_dev')
+                    ->table('bus')
+                    ->select('bus_operator_id', 'id')
+                    ->where('id', $busId)
+                    ->first();
 
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
-                }
-
-                $operators = [];
-                $slabInfo = [];
-
-                foreach ($row as $r) {
-
-                    // operators
-                    $operators[$r->bus_operator_id] = [
-                        'id' => $r->bus_operator_id,
-                        'name' => $r->operator_name
-                    ];
-
-                    // slab rows 
-                    $key = md5(
-                        $r->starting_fare . '|' .
-                            $r->upto_fare . '|' .
-                            $r->commision . '|' .
-                            date('Y-m-d', strtotime($r->from_date)) . '|' .
-                            date('Y-m-d', strtotime($r->to_date))
-                    );
-
-                    if (!isset($slabInfo[$key])) {
-                        $slabInfo[$key] = [
-                            'starting_fare' => (string)$r->starting_fare,
-                            'upto_fare' => (string)$r->upto_fare,
-                            'commision' => (string)$r->commision,
-                            'from_date' => date('Y-m-d', strtotime($r->from_date)),
-                            'to_date' => date('Y-m-d', strtotime($r->to_date)),
-                        ];
-                    }
-                }
-
-
-                $slabInfo = array_values($slabInfo);
-
-                $data['row'] = [
-                    'slab_id' => $id,
-                    'operators' => array_values($operators),
-                    'slabInfo' => $slabInfo
-                ];;
-
-                if ($row->isEmpty()) {
-                    return redirect('ticketfareslab-info');
-                }
-            } else {
-                $id = 0;
-                $redirectPage = "admin/ticketfareslab-info";
+                $data['editDate'] = $opDate;
+                $data['editData'] = (object)[
+                    'reason'          => $editRow->reason ?? '',
+                    'bus_operator_id' => $busInfo->bus_operator_id ?? '',
+                    'bus_id'          => $busInfo->id ?? ''
+                ];
             }
+
+            $redirectPage = "admin/seat-open";
 
             if (request()->isMethod('post')) {
 
-                request()->replace(request()->all());
-
-
                 $validator = Validator::make(request()->all(), [
-                    'slab_id' => 'bail|required|integer',
-                    'bus_operator_id' => 'nullable',
-
-                    'starting_fare.*' => 'required|numeric|min:0',
-                    'upto_fare.*'     => 'required|numeric',
-                    'commision.*'     => 'required|numeric',
-
-                    'from_date.*' => 'nullable|date',
-                    'to_date.*'   => 'nullable|date',
-                ], [
-                    'slab_id.required' => 'Please select slab',
-                    'bus_operator_id.required' => 'Please select at least one operator',
+                    'operator'        => 'required',
+                    'bus'             => 'required',
+                    'reason'          => 'required',
+                    'seat_operations' => 'required'
                 ]);
 
                 if ($validator->fails()) {
                     return back()->withErrors($validator)->withInput();
                 }
 
-                DB::beginTransaction();
+                $seatOperations = json_decode(request('seat_operations'), true);
 
-
-                $slab_id = (int) request('slab_id');
-                $bus_operator_id = request('bus_operator_id');
-
-                $operators = !empty($bus_operator_id)
-                    ? explode(',', $bus_operator_id)
-                    : [0];
-
-                $starting_fare = request('starting_fare');
-                $upto_fare     = request('upto_fare');
-                $commision     = request('commision');
-                $from_date     = request('from_date');
-                $to_date       = request('to_date');
-
-                foreach ($starting_fare as $i => $start) {
-                    if ($upto_fare[$i] < $start) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Fare must be greater than or equal to From Fare'
-                        ])->withInput();
-                    }
-
-                    if ($to_date[$i] < $from_date[$i]) {
-                        DB::rollBack();
-                        return back()->with([
-                            'level' => 'danger',
-                            'message' => 'To Date must be after From Date'
-                        ])->withInput();
-                    }
+                if (!is_array($seatOperations)) {
+                    return back()->with([
+                        'level'   => 'danger',
+                        'message' => 'Invalid seat data'
+                    ])->withInput();
                 }
 
-                if ($id > 0) {
-                    DB::table('mst_ticket_fare_slab_info')
-                        ->where('slab_id', $slab_id)
-                        ->delete();
+                DB::connection('mysql_dev')->beginTransaction();
+
+                $userId   = session('userid') ?? auth()->id() ?? 1;
+                $now      = now();
+                $busId    = request('bus');
+                $reasonId = request('reason');
+
+                $reason = DB::connection('mysql_dev')
+                    ->table('odbusmaster.mst_annexture')
+                    ->where('id', $reasonId)
+                    ->value('annexture_name');
+
+                $reason = $reason ?: 'Custom Other';
+
+                $layoutId = $seatOperations[0]['seat_layout_id'] ?? 0;
+
+                /* EDIT MODE -> remove previous rows first */
+                if ($method == 'Edit') {
+
+                    $editDate = $seatOperations[0]['operation_date'];
+
+                    DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->where('category', 1)
+                        ->where('bus_id', $busId)
+                        ->whereDate('operation_date', $editDate)
+                        ->whereNull('deleted_at')
+                        ->update([
+                            'deleted_at' => $now,
+                            'deleted_by' => $userId,
+                            'updated_at' => $now,
+                            'updated_by' => $userId
+                        ]);
                 }
 
+                $validRows = [];
 
-                $insertData = [];
+                foreach ($seatOperations as $seat) {
 
-                foreach ($operators as $operator) {
+                    $operationDate = $seat['operation_date'] ?? null;
+                    $seatCode      = trim((string) ($seat['seat_code'] ?? ''));
 
-                    foreach ($starting_fare as $key => $val) {
+                    if (empty($operationDate) || $seatCode == '') {
+                        continue;
+                    }
 
-                        $rowData = [
-                            'slab_id'         => $slab_id,
-                            'bus_operator_id' => (int) $operator,
-                            'starting_fare'   => $starting_fare[$key],
-                            'upto_fare'       => $upto_fare[$key],
-                            'commision'       => $commision[$key],
-                            'from_date'       => $from_date[$key],
-                            'to_date'         => $to_date[$key],
-                            'active_status'   => 1,
-                            'created_at'      => now(),
-                            'updated_at'      => now(),
-                        ];
+                    /*
+                Step 1:
+                Find seat inside bus_seats
+                */
+                    $busSeatId = DB::connection('mysql_dev')
+                        ->table('bus_seats')
+                        ->where('bus_id', $busId)
+                        ->whereRaw('TRIM(CAST(seat_code AS CHAR)) = ?', [$seatCode])
+                        ->value('id');
 
-                        $insertData[] = $rowData;
+                    /*
+                Step 2:
+                If not found create bus_seats row first
+                */
+                    if (!$busSeatId) {
+
+                        $mstSeat = DB::connection('mysql_dev')
+                            ->table('odbusmaster.mst_seats')
+                            ->where('seat_layout_name_id', $layoutId)
+                            ->where(function ($q) use ($seatCode) {
+                                $q->whereRaw('TRIM(CAST(seat_text AS CHAR)) = ?', [$seatCode])
+                                    ->orWhereRaw('TRIM(CAST(seat_code AS CHAR)) = ?', [$seatCode]);
+                            })
+                            ->first();
+
+                        if (!$mstSeat) {
+                            continue;
+                        }
+
+                        $busSeatId = DB::connection('mysql_dev')
+                            ->table('bus_seats')
+                            ->insertGetId([
+                                'seat_id'        => $mstSeat->id,
+                                'bus_id'         => $busId,
+                                'type'           => 0,
+                                'active_seats'   => 0,
+                                'seat_layout_id' => $layoutId,
+                                'seat_code'      => $seatCode,
+                                'created_at'     => $now,
+                                'created_by'     => $userId
+                            ]);
+                    }
+
+                    /*
+                Avoid duplicate insert
+                */
+                    $exists = DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->where('bus_id', $busId)
+                        ->where('bus_seat_id', $busSeatId)
+                        ->where('seat_code', $seatCode)
+                        ->where('category', 1)
+                        ->whereDate('operation_date', $operationDate)
+                        ->whereNull('deleted_at')
+                        ->exists();
+
+                    if ($exists) {
+                        continue;
+                    }
+
+                    $validRows[] = [
+                        'bus_id'         => $busId,
+                        'bus_seat_id'    => $busSeatId,
+                        'seat_code'      => $seatCode,
+                        'seat_layout_id' => $layoutId,
+                        'operation_date' => $operationDate,
+                        'category'       => 1,
+                        'reason'         => $reason,
+                        'created_at'     => $now,
+                        'created_by'     => $userId,
+                        'updated_at'     => $now,
+                        'updated_by'     => $userId
+                    ];
+                }
+
+                if (!empty($validRows)) {
+
+                    DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->insert($validRows);
+
+                    foreach ($validRows as $row) {
 
                         app(CommonController::class)->auditLog(
-                            'mst_ticket_fare_slab_info',
-                            null,
-                            ($id > 0 ? 'UPDATE' : 'INSERT'),
+                            'bus_seat_operation',
+                            0,
+                            'INSERT',
                             [],
-                            $rowData
+                            $row
                         );
                     }
                 }
 
-                DB::table('mst_ticket_fare_slab_info')->insert($insertData);
-
-                DB::commit();
+                DB::connection('mysql_dev')->commit();
 
                 session()->flash('level', 'success');
-                session()->flash(
-                    'message',
-                    'Ticket Fare Slab Info ' . ($id > 0 ? 'updated' : 'created') . ' successfully.'
-                );
+                session()->flash('message', 'Seat open data saved successfully.');
 
                 return redirect($redirectPage);
             }
         } catch (\Throwable $t) {
 
-            DB::rollBack();
+            DB::connection('mysql_dev')->rollBack();
 
-            Log::error("Error in TicketFareSlabInfoController@add", [
+            Log::error("Error in SeatOpenController@add", [
                 'method' => $method,
-                'error'  => $t->getMessage()
+                'error'  => $t->getMessage(),
+                'line'   => $t->getLine()
             ]);
 
             return back()->with([
@@ -350,8 +449,57 @@ class SeatOpenController extends Controller
             ])->withInput();
         }
 
-
         return view('Master.addSeatOpen', compact('data'));
+    }
+    
+    public function delete(Request $request)
+    {
+        try {
+
+            $decoded = Crypt::decryptString($request->id);
+            $parts = explode('|', $decoded);
+
+            if (count($parts) < 2) {
+                throw new \Exception('Invalid payload');
+            }
+
+            $busId = $parts[0];
+            $operationDate = $parts[1];
+
+            $userId = session('userid') ?? auth()->id() ?? 1;
+            $now = now();
+
+            $updated = DB::connection('mysql_dev')
+                ->table('bus_seat_operation')
+                ->whereNull('deleted_at')
+                ->where('category', 1)
+                ->where('bus_id', $busId)
+                ->whereDate('operation_date', $operationDate)
+                ->update([
+                    'deleted_at' => $now,
+                    'deleted_by' => $userId,
+                    'updated_at' => $now,
+                    'updated_by' => $userId
+                ]);
+
+            return response()->json([
+                'status' => $updated > 0,
+                'message' => $updated > 0
+                    ? 'Deleted successfully'
+                    : 'No matching records found'
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error('SeatOpen delete error', [
+                'message' => $t->getMessage(),
+                'line' => $t->getLine()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Delete failed'
+            ], 500);
+        }
     }
 
     public function edit($encId)
@@ -359,23 +507,452 @@ class SeatOpenController extends Controller
         return $this->add($encId);
     }
 
-    public function getOperatorSlabData(Request $request)
-    {
-        $operator_id = $request->operator_id;
 
-        $data = DB::table('mst_ticket_fare_slab_info as t')
-            ->leftJoin('mst_ticket_fare_slab as s', 's.id', '=', 't.slab_id')
-            ->where('t.bus_operator_id', $operator_id)
-            ->select(
-                't.*',
-                's.slab_name'
-            )
-            ->orderBy('t.starting_fare')
-            ->get();
+    public function getSeatLayoutByBus(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'bus_id' => 'required|integer'
+            ]);
+
+            $busId = (int) $request->bus_id;
+            $operationDate = $request->operation_date ?? '';
+
+            $bus = DB::connection('mysql_dev')
+                ->table('bus')
+                ->where('id', $busId)
+                ->first();
+
+            if (!$bus) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Bus not found'
+                ]);
+            }
+
+            $layoutId = (int) $bus->mst_seat_layout_name_id;
+
+            if ($layoutId <= 0) {
+                $layoutId = (int) $bus->seat_layout_type_id;
+            }
+
+            if ($layoutId <= 0) {
+                $layoutId = 1;
+            }
+
+            $layout = DB::connection('mysql_dev')
+                ->table('odbusmaster.mst_seat_layout_name')
+                ->where('id', $layoutId)
+                ->first();
+
+            $seats = DB::connection('mysql_dev')
+                ->table('odbusmaster.mst_seats')
+                ->where('seat_layout_name_id', $layoutId)
+                ->orderBy('berth_type')
+                ->orderBy('row_number')
+                ->orderBy('col_number')
+                ->get();
+
+            /* GREY seats = permanent active seats */
+            $activeSeats = DB::connection('mysql_dev')
+                ->table('bus_seats')
+                ->where('bus_id', $busId)
+                ->where('active_seats', 1)
+                ->pluck('seat_code')
+                ->map(fn($v) => strtoupper(trim($v)))
+                ->toArray();
+
+            /* BLUE seats = already opened for selected date */
+            $openedSeats = [];
+
+            if (!empty($operationDate)) {
+
+                $openedSeats = DB::connection('mysql_dev')
+                    ->table('bus_seat_operation')
+                    ->whereNull('deleted_at')
+                    ->where('category', 1)
+                    ->where('bus_id', $busId)
+                    ->whereDate('operation_date', $operationDate)
+                    ->pluck('seat_code')
+                    ->map(fn($v) => strtoupper(trim($v)))
+                    ->toArray();
+            }
+
+            $html = $this->buildSeatLayoutHtml(
+                $seats,
+                $activeSeats,
+                $busId,
+                $layoutId,
+                $openedSeats
+            );
+
+            return response()->json([
+                'status'      => true,
+                'layout_id'   => $layoutId,
+                'layout_name' => $layout->layout_name ?? '',
+                'bus_id'      => $busId,
+                'bus_name'    => $bus->name,
+                'bus_number'  => $bus->bus_number,
+                'html'        => $html
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    private function buildSeatLayoutHtml($seats, $activeSeats = [], $busId = 0, $layoutId = 0, $blockedSeats = [])
+    {
+        $layout = [
+            'UPPER'  => [],
+            'LOWER'  => [],
+            'MIDDLE' => []
+        ];
+
+        $seatMap = DB::connection('mysql_dev')
+            ->table('bus_seats')
+            ->where('bus_id', $busId)
+            ->get()
+            ->keyBy(function ($row) {
+                return strtoupper(trim(preg_replace('/\s+/', '', $row->seat_code)));
+            });
+
+        foreach ($seats as $seat) {
+
+            if ($seat->berth_type == 1) {
+                $deck = 'LOWER';
+            } elseif ($seat->berth_type == 2) {
+                $deck = 'UPPER';
+            } else {
+                $deck = 'MIDDLE';
+            }
+
+            $layout[$deck][$seat->row_number][$seat->col_number] = $seat;
+        }
+
+        foreach ($layout as $deck => $rows) {
+
+            ksort($rows);
+
+            foreach ($rows as $r => $cols) {
+                ksort($cols);
+                $rows[$r] = $cols;
+            }
+
+            $layout[$deck] = $rows;
+        }
+
+        $maxCols = ['UPPER' => 0, 'LOWER' => 0, 'MIDDLE' => 0];
+
+        foreach ($layout as $deck => $rows) {
+            foreach ($rows as $cols) {
+                if (!empty($cols)) {
+                    $maxCols[$deck] = max($maxCols[$deck], max(array_keys($cols)));
+                }
+            }
+        }
+
+        $normalizedActiveSeats = array_map(function ($v) {
+
+            $v = strtoupper(trim(preg_replace('/\s+/', '', (string) $v)));
+
+            if (is_numeric($v)) {
+                $v = (string) ((int) $v);
+            }
+
+            return $v;
+        }, $activeSeats);
+
+        $normalizedBlockedSeats = array_map(function ($v) {
+
+            $v = strtoupper(trim(preg_replace('/\s+/', '', (string) $v)));
+
+            if (is_numeric($v)) {
+                $v = (string) ((int) $v);
+            }
+
+            return $v;
+        }, $blockedSeats);
+
+        $html = '<div class="bus-layout">';
+
+        foreach (['UPPER', 'MIDDLE', 'LOWER'] as $deck) {
+
+            if (empty($layout[$deck])) continue;
+
+            $html .= '<div class="berth-row">';
+            $html .= '<div class="berth-label">' . ucfirst(strtolower($deck)) . ' Berth</div>';
+            $html .= '<div class="layout-box" style="grid-template-columns:repeat(' . $maxCols[$deck] . ',42px)">';
+
+            $skip = [];
+
+            foreach ($layout[$deck] as $rIndex => $row) {
+
+                foreach ($row as $cIndex => $seat) {
+
+                    if (isset($skip[$rIndex][$cIndex])) continue;
+
+                    $seatNo = trim((string) ($seat->seat_text ?: $seat->seat_code));
+
+                    if ((int) $seat->seat_class === 0 || $seatNo === '') {
+                        $html .= '<div class="empty-seat"></div>';
+                        continue;
+                    }
+
+                    $currentSeat = strtoupper(trim(preg_replace('/\s+/', '', $seatNo)));
+
+                    if (is_numeric($currentSeat)) {
+                        $currentSeat = (string) ((int) $currentSeat);
+                    }
+
+                    $isActive = in_array($currentSeat, $normalizedActiveSeats, true);
+                    $isOpened = in_array($currentSeat, $normalizedBlockedSeats, true);
+
+                    /*
+                Seat Open Logic
+
+                active seats      = grey locked
+                opened seats      = blue
+                remaining seats   = white clickable
+                */
+
+                    if ($isActive) {
+
+                        $selected = 'disabled';
+                        $checked  = '';
+                        $click    = '';
+                    } elseif ($isOpened) {
+
+                        $selected = 'selected-seat';
+                        $checked  = 'checked';
+                        $click    = 'onclick="toggleSeat(this)"';
+                    } else {
+
+                        $selected = 'openable';
+                        $checked  = '';
+                        $click    = 'onclick="toggleSeat(this)"';
+                    }
+
+                    $busSeatId = $seatMap[$currentSeat]->id ?? 0;
+
+                    if ($seat->seat_class == 3) {
+
+                        $class = 'bus-vertical-sleeper ' . $selected;
+
+                        $html .= '
+                    <label class="seat-wrap vertical-sleeper-wrap">
+                        <input type="checkbox"
+                            class="seat-checkbox"
+                            name="seats[]"
+                            value="' . $seatNo . '"
+                            ' . $checked . '
+                            hidden>
+
+                        <span class="' . $class . '"
+                              data-seatcode="' . $seatNo . '"
+                              data-busseatid="' . $busSeatId . '"
+                              data-layout="' . $layoutId . '"
+                              ' . $click . '></span>
+
+                        <span class="seat-number">' . $seatNo . '</span>
+                    </label>';
+
+                        $skip[$rIndex + 1][$cIndex] = true;
+                    } elseif ($seat->seat_class == 2) {
+
+                        $class = 'bus-sleeper ' . $selected;
+
+                        $html .= '
+                    <label class="seat-wrap sleeper-wrap">
+                        <input type="checkbox"
+                            class="seat-checkbox"
+                            name="seats[]"
+                            value="' . $seatNo . '"
+                            ' . $checked . '
+                            hidden>
+
+                        <span class="' . $class . '"
+                              data-seatcode="' . $seatNo . '"
+                              data-busseatid="' . $busSeatId . '"
+                              data-layout="' . $layoutId . '"
+                              ' . $click . '></span>
+
+                        <span class="seat-number">' . $seatNo . '</span>
+                    </label>';
+                    } else {
+
+                        $class = 'bus-seat ' . $selected;
+
+                        $html .= '
+                    <label class="seat-wrap">
+                        <input type="checkbox"
+                            class="seat-checkbox"
+                            name="seats[]"
+                            value="' . $seatNo . '"
+                            ' . $checked . '
+                            hidden>
+
+                        <span class="' . $class . '"
+                              data-seatcode="' . $seatNo . '"
+                              data-busseatid="' . $busSeatId . '"
+                              data-layout="' . $layoutId . '"
+                              ' . $click . '></span>
+
+                        <span class="seat-number">' . $seatNo . '</span>
+                    </label>';
+                    }
+                }
+            }
+
+            $html .= '</div></div>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    public function getOpenedSeatHistory(Request $request)
+    {
+        try {
+
+            $busId = (int) $request->bus_id;
+            $operationDate = $request->operation_date;
+
+            if ($busId <= 0) {
+                return response()->json([
+                    'status' => false,
+                    'html'   => 'Invalid bus'
+                ]);
+            }
+
+            $query = DB::connection('mysql_dev')
+                ->table('bus_seat_operation')
+                ->whereNull('deleted_at')
+                ->where('category', 1) // Seat Open
+                ->where('bus_id', $busId)
+                ->selectRaw("
+                operation_date,
+                GROUP_CONCAT(
+                    seat_code
+                    ORDER BY seat_code SEPARATOR ', '
+                ) as opened_seats,
+                MAX(reason) as reason,
+                MAX(updated_at) as updated_at,
+                MAX(updated_by) as updated_by
+            ");
+
+            /* EDIT MODE */
+            if (!empty($operationDate)) {
+                $query->whereDate('operation_date', $operationDate);
+            }
+
+            $rows = $query
+                ->groupBy('operation_date')
+                ->orderByDesc('operation_date')
+                ->get();
+
+            $html = '';
+
+            if ($rows->isEmpty()) {
+
+                $html = '
+                <div class="text-center text-muted">
+                    No opened history found
+                </div>
+            ';
+            } else {
+
+                $html .= '
+            <table class="table table-hover table-bordered table-sm align-middle">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>Date</th>
+                        <th>Seats Opened</th>
+                        <th>Reason</th>
+                        <th>Updated By</th>
+                    </tr>
+                </thead>
+                <tbody>
+            ';
+
+                $i = 1;
+
+                foreach ($rows as $row) {
+
+                    $html .= '
+                <tr>
+                    <td>' . $i++ . '</td>
+
+                    <td>' .
+                        date('d-M-Y', strtotime($row->operation_date))
+                        . '</td>
+
+                    <td>' .
+                        ($row->opened_seats ?: '-')
+                        . '</td>
+
+                    <td>' .
+                        ($row->reason ?: '-')
+                        . '</td>
+
+                    <td>User ' .
+                        $row->updated_by .
+                        '<br>' .
+                        date('d-M-Y H:i:s', strtotime($row->updated_at))
+                        . '</td>
+                </tr>';
+                }
+
+                $html .= '
+                </tbody>
+            </table>';
+            }
+
+            return response()->json([
+                'status' => true,
+                'html'   => $html
+            ]);
+        } catch (\Throwable $e) {
+
+            Log::error('Opened Seat History Error', [
+                'error' => $e->getMessage(),
+                'line'  => $e->getLine()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'html'   => 'Unable to load history'
+            ]);
+        }
+    }
+
+    public function getBusCancelledDates(Request $request)
+    {
+        $busId = $request->bus_id;
+
+        $dates = DB::connection('mysql_dev')
+            ->table('bus_cancelled_date as bcd')
+            ->join('bus_cancelled as bc', 'bc.id', '=', 'bcd.bus_cancelled_id')
+            ->where('bc.bus_id', $busId)
+            ->where('bc.active_status', 1)
+            ->where('bcd.active_status', 1)
+            ->whereNull('bc.deleted_at')
+            ->whereNull('bcd.deleted_at')
+            ->pluck('bcd.cancelled_date')
+            ->map(function ($d) {
+                return date('Y-m-d', strtotime($d));
+            })
+            ->toArray();
 
         return response()->json([
             'status' => true,
-            'data' => $data
+            'data'   => $dates
         ]);
     }
 }

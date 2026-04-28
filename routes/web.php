@@ -518,19 +518,29 @@ Route::prefix('admin')->group(function () {
     Route::post('get-bus-schedule-by-month', [BusCancelController::class, 'getBusScheduleDatesByMonth']);
     Route::post('get-cancelled-bus-data', [BusCancelController::class, 'getCancelledBusData']);
 
+    //Seat - Block
     Route::get('/seat-block', [SeatBlockController::class, 'index'])->name('seat-block.index');
     Route::match(['get', 'post'], 'seat-block/add', [SeatBlockController::class, 'add'])->name('seat-block.add');
     Route::post('seat-block/dataTableView', [SeatBlockController::class, 'dataTableView'])->name('seat-block.dataTableView');
     Route::match(['get', 'post'], 'seat-block/edit/{encId}', [SeatBlockController::class, 'edit'])->name('seat-block.edit');
-    Route::post('get-seat-layout-by-bus',[SeatBlockController::class, 'getSeatLayoutByBus'])->name('seat-block.layout.by.bus');
-    Route::post('seat-block/history',[SeatBlockController::class, 'getBlockedSeatHistory'])->name('seat-block.history');
-    Route::post('seat-block/delete',[SeatBlockController::class, 'delete'])->name('seat-block.delete');
-    Route::post('get-bus-cancelled-dates', [SeatBlockController::class,'getBusCancelledDates']);
+    Route::post('seat-block/get-seat-layout-by-bus', [SeatBlockController::class, 'getSeatLayoutByBus'])->name('seat-block.layout.by.bus');
+    Route::post('seat-block/history', [SeatBlockController::class, 'getBlockedSeatHistory'])->name('seat-block.history');
+    Route::post('seat-block/delete', [SeatBlockController::class, 'delete'])->name('seat-block.delete');
+    Route::post('get-bus-cancelled-dates',[SeatBlockController::class, 'getBusCancelledDates'])->name('seat-block.cancelled.dates');
 
+
+
+    //Seat - Open
     Route::get('/seat-open', [SeatOpenController::class, 'index'])->name('seat-open.index');
     Route::match(['get', 'post'], 'seat-open/add', [SeatOpenController::class, 'add'])->name('seat-open.add');
     Route::post('seat-open/dataTableView', [SeatOpenController::class, 'dataTableView'])->name('seat-open.dataTableView');
     Route::match(['get', 'post'], 'seat-open/edit/{encId}', [SeatOpenController::class, 'edit'])->name('seat-open.edit');
+    Route::post('seat-open/get-seat-layout-by-bus',[SeatOpenController::class, 'getSeatLayoutByBus'])->name('seat-open.layout.by.bus');
+    Route::post('seat-open/history', [SeatOpenController::class, 'getOpenedSeatHistory'])->name('seat-open.history');
+    Route::post('seat-open/delete', [SeatOpenController::class, 'delete'])->name('seat-open.delete');
+    Route::post('get-bus-cancelled-dates',[SeatOpenController::class, 'getBusCancelledDates'])->name('seat-open.cancelled.dates');
+
+
 
     Route::get('/extra-seat-block', [ExtraSeatBlockController::class, 'index'])->name('extra-seat-block.index');
     Route::match(['get', 'post'], 'extra-seat-block/add', [ExtraSeatBlockController::class, 'add'])->name('extra-seat-block.add');
