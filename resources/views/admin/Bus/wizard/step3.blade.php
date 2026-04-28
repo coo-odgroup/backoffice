@@ -85,6 +85,7 @@ $page_name = 'All ' . trim($__env->yieldContent('page_title'));
                                             <input type="hidden" name="bus_id" value="{{$data['bus_id']}}">
                                             <input type="hidden" name="param" value="{{$data['param']}}">
                                             <input type="hidden" name="param2" value="{{$data['param2']}}">
+                                            <input type="hidden" name="existRes" value="{{ $data['existRes'] ?? 0 }}">
                                             @php
                                             $isSave = ($data['param'] ?? null) === 'save';
                                             $isBack = ($data['param2'] ?? null) === 'back';

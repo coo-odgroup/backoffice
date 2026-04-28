@@ -254,7 +254,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 <script type="module">
     $(document).ready(function() {
-        commonAjax.allowOnlyNumbers(['conductorNumber', 'managerNumber', 'ownerNumber']); // Ids
+        commonAjax.allowNumbersWithComma(['conductorNumber', 'managerNumber', 'ownerNumber']); // Ids
     });
 
     $('#btnReset').click(function() {

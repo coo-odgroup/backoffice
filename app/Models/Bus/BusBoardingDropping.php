@@ -2,6 +2,7 @@
 
 namespace App\Models\Bus;
 
+use App\Models\Master\BoardingDropping;
 use App\Models\Master\Cities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,5 +29,10 @@ class BusBoardingDropping extends Model
     public function stop()
     {
         return $this->belongsTo(Cities::class, 'stop_id');
+    }
+
+    public function station()
+    {
+        return $this->belongsTo(BoardingDropping::class, 'stop_id');
     }
 }

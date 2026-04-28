@@ -72,7 +72,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <select class="form-select form-select-sm" name="seat_layout_id" id="seatLayout">
                                                     <option value="">Select Seat Layout</option>
                                                     @foreach($data['seat_layout'] as $layout)
-                                                    <option value="{{ $layout->id }}" {{ ($data['step7BusRes']==$layout->id) ? 'selected' : '' }}>
+                                                    <option value="{{ $layout->id }}" {{ (@$data['step7BusRes']==$layout->id) ? 'selected' : '' }}>
                                                         {{ $layout->layout_name }}
                                                     </option>
                                                     @endforeach

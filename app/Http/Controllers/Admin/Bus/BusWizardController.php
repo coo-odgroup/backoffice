@@ -206,9 +206,20 @@ class BusWizardController extends Controller
             ->groupBy('category_name');
 
         $busRoutesStops = BusRoutesStops::with('city')->where('bus_id', $busId)->orderBy('stop_order', 'ASC')->get();
-        $busBoardingDropping = BusBoardingDropping::with('city', 'stop')->where('bus_id', $busId)->get();
-        // $busBoardingDropping = BusBoardingDropping::with(['city.boardingdroppings'])->where('bus_id', $busId)->get();
-        // return $busBoardingDropping;
+        $busBoardingDropping = BusBoardingDropping::with(['city', 'station'])
+            ->where('bus_id', $busId)
+            ->get()
+            ->groupBy(fn($item) => $item->city->city_name)
+            ->map(function ($group) {
+                return $group->map(function ($item) {
+                    return [
+                        'location' => $item->station->brd_drp_point ?? '--',
+                        'time' => $item->timing,
+                        'type' => $item->type,
+                    ];
+                })->values();
+            })
+            ->toArray();
         $busRouteFares = BusRouteFares::with('source', 'destination')->where('bus_id', $busId)->get();
         $busContacts = BusContacts::where('bus_id', $busId)->get();
 

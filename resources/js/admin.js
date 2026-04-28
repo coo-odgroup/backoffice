@@ -20,7 +20,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 import select2 from 'select2';
-select2($); 
+select2($);
 
 import '@fortawesome/fontawesome-free/js/all';
 
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-$(document).ajaxStart(function () {    
+$(document).ajaxStart(function () {
     $('#pageLoader').removeClass('d-none').addClass('d-flex');
 });
 
@@ -63,8 +63,8 @@ window.addEventListener('load', function () {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    
-   
+
+
     const alerts = document.querySelectorAll('.alert');
 
     alerts.forEach(function (alert) {
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('btnToggleFilter');
     const filterBox = document.getElementById('filterBox');
 
-    if (!btn || !filterBox) return; 
+    if (!btn || !filterBox) return;
 
     btn.addEventListener('click', function () {
 
@@ -125,12 +125,13 @@ import { loadDataTable } from './common-datatable';
 window.loadDataTable = loadDataTable;
 
 import * as commonAjax from './commonAjax';
-window.commonAjax = commonAjax; 
+window.commonAjax = commonAjax;
 window.initTooltips = commonAjax.initTooltips;
 window.actionRec = commonAjax.actionRec;
 window.initCharCounter = commonAjax.initCharCounter;
 window.makeUpperCase = commonAjax.makeUpperCase;
 window.allowOnlyNumbers = commonAjax.allowOnlyNumbers;
+window.allowNumbersWithComma = commonAjax.allowNumbersWithComma;
 
 $(document).on('click', '.btn-view-log', function() {
 
@@ -148,7 +149,7 @@ $(document).on('click', '.btn-view', function() {
 });
 
 import * as seatAjax from './seat-layout';
-window.seatAjax = seatAjax; 
+window.seatAjax = seatAjax;
 
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 

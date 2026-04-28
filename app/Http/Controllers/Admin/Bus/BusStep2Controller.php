@@ -34,9 +34,8 @@ class BusStep2Controller extends Controller
         $data['param2'] = $param2;
 
         // Edit or Back or Continue
-        // $ifExist = BusRoutesStops::where('bus_id', $busId)->first();
-        // return $ifExist;
-        if ($param == 'save' && ($param2 == 'back' || $param2 == 'edit')) {
+        $isExist = BusRoutesStops::where('bus_id', $busId)->first();
+        if ($param == 'save' && ($param2 == 'back' || $param2 == 'edit') || $isExist) {
             $busRouteStops = BusRoutesStops::with('city')
                 ->where('bus_id', $busId)
                 ->get();
@@ -47,6 +46,8 @@ class BusStep2Controller extends Controller
                     $item->city->city_name
                 ];
             })->values();
+
+            $data['existRes'] = 1;
         }
 
         return view('admin.bus.wizard.step2', compact('data'));
