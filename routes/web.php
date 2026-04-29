@@ -87,6 +87,8 @@ Route::prefix('admin/bus')->group(function () {
 
     Route::get('/copy/{encId?}', [BusWizardController::class, 'copy'])->name('bus.copy');
     Route::get('/clone/{encId?}', [BusWizardController::class, 'clone'])->name('bus.clone');
+
+    Route::post('/view', [BusWizardController::class, 'viewBusRecord'])->name('bus.viewbusrecord');
 });
 
 Route::prefix('admin/bus/create')->group(function () {
