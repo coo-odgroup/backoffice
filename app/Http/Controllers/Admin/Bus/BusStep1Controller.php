@@ -140,32 +140,72 @@ class BusStep1Controller extends Controller
             $amenities_ids = request('amenities_id', []);
 
             $category_map = Amenity::whereIn('id', $amenities_ids)
-                ->pluck('category_id', 'id'); // key = amenity_id
+                ->pluck('category_id', 'id')
+                ->toArray();
 
-            $amenitiesData = [];
+            $newAmenities = collect($amenities_ids)
+                ->filter(fn($id) => isset($category_map[$id]))
+                ->values()
+                ->toArray();
 
-            foreach ($amenities_ids as $amenities_id) {
+            BusAmenity::withTrashed()
+                ->where('bus_id', $bus_id)
+                ->whereIn('amenities_id', $newAmenities)
+                ->restore();
 
-                if (!isset($category_map[$amenities_id])) {
-                    continue;
-                }
-
-                $amenitiesData[] = [
-                    'bus_id' => $bus_id,
-                    'category_id' => $category_map[$amenities_id],
-                    'amenities_id' => $amenities_id,
+            BusAmenity::where('bus_id', $bus_id)
+                ->whereIn('amenities_id', $newAmenities)
+                ->update([
+                    'deleted_by'    => null,
                     'active_status' => 1,
-                    'created_by' => 1
+                    'updated_at'    => now(),
+                    'updated_by'    => 1
+                ]);
+
+            $existingAll = BusAmenity::where('bus_id', $bus_id)
+                ->whereNull('deleted_at')
+                ->pluck('amenities_id')
+                ->toArray();
+
+            $toInsert = array_diff($newAmenities, $existingAll);
+
+            $insertData = [];
+
+            foreach ($toInsert as $amenities_id) {
+                $insertData[] = [
+                    'bus_id'        => $bus_id,
+                    'category_id'   => $category_map[$amenities_id],
+                    'amenities_id'  => $amenities_id,
+                    'active_status' => 1,
+                    'created_by'    => 1,
+                    'created_at'    => now()
                 ];
             }
 
-            if ($busId != 0) {
-                BusAmenity::where('bus_id', $bus_id)->delete();
+            if (!empty($insertData)) {
+                BusAmenity::insert($insertData);
             }
 
-            if (!empty($amenitiesData)) {
-                BusAmenity::insert($amenitiesData);
+            $existingActive = BusAmenity::where('bus_id', $bus_id)
+                ->whereNull('deleted_at')
+                ->pluck('amenities_id')
+                ->toArray();
+
+            $toDelete = array_diff($existingActive, $newAmenities);
+
+            if (!empty($toDelete)) {
+                BusAmenity::where('bus_id', $bus_id)
+                    ->whereIn('amenities_id', $toDelete)
+                    ->whereNull('deleted_at')
+                    ->update([
+                        'deleted_at'    => now(),
+                        'deleted_by'    => 1,
+                        'active_status' => 0,
+                        'updated_at'    => now(),
+                        'updated_by'    => 1
+                    ]);
             }
+            // Amenities Section End
 
             DB::commit();
 

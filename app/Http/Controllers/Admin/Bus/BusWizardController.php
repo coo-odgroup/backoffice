@@ -187,6 +187,7 @@ class BusWizardController extends Controller
 
     public function preview($bus_id = null, $param = null, $param2 = null)
     {
+        // return $param;
         $data = [];
         $data['strPage'] = 'Add';
         $data['strSubmit'] = 'Submit';
@@ -235,7 +236,13 @@ class BusWizardController extends Controller
         $data['param'] = $param;
         $data['param2'] = $param2;
 
-        return view('admin.bus.wizard.preview', compact('data', 'bus_record', 'amennity_records', 'busRoutesStops', 'busBoardingDropping', 'busRouteFares', 'busContacts', 'seatLayout'));
+        $page = "preview";
+
+        if ($param == "view") {
+            $page = "busview";
+        }
+
+        return view('admin.bus.wizard.'.$page, compact('data', 'bus_record', 'amennity_records', 'busRoutesStops', 'busBoardingDropping', 'busRouteFares', 'busContacts', 'seatLayout'));
     }
 
     public function genSeatLayout($seatLayoutId, $busId)
@@ -558,5 +565,14 @@ class BusWizardController extends Controller
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function viewBusRecord(Request $request)
+    {
+        $id = Crypt::decryptString($request->id);
+
+        $records = Bus::where('id', $id)->first();
+
+        return response()->json($records ?? []);
     }
 }

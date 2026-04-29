@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All ' . trim($__env->yieldContent('page_title'));
+// $page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -450,7 +450,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </a>
 
                             <a href="javascript:void(0);"
-                            class="btn btn-sm btn-primary btn-view-log"
+                            class="btn btn-sm btn-primary btn-view-bus"
                             data-table="bus"
                             data-id="${row.enc_bus_id}">
                                 <i class="fa fa-eye"></i>

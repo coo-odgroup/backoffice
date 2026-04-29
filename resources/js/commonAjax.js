@@ -554,6 +554,29 @@ export function viewUserRecord(id) {
     });
 }
 
+export function viewBusRecord(id) {
+    $("#viewBusRecordContainer").html("Loading...");
+
+    const modalElement = document.getElementById("viewBusRecord");
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "bus/create/preview/" + id + "/view",
+        success: function (response) {
+            $("#viewBusRecordContainer").html(response);
+        },
+        error: function () {
+            $("#viewBusRecordContainer").html(`
+                <div class="alert alert-danger text-center">
+                    Failed to load preview
+                </div>
+            `);
+        }
+    });
+}
+
 export function formatDate(dateString) {
     let date = new Date(dateString);
 

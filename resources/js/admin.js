@@ -148,6 +148,13 @@ $(document).on('click', '.btn-view', function() {
     commonAjax.viewUserRecord(id);
 });
 
+$(document).on('click', '.btn-view-bus', function() {
+
+    let id = $(this).data('id');
+
+    commonAjax.viewBusRecord(id);
+});
+
 import * as seatAjax from './seat-layout';
 window.seatAjax = seatAjax;
 

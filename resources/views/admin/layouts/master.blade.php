@@ -14,7 +14,7 @@
 
     @vite(['resources/css/app.css',
           'resources/js/admin.js'])
-   
+
 </head>
 
 <body>
@@ -77,7 +77,7 @@
                 <input type="hidden" id="confirmModalHref">
 
                 <div class="d-flex justify-content-center gap-3">
-                    
+
                     <button type="button"
                             class="btn btn-primary btn-sm"
                             id="btnConfirmOk"
@@ -162,6 +162,20 @@
       </div>
       <div class="modal-body" style="overflow-y:auto">
         <div id="viewUserRecordContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="viewBusRecord" tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false"   aria-hidden="true">
+ <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">View Bus Records</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" style="overflow-y:auto">
+        <div id="viewBusRecordContainer"></div>
       </div>
     </div>
   </div>
