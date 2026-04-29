@@ -341,15 +341,27 @@ class SeatBlockController extends Controller
 
                 $validRows = [];
 
-                if ($method == 'Edit' && !empty($seatOperations)) {
+                if ($method == 'Edit') {
 
-                    $editDate = $seatOperations[0]['operation_date'];
+                    $editDate = $seatOperations[0]['operation_date'] ?? ($opDate ?? null);
                     $busId = request('bus');
 
                     $submittedIds = collect($seatOperations)
                         ->pluck('bus_seat_id')
                         ->map(fn($v) => (int)$v)
                         ->toArray();
+
+                    $removedSeats = DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->whereNull('deleted_at')
+                        ->whereDate('operation_date', $editDate)
+                        ->whereIn('bus_seat_id', function ($q) use ($busId) {
+                            $q->select('id')
+                                ->from('bus_seats')
+                                ->where('bus_id', $busId);
+                        })
+                        ->whereNotIn('bus_seat_id', $submittedIds)
+                        ->get();
 
                     DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
@@ -367,6 +379,27 @@ class SeatBlockController extends Controller
                             'updated_at' => $now,
                             'updated_by' => $userId
                         ]);
+
+                    foreach ($removedSeats as $seat) {
+
+                        DB::connection('mysql_dev')
+                            ->table('odbuslog.bus_seat_operation_log')
+                            ->insert([
+                                'bus_seat_operation_id' => $seat->id,
+                                'bus_seat_id'           => $seat->bus_seat_id,
+                                'bus_id'                => $seat->bus_id,
+                                'seat_code'             => $seat->seat_code,
+                                'seat_layout_id'        => $seat->seat_layout_id,
+                                'operation_date'        => $seat->operation_date,
+                                'category'              => $seat->category,
+                                'action'                => 3,
+                                'old_category'          => 2,
+                                'new_category'          => 1,
+                                'reason'                => $seat->reason,
+                                'created_at'            => $now,
+                                'created_by'            => $userId
+                            ]);
+                    }
                 }
 
                 foreach ($seatOperations as $seat) {
@@ -406,6 +439,7 @@ class SeatBlockController extends Controller
 
                         $validRows[] = [
                             'bus_seat_id'    => $busSeatId,
+                            'bus_id'         => request('bus'),
                             'seat_code'      => $seatCode,
                             'seat_layout_id' => $layoutId,
                             'operation_date' => $operationDate,
@@ -421,15 +455,59 @@ class SeatBlockController extends Controller
 
                 if (!empty($validRows)) {
 
-                    DB::connection('mysql_dev')
-                        ->table('bus_seat_operation')
-                        ->insert($validRows);
-
                     foreach ($validRows as $row) {
+
+                        $insertId = DB::connection('mysql_dev')
+                            ->table('bus_seat_operation')
+                            ->insertGetId($row);
+
+                        $action      = 1;
+                        $oldCategory = null;
+                        $newCategory = 1; // default for Add fresh block
+
+                        $deletedRecord = DB::connection('mysql_dev')
+                            ->table('bus_seat_operation')
+                            ->where('bus_seat_id', $row['bus_seat_id'])
+                            ->whereDate('operation_date', $row['operation_date'])
+                            ->whereNotNull('deleted_at')
+                            ->orderByDesc('id')
+                            ->first();
+
+                        if ($deletedRecord) {
+
+
+                            $action = 4;
+                            $oldCategory = 1;
+                            $newCategory = 2;
+                        } elseif ($method == 'Edit') {
+
+
+                            $action = 2;
+                            $oldCategory = null;
+                            $newCategory = 2;
+                        }
+
+                        DB::connection('mysql_dev')
+                            ->table('odbuslog.bus_seat_operation_log')
+                            ->insert([
+                                'bus_seat_operation_id' => $insertId,
+                                'bus_seat_id'           => $row['bus_seat_id'],
+                                'bus_id'                => $row['bus_id'],
+                                'seat_code'             => $row['seat_code'],
+                                'seat_layout_id'        => $row['seat_layout_id'],
+                                'operation_date'        => $row['operation_date'],
+                                'category'              => $row['category'],
+                                'action'                => $action,
+                                'old_category'          => $oldCategory,
+                                'new_category'          => $newCategory,
+                                'reason'                => $row['reason'],
+                                'created_at'            => $now,
+                                'created_by'            => $userId
+                            ]);
 
                         app(CommonController::class)->auditLog(
                             'bus_seat_operation',
-                            0,
+                            $insertId,
                             'INSERT',
                             [],
                             $row
@@ -472,15 +550,35 @@ class SeatBlockController extends Controller
             $parts = explode('|', $decoded);
 
             if (count($parts) < 2) {
-                throw new \Exception('Invalid delete payload');
+                throw new Exception('Invalid delete payload');
             }
 
-            $busId = $parts[0];
-            $operationDate = $parts[1];
+            $busId          = $parts[0];
+            $operationDate  = $parts[1];
+            $userId         = session('userid') ?? auth()->id() ?? 1;
+            $now            = now();
 
-            $userId = session('userid') ?? auth()->id() ?? 1;
+            DB::connection('mysql_dev')->beginTransaction();
 
-            $updated = DB::connection('mysql_dev')
+            /*
+        Get active seats first for log
+        Same as unblock in add()
+        */
+            $rows = DB::connection('mysql_dev')
+                ->table('bus_seat_operation')
+                ->whereNull('deleted_at')
+                ->whereDate('operation_date', $operationDate)
+                ->whereIn('bus_seat_id', function ($q) use ($busId) {
+                    $q->select('id')
+                        ->from('bus_seats')
+                        ->where('bus_id', $busId);
+                })
+                ->get();
+
+            /*
+        Soft delete
+        */
+            DB::connection('mysql_dev')
                 ->table('bus_seat_operation')
                 ->whereNull('deleted_at')
                 ->whereDate('operation_date', $operationDate)
@@ -490,25 +588,64 @@ class SeatBlockController extends Controller
                         ->where('bus_id', $busId);
                 })
                 ->update([
-                    'deleted_at' => now(),
+                    'deleted_at' => $now,
                     'deleted_by' => $userId,
-                    'updated_at' => now(),
+                    'updated_at' => $now,
                     'updated_by' => $userId
                 ]);
 
+            /*
+        Insert log like unblock seat
+        Action = 3
+        old_category = 2
+        new_category = 1
+        */
+            foreach ($rows as $row) {
+
+                DB::connection('mysql_dev')
+                    ->table('odbuslog.bus_seat_operation_log')
+                    ->insert([
+                        'bus_seat_operation_id' => $row->id,
+                        'bus_seat_id'           => $row->bus_seat_id,
+                        'bus_id'                => $row->bus_id,
+                        'seat_code'             => $row->seat_code,
+                        'seat_layout_id'        => $row->seat_layout_id,
+                        'operation_date'        => $row->operation_date,
+                        'category'              => $row->category,
+                        'action'                => 3,
+                        'old_category'          => 2,
+                        'new_category'          => 1,
+                        'reason'                => $row->reason,
+                        'created_at'            => $now,
+                        'created_by'            => $userId
+                    ]);
+
+                app(CommonController::class)->auditLog(
+                    'bus_seat_operation',
+                    $row->id,
+                    'DELETE',
+                    (array)$row,
+                    []
+                );
+            }
+
+            DB::connection('mysql_dev')->commit();
+
             return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => 'Deleted successfully'
             ]);
         } catch (\Throwable $t) {
 
+            DB::connection('mysql_dev')->rollBack();
+
             Log::error('SeatBlock delete error', [
                 'message' => $t->getMessage(),
-                'line' => $t->getLine()
+                'line'    => $t->getLine()
             ]);
 
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Delete failed'
             ], 500);
         }
@@ -518,7 +655,6 @@ class SeatBlockController extends Controller
     {
         return $this->add($encId);
     }
-
 
     public function getSeatLayoutByBus(Request $request)
     {

@@ -49,6 +49,15 @@ class BusScheduleCron extends Command
                 ->where('entry_date', '<=', $deleteBefore)
                 ->delete();
 
+
+       
+            $seatDeleteBefore = Carbon::today()->subDays(30)->format('Y-m-d');
+
+            DB::table('odbusdev.bus_seat_operation')
+                ->whereDate('operation_date', '<=', $seatDeleteBefore)
+                ->delete();
+
+
             $schedules = DB::table('odbusdev.bus_schedule')
                 ->where('active_status', 1)
                 ->get();

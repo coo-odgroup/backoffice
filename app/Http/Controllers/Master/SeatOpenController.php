@@ -280,6 +280,63 @@ class SeatOpenController extends Controller
 
                 $seatOperations = json_decode(request('seat_operations'), true);
 
+                if ($method == 'Edit' && empty($seatOperations)) {
+
+                    DB::connection('mysql_dev')->beginTransaction();
+
+                    $userId = session('userid') ?? auth()->id() ?? 1;
+                    $now    = now();
+
+                    $rows = DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->whereNull('deleted_at')
+                        ->where('category', 1)
+                        ->where('bus_id', $busId)
+                        ->whereDate('operation_date', $opDate)
+                        ->get();
+
+                    DB::connection('mysql_dev')
+                        ->table('bus_seat_operation')
+                        ->whereNull('deleted_at')
+                        ->where('category', 1)
+                        ->where('bus_id', $busId)
+                        ->whereDate('operation_date', $opDate)
+                        ->update([
+                            'deleted_at' => $now,
+                            'deleted_by' => $userId,
+                            'updated_at' => $now,
+                            'updated_by' => $userId
+                        ]);
+
+                    foreach ($rows as $seat) {
+
+                        DB::connection('mysql_dev')
+                            ->table('odbuslog.bus_seat_operation_log')
+                            ->insert([
+                                'bus_seat_operation_id' => $seat->id,
+                                'bus_seat_id'           => $seat->bus_seat_id,
+                                'bus_id'                => $seat->bus_id,
+                                'seat_code'             => $seat->seat_code,
+                                'seat_layout_id'        => $seat->seat_layout_id,
+                                'operation_date'        => $seat->operation_date,
+                                'category'              => $seat->category,
+                                'action'                => 3,
+                                'old_category'          => 2,
+                                'new_category'          => 1,
+                                'reason'                => $seat->reason,
+                                'created_at'            => $now,
+                                'created_by'            => $userId
+                            ]);
+                    }
+
+                    DB::connection('mysql_dev')->commit();
+
+                    session()->flash('level', 'success');
+                    session()->flash('message', 'All opened seats removed successfully.');
+
+                    return redirect($redirectPage);
+                }
+
                 if (!is_array($seatOperations)) {
                     return back()->with([
                         'level'   => 'danger',
@@ -393,7 +450,7 @@ class SeatOpenController extends Controller
             */
                 if ($method == 'Edit') {
 
-                    $editDate = $seatOperations[0]['operation_date'] ?? null;
+                   $editDate = $seatOperations[0]['operation_date'] ?? ($opDate ?? null);
 
                     if ($editDate) {
 
@@ -415,12 +472,35 @@ class SeatOpenController extends Controller
                             $query->whereNotIn('seat_code', $selectedSeats);
                         }
 
+                        $removedRows = $query->get();
+
                         $query->update([
                             'deleted_at' => $now,
                             'deleted_by' => $userId,
                             'updated_at' => $now,
                             'updated_by' => $userId
                         ]);
+
+                        foreach ($removedRows as $seat) {
+
+                            DB::connection('mysql_dev')
+                                ->table('odbuslog.bus_seat_operation_log')
+                                ->insert([
+                                    'bus_seat_operation_id' => $seat->id,
+                                    'bus_seat_id'           => $seat->bus_seat_id,
+                                    'bus_id'                => $seat->bus_id,
+                                    'seat_code'             => $seat->seat_code,
+                                    'seat_layout_id'        => $seat->seat_layout_id,
+                                    'operation_date'        => $seat->operation_date,
+                                    'category'              => $seat->category,
+                                    'action'                => 3,
+                                    'old_category'          => 2,
+                                    'new_category'          => 1,
+                                    'reason'                => $seat->reason,
+                                    'created_at'            => $now,
+                                    'created_by'            => $userId
+                                ]);
+                        }
                     }
                 }
 
@@ -429,15 +509,72 @@ class SeatOpenController extends Controller
             */
                 if (!empty($validRows)) {
 
-                    DB::connection('mysql_dev')
-                        ->table('bus_seat_operation')
-                        ->insert($validRows);
-
                     foreach ($validRows as $row) {
+
+                        $insertId = DB::connection('mysql_dev')
+                            ->table('bus_seat_operation')
+                            ->insertGetId($row);
+
+                        /*
+        Default:
+        New seat opened in Add
+        */
+                        $action      = 1;
+                        $oldCategory = null;
+                        $newCategory = 1;
+
+                        /*
+        Check previously unopened then reopened
+        */
+                        $deletedRecord = DB::connection('mysql_dev')
+                            ->table('bus_seat_operation')
+                            ->where('bus_id', $row['bus_id'])
+                            ->where('category', 1)
+                            ->where('seat_code', $row['seat_code'])
+                            ->whereDate('operation_date', $row['operation_date'])
+                            ->whereNotNull('deleted_at')
+                            ->orderByDesc('id')
+                            ->first();
+
+                        if ($deletedRecord) {
+
+                            /*
+            Re-open already unopened seat
+            */
+                            $action = 4;
+                            $oldCategory = 1;
+                            $newCategory = 2;
+                        } elseif ($method == 'Edit') {
+
+                            /*
+            New seat opened in edit
+            */
+                            $action = 2;
+                            $oldCategory = null;
+                            $newCategory = 2;
+                        }
+
+                        DB::connection('mysql_dev')
+                            ->table('odbuslog.bus_seat_operation_log')
+                            ->insert([
+                                'bus_seat_operation_id' => $insertId,
+                                'bus_seat_id'           => $row['bus_seat_id'],
+                                'bus_id'                => $row['bus_id'],
+                                'seat_code'             => $row['seat_code'],
+                                'seat_layout_id'        => $row['seat_layout_id'],
+                                'operation_date'        => $row['operation_date'],
+                                'category'              => $row['category'],
+                                'action'                => $action,
+                                'old_category'          => $oldCategory,
+                                'new_category'          => $newCategory,
+                                'reason'                => $row['reason'],
+                                'created_at'            => $now,
+                                'created_by'            => $userId
+                            ]);
 
                         app(CommonController::class)->auditLog(
                             'bus_seat_operation',
-                            0,
+                            $insertId,
                             'INSERT',
                             [],
                             $row
@@ -476,18 +613,35 @@ class SeatOpenController extends Controller
         try {
 
             $decoded = Crypt::decryptString($request->id);
-            $parts = explode('|', $decoded);
+            $parts   = explode('|', $decoded);
 
             if (count($parts) < 2) {
                 throw new \Exception('Invalid payload');
             }
 
-            $busId = $parts[0];
+            $busId         = $parts[0];
             $operationDate = $parts[1];
 
             $userId = session('userid') ?? auth()->id() ?? 1;
-            $now = now();
+            $now    = now();
 
+            DB::connection('mysql_dev')->beginTransaction();
+
+            /*
+        Get active opened seats first for log
+        Same as unopen logic
+        */
+            $rows = DB::connection('mysql_dev')
+                ->table('bus_seat_operation')
+                ->whereNull('deleted_at')
+                ->where('category', 1)
+                ->where('bus_id', $busId)
+                ->whereDate('operation_date', $operationDate)
+                ->get();
+
+            /*
+        Soft delete opened seats
+        */
             $updated = DB::connection('mysql_dev')
                 ->table('bus_seat_operation')
                 ->whereNull('deleted_at')
@@ -501,31 +655,68 @@ class SeatOpenController extends Controller
                     'updated_by' => $userId
                 ]);
 
+            /*
+        Log as Unopen
+        Action = 3
+        old_category = 2
+        new_category = 1
+        */
+            foreach ($rows as $row) {
+
+                DB::connection('mysql_dev')
+                    ->table('odbuslog.bus_seat_operation_log')
+                    ->insert([
+                        'bus_seat_operation_id' => $row->id,
+                        'bus_seat_id'           => $row->bus_seat_id,
+                        'bus_id'                => $row->bus_id,
+                        'seat_code'             => $row->seat_code,
+                        'seat_layout_id'        => $row->seat_layout_id,
+                        'operation_date'        => $row->operation_date,
+                        'category'              => $row->category,
+                        'action'                => 3,
+                        'old_category'          => 2,
+                        'new_category'          => 1,
+                        'reason'                => $row->reason,
+                        'created_at'            => $now,
+                        'created_by'            => $userId
+                    ]);
+
+                app(CommonController::class)->auditLog(
+                    'bus_seat_operation',
+                    $row->id,
+                    'DELETE',
+                    (array)$row,
+                    []
+                );
+            }
+
+            DB::connection('mysql_dev')->commit();
+
             return response()->json([
-                'status' => $updated > 0,
+                'status'  => $updated > 0,
                 'message' => $updated > 0
                     ? 'Deleted successfully'
                     : 'No matching records found'
             ]);
         } catch (\Throwable $t) {
 
+            DB::connection('mysql_dev')->rollBack();
+
             Log::error('SeatOpen delete error', [
                 'message' => $t->getMessage(),
-                'line' => $t->getLine()
+                'line'    => $t->getLine()
             ]);
 
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => 'Delete failed'
             ], 500);
         }
     }
-
     public function edit($encId)
     {
         return $this->add($encId);
     }
-
 
     public function getSeatLayoutByBus(Request $request)
     {
