@@ -173,7 +173,6 @@
                 </div>
             </div>
     </form>
-
     @endsection
 
     @push('scripts')
@@ -232,6 +231,10 @@
                 loadSeatBlockSchedules(true);
                 loadSeatLayoutByBus(selectedEditDate);
                 loadBlockedSeatHistory();
+
+                /* 🔥 ADD THIS */
+                $('#operator').prop('disabled', true).trigger('change');
+                $('#bus').prop('disabled', true).trigger('change');
 
                 isRestoring = false;
             });

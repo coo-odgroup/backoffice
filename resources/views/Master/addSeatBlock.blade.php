@@ -200,41 +200,35 @@
 
         function restoreSelection() {
 
-            if (!selectedOperator) return;
+    if (!selectedOperator) return;
 
-            isRestoring = true;
+    isRestoring = true;
 
+    $('#operator').val(selectedOperator).trigger('change');
 
+    commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
 
-            $('#operator').val(selectedOperator).trigger('change');
+    waitForOptions('#bus', function() {
 
-            $('#seatLayoutContainer').html(`
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary"></div>
-                        <p>Loading seat layout...</p>
-                    </div>
-             `);
+        $('#bus').val(selectedBus).trigger('change');
 
-            commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
+        $('#reason option').each(function() {
+            if ($(this).text().trim() == selectedReason.trim()) {
+                $('#reason').val($(this).val()).trigger('change');
+            }
+        });
 
-            waitForOptions('#bus', function() {
+        loadSeatBlockSchedules(true);
+        loadSeatLayoutByBus(selectedEditDate);
+        loadBlockedSeatHistory();
 
-                $('#bus').val(selectedBus).trigger('change');
+        /* 🔥 ADD THIS BLOCK */
+        $('#operator').prop('disabled', true);
+        $('#bus').prop('disabled', true);
 
-                $('#reason option').each(function() {
-                    if ($(this).text().trim() == selectedReason.trim()) {
-                        $('#reason').val($(this).val()).trigger('change');
-                    }
-                });
-
-                loadSeatBlockSchedules(true);
-                loadSeatLayoutByBus(selectedEditDate);
-                loadBlockedSeatHistory();
-
-                isRestoring = false;
-            });
-        }
-
+        isRestoring = false;
+    });
+}
         function waitForOptions(selector, callback, retry = 0) {
 
             if ($(selector + ' option').length > 1) {

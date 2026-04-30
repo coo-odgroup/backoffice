@@ -424,10 +424,14 @@
                         $('#date').val(lastScheduleDate);
                     }
 
+                    if (selectedOperator && selectedBus) {
+                        $('#operator').prop('disabled', true).trigger('change.select2');
+                        $('#bus').prop('disabled', true).trigger('change.select2');
+                    }
+
                     isRestoring = false;
                 });
             }
-
             @if(session('level') == 'success')
 
             let bus_id = "{{ old('bus') }}";

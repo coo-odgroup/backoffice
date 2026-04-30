@@ -270,7 +270,7 @@
         $(document).ready(function() {
 
             commonAjax.initSelect2('#operator', 'Select Operator');
-            commonAjax.initSelect2('#bus', 'Select Bus');
+            $('#bus').select2({placeholder: "Select Bus",allowClear: true,dropdownParent: $('body')});
             commonAjax.initSelect2('#reason', 'Select Reason');
 
             commonAjax.loadBusOperatorDropdown('');
@@ -321,6 +321,11 @@
         });
 
 
+        if (editData.operator && editData.bus) {
+            $('#operator').prop('disabled', true).trigger('change');
+            $('#bus').prop('disabled', true).trigger('change');
+        }
+
 
         $('#operator').on('change', function() {
 
@@ -328,6 +333,9 @@
             if (!operator_id) return;
 
             commonAjax.loadBusListByOperator('#bus', operator_id, function() {
+
+                /* 🔥 RESET BUS (IMPORTANT FIX) */
+                $('#bus').val(null).trigger('change');
 
                 if (!pageInitializing) {
                     selectedBuses = [];
