@@ -821,27 +821,13 @@ class SeatBlockController extends Controller
             }
         }
 
-        $normalizedActiveSeats = array_map(function ($v) {
-
+        $normalize = function ($v) {
             $v = strtoupper(trim(preg_replace('/\s+/', '', (string)$v)));
+            return is_numeric($v) ? (string)(int)$v : $v;
+        };
 
-            if (is_numeric($v)) {
-                $v = (string)(int)$v;
-            }
-
-            return $v;
-        }, $activeSeats);
-
-        $normalizedBlockedSeats = array_map(function ($v) {
-
-            $v = strtoupper(trim(preg_replace('/\s+/', '', (string)$v)));
-
-            if (is_numeric($v)) {
-                $v = (string)(int)$v;
-            }
-
-            return $v;
-        }, $blockedSeats);
+        $normalizedActiveSeats  = array_map($normalize, $activeSeats);
+        $normalizedBlockedSeats = array_map($normalize, $blockedSeats);
 
         $html = '<div class="bus-layout">';
 
@@ -868,102 +854,132 @@ class SeatBlockController extends Controller
                         continue;
                     }
 
-                    $currentSeat = strtoupper(trim(preg_replace('/\s+/', '', $seatNo)));
+                    $seatCodeUpper = strtoupper(trim($seatNo));
 
-                    if (is_numeric($currentSeat)) {
-                        $currentSeat = (string)(int)$currentSeat;
+                    /*
+                -----------------------------------
+                EXIT (INSIDE GRID)
+                -----------------------------------
+                */
+                    if (str_contains($seatCodeUpper, 'EXIT')) {
+
+                        $img = ($seat->seat_class == 3)
+                            ? asset('assets/seats/exit_vertical.png')
+                            : asset('assets/seats/exit_horizontal.png');
+
+                        $wrapperClass = 'seat-wrap';
+
+                        if ($seat->seat_class == 3) {
+                            $wrapperClass .= ' vertical-sleeper-wrap';
+                        } elseif ($seat->seat_class == 2) {
+                            $wrapperClass .= ' sleeper-wrap';
+                        }
+
+                        $html .= '
+                            <label class="' . $wrapperClass . ' exit-seat">
+
+                                <span class="seat-img-container">
+                                    <img src="' . $img . '" class="seat-img-full" />
+                                </span>
+
+                                <span class="seat-number">EXIT</span>
+
+                            </label>';
+
+                        continue;
                     }
+
+
+                    if (str_contains($seatCodeUpper, 'TOILET')) {
+                        $html .= '<div class="empty-seat"></div>';
+                        continue;
+                    }
+
+                    $currentSeat = $normalize($seatNo);
 
                     $isActive  = in_array($currentSeat, $normalizedActiveSeats, true);
                     $isBlocked = in_array($currentSeat, $normalizedBlockedSeats, true);
 
                     if ($isBlocked) {
-
                         $selected = 'blocked';
                         $checked  = '';
                         $click    = 'onclick="toggleSeat(this)"';
                     } elseif ($isActive) {
-
                         $selected = 'selected-seat';
                         $checked  = 'checked';
                         $click    = 'onclick="toggleSeat(this)"';
                     } else {
-
                         $selected = 'disabled';
                         $checked  = '';
                         $click    = '';
                     }
 
-
-                    $busSeat = DB::connection('mysql_dev')
-                        ->table('bus_seats')
-                        ->where('bus_id', $busId)
-                        ->whereRaw('TRIM(UPPER(seat_code)) = ?', [
-                            trim(strtoupper($seatNo))
-                        ])
-                        ->first();
-
                     $busSeatId = $seatMap[$currentSeat]->id ?? 0;
 
+                    /*
+                -----------------------------------
+                VERTICAL SLEEPER
+                -----------------------------------
+                */
                     if ($seat->seat_class == 3) {
 
                         $class = 'bus-vertical-sleeper ' . $selected;
 
                         $html .= '
                     <label class="seat-wrap vertical-sleeper-wrap">
-                        <input type="checkbox"
-                            class="seat-checkbox"
-                            name="seats[]"
-                            value="' . $seatNo . '"
-                            ' . $checked . '
-                            hidden>
+                        <input type="checkbox" class="seat-checkbox"
+                            value="' . $seatNo . '" ' . $checked . ' hidden>
 
                         <span class="' . $class . '"
-                              data-busseatid="' . $busSeatId . '"
-                              data-layout="' . $layoutId . '"
-                              ' . $click . '></span>
+                            data-busseatid="' . $busSeatId . '"
+                            data-layout="' . $layoutId . '"
+                            ' . $click . '></span>
 
                         <span class="seat-number">' . $seatNo . '</span>
                     </label>';
 
                         $skip[$rIndex + 1][$cIndex] = true;
-                    } elseif ($seat->seat_class == 2) {
+                    }
+
+                    /*
+                -----------------------------------
+                HORIZONTAL SLEEPER
+                -----------------------------------
+                */ elseif ($seat->seat_class == 2) {
 
                         $class = 'bus-sleeper ' . $selected;
 
                         $html .= '
                     <label class="seat-wrap sleeper-wrap">
-                        <input type="checkbox"
-                            class="seat-checkbox"
-                            name="seats[]"
-                            value="' . $seatNo . '"
-                            ' . $checked . '
-                            hidden>
+                        <input type="checkbox" class="seat-checkbox"
+                            value="' . $seatNo . '" ' . $checked . ' hidden>
 
                         <span class="' . $class . '"
-                              data-busseatid="' . $busSeatId . '"
-                              data-layout="' . $layoutId . '"
-                              ' . $click . '></span>
+                            data-busseatid="' . $busSeatId . '"
+                            data-layout="' . $layoutId . '"
+                            ' . $click . '></span>
 
                         <span class="seat-number">' . $seatNo . '</span>
                     </label>';
-                    } else {
+                    }
+
+                    /*
+                -----------------------------------
+                NORMAL SEAT
+                -----------------------------------
+                */ else {
 
                         $class = 'bus-seat ' . $selected;
 
                         $html .= '
                     <label class="seat-wrap">
-                        <input type="checkbox"
-                            class="seat-checkbox"
-                            name="seats[]"
-                            value="' . $seatNo . '"
-                            ' . $checked . '
-                            hidden>
+                        <input type="checkbox" class="seat-checkbox"
+                            value="' . $seatNo . '" ' . $checked . ' hidden>
 
                         <span class="' . $class . '"
-                              data-busseatid="' . $busSeatId . '"
-                              data-layout="' . $layoutId . '"
-                              ' . $click . '></span>
+                            data-busseatid="' . $busSeatId . '"
+                            data-layout="' . $layoutId . '"
+                            ' . $click . '></span>
 
                         <span class="seat-number">' . $seatNo . '</span>
                     </label>';

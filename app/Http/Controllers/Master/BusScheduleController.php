@@ -218,10 +218,10 @@ class BusScheduleController extends Controller
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'operator'       => 'required|integer',
-                    'bus'            => 'required|integer',
-                    'running_cycle'  => 'required|integer|min:1|max:5',
-                    'date'           => 'required|date',
+                    'operator'      => 'required|integer',
+                    'bus'           => 'required|integer',
+                    'running_cycle' => 'required|integer|min:1|max:5',
+                    'date'          => 'required|date',
                 ]);
 
                 if ($validator->fails()) {
@@ -234,6 +234,27 @@ class BusScheduleController extends Controller
                 $bus_id        = request('bus');
                 $running_cycle = (int) request('running_cycle');
                 $start_date    = request('date');
+
+                /*
+            Prevent duplicate active schedule for same bus
+            */
+                $duplicateQuery = DB::table('odbusdev.bus_schedule')
+                    ->where('bus_id', $bus_id)
+                    ->where('active_status', 1);
+
+                if ($id > 0) {
+                    $duplicateQuery->where('id', '!=', $id);
+                }
+
+                if ($duplicateQuery->exists()) {
+
+                    DB::rollBack();
+
+                    return back()->withInput()->with([
+                        'level'   => 'danger',
+                        'message' => 'This bus already has a schedule.'
+                    ]);
+                }
 
                 if ($id > 0) {
 
@@ -251,6 +272,7 @@ class BusScheduleController extends Controller
                     $newChanged = [];
 
                     foreach ($newData as $key => $value) {
+
                         $oldValue = $oldData->$key ?? null;
 
                         if ((string)$oldValue !== (string)$value) {
@@ -258,7 +280,9 @@ class BusScheduleController extends Controller
                             $newChanged[$key] = $value;
                         }
                     }
+
                     if (!empty($newChanged)) {
+
                         app(CommonController::class)->auditLog(
                             'bus_schedule',
                             $id,
@@ -284,6 +308,7 @@ class BusScheduleController extends Controller
 
                     $schedule_id = $id;
                 } else {
+
                     $insertData = [
                         'operator_id'   => $operator_id,
                         'bus_id'        => $bus_id,
@@ -336,7 +361,7 @@ class BusScheduleController extends Controller
                 return redirect()->back()
                     ->withInput()
                     ->with([
-                        'level' => 'success',
+                        'level'   => 'success',
                         'message' => 'Bus Schedule ' . ($id ? 'updated' : 'created') . ' successfully'
                     ]);
             }
@@ -357,7 +382,6 @@ class BusScheduleController extends Controller
 
         return view('Master.addBusSchedule', compact('data'));
     }
-
     public function edit($encId)
     {
         return $this->add($encId);
@@ -445,11 +469,12 @@ class BusScheduleController extends Controller
             }
 
             $html = '
-                                <div id="modalBusTitle" style="display:none;"> - (' . $busNumber . ')</div>';
+                <div id="modalBusTitle" style="display:none;"> - (' . $busNumber . ')</div>';
 
             if (!empty($scheduleDates)) {
 
-                $chunkSize = ceil(count($scheduleDates) / 3);
+                $columns = 3;
+                $chunkSize = ceil(count($scheduleDates) / $columns);
                 $chunks = array_chunk($scheduleDates, $chunkSize);
 
                 $html .= '<div class="row">';
@@ -466,15 +491,15 @@ class BusScheduleController extends Controller
 
                         if ($dateObj->lt($today)) {
                             $style = 'color:#6c757d;
-                                  text-decoration:line-through;
-                                  text-decoration-color:red;
-                                  text-decoration-thickness:2px;';
+                          text-decoration:line-through;
+                          text-decoration-color:red;
+                          text-decoration-thickness:2px;';
                         }
 
                         $html .= '
-                            <div class="date-tile text-center mb-2 p-2 border rounded bg-light" style="' . $style . '">
-                                ' . $dateObj->format('d-M-Y') . '
-                            </div>';
+            <div class="date-box text-center mb-2 p-2 border rounded bg-light" style="' . $style . '">
+                ' . $dateObj->format('d-M-Y') . '
+            </div>';
                     }
 
                     $html .= '</div>';
@@ -502,9 +527,9 @@ class BusScheduleController extends Controller
         } catch (\Exception $e) {
 
             return response('
-                <div class="text-danger text-center p-4">
-                    Failed to load schedule
-                </div>');
+            <div class="text-danger text-center p-4">
+                Failed to load schedule
+            </div>');
         }
     }
 }

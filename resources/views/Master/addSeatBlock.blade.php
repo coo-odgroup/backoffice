@@ -100,7 +100,7 @@
                                                         <strong>Schedule Date List</strong>
                                                     </div>
 
-                                                    <div class="card-body" id="scheduleContainer">
+                                                    <div class="card-body" id="seatBlockScheduleContainer">
                                                         <div class="text-center text-muted">
                                                             Please select Operator and Bus
                                                         </div>
@@ -171,7 +171,6 @@
                 </div>
             </div>
     </form>
-
 
     @endsection
 
@@ -259,7 +258,7 @@
 
             $('#bus').html('');
 
-            $('#scheduleContainer').html(`
+            $('#seatBlockScheduleContainer').html(`
                     <div class="text-center text-muted">
                         Please select bus
                     </div>
@@ -309,7 +308,7 @@
             let bus = $('#bus').val();
 
             if (!operator || !bus) {
-                $('#scheduleContainer').html(`
+                $('#seatBlockScheduleContainer').html(`
                     <div class="text-center text-muted">
                         Please select operator and bus
                     </div>
@@ -321,7 +320,7 @@
             let year = today.getFullYear();
             let month = today.getMonth() + 1;
 
-            $('#scheduleContainer').html(`
+            $('#seatBlockScheduleContainer').html(`
                     <div class="text-center p-4">
                         <div class="spinner-border text-primary"></div>
                         <p>Loading schedules...</p>
@@ -342,7 +341,7 @@
 
                 success: function(res) {
                     if (!res.status || !res.data) {
-                        $('#scheduleContainer').html(`
+                        $('#seatBlockScheduleContainer').html(`
                             <div class="text-danger text-center">
                                 No Schedule Found
                             </div>
@@ -359,7 +358,7 @@
 
         window.handlePageCancel = function() {
 
-            let isEditPage = @json(request()-> routeIs('seat-block.edit'));
+            let isEditPage = @json(request() -> routeIs('seat-block.edit'));
 
             if (isEditPage) {
                 window.location.href = "{{ route('seat-block.index') }}";
@@ -486,7 +485,7 @@
                         `;
                     });
 
-                    $('#scheduleContainer').html(html);
+                    $('#seatBlockScheduleContainer').html(html);
 
                     if (isEditMode && selectedEditDate) {
 

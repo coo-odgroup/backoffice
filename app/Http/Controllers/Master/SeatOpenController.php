@@ -351,9 +351,6 @@ class SeatOpenController extends Controller
                 $busId    = request('bus');
                 $reasonId = request('reason');
 
-                /*
-            Correct Reason Mapping
-            */
                 $reason = DB::connection('mysql_dev')
                     ->table('odbusmaster.mst_annexture as ma')
                     ->join(
@@ -382,9 +379,7 @@ class SeatOpenController extends Controller
                         continue;
                     }
 
-                    /*
-                Seat from mst_seats
-                */
+
                     $mstSeatId = DB::connection('mysql_dev')
                         ->table('odbusmaster.mst_seats')
                         ->where('seat_layout_name_id', $layoutId)
@@ -398,9 +393,7 @@ class SeatOpenController extends Controller
                         continue;
                     }
 
-                    /*
-                Permanent active seats cannot be opened
-                */
+
                     $isPermanent = DB::connection('mysql_dev')
                         ->table('bus_seats')
                         ->where('bus_id', $busId)
@@ -412,9 +405,6 @@ class SeatOpenController extends Controller
                         continue;
                     }
 
-                    /*
-                Existing active row?
-                */
                     $exists = DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
                         ->whereNull('deleted_at')
@@ -443,11 +433,6 @@ class SeatOpenController extends Controller
                     ];
                 }
 
-                /*
-            EDIT MODE:
-            delete only unchecked seats
-            keep old checked seats untouched
-            */
                 if ($method == 'Edit') {
 
                    $editDate = $seatOperations[0]['operation_date'] ?? ($opDate ?? null);
@@ -913,6 +898,38 @@ class SeatOpenController extends Controller
                         continue;
                     }
 
+
+                    $seatCodeUpper = strtoupper(trim($seatNo));
+
+                    if (str_contains($seatCodeUpper, 'EXIT')) {
+
+                        $img = ($seat->seat_class == 3)
+                            ? asset('assets/seats/exit_vertical.png')
+                            : asset('assets/seats/exit_horizontal.png');
+
+                        $wrapperClass = 'seat-wrap';
+
+                        if ($seat->seat_class == 3) {
+                            $wrapperClass .= ' vertical-sleeper-wrap';
+                        } elseif ($seat->seat_class == 2) {
+                            $wrapperClass .= ' sleeper-wrap';
+                        }
+
+                        $html .= '
+                        <label class="' . $wrapperClass . ' exit-seat">
+
+                            <span class="seat-img-container">
+                                <img src="' . $img . '" class="seat-img-full" />
+                            </span>
+
+                            <span class="seat-number">EXIT</span>
+
+                        </label>';
+
+                        continue;
+                    }
+
+                    
                     $currentSeat = strtoupper(trim(preg_replace('/\s+/', '', $seatNo)));
 
                     if (is_numeric($currentSeat)) {

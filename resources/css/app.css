@@ -2484,9 +2484,6 @@ label.amenity-chip:has(input:checked) {
 
         /* ===== Schedule Date Tiles (override) ===== */
 
-        #scheduleContainer .row>.col-md-4 {
-            display: flex;
-        }
 
 
 
@@ -2572,34 +2569,9 @@ label.amenity-chip:has(input:checked) {
         /* FINAL FIX - FORCE SINGLE LINE THIN TILES */
 
         /* schedule tiles */
-        #scheduleContainer .row>.col-md-4,
-        #scheduleContainer .row>.col-md-12 {
-            display: flex;
-        }
+      
 
-        #scheduleContainer .schedule-tile,
-        #scheduleContainer .cancelled-inline-tile,
-        #scheduleContainer .disabled-date-tile {
-            width: 100%;
-            height: 38px;
-            min-height: 38px;
-            max-height: 38px;
 
-            border: 1px solid #adb5bd;
-            border-radius: 4px;
-            background: #fff;
-
-            box-sizing: border-box;
-
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-
-            padding: 0 10px;
-            margin: 0;
-        }
 
         /* checkbox */
         #scheduleContainer .schedule-checkbox {
@@ -2724,7 +2696,72 @@ label.amenity-chip:has(input:checked) {
 
 
 
+#seatOpenScheduleContainer .schedule-tile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 
+    height: 38px;
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    background: #fff;
+}
+
+#seatBlockScheduleContainer .schedule-tile {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    height: 38px;
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    background: #fff;
+}
+
+/* COMMON for both Seat Block & Seat Open */
+.seat-img-container {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.seat-img-full {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: none !important;
+    background: transparent;
+}
+
+.exit-seat {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    border: none !important;
+    background: transparent !important;
+    width: 100%;
+    height: 100%;
+}
+
+.exit-seat,
+.exit-seat * {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+#seatBlockContainer .exit-seat .seat-img-container {
+    top: -15px;
+}
+
+#seatLayoutContainer .exit-seat .seat-img-container {
+    top: -17px;
+}
 
 
 

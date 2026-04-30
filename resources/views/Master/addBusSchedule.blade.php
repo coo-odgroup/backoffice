@@ -125,14 +125,11 @@
                                                                 @endphp
 
                                                                 <div class="row">
-                                                                    @foreach ($chunks as $chunk)
-                                                                    <div class="col-4">
-                                                                        @foreach ($chunk as $date)
-                                                                        <div
-                                                                            class="date-tile text-center mb-2">
+                                                                    @foreach ($data['scheduleDates'] as $date)
+                                                                    <div class="col-md-4 mb-2">
+                                                                        <div class="date-box text-center p-2 border rounded bg-light">
                                                                             {{ \Carbon\Carbon::parse($date)->format('d-M-Y') }}
                                                                         </div>
-                                                                        @endforeach
                                                                     </div>
                                                                     @endforeach
                                                                 </div>
@@ -172,7 +169,22 @@
         </form>
 
         <style>
+            .date-pill {
+                padding: 6px 10px;
+                border-radius: 6px;
+                border: 1px solid #adb5bd;
+                background: #e9ecef;
+                font-size: 12px;
+                white-space: nowrap;
+            }
 
+            .date-box {
+                padding: 8px;
+                border-radius: 6px;
+                border: 1px solid #adb5bd;
+                background: #f8f9fa;
+                font-size: 13px;
+            }
         </style>
 
         @endsection
@@ -387,34 +399,34 @@
             let selectedCycle = "{{ $data['row']->running_cycle ?? '' }}";
 
 
-         function restoreSelection() {
+            function restoreSelection() {
 
-    if (!selectedOperator) return;
+                if (!selectedOperator) return;
 
-    isRestoring = true;
+                isRestoring = true;
 
-    $('#operator').val(selectedOperator).trigger('change.select2');
+                $('#operator').val(selectedOperator).trigger('change.select2');
 
-    commonAjax.loadBusListByOperator('#bus', selectedOperator);
+                commonAjax.loadBusListByOperator('#bus', selectedOperator);
 
-    waitForOptions('#bus', function () {
+                waitForOptions('#bus', function() {
 
-        if (selectedBus) {
-            $('#bus').val(selectedBus).trigger('change.select2');
-            loadSchedule(selectedBus);
-        }
+                    if (selectedBus) {
+                        $('#bus').val(selectedBus).trigger('change.select2');
+                        loadSchedule(selectedBus);
+                    }
 
-        if (selectedCycle) {
-            $('#running_cycle').val(selectedCycle);
-        }
+                    if (selectedCycle) {
+                        $('#running_cycle').val(selectedCycle);
+                    }
 
-        if (lastScheduleDate) {
-            $('#date').val(lastScheduleDate);
-        }
+                    if (lastScheduleDate) {
+                        $('#date').val(lastScheduleDate);
+                    }
 
-        isRestoring = false;
-    });
-}
+                    isRestoring = false;
+                });
+            }
 
             @if(session('level') == 'success')
 
