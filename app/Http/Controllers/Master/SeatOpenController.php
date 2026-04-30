@@ -40,7 +40,11 @@ class SeatOpenController extends Controller
                 ->where('bso.category', 1)
 
                 ->leftJoin('bus as b', 'b.id', '=', 'bso.bus_id')
-                ->leftJoin('bus_routes_map as brm', 'brm.bus_id', '=', 'b.id')
+
+                ->leftJoin('bus_routes_map as brm', function ($join) {
+                    $join->on('brm.bus_id', '=', 'b.id')
+                        ->limit(1);
+                })
                 ->leftJoin('bus_routes as br', function ($join) {
                     $join->on('br.id', '=', 'brm.bus_route_id')
                         ->whereNull('br.deleted_at');
@@ -50,40 +54,33 @@ class SeatOpenController extends Controller
                     'bso.id',
                     'bso.bus_id',
 
-                    DB::raw("(
-                    SELECT organization_name
-                    FROM odbusmaster.users
-                    WHERE id = b.bus_operator_id
-                    LIMIT 1
-                ) as operator_name"),
+                    DB::raw("(SELECT organization_name FROM odbusmaster.users WHERE id = b.bus_operator_id LIMIT 1) as operator_name"),
 
                     'b.name as bus_name',
                     'b.bus_number as bus_registration_no',
                     'br.route_name',
                     'bso.operation_date',
                     'bso.seat_code',
-                    'bso.reason',
-                    'bso.created_at',
 
                     DB::raw("(
-                    SELECT name
-                    FROM odbusmaster.users
-                    WHERE id = bso.created_by
+                    SELECT ma.annexture_name
+                    FROM odbusmaster.mst_annexture ma
+                    JOIN odbusmaster.mst_annexture_type mat 
+                        ON mat.id = ma.annexture_type_id
+                    WHERE mat.annexture_type = 'REASON'
+                    AND ma.annexture_value = bso.reason
+                    AND ma.active_status = 1
                     LIMIT 1
-                ) as created_by_name")
+                ) as reason"),
+
+                    'bso.created_at',
+
+                    DB::raw("(SELECT name FROM odbusmaster.users WHERE id = bso.created_by LIMIT 1) as created_by_name")
                 );
 
             if (!empty($txtSearch)) {
-
                 $query->where(function ($q) use ($txtSearch) {
-
-                    $q->whereRaw("(
-                    SELECT organization_name
-                    FROM odbusmaster.users
-                    WHERE id = b.bus_operator_id
-                    LIMIT 1
-                ) like ?", ["%{$txtSearch}%"])
-
+                    $q->whereRaw("(SELECT organization_name FROM odbusmaster.users WHERE id = b.bus_operator_id LIMIT 1) like ?", ["%{$txtSearch}%"])
                         ->orWhere('b.name', 'like', "%{$txtSearch}%")
                         ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
                         ->orWhere('bso.seat_code', 'like', "%{$txtSearch}%");
@@ -105,30 +102,17 @@ class SeatOpenController extends Controller
             if (!empty($destination)) {
                 $query->where('br.dropping_city_id', $destination);
             }
-
             if (!empty($reason)) {
-
-                $reasonName = DB::connection('mysql_dev')
-                    ->table('odbusmaster.mst_annexture')
-                    ->where('id', $reason)
-                    ->value('annexture_name');
-
-                if (!empty($reasonName)) {
-                    $query->where('bso.reason', $reasonName);
-                }
+                $query->where('bso.reason', $reason);
             }
-
             $today = date('Y-m-d');
 
             if (empty($fromDate) && empty($toDate)) {
-
                 $query->whereDate('bso.operation_date', '>=', $today);
             } else {
-
                 if (!empty($fromDate)) {
                     $query->whereDate('bso.operation_date', '>=', $fromDate);
                 }
-
                 if (!empty($toDate)) {
                     $query->whereDate('bso.operation_date', '<=', $toDate);
                 }
@@ -143,11 +127,9 @@ class SeatOpenController extends Controller
 
             foreach ($rows as $row) {
 
-                /* GROUP ONLY BY BUS */
                 $key = $row->bus_id;
 
                 if (!isset($grouped[$key])) {
-
                     $grouped[$key] = [
                         'id'            => $row->id,
                         'operator_name' => $row->operator_name ?: '--',
@@ -160,7 +142,6 @@ class SeatOpenController extends Controller
                 $dateKey = date('d-M-Y', strtotime($row->operation_date));
 
                 if (!isset($grouped[$key]['block_info'][$dateKey])) {
-
                     $grouped[$key]['block_info'][$dateKey] = [
                         'date'       => $dateKey,
                         'seat_list'  => [],
@@ -170,8 +151,7 @@ class SeatOpenController extends Controller
                         'enc_id'     => Crypt::encryptString($row->bus_id . '|' . $row->operation_date),
                     ];
                 }
-
-                $grouped[$key]['block_info'][$dateKey]['seat_list'][] = $row->seat_code;
+                $grouped[$key]['block_info'][$dateKey]['seat_list'][$row->seat_code] = $row->seat_code;
             }
 
             foreach ($grouped as &$item) {
@@ -182,7 +162,7 @@ class SeatOpenController extends Controller
 
                     $formatted[] = [
                         'date'       => $r['date'],
-                        'seat_code'  => implode(', ', $r['seat_list']),
+                        'seat_code'  => implode(', ', array_values($r['seat_list'])),
                         'reason'     => $r['reason'],
                         'created_by' => $r['created_by'],
                         'created_at' => $r['created_at'],
@@ -362,7 +342,7 @@ class SeatOpenController extends Controller
                     ->where('mat.annexture_type', 'REASON')
                     ->where('ma.annexture_value', $reasonId)
                     ->where('ma.active_status', 1)
-                    ->value('ma.annexture_name');
+                    ->value('ma.annexture_value'); // ✅ STORE VALUE (2,3,...)
 
                 $reason = $reason ?: 'Other';
 
@@ -435,7 +415,7 @@ class SeatOpenController extends Controller
 
                 if ($method == 'Edit') {
 
-                   $editDate = $seatOperations[0]['operation_date'] ?? ($opDate ?? null);
+                    $editDate = $seatOperations[0]['operation_date'] ?? ($opDate ?? null);
 
                     if ($editDate) {
 
@@ -929,7 +909,7 @@ class SeatOpenController extends Controller
                         continue;
                     }
 
-                    
+
                     $currentSeat = strtoupper(trim(preg_replace('/\s+/', '', $seatNo)));
 
                     if (is_numeric($currentSeat)) {

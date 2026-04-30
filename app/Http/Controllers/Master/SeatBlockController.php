@@ -35,7 +35,6 @@ class SeatBlockController extends Controller
             $toDate   = request('toDate');
             $reason   = request('reason');
 
-
             $query = DB::connection('mysql_dev')
                 ->table('bus_seat_operation as bso')
                 ->whereNull('bso.deleted_at')
@@ -69,7 +68,18 @@ class SeatBlockController extends Controller
                     'bso.operation_date',
                     'bso.seat_code',
                     'bso.category',
-                    'bso.reason',
+
+                    DB::raw("(
+                    SELECT ma.annexture_name
+                    FROM odbusmaster.mst_annexture ma
+                    JOIN odbusmaster.mst_annexture_type mat 
+                        ON mat.id = ma.annexture_type_id
+                    WHERE mat.annexture_type = 'REASON'
+                    AND ma.annexture_value = bso.reason
+                    AND ma.active_status = 1
+                    LIMIT 1
+                ) as reason"),
+
                     'bso.created_at',
                     'bso.updated_at',
 
@@ -78,18 +88,17 @@ class SeatBlockController extends Controller
                 )
 
                 ->whereRaw("
-                    bso.id IN (
-                        SELECT MAX(id)
-                        FROM bus_seat_operation
-                        WHERE deleted_at IS NULL
-                        GROUP BY bus_seat_id, operation_date
-                        )
-                    ");
+                bso.id IN (
+                    SELECT MAX(id)
+                    FROM bus_seat_operation
+                    WHERE deleted_at IS NULL
+                    GROUP BY bus_seat_id, operation_date
+                )
+            ");
 
+            /* 🔍 SEARCH */
             if (!empty($txtSearch)) {
-
                 $query->where(function ($q) use ($txtSearch) {
-
                     $q->where('u.organization_name', 'like', "%{$txtSearch}%")
                         ->orWhere('b.name', 'like', "%{$txtSearch}%")
                         ->orWhere('b.bus_number', 'like', "%{$txtSearch}%")
@@ -102,14 +111,7 @@ class SeatBlockController extends Controller
             }
 
             if (!empty($reason)) {
-
-                $reasonName = DB::connection('mysql_dev')
-                    ->table('odbusmaster.mst_annexture')
-                    ->value('annexture_name');
-
-                if (!empty($reasonName)) {
-                    $query->where('bso.reason', trim($reasonName));
-                }
+                $query->where('bso.reason', $reason);
             }
 
             if (!empty($operator)) {
@@ -130,17 +132,12 @@ class SeatBlockController extends Controller
 
             $today = date('Y-m-d');
 
-
             if (empty($fromDate) && empty($toDate)) {
-
                 $query->whereDate('bso.operation_date', '>=', $today);
             } else {
-
-
                 if (!empty($fromDate)) {
                     $query->whereDate('bso.operation_date', '>=', $fromDate);
                 }
-
                 if (!empty($toDate)) {
                     $query->whereDate('bso.operation_date', '<=', $toDate);
                 }
@@ -158,7 +155,6 @@ class SeatBlockController extends Controller
                 $key = $row->bus_id;
 
                 if (!isset($grouped[$key])) {
-
                     $grouped[$key] = [
                         'id'            => $row->id,
                         'operator_name' => $row->operator_name ?: '--',
@@ -172,7 +168,6 @@ class SeatBlockController extends Controller
                 $dateKey = date('d-M-Y', strtotime($row->operation_date));
 
                 if (!isset($grouped[$key]['block_info'][$dateKey])) {
-
                     $grouped[$key]['block_info'][$dateKey] = [
                         'date'       => $dateKey,
                         'seat_list'  => [],
@@ -183,9 +178,8 @@ class SeatBlockController extends Controller
                     ];
                 }
 
-                $grouped[$key]['block_info'][$dateKey]['seat_list'][] = $row->seat_code;
+                $grouped[$key]['block_info'][$dateKey]['seat_list'][$row->seat_code] = $row->seat_code;
             }
-
 
             foreach ($grouped as &$item) {
 
@@ -195,7 +189,7 @@ class SeatBlockController extends Controller
 
                     $formatted[] = [
                         'date'       => $r['date'],
-                        'seat_code'  => implode(', ', $r['seat_list']),
+                        'seat_code'  => implode(', ', array_values($r['seat_list'])),
                         'reason'     => $r['reason'],
                         'created_by' => $r['created_by'],
                         'created_at' => $r['created_at'],
@@ -331,13 +325,7 @@ class SeatBlockController extends Controller
                 $now      = now();
                 $reasonId = request('reason');
 
-                $reason = DB::connection('mysql_dev')
-                    ->table('odbusmaster.mst_annexture as ma')
-                    ->join('odbusmaster.mst_annexture_type as mat', 'mat.id', '=', 'ma.annexture_type_id')
-                    ->where('mat.annexture_type', 'REASON')
-                    ->where('ma.active_status', 1)
-                    ->value('ma.annexture_name');
-                $reason = $reason ?: 'Other';
+              $reason = request('reason');
 
                 $validRows = [];
 
