@@ -196,7 +196,7 @@
                 restoreSelection();
             });
             commonAjax.initClearableInputs();
-        });
+        }); 
 
         function restoreSelection() {
 
@@ -396,24 +396,23 @@
                                 <div class="row">
                         `;
 
-                        /* EDIT MODE = SHOW ONLY ONE DATE */
-                        if (isEditMode && selectedEditDate) {
+                       if (isEditMode && selectedEditDate) {
 
                             html += `
                                 <div class="col-md-12 mb-2">
-                                        <label class="schedule-tile normal-inline-tile">
-                                            <input type="checkbox"
-                                                checked
-                                                name="dates[]"
-                                                value="${selectedEditDate}"
-                                                class="schedule-checkbox"
-                                                data-bus="${bus_id}"
-                                                data-date="${selectedEditDate}">
-                                            <span class="tile-date">${formatDate(selectedEditDate)}</span>
-                                        </label>
-                                    </div>
-                                    `;
-
+                                    <label class="schedule-tile normal-inline-tile disabled-date-tile">
+                                        <input type="checkbox"
+                                            checked
+                                            disabled
+                                            name="dates[]"
+                                            value="${selectedEditDate}"
+                                            class="schedule-checkbox"
+                                            data-bus="${bus_id}"
+                                            data-date="${selectedEditDate}">
+                                        <span class="tile-date">${formatDate(selectedEditDate)}</span>
+                                    </label>
+                                </div>
+                            `;
                         }
 
                         /* ADD MODE = SHOW FULL LIST */
