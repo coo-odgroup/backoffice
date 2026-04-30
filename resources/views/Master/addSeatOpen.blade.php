@@ -232,9 +232,14 @@
                 loadSeatLayoutByBus(selectedEditDate);
                 loadBlockedSeatHistory();
 
-                /* 🔥 ADD THIS */
-                $('#operator').prop('disabled', true).trigger('change');
-                $('#bus').prop('disabled', true).trigger('change');
+                /* 🔥 SAME AS SEAT BLOCK */
+                $('#operator').next('.select2-container')
+                    .css('pointer-events', 'none')
+                    .css('opacity', '0.6');
+
+                $('#bus').next('.select2-container')
+                    .css('pointer-events', 'none')
+                    .css('opacity', '0.6');
 
                 isRestoring = false;
             });

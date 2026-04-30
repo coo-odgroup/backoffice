@@ -376,6 +376,7 @@
                         if (typeof response === 'object') {
 
                             $('#scheduleContainer').html(response.html);
+                            
 
                             if (response.running_cycle) {
                                 $('#running_cycle').val(response.running_cycle).trigger('change');
@@ -424,14 +425,25 @@
                         $('#date').val(lastScheduleDate);
                     }
 
+                    /* 🔥 FINAL FIX */
                     if (selectedOperator && selectedBus) {
-                        $('#operator').prop('disabled', true).trigger('change.select2');
-                        $('#bus').prop('disabled', true).trigger('change.select2');
+
+                        $('#operator').next('.select2-container')
+                            .css('pointer-events', 'none')
+                            .css('opacity', '0.6')
+                            .css('cursor', 'not-allowed');
+
+                        $('#bus').next('.select2-container')
+                            .css('pointer-events', 'none')
+                            .css('opacity', '0.6')
+                            .css('cursor', 'not-allowed');
                     }
 
                     isRestoring = false;
                 });
             }
+
+
             @if(session('level') == 'success')
 
             let bus_id = "{{ old('bus') }}";

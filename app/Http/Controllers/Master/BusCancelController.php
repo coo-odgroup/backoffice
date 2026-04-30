@@ -42,6 +42,15 @@ class BusCancelController extends Controller
 
                 ->join('bus as b', 'b.id', '=', 'bc.bus_id')
 
+                ->leftJoin('odbusdev.bus_routes_map as brm', function ($join) {
+                    $join->on('brm.bus_id', '=', 'b.id');
+                })
+
+                ->leftJoin('odbusdev.bus_routes as br', function ($join) {
+                    $join->on('br.id', '=', 'brm.bus_route_id')
+                        ->where('br.active_status', 1);
+                })
+
 
                 ->join('odbusmaster.users as u', function ($join) {
                     $join->on('u.id', '=', 'bc.bus_operator_id')
@@ -59,6 +68,7 @@ class BusCancelController extends Controller
 
                     'b.name as bus_name',
                     'b.bus_number',
+                    'br.route_name as route',
 
                     'bcd.cancelled_date',
 
@@ -114,7 +124,7 @@ class BusCancelController extends Controller
 
                         'busName' => trim(($row->bus_name ?? '') . ' / ' . ($row->bus_number ?? '')),
 
-                        'route' => '--',
+                        'route' => $row->route ?? '--',
 
                         'reason' => $reasonText,
 
@@ -206,7 +216,17 @@ class BusCancelController extends Controller
                 DB::beginTransaction();
 
                 $operator_id  = request('operator');
-                $bus_ids      = explode(',', request('bus'));
+                $bus_ids = array_filter(explode(',', request('bus')), function ($id) {
+                    return !empty($id);
+                });
+
+                // safety check
+                if (empty($bus_ids)) {
+                    return back()->withInput()->with([
+                        'level' => 'danger',
+                        'message' => 'Please select at least one valid bus'
+                    ]);
+                }
                 $year         = request('year');
                 $month        = request('month');
                 $reason       = request('reason');
@@ -296,19 +316,19 @@ class BusCancelController extends Controller
                     'message' => 'Bus Cancel ' . ($id ? 'updated' : 'created') . ' successfully'
                 ]);
             }
-            } catch (\Throwable $t) {
+        } catch (\Throwable $t) {
 
-                DB::rollBack();
+            DB::rollBack();
 
-                return back()->withInput()->with([
-                    'level' => 'danger',
-                    'message' => $t->getMessage()
-                ]);
-            }
+            return back()->withInput()->with([
+                'level' => 'danger',
+                'message' => $t->getMessage()
+            ]);
+        }
 
         return view('Master.addBusCancel', compact('data'));
     }
-    
+
     public function edit($encId)
     {
         return $this->add($encId);

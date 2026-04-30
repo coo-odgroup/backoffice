@@ -270,7 +270,11 @@
         $(document).ready(function() {
 
             commonAjax.initSelect2('#operator', 'Select Operator');
-            $('#bus').select2({placeholder: "Select Bus",allowClear: true,dropdownParent: $('body')});
+            $('#bus').select2({
+                placeholder: "Select Bus",
+                allowClear: true,
+                dropdownParent: $('body')
+            });
             commonAjax.initSelect2('#reason', 'Select Reason');
 
             commonAjax.loadBusOperatorDropdown('');
@@ -395,7 +399,11 @@
 
             $('#selectedBuses').html(html);
 
-            $('#bus_ids').val(selectedBuses.map(b => b.id).join(','));
+            let validBusIds = selectedBuses
+                .map(b => b.id)
+                .filter(id => id && id !== '');
+
+            $('#bus_ids').val(validBusIds.join(','));
 
             $('#selectedBusWrapper').toggle(selectedBuses.length > 0);
         }

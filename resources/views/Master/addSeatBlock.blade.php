@@ -67,11 +67,13 @@
                                                     <div class="mb-2">
                                                         <label for="operator">Operator <span class="text-danger">*</span></label>
                                                         <select class="form-select form-select-sm" id="operator" name="operator"></select>
+                                                        <input type="hidden" name="operator_hidden" id="operator_hidden">
                                                     </div>
 
                                                     <div class="mb-2">
                                                         <label for="bus">Bus <span class="text-danger">*</span></label>
                                                         <select class="form-select form-select-sm" id="bus" name="bus"></select>
+                                                        <input type="hidden" name="bus_hidden" id="bus_hidden">
                                                     </div>
 
                                                     <div class="mb-2">
@@ -196,39 +198,48 @@
                 restoreSelection();
             });
             commonAjax.initClearableInputs();
-        }); 
+        });
 
         function restoreSelection() {
 
-    if (!selectedOperator) return;
+            if (!selectedOperator) return;
 
-    isRestoring = true;
+            isRestoring = true;
 
-    $('#operator').val(selectedOperator).trigger('change');
+            $('#operator').val(selectedOperator).trigger('change');
 
-    commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
+            commonAjax.loadBusListByOperator('#bus', selectedOperator, selectedBus);
 
-    waitForOptions('#bus', function() {
+            waitForOptions('#bus', function() {
 
-        $('#bus').val(selectedBus).trigger('change');
+                $('#bus').val(selectedBus).trigger('change');
 
-        $('#reason option').each(function() {
-            if ($(this).text().trim() == selectedReason.trim()) {
-                $('#reason').val($(this).val()).trigger('change');
-            }
-        });
+                $('#reason option').each(function() {
+                    if ($(this).text().trim() == selectedReason.trim()) {
+                        $('#reason').val($(this).val()).trigger('change');
+                    }
+                });
 
-        loadSeatBlockSchedules(true);
-        loadSeatLayoutByBus(selectedEditDate);
-        loadBlockedSeatHistory();
+                loadSeatBlockSchedules(true);
+                loadSeatLayoutByBus(selectedEditDate);
+                loadBlockedSeatHistory();
 
-        /* 🔥 ADD THIS BLOCK */
-        $('#operator').prop('disabled', true);
-        $('#bus').prop('disabled', true);
+                /* 🔥 ADD THIS BLOCK */
+                $('#operator_hidden').val(selectedOperator);
+                $('#bus_hidden').val(selectedBus);
 
-        isRestoring = false;
-    });
-}
+                $('#operator').next('.select2-container')
+                    .css('pointer-events', 'none')
+                    .css('opacity', '0.6');
+
+                $('#bus').next('.select2-container')
+                    .css('pointer-events', 'none')
+                    .css('opacity', '0.6');
+
+                isRestoring = false;
+            });
+        }
+
         function waitForOptions(selector, callback, retry = 0) {
 
             if ($(selector + ' option').length > 1) {
@@ -396,7 +407,7 @@
                                 <div class="row">
                         `;
 
-                       if (isEditMode && selectedEditDate) {
+                        if (isEditMode && selectedEditDate) {
 
                             html += `
                                 <div class="col-md-12 mb-2">
@@ -614,7 +625,6 @@
                 let layoutId = $(this).data('layout') || 0;
 
                 selectedDates.forEach(function(date) {
-
                     seatData.push({
                         bus_seat_id: busSeatId,
                         seat_code: seatCode,
@@ -622,7 +632,6 @@
                         operation_date: date,
                         category: 2
                     });
-
                 });
 
             });
