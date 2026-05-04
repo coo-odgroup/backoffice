@@ -66,6 +66,8 @@ use App\Http\Controllers\Master\BusCancelController;
 use App\Http\Controllers\Master\SeatBlockController;
 use App\Http\Controllers\Master\ExtraSeatBlockController;
 use App\Http\Controllers\Master\SeatOpenController;
+use App\Http\Controllers\Master\NotificationTemplateController;
+use App\Http\Controllers\Master\CronJobController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -548,4 +550,14 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'extra-seat-block/add', [ExtraSeatBlockController::class, 'add'])->name('extra-seat-block.add');
     Route::post('extra-seat-block/dataTableView', [ExtraSeatBlockController::class, 'dataTableView'])->name('extra-seat-block.dataTableView');
     Route::match(['get', 'post'], 'extra-seat-block/edit/{encId}', [ExtraSeatBlockController::class, 'edit'])->name('extra-seat-block.edit');
+
+    Route::get('/notification-template', [NotificationTemplateController::class, 'index'])->name('notification-template.index');
+    Route::match(['get', 'post'], 'notification-template/add', [NotificationTemplateController::class, 'add'])->name('notification-template.add');
+    Route::post('notification-template/dataTableView', [NotificationTemplateController::class, 'dataTableView'])->name('notification-template.dataTableView');
+    Route::match(['get', 'post'], 'notification-template/edit/{encId}', [NotificationTemplateController::class, 'edit'])->name('notification-template.edit');
+
+    Route::get('/cron-job', [CronJobController::class, 'index'])->name('cron-job.index');
+    Route::match(['get', 'post'], 'cron-job/add', [CronJobController::class, 'add'])->name('cron-job.add');
+    Route::post('cron-job/dataTableView', [CronJobController::class, 'dataTableView'])->name('cron-job.dataTableView');
+    Route::match(['get', 'post'], 'cron-job/edit/{encId}', [CronJobController::class, 'edit'])->name('cron-job.edit');
 });
