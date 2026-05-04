@@ -194,6 +194,36 @@
             let isRestoring = false;
             let selectedOperators = [];
 
+            function freezePage() {
+                $('body').css({
+                    'pointer-events': 'none',
+                    'opacity': '0.6'
+                });
+
+                if ($('#globalFreezeLoader').length === 0) {
+                    $('body').append(`
+                    <div id="globalFreezeLoader" style="
+                        position:fixed;
+                        top:50%;
+                        left:50%;
+                        transform:translate(-50%, -50%);
+                        z-index:9999;
+                    ">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                `);
+                }
+            }
+
+            function unfreezePage() {
+                $('body').css({
+                    'pointer-events': '',
+                    'opacity': ''
+                });
+
+                $('#globalFreezeLoader').remove();
+            }
+
             $('#backoffice-form').on('submit', function(e) {
 
                 let operator = $('#operator').val();
@@ -263,7 +293,16 @@
                     dropdownParent: $('body')
                 });
 
+                freezePage();
+
                 commonAjax.loadBusOperatorDropdown();
+
+                waitForOptions('#operator', function() {
+                    unfreezePage();
+                    restoreSelection();
+                });
+
+                setTimeout(unfreezePage, 5000);
 
                 waitForOptions('#operator', function() {
                     restoreSelection();
@@ -295,7 +334,6 @@
 
             });
 
-            // Operator change load buses
             $('#operator').on('change', function() {
 
                 let operator_id = $(this).val();
@@ -303,21 +341,18 @@
 
                 $('#bus').html('');
 
-                $('#bus').closest('.mb-2').append(`
-                <div id="busLoader" class="text-center mt-2">
-                    <div class="spinner-border text-primary"></div>
-                </div>
-            `);
-        
+                freezePage();
+
                 commonAjax.loadBusListByOperator('#bus', operator_id);
 
                 waitForOptions('#bus', function() {
-                    $('#busLoader').remove();
+                    unfreezePage();
                 });
 
+                setTimeout(unfreezePage, 5000);
             });
 
-            // Bus change → load schedule
+
             $('#bus').on('change', function() {
 
                 let bus_id = $(this).val();

@@ -184,6 +184,36 @@
         let selectedReason = "{{ $data['editData']->reason ?? (old('reason') ?? '') }}";
         let selectedEditDate = "{{ $data['editDate'] ?? '' }}";
 
+        function freezePage() {
+            $('body').css({
+                'pointer-events': 'none',
+                'opacity': '0.6'
+            });
+
+            if ($('#globalFreezeLoader').length === 0) {
+                $('body').append(`
+                <div id="globalFreezeLoader" style="
+                    position:fixed;
+                    top:50%;
+                    left:50%;
+                    transform:translate(-50%, -50%);
+                    z-index:9999;
+                ">
+              <div class="spinner-border text-primary"></div>
+                </div>
+            `);
+            }
+        }
+
+        function unfreezePage() {
+            $('body').css({
+                'pointer-events': '',
+                'opacity': ''
+            });
+
+            $('#globalFreezeLoader').remove();
+        }
+
 
         $(document).ready(function() {
 
@@ -191,18 +221,16 @@
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#reason', 'Select Reason');
 
-            $('#operator').closest('.mb-2').append(`
-                <div id="operatorLoader" class="text-center mt-2">
-                    <div class="spinner-border text-primary"></div>
-                </div>
-            `);
+            freezePage();
 
             commonAjax.loadBusOperatorDropdown('');
 
             waitForOptions('#operator', function() {
-                $('#operatorLoader').remove();
+                unfreezePage();
                 restoreSelection();
             });
+
+            setTimeout(unfreezePage, 5000); // fallback
 
             commonAjax.loadAnnextureList('REASON', '', '#reason');
             commonAjax.initClearableInputs();
@@ -276,24 +304,15 @@
 
             $('#bus').html('');
 
-            $('#bus').closest('.mb-2').append(`
-                <div id="busLoader" class="text-center mt-2">
-                    <div class="spinner-border text-primary"></div>
-                </div>
-            `);
-
-            $('#seatOpenScheduleContainer').html(`
-                <div class="text-center text-muted">
-                    Please select bus
-                </div>
-            `);
+            freezePage();
 
             commonAjax.loadBusListByOperator('#bus', operator_id);
 
             waitForOptions('#bus', function() {
-                $('#busLoader').remove();
+                unfreezePage();
             });
 
+            setTimeout(unfreezePage, 5000); // fallback
         });
 
 
@@ -430,7 +449,6 @@
                                 <div class="row">
                         `;
 
-                        /* EDIT MODE = SHOW ONLY ONE DATE */
                         if (isEditMode && selectedEditDate) {
 
                             html += `
@@ -450,7 +468,6 @@
                             `;
                         }
 
-                        /* ADD MODE = SHOW FULL LIST */
                         else {
 
                             bus.dates.forEach(function(date) {
