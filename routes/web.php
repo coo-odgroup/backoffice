@@ -560,4 +560,5 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'cron-job/add', [CronJobController::class, 'add'])->name('cron-job.add');
     Route::post('cron-job/dataTableView', [CronJobController::class, 'dataTableView'])->name('cron-job.dataTableView');
     Route::match(['get', 'post'], 'cron-job/edit/{encId}', [CronJobController::class, 'edit'])->name('cron-job.edit');
+    
 });

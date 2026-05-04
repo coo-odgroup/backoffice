@@ -533,3 +533,4 @@ class NotificationTemplateController extends Controller
         }
     }
 }
+
