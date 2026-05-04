@@ -191,7 +191,6 @@
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#reason', 'Select Reason');
 
-            // 🔥 SHOW LOADER FOR OPERATOR
             $('#operator').closest('.mb-2').append(`
                 <div id="operatorLoader" class="text-center mt-2">
                     <div class="spinner-border text-primary"></div>
@@ -200,7 +199,6 @@
 
             commonAjax.loadBusOperatorDropdown('');
 
-            // 🔥 WAIT + REMOVE LOADER
             waitForOptions('#operator', function() {
                 $('#operatorLoader').remove();
                 restoreSelection();
@@ -243,7 +241,6 @@
                 loadSeatLayoutByBus(selectedEditDate);
                 loadBlockedSeatHistory();
 
-                /* 🔥 SAME AS SEAT BLOCK */
                 $('#operator').next('.select2-container')
                     .css('pointer-events', 'none')
                     .css('opacity', '0.6');
