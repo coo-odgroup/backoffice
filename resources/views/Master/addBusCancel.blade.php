@@ -251,11 +251,13 @@
 
         let cancelledDatesMap = {};
         let removedCancelledDates = [];
+        let scheduleRequest = null;
+        let currentRequestId = 0;
 
 
         function waitForOptions(selector, callback, retry = 0) {
 
-            if ($(selector + ' option').length > 1) {
+            if ($(selector + ' option').length > 0) {
                 callback();
                 return;
             }
@@ -269,6 +271,15 @@
 
         $(document).ready(function() {
 
+            // 🔥 ADD THIS (before loading operator)
+            $('#operatorLoader').remove();
+
+            $('#operator').closest('.mb-2').append(`
+                <div id="operatorLoader" class="text-center mt-2">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            `);
+
             commonAjax.initSelect2('#operator', 'Select Operator');
             $('#bus').select2({
                 placeholder: "Select Bus",
@@ -279,13 +290,21 @@
 
             commonAjax.loadBusOperatorDropdown('');
 
-
             let operatorId = String(editData.operator).trim();
-            let busId = String(editData.bus).trim();
 
             waitForOptions('#operator', function() {
-                $('#operator').val(operatorId).trigger('change');
+
+                $('#operatorLoader').remove();
+
+                if (operatorId) {
+                    $('#operator').val(operatorId).trigger('change');
+                }
+
             });
+
+
+            let busId = String(editData.bus).trim();
+
             commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
             //commonAjax.loadAnnextureList('REASON', editData.reason);
 
@@ -336,18 +355,30 @@
             let operator_id = $(this).val();
             if (!operator_id) return;
 
-            commonAjax.loadBusListByOperator('#bus', operator_id, function() {
+            $('#bus').html('');
 
-                /* 🔥 RESET BUS (IMPORTANT FIX) */
-                $('#bus').val(null).trigger('change');
+            $('#busLoader').remove();
 
-                if (!pageInitializing) {
-                    selectedBuses = [];
-                    renderBuses();
-                    $('#bus_ids').val('');
-                }
+            $('#bus').closest('.mb-2').append(`
+                <div id="busLoader" class="text-center mt-2">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            `);
 
+            $('#bus').prop('disabled', true);
+
+            commonAjax.loadBusListByOperator('#bus', operator_id);
+
+
+            waitForOptions('#bus', function() {
+                $('#busLoader').remove();
+                $('#bus').prop('disabled', false);
             });
+
+            setTimeout(function() {
+                $('#busLoader').remove();
+                $('#bus').prop('disabled', false);
+            }, 5000);
 
         });
 
@@ -367,10 +398,11 @@
             });
 
             renderBuses();
-
             $(this).val('').trigger('change');
 
-            refreshAllData();
+            setTimeout(function() {
+                refreshAllData();
+            }, 200);
         });
 
         $(document).on('click', '#selectedBuses .remove', function() {
@@ -417,23 +449,31 @@
 
             if (!operator || !bus_ids || !year || !month) {
                 $('#scheduleContainer').html(`
-                <div class="text-center text-muted">
-                    Please select operator, bus, year and month
-                </div>
-                `);
+            <div class="text-center text-muted">
+                Please select operator, bus, year and month
+            </div>
+        `);
                 return;
             }
 
+            currentRequestId++;
+            let requestId = currentRequestId;
+
+            if (scheduleRequest) {
+                scheduleRequest.abort();
+            }
+
             $('#scheduleContainer').html(`
-            <div class="text-center p-4">
-                <div class="spinner-border text-primary"></div>
-                <p>Loading schedules...</p>
-            </div>
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary"></div>
+                    <p>Loading schedules...</p>
+                </div>
             `);
 
-            $.ajax({
+            scheduleRequest = $.ajax({
                 type: "POST",
                 url: "/admin/get-bus-schedule-by-month",
+                timeout: 15000,
                 data: {
                     operator_id: operator,
                     bus_ids: bus_ids,
@@ -441,14 +481,35 @@
                     month: month,
                     _token: $('meta[name="csrf-token"]').attr("content"),
                 },
+
                 success: function(res) {
 
-                    if (!res.status || !res.data) {
-                        $('#scheduleContainer').html(`<div class="text-danger">No data found</div>`);
+                    if (requestId !== currentRequestId) return;
+
+                    if (!res || !res.status || !res.data) {
+                        $('#scheduleContainer').html(`
+                    <div class="text-danger text-center">
+                        No data found
+                    </div>
+                `);
                         return;
                     }
 
                     renderSchedule(res.data);
+                },
+
+                error: function(xhr, status) {
+
+                    if (status === 'abort') return;
+
+                    $('#scheduleContainer').html(`
+                        <div class="text-danger text-center">
+                            Failed to load schedule.<br>
+                            <button class="btn btn-sm btn-primary mt-2" onclick="loadBusSchedules()">
+                                Retry
+                            </button>
+                        </div>
+                    `);
                 }
             });
         }
@@ -529,12 +590,13 @@
 
             if (pageInitializing) return;
 
+            if (!$('#bus_ids').val()) return;
+
             clearTimeout(refreshTimer);
 
             refreshTimer = setTimeout(function() {
                 refreshAllData();
             }, 300);
-
         });
 
         $('#reason').on('change', function() {

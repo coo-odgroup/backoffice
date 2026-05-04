@@ -301,44 +301,21 @@
                 let operator_id = $(this).val();
                 if (!operator_id || isRestoring) return;
 
-                if ($('#pageLoader').length === 0) {
-                    $('body').append(`
-            <div id="pageLoader" style="
-                position:fixed;
-                top:0;
-                left:0;
-                width:100%;
-                height:100%;
-                background:rgba(255,255,255,0.75);
-                z-index:99999;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                flex-direction:column;
-            ">
-                <div class="spinner-border text-primary"></div>
-                <div class="mt-2 fw-semibold">Loading buses...</div>
-            </div>
-        `);
-                }
+                $('#bus').html('');
 
+                $('#bus').closest('.mb-2').append(`
+                <div id="busLoader" class="text-center mt-2">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            `);
+        
                 commonAjax.loadBusListByOperator('#bus', operator_id);
-                let checkBusLoaded = setInterval(function() {
 
-                    if ($('#bus option').length > 1) {
-                        clearInterval(checkBusLoaded);
-                        $('#pageLoader').remove();
-                    }
-                }, 300);
-
-                // fail-safe remove after 5 sec
-                setTimeout(function() {
-                    clearInterval(checkBusLoaded);
-                    $('#pageLoader').remove();
-                }, 5000);
+                waitForOptions('#bus', function() {
+                    $('#busLoader').remove();
+                });
 
             });
-
 
             // Bus change → load schedule
             $('#bus').on('change', function() {
@@ -376,7 +353,7 @@
                         if (typeof response === 'object') {
 
                             $('#scheduleContainer').html(response.html);
-                            
+
 
                             if (response.running_cycle) {
                                 $('#running_cycle').val(response.running_cycle).trigger('change');

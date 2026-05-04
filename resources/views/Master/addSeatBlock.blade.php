@@ -191,12 +191,21 @@
             commonAjax.initSelect2('#operator', 'Select Operator');
             commonAjax.initSelect2('#bus', 'Select Bus');
             commonAjax.initSelect2('#reason', 'Select Reason');
+
+            $('#operator').closest('.mb-2').append(`
+                    <div id="operatorLoader" class="text-center mt-2">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
+                `);
+
             commonAjax.loadBusOperatorDropdown('');
-            commonAjax.loadAnnextureList('REASON', '', '#reason');
 
             waitForOptions('#operator', function() {
+                $('#operatorLoader').remove();
                 restoreSelection();
             });
+
+            commonAjax.loadAnnextureList('REASON', '', '#reason');
             commonAjax.initClearableInputs();
         });
 
@@ -263,13 +272,23 @@
 
             $('#bus').html('');
 
+            $('#bus').closest('.mb-2').append(`
+                <div id="busLoader" class="text-center mt-2">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            `);
+
             $('#seatBlockScheduleContainer').html(`
-                    <div class="text-center text-muted">
-                        Please select bus
-                    </div>
-                `);
+                <div class="text-center text-muted">
+                    Please select bus
+                </div>
+            `);
 
             commonAjax.loadBusListByOperator('#bus', operator_id);
+
+            waitForOptions('#bus', function() {
+                $('#busLoader').remove();
+            });
 
         });
 
