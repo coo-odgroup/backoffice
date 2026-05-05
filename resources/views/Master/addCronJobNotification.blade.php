@@ -1,5 +1,5 @@
         @extends('admin.layouts.master')
-        @section('page_title', 'Cron Job')
+        @section('page_title', 'Cron Job Notification')
         @section('content')
 
         <?php
@@ -463,4 +463,3 @@
             }
         </script>
         @endpush
-
