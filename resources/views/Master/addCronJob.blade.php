@@ -64,96 +64,85 @@
                                             <div class="row">
 
                                                 <!-- LEFT COLUMN -->
-                                                <div class="col-md-5">
+                                                <div class="col-md-6">
                                                     <div class="p-3 border rounded bg-white">
                                                         <div class="mb-2">
-                                                            <label for="operator">Operator<span
+                                                            <label for="operator">Cron Name<span
                                                                     class="text-danger">*</span></label>
-                                                           <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
+                                                            <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
                                                         </div>
 
                                                         <div class="mb-2">
                                                             <label for="bus">Slug<span
                                                                     class="text-danger">*</span></label>
-                                                           <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Slug" maxlength="100">
+                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Slug" maxlength="100">
                                                         </div>
-                                                          <div class="mb-2">
-                                                        <div class="row">
-                                                            <div class="col-xl-6">
-                                                                <label for="year">Type <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="year" name="year">
-                                                                    <option value="">Select Type</option>
-                                                                   
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-xl-6">
-                                                                <label for="month">Category <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="month" name="month">
-                                                                    <option value="">Select Category</option>
-                                                                  
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                         <div class="mb-2">
-                                                            <label for="operator">Event Trigger<span
-                                                                    class="text-danger">*</span></label>
-                                                           <select class="form-select form-select-sm"
-                                                                    id="month" name="month">
-                                                                    <option value="">Select Event Trigger</option>
-                                                           </select>
+                                                            <div class="row">
+                                                                <div class="col-xl-6">
+                                                                    <label for="year">Type <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="year" name="year">
+                                                                        <option value="">Select Type</option>
+                                                                        <option value="Auto">Auto</option>
+                                                                        <option value="Manual">Manual</option>
+
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-xl-6">
+                                                                    <label for="month">Scheduler Type <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="month" name="month">
+                                                                        <option value="">Select</option>
+
+                                                                    </select>
+                                                                </div>
+                                                            </div>
                                                         </div>
-
+                                                        <div class="mb-2">
+                                                            <label for="operator">Interval Minutes</label>
+                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Interval Minutes" maxlength="2">
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label for="operator">Run Time Json</label>
+                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Interval Minutes">
+                                                        </div>
                                                          <div class="mb-2">
-                                                                <label for="operator">Allowd Placeholders</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter Allowd Placeholders"></textarea>
-                                                         </div>
-
-                                                        
+                                                            <label for="operator">Cron Expression</label>
+                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Cron Expression">
+                                                        </div>
                                                     </div>
-
                                                 </div>
 
                                                 <!-- RIGHT COLUMN -->
-                                                <div class="col-md-7">
+                                                <div class="col-md-6">
                                                     <div class="border rounded schedule-card">
-                                                        <div class="card-header schedule-header">
+                                                        <!-- <div class="card-header schedule-header">
                                                             <strong>Date Schedule List</strong>
-                                                        </div>
+                                                        </div> -->
                                                         <div class="card-body" id="scheduleContainer">
 
-                                                             <div class="mb-2">
-                                                                <label for="operator">Subject</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Subject" maxlength="100">
-                                                             </div>
+                                                            <div class="mb-2">
+                                                                <label for="operator">Execution Type</label>
+                                                                <select class="form-select form-select-sm"
+                                                                        id="month" name="month">
+                                                                        <option value="">Select Execution Type</option>
+                                                                        <option value="Job">Job</option>
+                                                                        <option value="Command">Command</option>
+                                                                </select>
+                                                            </div>
 
-                                                             <div class="mb-2">
-                                                                <label for="operator">Email Content</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Email Conetent"></textarea>
-                                                             </div>
-                                                             <div class="mb-2">
-                                                                <label for="operator">Title</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
-                                                             </div>
-
-                                                             <div class="mb-2">
-                                                                <label for="operator">Body</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter Body"></textarea>
-                                                             </div>
-
-                                                              <div class="mb-2">
-                                                                <label for="operator">SMS Content</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter SMS Content"></textarea>
-                                                             </div>
-                                                              <div class="mb-2">
-                                                                <label for="operator">WhatsApp Content</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter WhatsApp Content"></textarea>
-                                                             </div>
+                                                            <div class="mb-2">
+                                                                <label for="operator">Job Class</label>
+                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Job Class" maxlength="100">
+                                                            </div>
+                                                            <div class="mb-2">
+                                                                <label for="operator">Command Name</label>
+                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Command Name" maxlength="100">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

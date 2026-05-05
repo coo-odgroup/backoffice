@@ -141,10 +141,10 @@
                                     </div>
                                 </th>
                                 <th>Sl No</th>
-                                <th>Opeator</th>
-                                <!-- <th>Route</th> -->
-                                <th>Bus Name/No</th>
-                                <th>Runing Cycle</th>
+                                <th>Cron Name</th>
+                                <th>Cron Type</th>
+                                <th>Scheduler Type</th>
+                                <th>Execution Type</th>
                                 <th>Last Modified</th>
                                 <th>Status</th>
                                 <th class="no-sort">View Schedule</th>
@@ -276,6 +276,10 @@
                         return meta.row + meta.settings._iDisplayStart + 1;
                     },
                     className: "text-center"
+                },
+                {
+                    data: 'operator_name',
+                    defaultContent: "--"
                 },
                 {
                     data: 'operator_name',
