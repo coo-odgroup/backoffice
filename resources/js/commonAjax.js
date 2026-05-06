@@ -573,7 +573,7 @@ export function viewBusRecord(id) {
                     Failed to load preview
                 </div>
             `);
-        },
+        }
     });
 }
 
@@ -1505,11 +1505,7 @@ function getLoadAnnextureList(annexture_type = "", type = "") {
         },
     });
 }
-export function loadAnnextureList_bk(
-    key,
-    selected = "",
-    selector = ".annexture",
-) {
+export function loadAnnextureList_bk(key, selected = "", selector = ".annexture") {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-annexture-list",
@@ -1544,59 +1540,30 @@ export function loadAnnextureList_bk(
     });
 }
 
-// export function loadAnnextureList(annexture_type = "", selected_id = 0) {
-//     $.ajax({
-//         type: "POST",
-//         url: ajaxUrl + "get-annexture-list",
-//         data: {
-//             annexture_type: annexture_type,
-//             _token: $('meta[name="csrf-token"]').attr("content"),
-//         },
-//         dataType: "json",
-
-//         success: function (response) {
-//             let options = '<option value="">Select Option</option>';
-
-//             if (response.status && response.data.length > 0) {
-//                 $.each(response.data, function (index, item) {
-//                     let selected = selected_id == item.annexture_value ? "selected" : "";
-
-//                     options += `<option value="${item.annexture_value}" ${selected}>
-//                                         ${item.annexture_name}
-//                                     </option>`;
-//                 });
-//             }
-
-//             $(".annexture").html(options);
-//         },
-
-//         error: function () {
-//             console.log("Error loading annexture list");
-//         },
-//     });
-// }
-
-export function loadAnnextureList(annexture_types = [], callback = null) {
+export function loadAnnextureList(annexture_type = "", selected_id = 0) {
     $.ajax({
         type: "POST",
-
         url: ajaxUrl + "get-annexture-list",
-
         data: {
-            annexture_types: annexture_types,
+            annexture_type: annexture_type,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
-
         dataType: "json",
 
         success: function (response) {
-            if (!response.status) {
-                return;
+            let options = '<option value="">Select Option</option>';
+
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, item) {
+                    let selected = selected_id == item.annexture_value ? "selected" : "";
+
+                    options += `<option value="${item.annexture_value}" ${selected}>
+                                        ${item.annexture_name}
+                                    </option>`;
+                });
             }
 
-            if (typeof callback === "function") {
-                callback(response.data);
-            }
+            $(".annexture").html(options);
         },
 
         error: function () {
@@ -1816,7 +1783,7 @@ export function allowNumbersWithComma(ids) {
             value = value.replace(/[^0-9,]/g, "");
 
             // Split by comma, limit each number to 10 digits
-            let numbers = value.split(",").map((num) => num.slice(0, 10));
+            let numbers = value.split(",").map(num => num.slice(0, 10));
 
             // Join back with comma
             value = numbers.join(",");
@@ -1901,7 +1868,7 @@ export function loadUsersList(user_code = "", selected_id = 0) {
                     let selected = selected_id == item.id ? "selected" : "";
 
                     options += `<option value="${item.id}" ${selected}>
-                                    ${item.name}${item.organization_name ? ` ( ${item.organization_name} )` : ""}
+                                    ${item.name}${item.organization_name ? ` ( ${item.organization_name} )` : ''}
                                 </option>`;
                 });
             }

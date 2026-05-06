@@ -213,60 +213,49 @@
             getDataTableView(true);
         });
 
-        $(document).ready(function() {
+        $(document).ready(async function() {
 
-            commonAjax.initSelect2('#type', 'Select Type');
-            commonAjax.initSelect2('#category', 'Select Category');
-            commonAjax.initSelect2('#trigger', 'Select Event Trigger');
+        await loadDropdown('#type', 'NOTIFICATION_TYPE');
 
-            loadAnnextureList([
-                'NOTIFICATION_TYPE',
-                'NOTIFICATION_TEMPLATE_CATEGORY',
-                'NOTIFICATION_EVENT_TRIGGER'
-            ], function(data) {
+        await loadDropdown('#category', 'NOTIFICATION_TEMPLATE_CATEGORY');
 
-                renderDropdown(
-                    '#type',
-                    data.NOTIFICATION_TYPE || []
-                );
+        await loadDropdown('#trigger', 'NOTIFICATION_EVENT_TRIGGER');
 
-                renderDropdown(
-                    '#category',
-                    data.NOTIFICATION_TEMPLATE_CATEGORY || []
-                );
-
-                renderDropdown(
-                    '#trigger',
-                    data.NOTIFICATION_EVENT_TRIGGER || []
-                );
-
-                // LOAD TABLE ONLY AFTER DROPDOWNS READY
-                getDataTableView();
-            });
+        getDataTableView();
 
         });
 
-        function renderDropdown(selector, items = [], selected = 0) {
 
-            let options = '<option value="0">Select Option</option>';
 
-            $.each(items, function(index, item) {
+        async function loadDropdown(selector, annextureType) {
 
-                let isSelected =
-                    selected == item.annexture_value ?
-                    'selected' :
-                    '';
+            return new Promise((resolve) => {
 
-                options += `
-                <option value="${item.annexture_value}" ${isSelected}>
-                    ${item.annexture_name}
-                </option>
-            `;
+                $('.annexture').removeClass('annexture');
+
+                $(selector).addClass('annexture');
+
+                commonAjax.loadAnnextureList(annextureType);
+
+                let interval = setInterval(() => {
+
+                    let optionCount = $(selector + ' option').length;
+
+                    // dropdown loaded
+                    if (optionCount > 1) {
+
+                        clearInterval(interval);
+
+                        $(selector).removeClass('annexture');
+
+                        resolve();
+                    }
+
+                }, 50);
+
             });
 
-            $(selector).html(options).trigger('change');
         }
-
 
         window.getDataTableView = function(reset = true) {
 
