@@ -233,7 +233,7 @@
                 $('#defaultMessage').show();
             }
 
-            $(document).ready(async function() {
+            $(document).ready(function() {
 
                 commonAjax.initSelect2('#type', 'Select Type');
                 commonAjax.initSelect2('#category', 'Select Category');
@@ -245,49 +245,57 @@
                 let categoryVal = "{{ $data['row']->category ?? '' }}";
                 let triggerVal = "{{ $data['row']->event_trigger ?? '' }}";
 
-                await loadDropdown('#type', 'NOTIFICATION_TYPE', typeVal);
+                commonAjax.loadAnnextureList([
+                    'NOTIFICATION_TYPE',
+                    'NOTIFICATION_TEMPLATE_CATEGORY',
+                    'NOTIFICATION_EVENT_TRIGGER'
+                ], function(data) {
 
-                await loadDropdown('#category', 'NOTIFICATION_TEMPLATE_CATEGORY', categoryVal);
+                    renderDropdown(
+                        '#type',
+                        data.NOTIFICATION_TYPE || [],
+                        typeVal
+                    );
 
-                await loadDropdown('#trigger', 'NOTIFICATION_EVENT_TRIGGER', triggerVal);
+                    renderDropdown(
+                        '#category',
+                        data.NOTIFICATION_TEMPLATE_CATEGORY || [],
+                        categoryVal
+                    );
 
-                if (typeVal) {
-                    $('#type').val(typeVal).trigger('change');
-                }
+                    renderDropdown(
+                        '#trigger',
+                        data.NOTIFICATION_EVENT_TRIGGER || [],
+                        triggerVal
+                    );
 
-            });
-
-            async function loadDropdown(selector, annextureType, selectedValue = '') {
-
-                return new Promise((resolve) => {
-
-                    $('.annexture').removeClass('annexture');
-
-                    $(selector).addClass('annexture');
-
-                    commonAjax.loadAnnextureList(annextureType, selectedValue);
-
-                    let interval = setInterval(() => {
-
-                        let optionCount = $(selector + ' option').length;
-
-                        if (optionCount > 1) {
-
-                            clearInterval(interval);
-
-                            $(selector).removeClass('annexture');
-
-                            if (selectedValue) {
-                                $(selector).val(selectedValue).trigger('change');
-                            }
-
-                            resolve();
-                        }
-
-                    }, 50);
+                    if (typeVal) {
+                        $('#type').val(typeVal).trigger('change');
+                    }
 
                 });
 
+            });
+
+            function renderDropdown(selector, items = [], selected = '') {
+
+                let options = '<option value="">Select Option</option>';
+
+                $.each(items, function(index, item) {
+
+                    let isSelected =
+                        selected == item.annexture_value ?
+                        'selected' :
+                        '';
+
+                    options += `
+                    <option value="${item.annexture_value}" ${isSelected}>
+                        ${item.annexture_name}
+                    </option>
+                `;
+                });
+
+                $(selector).html(options).trigger('change');
             }
 
 

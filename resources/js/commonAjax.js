@@ -1540,35 +1540,69 @@ export function loadAnnextureList_bk(key, selected = "", selector = ".annexture"
     });
 }
 
-export function loadAnnextureList(annexture_type = "", selected_id = 0) {
+// export function loadAnnextureList(annexture_type = "", selected_id = 0) {
+//     $.ajax({
+//         type: "POST",
+//         url: ajaxUrl + "get-annexture-list",
+//         data: {
+//             annexture_type: annexture_type,
+//             _token: $('meta[name="csrf-token"]').attr("content"),
+//         },
+//         dataType: "json",
+
+//         success: function (response) {
+//             let options = '<option value="">Select Option</option>';
+
+//             if (response.status && response.data.length > 0) {
+//                 $.each(response.data, function (index, item) {
+//                     let selected = selected_id == item.annexture_value ? "selected" : "";
+
+//                     options += `<option value="${item.annexture_value}" ${selected}>
+//                                         ${item.annexture_name}
+//                                     </option>`;
+//                 });
+//             }
+
+//             $(".annexture").html(options);
+//         },
+
+//         error: function () {
+//             console.log("Error loading annexture list");
+//         },
+//     });
+// }
+
+export function loadAnnextureList(annexture_types = [], callback = null) {
+
     $.ajax({
+
         type: "POST",
+
         url: ajaxUrl + "get-annexture-list",
+
         data: {
-            annexture_type: annexture_type,
+            annexture_types: annexture_types,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
+
         dataType: "json",
 
-        success: function (response) {
-            let options = '<option value="">Select Option</option>';
+        success: function(response) {
 
-            if (response.status && response.data.length > 0) {
-                $.each(response.data, function (index, item) {
-                    let selected = selected_id == item.annexture_value ? "selected" : "";
-
-                    options += `<option value="${item.annexture_value}" ${selected}>
-                                        ${item.annexture_name}
-                                    </option>`;
-                });
+            if (!response.status) {
+                return;
             }
 
-            $(".annexture").html(options);
+            if (typeof callback === 'function') {
+                callback(response.data);
+            }
+
         },
 
-        error: function () {
+        error: function() {
             console.log("Error loading annexture list");
-        },
+        }
+
     });
 }
 

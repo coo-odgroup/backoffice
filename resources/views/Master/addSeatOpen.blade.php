@@ -223,17 +223,31 @@
 
             freezePage();
 
+
             commonAjax.loadBusOperatorDropdown('');
 
-            waitForOptions('#operator', function() {
-                unfreezePage();
-                restoreSelection();
+            commonAjax.loadAnnextureList([
+                'REASON'
+            ], function(data) {
+
+                renderDropdown(
+                    '#reason',
+                    data.REASON || [],
+                    selectedReason
+                );
+
             });
 
-            setTimeout(unfreezePage, 5000); // fallback
+            waitForOptions('#operator', function() {
 
-            commonAjax.loadAnnextureList('REASON', '', '#reason');
+                unfreezePage();
+
+                restoreSelection();
+
+            });
+
             commonAjax.initClearableInputs();
+
         });
 
         function restoreSelection() {
@@ -294,6 +308,27 @@
                 waitForOptions(selector, callback, retry + 1);
             }, 200);
         }
+
+        function renderDropdown(selector, items = [], selected = '') {
+
+    let options = '<option value="">Select Option</option>';
+
+    $.each(items, function(index, item) {
+
+        let isSelected =
+            selected == item.annexture_value
+            ? 'selected'
+            : '';
+
+        options += `
+            <option value="${item.annexture_value}" ${isSelected}>
+                ${item.annexture_name}
+            </option>
+        `;
+    });
+
+    $(selector).html(options).trigger('change');
+}
 
 
         $('#operator').on('change', function() {
@@ -466,9 +501,7 @@
                                     </label>
                                 </div>
                             `;
-                        }
-
-                        else {
+                        } else {
 
                             bus.dates.forEach(function(date) {
 

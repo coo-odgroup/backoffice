@@ -213,49 +213,61 @@
             getDataTableView(true);
         });
 
-        $(document).ready(async function() {
+        $(document).ready(function() {
 
-        await loadDropdown('#type', 'NOTIFICATION_TYPE');
+            commonAjax.initSelect2('#type', 'Select Type');
+            commonAjax.initSelect2('#category', 'Select Category');
+            commonAjax.initSelect2('#trigger', 'Select Event Trigger');
 
-        await loadDropdown('#category', 'NOTIFICATION_TEMPLATE_CATEGORY');
+            commonAjax.loadAnnextureList([
+                'NOTIFICATION_TYPE',
+                'NOTIFICATION_TEMPLATE_CATEGORY',
+                'NOTIFICATION_EVENT_TRIGGER'
+            ], function(data) {
 
-        await loadDropdown('#trigger', 'NOTIFICATION_EVENT_TRIGGER');
+                renderDropdown(
+                    '#type',
+                    data.NOTIFICATION_TYPE || []
+                );
 
-        getDataTableView();
+                renderDropdown(
+                    '#category',
+                    data.NOTIFICATION_TEMPLATE_CATEGORY || []
+                );
+
+                renderDropdown(
+                    '#trigger',
+                    data.NOTIFICATION_EVENT_TRIGGER || []
+                );
+
+                getDataTableView();
+            });
 
         });
 
 
 
-        async function loadDropdown(selector, annextureType) {
+        function renderDropdown(selector, items = [], selected = 0) {
 
-            return new Promise((resolve) => {
+            let options = '<option value="0">Select Option</option>';
 
-                $('.annexture').removeClass('annexture');
+            $.each(items, function(index, item) {
 
-                $(selector).addClass('annexture');
+                let isSelected =
+                    selected == item.annexture_value ?
+                    'selected' :
+                    '';
 
-                commonAjax.loadAnnextureList(annextureType);
-
-                let interval = setInterval(() => {
-
-                    let optionCount = $(selector + ' option').length;
-
-                    // dropdown loaded
-                    if (optionCount > 1) {
-
-                        clearInterval(interval);
-
-                        $(selector).removeClass('annexture');
-
-                        resolve();
-                    }
-
-                }, 50);
-
+                options += `
+                <option value="${item.annexture_value}" ${isSelected}>
+                    ${item.annexture_name}
+                </option>
+            `;
             });
 
+            $(selector).html(options).trigger('change');
         }
+
 
         window.getDataTableView = function(reset = true) {
 
