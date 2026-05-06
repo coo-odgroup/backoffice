@@ -65,7 +65,7 @@
 
                         <!-- Trigger -->
                         <div class="col-lg-2 col-md-6">
-                            <label for="trigger" >Event Trigger</label>
+                            <label for="trigger">Event Trigger</label>
                             <select class="form-select form-select-sm " id="trigger" name="trigger">
                                 <option value="0">Select Trigger</option>
                             </select>
@@ -215,38 +215,58 @@
 
         $(document).ready(function() {
 
-            loadDropdown('#type', 'NOTIFICATION_TYPE', function() {
+            commonAjax.initSelect2('#type', 'Select Type');
+            commonAjax.initSelect2('#category', 'Select Category');
+            commonAjax.initSelect2('#trigger', 'Select Event Trigger');
 
-                loadDropdown('#category', 'NOTIFICATION_TEMPLATE_CATEGORY', function() {
+            loadAnnextureList([
+                'NOTIFICATION_TYPE',
+                'NOTIFICATION_TEMPLATE_CATEGORY',
+                'NOTIFICATION_EVENT_TRIGGER'
+            ], function(data) {
 
-                    loadDropdown('#trigger', 'NOTIFICATION_EVENT_TRIGGER', function() {
-                        getDataTableView();
+                renderDropdown(
+                    '#type',
+                    data.NOTIFICATION_TYPE || []
+                );
 
-                    });
+                renderDropdown(
+                    '#category',
+                    data.NOTIFICATION_TEMPLATE_CATEGORY || []
+                );
 
-                });
+                renderDropdown(
+                    '#trigger',
+                    data.NOTIFICATION_EVENT_TRIGGER || []
+                );
 
+                // LOAD TABLE ONLY AFTER DROPDOWNS READY
+                getDataTableView();
             });
 
         });
 
+        function renderDropdown(selector, items = [], selected = 0) {
 
-        function loadDropdown(selector, type, callback) {
+            let options = '<option value="0">Select Option</option>';
 
-            $('.annexture').removeClass('annexture');
+            $.each(items, function(index, item) {
 
-            $(selector).addClass('annexture');
+                let isSelected =
+                    selected == item.annexture_value ?
+                    'selected' :
+                    '';
 
-            commonAjax.loadAnnextureList(type);
+                options += `
+                <option value="${item.annexture_value}" ${isSelected}>
+                    ${item.annexture_name}
+                </option>
+            `;
+            });
 
-            setTimeout(function() {
-
-                $(selector).removeClass('annexture');
-
-                if (callback) callback();
-
-            }, 500);
+            $(selector).html(options).trigger('change');
         }
+
 
         window.getDataTableView = function(reset = true) {
 

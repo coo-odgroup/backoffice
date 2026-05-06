@@ -154,7 +154,7 @@ class CommonController extends Controller
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
-            'BusSchedule' => \App\Models\Bus\BusSchedule::class, 
+            'BusSchedule' => \App\Models\Bus\BusSchedule::class,
             'BusCancel' => \App\Models\Bus\BusCancel::class,
             'NotificationTemplate' => \App\Models\Master\NotificationTemplate::class,
             'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
@@ -804,37 +804,116 @@ class CommonController extends Controller
         }
     }
 
+    // public function getAnnextureList(Request $request)
+    // {
+    //     try {
+
+    //         $annexture_type = $request->annexture_type;
+
+    //         // Step 1: Get annexture_type_id
+    //         $type = DB::table('mst_annexture_type')
+    //             ->select('id')
+    //             ->where('annexture_type', $annexture_type)
+    //             ->where('active_status', 1)
+    //             ->first();
+
+    //         if (!$type) {
+    //             return response()->json([
+    //                 'status' => false,
+    //                 'data'   => []
+    //             ]);
+    //         }
+
+    //         // Step 2: Get annexture list using type_id
+    //         $data = DB::table('mst_annexture')
+    //             ->select('id', 'annexture_name', 'annexture_value')
+    //             ->where('annexture_type_id', $type->id)
+    //             ->where('active_status', 1)
+    //             ->orderBy('annexture_value', 'asc')
+    //             ->get();
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'data'   => $data
+    //         ]);
+    //     } catch (\Throwable $t) {
+
+    //         return response()->json([
+    //             'status' => false,
+    //             'data'   => []
+    //         ]);
+    //     }
+    // }
+
     public function getAnnextureList(Request $request)
     {
         try {
 
-            $annexture_type = $request->annexture_type;
+            // MULTIPLE TYPES SUPPORT
+            $annextureTypes = $request->annexture_types ?? [];
 
-            // Step 1: Get annexture_type_id
-            $type = DB::table('mst_annexture_type')
-                ->select('id')
-                ->where('annexture_type', $annexture_type)
-                ->where('active_status', 1)
-                ->first();
+            // SINGLE TYPE SUPPORT (BACKWARD COMPATIBLE)
+            if (empty($annextureTypes) && $request->annexture_type) {
+                $annextureTypes = [$request->annexture_type];
+            }
 
-            if (!$type) {
+            if (empty($annextureTypes)) {
                 return response()->json([
                     'status' => false,
                     'data'   => []
                 ]);
             }
 
-            // Step 2: Get annexture list using type_id
-            $data = DB::table('mst_annexture')
-                ->select('id', 'annexture_name', 'annexture_value')
-                ->where('annexture_type_id', $type->id)
+            // GET TYPE IDS
+            $types = DB::table('mst_annexture_type')
+                ->select('id', 'annexture_type')
+                ->whereIn('annexture_type', $annextureTypes)
+                ->where('active_status', 1)
+                ->get();
+
+            if ($types->isEmpty()) {
+                return response()->json([
+                    'status' => false,
+                    'data'   => []
+                ]);
+            }
+
+            $typeMap = [];
+
+            foreach ($types as $type) {
+                $typeMap[$type->id] = $type->annexture_type;
+            }
+
+            // GET ALL ANNEXTURES
+            $annextures = DB::table('mst_annexture')
+                ->select(
+                    'id',
+                    'annexture_type_id',
+                    'annexture_name',
+                    'annexture_value'
+                )
+                ->whereIn('annexture_type_id', array_keys($typeMap))
                 ->where('active_status', 1)
                 ->orderBy('annexture_value', 'asc')
                 ->get();
 
+            // GROUP DATA
+            $groupedData = [];
+
+            foreach ($annextures as $item) {
+
+                $typeKey = $typeMap[$item->annexture_type_id];
+
+                $groupedData[$typeKey][] = [
+                    'id'               => $item->id,
+                    'annexture_name'  => $item->annexture_name,
+                    'annexture_value' => $item->annexture_value
+                ];
+            }
+
             return response()->json([
                 'status' => true,
-                'data'   => $data
+                'data'   => $groupedData
             ]);
         } catch (\Throwable $t) {
 

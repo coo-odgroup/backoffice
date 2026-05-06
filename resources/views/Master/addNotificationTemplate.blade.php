@@ -233,50 +233,62 @@
                 $('#defaultMessage').show();
             }
 
-          $(document).ready(function() {
+            $(document).ready(async function() {
 
-    commonAjax.initSelect2('#type', 'Select Type');
-    commonAjax.initSelect2('#category', 'Select Category');
-    commonAjax.initSelect2('#trigger', 'Select Event Trigger');
+                commonAjax.initSelect2('#type', 'Select Type');
+                commonAjax.initSelect2('#category', 'Select Category');
+                commonAjax.initSelect2('#trigger', 'Select Event Trigger');
 
-    hideAllSections();
+                hideAllSections();
 
-    let typeVal = "{{ $data['row']->type ?? '' }}";
-    let categoryVal = "{{ $data['row']->category ?? '' }}";
-    let triggerVal = "{{ $data['row']->event_trigger ?? '' }}";
+                let typeVal = "{{ $data['row']->type ?? '' }}";
+                let categoryVal = "{{ $data['row']->category ?? '' }}";
+                let triggerVal = "{{ $data['row']->event_trigger ?? '' }}";
 
-    // TYPE
-    $('#type').addClass('annexture');
-    commonAjax.loadAnnextureList('NOTIFICATION_TYPE', typeVal);
+                await loadDropdown('#type', 'NOTIFICATION_TYPE', typeVal);
 
-    setTimeout(() => {
-        $('#type').removeClass('annexture');
+                await loadDropdown('#category', 'NOTIFICATION_TEMPLATE_CATEGORY', categoryVal);
 
-        // CATEGORY
-        $('#category').addClass('annexture');
-        commonAjax.loadAnnextureList('NOTIFICATION_TEMPLATE_CATEGORY', categoryVal);
-
-        setTimeout(() => {
-            $('#category').removeClass('annexture');
-
-            // TRIGGER
-            $('#trigger').addClass('annexture');
-            commonAjax.loadAnnextureList('NOTIFICATION_EVENT_TRIGGER', triggerVal);
-
-            setTimeout(() => {
-                $('#trigger').removeClass('annexture');
+                await loadDropdown('#trigger', 'NOTIFICATION_EVENT_TRIGGER', triggerVal);
 
                 if (typeVal) {
                     $('#type').val(typeVal).trigger('change');
                 }
 
-            }, 300);
+            });
 
-        }, 300);
+            async function loadDropdown(selector, annextureType, selectedValue = '') {
 
-    }, 300);
+                return new Promise((resolve) => {
 
-});
+                    $('.annexture').removeClass('annexture');
+
+                    $(selector).addClass('annexture');
+
+                    commonAjax.loadAnnextureList(annextureType, selectedValue);
+
+                    let interval = setInterval(() => {
+
+                        let optionCount = $(selector + ' option').length;
+
+                        if (optionCount > 1) {
+
+                            clearInterval(interval);
+
+                            $(selector).removeClass('annexture');
+
+                            if (selectedValue) {
+                                $(selector).val(selectedValue).trigger('change');
+                            }
+
+                            resolve();
+                        }
+
+                    }, 50);
+
+                });
+
+            }
 
 
             $('#btnReset').click(function() {
@@ -411,4 +423,3 @@
             });
         </script>
         @endpush
-        
