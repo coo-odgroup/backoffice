@@ -1,5 +1,5 @@
     @extends('admin.layouts.master')
-    @section('page_title', 'Notification Template')
+    @section('page_title', 'Cron Job Notification')
     @section('content')
 
     <?php
@@ -26,7 +26,7 @@
                 <i class="fa-solid fa-magnifying-glass me-1"></i>
                 <span class="btn-text">Filter</span>
             </button>
-            <a href="{{ route('notification-template.add') }}" class="btn btn-success btn-sm">
+            <a href="{{ route('cron-job.add') }}" class="btn btn-success btn-sm">
                 + Add @yield('page_title')
             </a>
         </div>
@@ -40,49 +40,43 @@
                 <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
                     <div class="row align-items-end">
 
-                        <!-- Notification Name -->
                         <div class="col-lg-3 col-md-6">
-                            <label for="txtSearch">Notification Name</label>
-                            <input type="text" class="form-control form-control-sm clearable"
-                                id="txtSearch" placeholder="Search Notification" name="txtSearch">
-                        </div>
-
-                        <!-- Type -->
-                        <div class="col-lg-2 col-md-6">
-                            <label for="type">Type</label>
-                            <select class="form-select form-select-sm " id="type" name="type">
-                                <option value="0">Select Type</option>
+                            <label for="operator">Operator:</label>
+                            <select class="form-select form-select-sm" id="operator" name="operator">
+                                <option value="">Select Operator</option>
                             </select>
                         </div>
 
-                        <!-- Category -->
-                        <div class="col-lg-2 col-md-6">
-                            <label for="category">Category</label>
-                            <select class="form-select form-select-sm " id="category" name="category">
-                                <option value="0">Select Category</option>
+                        <div class="col-lg-3 col-md-6">
+                            <label for="bus">Bus:</label>
+                            <select class="form-select form-select-sm" id="bus" name="bus">
+                                <option value="">Select Bus:</option>
                             </select>
                         </div>
 
-                        <!-- Trigger -->
                         <div class="col-lg-2 col-md-6">
-                            <label for="trigger" >Event Trigger</label>
-                            <select class="form-select form-select-sm " id="trigger" name="trigger">
-                                <option value="0">Select Trigger</option>
+                            <label for="runningCycle">Running Cycle:</label>
+                            <select class="form-select form-select-sm" id="runningCycle" name="runningCycle">
+                                <option value="">Select Running Cycle:</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
                             </select>
                         </div>
 
-                        <!-- Status -->
-                        <div class="col-lg-1 col-md-6">
-                            <label for="selStatus">Status</label>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="selStatus">Status:</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                                <option value="">All</option>
+                                <option value="">Select Status</option>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-lg-2 col-md-12 d-flex justify-content-end gap-1">
+                        <div class="col-lg-2 col-md-12 d-flex justify-content-end flex-wrap action-btns gap-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -105,7 +99,7 @@
                             <option value="-1">All</option>
                         </select>
                         <div>
-                            <button type="button" id="btnDelete" class="btn btn-warning btn-sm " onclick="actionRec('D');">
+                            <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
                                 <i class="fa-solid fa-trash me-1"></i>
                                 Delete
                             </button>
@@ -137,8 +131,8 @@
                 </div>
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                        data-url="{{ route('notification-template.dataTableView') }}"
-                        data-edit-url="{{ route('notification-template.edit', 'ID') }}">
+                        data-url="{{ route('cron-job.dataTableView') }}"
+                        data-edit-url="{{ route('cron-job.edit', 'ID') }}">
                         <thead class="table-secondary">
                             <tr>
                                 <th class="noPrint no-sort">
@@ -147,13 +141,13 @@
                                     </div>
                                 </th>
                                 <th>Sl No</th>
-                                <th>Notification Name</th>
-                                <th>Notification Type</th>
-                                <th>Notification Category</th>
-                                <th>Notification Trigger</th>
-                                <th class="no-sort">View Details</th>
-                                <th>Last Modefied</th>
+                                <th>Cron Name</th>
+                                <th>Cron Type</th>
+                                <th>Scheduler Type</th>
+                                <th>Execution Type</th>
+                                <th>Last Modified</th>
                                 <th>Status</th>
+                                <th class="no-sort">View Schedule</th>
                                 <th class="no-sort">Action</th>
                             </tr>
                         </thead>
@@ -164,7 +158,7 @@
                 {{csrf_field()}}
                 <input name="hdn_ids" id="hdn_ids" type="hidden">
                 <input name="hdn_qs" id="hdn_qs" type="hidden">
-                <input type="hidden" id="hdn_model" value="NotificationTemplate">
+                <input type="hidden" id="hdn_model" value="BusSchedule">
 
                 <div class="d-flex justify-content-between align-items-center mt-2">
                     <div id="customTableInfo"></div>
@@ -175,20 +169,19 @@
         </div>
     </form>
 
-
-    <div class="modal fade" id="viewDetailsModal" tabindex="-1">
-        <div class="modal-dialog modal-lg  modal-dialog-centered">
+    <div class="modal fade" id="viewScheduleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
-
                 <div class="modal-header">
-                    <h5 class="modal-title">Notification Details</h5>
+                    <h5 class="modal-title">
+                        Bus Schedule Dates
+                        <span id="modalBusHeading" class="ms-2 fw-bold text- dark"></span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-
-                <div class="modal-body" id="modalContent">
-                    <div class="text-center p-3">Loading...</div>
+                <div class="modal-body" style="overflow-y:auto">
+                    <div id="viewScheduleContainer"></div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -203,7 +196,24 @@
             e.preventDefault();
         });
 
+        $(document).ready(function() {
 
+            commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+
+            commonAjax.initSelect2('#operator', 'Select Operator');
+            commonAjax.initSelect2('#bus', 'Select Bus');
+            commonAjax.initClearableInputs();
+            commonAjax.loadBusOperatorDropdown();
+
+            $('#operator').on('change', function() {
+                let operator_id = $(this).val();
+                if (!operator_id) return;
+
+                commonAjax.loadBusListByOperator('#bus', operator_id);
+            });
+
+            getDataTableView();
+        });
 
 
         $('#btnReset').click(function() {
@@ -213,86 +223,53 @@
             getDataTableView(true);
         });
 
-        $(document).ready(function() {
-
-            loadDropdown('#type', 'NOTIFICATION_TYPE', function() {
-
-                loadDropdown('#category', 'NOTIFICATION_TEMPLATE_CATEGORY', function() {
-
-                    loadDropdown('#trigger', 'NOTIFICATION_EVENT_TRIGGER', function() {
-                        getDataTableView();
-
-                    });
-
-                });
-
-            });
-
-        });
-
-
-        function loadDropdown(selector, type, callback) {
-
-            $('.annexture').removeClass('annexture');
-
-            $(selector).addClass('annexture');
-
-            commonAjax.loadAnnextureList(type);
-
-            setTimeout(function() {
-
-                $(selector).removeClass('annexture');
-
-                if (callback) callback();
-
-            }, 500);
-        }
-
         window.getDataTableView = function(reset = true) {
 
-            let tableSelector = '#datatable';
-
-            if ($.fn.DataTable.isDataTable(tableSelector)) {
-                $(tableSelector).DataTable().clear().destroy();
-                $(tableSelector + ' tbody').empty();
-            }
 
             if (window.dataTableInstance && reset) {
+
                 window.dataTableInstance.state.clear();
+
                 $('#pageSizeDatatable').val(10);
+
                 window.dataTableInstance.page.len(10);
+
                 window.dataTableInstance.page(0);
             }
 
             $('#pageSizeDatatable').val(10);
+            let txtSearch = '';
+            let selStatus = '';
+
+            if ($('#txtSearch').val() != '') {
+                txtSearch = $('#txtSearch').val();
+            }
+
+            if ($('#selStatus').val() != '') {
+                selStatus = $('#selStatus').val();
+            }
+
+
             let tableId = 'datatable';
             let orderBy = [2, 'asc'];
-
             let searchParams = {
-                txtSearch: $('#txtSearch').val() || '',
-                selStatus: $('#selStatus').val() || '',
-                type: $('#type').val() || 0,
-                category: $('#category').val() || 0,
-                trigger: $('#trigger').val() || 0
+                txtSearch: txtSearch,
+                selStatus: selStatus,
+                operator: operator,
+                bus: bus,
+                runningCycle: runningCycle
             };
 
             let displayColumns = [1, 2, 3, 4, 5, 6, 7];
-            let dataTableColumns = [
-
-                {
+            let dataTableColumns = [{
                     data: '',
                     render: function(data, type, row) {
                         return `<div class="checkbox">
-                            <input class="chkItem"
-                                type="checkbox"
-                                id="check${row.id}"
-                                name="chk${row.id}"
-                                value="${row.id}">
-                        </div>`;
+                                            <input class="chkItem" type="checkbox" value="${row.bus_schedule_id}">
+                                        </div>`;
                     },
                     className: "noPrint text-center"
                 },
-
                 {
                     data: 'slNo',
                     render: function(data, type, row, meta) {
@@ -300,35 +277,20 @@
                     },
                     className: "text-center"
                 },
-
                 {
-                    data: 'notification_name',
+                    data: 'operator_name',
                     defaultContent: "--"
                 },
                 {
-                    data: 'notification_type',
+                    data: 'operator_name',
                     defaultContent: "--"
                 },
                 {
-                    data: 'notification_category',
+                    data: 'bus_name',
                     defaultContent: "--"
-                },
-                {
-                    data: 'notification_trigger',
+                }, {
+                    data: 'running_cycle',
                     defaultContent: "--"
-                },
-                {
-                    data: '',
-                    render: function(data, type, row) {
-
-                        return `
-                            <button class="btn btn-sm btn-primary viewDetailsBtn"
-                                data-id="${row.id}">
-                                <i class="fa fa-eye"></i>
-                            </button>
-                        `;
-                    },
-                    className: "text-center"
                 },
                 {
                     data: null,
@@ -337,20 +299,23 @@
                         let createdBy = row.created_by_name ?? '--';
                         let createdAt = row.created_date ?? '--';
 
-                        let updatedBy = row.updated_by_name ?? '--';
-                        let updatedAt = row.updated_date ?? '--';
+                        let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                        let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
+                        // Show updated date if exists, else created date
                         let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                         return `
-                            <span class="fw-semibold text-decoration-underline cursor-pointer"
+                            <span
+                                class="fw-semibold text-decoration-underline cursor-pointer"
                                 data-bs-toggle="tooltip"
+                                data-bs-placement="top"
                                 data-bs-html="true"
                                 title="
-                                    <div>
+                                    <div class='audit-box'>
                                         <div><strong>Created By:</strong> ${createdBy}</div>
                                         <div><strong>Created At:</strong> ${createdAt}</div>
-                                        <hr>
+                                        <hr class='my-1'>
                                         <div><strong>Updated By:</strong> ${updatedBy}</div>
                                         <div><strong>Updated At:</strong> ${updatedAt}</div>
                                     </div>
@@ -360,12 +325,11 @@
                         `;
                     }
                 },
-
                 {
                     data: 'is_active',
                     render: function(data, type, row) {
-                        let cls = row.is_active === 'Active' ? 'badge bg-success' : 'badge bg-danger';
-                        return `<span class="${cls}">${row.is_active}</span>`;
+                        var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
+                        return '<span class="' + cls + '">' + row.is_active + '</span>';
                     },
                     className: "text-center"
                 },
@@ -373,30 +337,45 @@
                     data: '',
                     render: function(data, type, row) {
 
-                        let editUrl = $('#datatable').data('edit-url');
+                        return `
+                            <span class="btn btn-sm btn-primary btnViewSchedule"
+                                data-id="${row.bus_schedule_id}"
+                                data-id="${row.enc_bustype_id}"
+                                data-name="${row.layout_name}">
+                                <i class="fa fa-calendar"></i> View
+                            </span>
+                        `;
+                    },
+                    className: "noPrint text-center"
+                },
+                {
+                    data: '',
+                    render: function(data, type, row) {
+
+                        let editUrl = $('#' + tableId).data('edit-url');
+
+                        if (!editUrl) return '';
 
                         return `
                             <a class="btn btn-sm btn-info"
-                                href="${editUrl.replace('ID', row.enc_id)}">
-                                <i class="fa fa-edit"></i>
+                                href="${editUrl.replace('ID', row.enc_bus_schedule_id)}">
+                                <i class="fa fa-edit"></i> Edit
                             </a>
 
                             <a href="javascript:void(0);"
-                                        class="btn btn-sm btn-success btn-view-log"
-                                        data-table="mst_districts"
-                                        data-id="${row.enc_district_id}">
-                                            <i class="fa fa-history"></i> View Log
-                                    </a>
+                                class="btn btn-sm btn-success btn-view-log"
+                                data-table="bus_schedule"
+                                data-id="${row.enc_bus_schedule_id}">
+                                <i class="fa fa-history"></i> View Log
+                            </a>
                         `;
                     },
-                    className: "text-center"
+                    className: "noPrint text-center"
                 }
-            ];
-            console.log(searchParams);
+            ]
+
             loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
         }
-
-
         $(document).on('click', '.btnViewSchedule', function() {
 
             let id = $(this).data('id');
@@ -440,37 +419,5 @@
             });
 
         });
-
-        $(document).on('click', '.viewDetailsBtn', function() {
-
-            let id = $(this).data('id');
-
-            $('#modalContent').html('Loading...');
-
-            let modal = new bootstrap.Modal(document.getElementById('viewDetailsModal'));
-            modal.show();
-
-            $.ajax({
-                url: "{{ url('admin/get-notification-details') }}",
-                type: 'POST',
-                data: {
-                    id: id,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    $('#modalContent').html(response);
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                    $('#modalContent').html(`
-                <div class="text-danger text-center">
-                    Failed to load
-                </div>
-            `);
-                }
-            });
-
-        });
     </script>
     @endpush
-    
