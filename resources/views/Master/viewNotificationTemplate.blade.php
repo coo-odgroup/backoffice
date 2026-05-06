@@ -473,4 +473,3 @@
         });
     </script>
     @endpush
-    
