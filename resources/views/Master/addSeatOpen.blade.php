@@ -311,24 +311,24 @@
 
         function renderDropdown(selector, items = [], selected = '') {
 
-    let options = '<option value="">Select Option</option>';
+            let options = '<option value="">Select Option</option>';
 
-    $.each(items, function(index, item) {
+            $.each(items, function(index, item) {
 
-        let isSelected =
-            selected == item.annexture_value
-            ? 'selected'
-            : '';
+                let isSelected =
+                    selected == item.annexture_value ?
+                    'selected' :
+                    '';
 
-        options += `
-            <option value="${item.annexture_value}" ${isSelected}>
-                ${item.annexture_name}
-            </option>
-        `;
-    });
+                options += `
+                    <option value="${item.annexture_value}" ${isSelected}>
+                        ${item.annexture_name}
+                    </option>
+                `;
+            });
 
-    $(selector).html(options).trigger('change');
-}
+            $(selector).html(options).trigger('change');
+        }
 
 
         $('#operator').on('change', function() {

@@ -303,12 +303,38 @@
 
             $('#operatorLoader').remove();
 
+            commonAjax.initSelect2('#operator', 'Select Operator');
+
+            $('#bus').select2({
+                placeholder: "Select Bus",
+                allowClear: true,
+                dropdownParent: $('body')
+            });
+
+            commonAjax.initSelect2('#reason', 'Select Reason');
+
             freezePage();
 
+            // LOAD OPERATORS
             commonAjax.loadBusOperatorDropdown('');
 
-            let operatorId = String(editData.operator).trim();
+            // LOAD ALL ANNEXTURES IN SINGLE API
+            commonAjax.loadAnnextureList([
+                'REASON'
+            ], function(data) {
 
+                renderDropdown(
+                    '#reason',
+                    data.REASON || [],
+                    editData.reason
+                );
+
+            });
+
+            let operatorId = String(editData.operator).trim();
+            let busId = String(editData.bus).trim();
+
+            // WAIT FOR OPERATOR
             waitForOptions('#operator', function() {
 
                 unfreezePage();
@@ -317,58 +343,69 @@
                     $('#operator').val(operatorId).trigger('change');
                 }
 
+                // WAIT FOR BUS
+                waitForOptions('#bus', function() {
+
+                    let option = $('#bus option[value="' + busId + '"]');
+
+                    if (option.length > 0) {
+
+                        $('#bus').val(busId);
+
+                        selectedBuses = [{
+                            id: busId,
+                            text: option.text()
+                        }];
+
+                        renderBuses();
+
+                        $('#bus_ids').val(busId);
+                    }
+
+                    $('#year').val(editData.year);
+                    $('#month').val(editData.month);
+                    $('#reason').val(editData.reason).trigger('change');
+
+                    if (editData.reason == 7) {
+
+                        $('#otherReasonWrapper').show();
+
+                        $('#other_reason').val(editData.other_reason);
+                    }
+
+                    editData.loaded = true;
+                    pageInitializing = false;
+
+                    refreshAllData();
+
+                });
+
             });
 
-            setTimeout(unfreezePage, 5000);
+            commonAjax.initClearableInputs();
 
-            commonAjax.initSelect2('#operator', 'Select Operator');
-            $('#bus').select2({
-                placeholder: "Select Bus",
-                allowClear: true,
-                dropdownParent: $('body')
-            });
-            commonAjax.initSelect2('#reason', 'Select Reason');
-
-       
-
-
-            let busId = String(editData.bus).trim();
-
-            commonAjax.loadAnnextureList('REASON', editData.reason, '#reason');
-
-
-            waitForOptions('#bus', function() {
-
-                let option = $('#bus option[value="' + busId + '"]');
-
-                if (option.length > 0) {
-
-                    $('#bus').val(busId);
-
-                    selectedBuses = [{
-                        id: busId,
-                        text: option.text()
-                    }];
-
-                    renderBuses();
-                    $('#bus_ids').val(busId);
-                }
-
-                $('#year').val(editData.year);
-                $('#month').val(editData.month);
-                $('#reason').val(editData.reason);
-
-                if (editData.reason == 7) {
-                    $('#otherReasonWrapper').show();
-                    $('#other_reason').val(editData.other_reason);
-                }
-
-                editData.loaded = true;
-                pageInitializing = false;
-                refreshAllData();
-            });
         });
 
+        function renderDropdown(selector, items = [], selected = '') {
+
+            let options = '<option value="">Select Option</option>';
+
+            $.each(items, function(index, item) {
+
+                let isSelected =
+                    selected == item.annexture_value ?
+                    'selected' :
+                    '';
+
+                options += `
+            <option value="${item.annexture_value}" ${isSelected}>
+                ${item.annexture_name}
+            </option>
+        `;
+            });
+
+            $(selector).html(options).trigger('change');
+        }
 
         if (editData.operator && editData.bus) {
             $('#operator').prop('disabled', true).trigger('change');
@@ -391,8 +428,6 @@
                 unfreezePage();
             });
 
-
-            setTimeout(unfreezePage, 5000);
         });
 
         $('#bus').on('change', function() {
