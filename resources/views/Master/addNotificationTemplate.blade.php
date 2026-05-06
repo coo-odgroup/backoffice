@@ -67,54 +67,55 @@
                                                 <div class="col-md-5">
                                                     <div class="p-3 border rounded bg-white">
                                                         <div class="mb-2">
-                                                            <label for="operator">Operator<span
+                                                            <label for="operator">Notification Name <span
                                                                     class="text-danger">*</span></label>
-                                                           <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
+                                                            <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
                                                         </div>
 
                                                         <div class="mb-2">
                                                             <label for="bus">Slug<span
                                                                     class="text-danger">*</span></label>
-                                                           <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Slug" maxlength="100">
+                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Slug" maxlength="100">
                                                         </div>
-                                                          <div class="mb-2">
-                                                        <div class="row">
-                                                            <div class="col-xl-6">
-                                                                <label for="year">Type <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="year" name="year">
-                                                                    <option value="">Select Type</option>
-                                                                   
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="col-xl-6">
-                                                                <label for="month">Category <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="month" name="month">
-                                                                    <option value="">Select Category</option>
-                                                                  
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                         <div class="mb-2">
-                                                            <label for="operator">Event Trigger<span
+                                                            <div class="row">
+                                                                <div class="col-xl-6">
+                                                                    <label for="type">Type <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="type" name="type">
+                                                                        <option value="">Select Type</option>
+
+                                                                    </select>
+                                                                </div>
+
+                                                                <div class="col-xl-6">
+                                                                    <label for="category">Category <span
+                                                                            class="text-danger">*</span></label>
+                                                                    <select class="form-select form-select-sm"
+                                                                        id="category" name="category">
+                                                                        <option value="">Select Category</option>
+
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label for="trigger">Event Trigger<span
                                                                     class="text-danger">*</span></label>
-                                                           <select class="form-select form-select-sm"
-                                                                    id="month" name="month">
-                                                                    <option value="">Select Event Trigger</option>
-                                                           </select>
+                                                            <select class="form-select form-select-sm"
+                                                                id="trigger" name="trigger">
+                                                                <option value="">Select Event Trigger</option>
+                                                            </select>
                                                         </div>
 
-                                                         <div class="mb-2">
-                                                                <label for="operator">Allowd Placeholders</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter Allowd Placeholders"></textarea>
-                                                         </div>
+                                                        <div class="mb-2">
+                                                            <label for="operator">Allowd Placeholders<span
+                                                                    class="text-danger">*</span></label>
+                                                            <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter Allowd Placeholders"></textarea>
+                                                        </div>
 
-                                                        
+
                                                     </div>
 
                                                 </div>
@@ -126,35 +127,58 @@
                                                             <strong>Date Schedule List</strong>
                                                         </div>
                                                         <div class="card-body" id="scheduleContainer">
+                                                            <div id="defaultMessage" class="text-center text-muted py-5">
+                                                                <strong>Select Notification Type</strong>
+                                                            </div>
 
-                                                             <div class="mb-2">
-                                                                <label for="operator">Subject</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Subject" maxlength="100">
-                                                             </div>
+                                                            <!-- EMAIL -->
+                                                            <div id="emailFields">
+                                                                <div class="mb-2">
+                                                                    <label for="operator">Subject<span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input type="text" id="email_subject" class="form-control form-control-sm clearable" name="email_subject" value="{{ $data['row']->subject ?? '' }}" placeholder="Enter Subject" maxlength="100">
+                                                                </div>
 
-                                                             <div class="mb-2">
-                                                                <label for="operator">Email Content</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Email Conetent"></textarea>
-                                                             </div>
-                                                             <div class="mb-2">
-                                                                <label for="operator">Title</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
-                                                             </div>
+                                                                <div class="mb-2">
+                                                                    <label for="operator">Email Content<span
+                                                                            class="text-danger">*</span></label>
+                                                                    <textarea id="email_content" class="form-control  form-control-sm clearable" rows="5" name="emailContent" placeholder="Email Conetent">{{ $data['row']->body ?? '' }}</textarea>
+                                                                </div>
+                                                            </div>
+                                                            <!-- PUSH -->
+                                                            <div id="pushFields">
+                                                                <div class="mb-2">
+                                                                    <label for="operator">Title<span
+                                                                            class="text-danger">*</span></label>
+                                                                    <input id="push_title" type="text" class="form-control form-control-sm clearable" name="title" value="{{ $data['row']->title ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
+                                                                </div>
 
-                                                             <div class="mb-2">
-                                                                <label for="operator">Body</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter Body"></textarea>
-                                                             </div>
+                                                                <div class="mb-2">
+                                                                    <label for="operator">Body<span
+                                                                            class="text-danger">*</span></label>
+                                                                    <textarea id="push_body" class="form-control form-control-sm clearable" rows="5" name="body" placeholder="Enter Body">{{ $data['row']->body ?? '' }}</textarea>
+                                                                </div>
+                                                            </div>
 
-                                                              <div class="mb-2">
-                                                                <label for="operator">SMS Content</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter SMS Content"></textarea>
-                                                             </div>
-                                                              <div class="mb-2">
-                                                                <label for="operator">WhatsApp Content</label>
-                                                                <textarea class="form-control form-control-sm clearable" rows="5" id="description" name="description" placeholder="Enter WhatsApp Content"></textarea>
-                                                             </div>
+                                                            <!-- SMS -->
+                                                            <div id="smsFields">
+                                                                <div class="mb-2">
+                                                                    <label for="operator">SMS Content<span
+                                                                            class="text-danger">*</span></label>
+                                                                    <textarea id="sms_content" class="form-control form-control-sm clearable" rows="5" name="smsContent" placeholder="Enter SMS Content">{{ $data['row']->body ?? '' }}</textarea>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- WHATSAPP -->
+                                                            <div class="mb-2">
+                                                                <div id="whatsappFields">
+                                                                    <label for="operator">WhatsApp Content<span
+                                                                            class="text-danger">*</span></label>
+                                                                    <textarea id="whatsapp_content" class="form-control form-control-sm clearable" rows="5" name="whatsappContent" placeholder="Enter WhatsApp Content">{{ $data['row']->body ?? '' }}</textarea>
+                                                                </div>
+                                                            </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -204,273 +228,186 @@
 
         @push('scripts')
         <script type="module">
-            let isRestoring = false;
-            let selectedOperators = [];
+            function hideAllSections() {
+                $('#emailFields, #pushFields, #smsFields, #whatsappFields').hide();
+                $('#defaultMessage').show();
+            }
+
+          $(document).ready(function() {
+
+    commonAjax.initSelect2('#type', 'Select Type');
+    commonAjax.initSelect2('#category', 'Select Category');
+    commonAjax.initSelect2('#trigger', 'Select Event Trigger');
+
+    hideAllSections();
+
+    let typeVal = "{{ $data['row']->type ?? '' }}";
+    let categoryVal = "{{ $data['row']->category ?? '' }}";
+    let triggerVal = "{{ $data['row']->event_trigger ?? '' }}";
+
+    // TYPE
+    $('#type').addClass('annexture');
+    commonAjax.loadAnnextureList('NOTIFICATION_TYPE', typeVal);
+
+    setTimeout(() => {
+        $('#type').removeClass('annexture');
+
+        // CATEGORY
+        $('#category').addClass('annexture');
+        commonAjax.loadAnnextureList('NOTIFICATION_TEMPLATE_CATEGORY', categoryVal);
+
+        setTimeout(() => {
+            $('#category').removeClass('annexture');
+
+            // TRIGGER
+            $('#trigger').addClass('annexture');
+            commonAjax.loadAnnextureList('NOTIFICATION_EVENT_TRIGGER', triggerVal);
+
+            setTimeout(() => {
+                $('#trigger').removeClass('annexture');
+
+                if (typeVal) {
+                    $('#type').val(typeVal).trigger('change');
+                }
+
+            }, 300);
+
+        }, 300);
+
+    }, 300);
+
+});
+
+
+            $('#btnReset').click(function() {
+
+                $('#backoffice-form')[0].reset();
+
+                $('#type, #category, #trigger').val('').trigger('change');
+
+                hideAllSections();
+            });
+
+
+            $('#type').on('change', function() {
+
+                let type = parseInt($(this).val());
+
+                hideAllSections();
+
+                if (!type) {
+                    $('#rightPanel').hide();
+                    $('#defaultMessage').show();
+                    return;
+                }
+
+                $('#rightPanel').show();
+                $('#defaultMessage').hide();
+
+                if (type === 1) {
+                    $('#emailFields').show();
+                } else if (type === 2) {
+                    $('#smsFields').show();
+                } else if (type === 3) {
+                    $('#pushFields').show();
+                } else if (type === 4) {
+                    $('#whatsappFields').show();
+                }
+
+            });
+
 
             $('#backoffice-form').on('submit', function(e) {
 
-                let operator = $('#operator').val();
-                let bus = $('#bus').val();
-                let cycle = $('#running_cycle').val();
-                let date = $('#date').val();
+                e.preventDefault();
 
-                let yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                let minDate = yesterday.toISOString().split('T')[0];
+                let errorMsg = "";
+                let isValid = true;
 
-                if (!operator) {
-                    commonAjax.viewAlert("Please select operator", "warning");
-                    e.preventDefault();
-                    return;
+                // BASIC VALIDATION
+                if (!$('#name').val().trim()) {
+                    isValid = false;
+                    errorMsg = "Notification Name is required";
+                } else if (!$('#slug').val().trim()) {
+                    isValid = false;
+                    errorMsg = "Slug is required";
+                } else if (!$('#type').val()) {
+                    isValid = false;
+                    errorMsg = "Please select Notification Type";
+                } else if (!$('#category').val()) {
+                    isValid = false;
+                    errorMsg = "Please select Category";
+                } else if (!$('#trigger').val()) {
+                    isValid = false;
+                    errorMsg = "Please select Event Trigger";
                 }
 
-                if (!bus) {
-                    commonAjax.viewAlert("Please select bus", "warning");
-                    e.preventDefault();
-                    return;
-                }
+                // TYPE BASED VALIDATION
+                let type = parseInt($('#type').val());
 
-                if (!cycle) {
-                    commonAjax.viewAlert("Please select running cycle", "warning");
-                    e.preventDefault();
-                    return;
-                }
+                if (isValid) {
 
-                if (!date) {
-                    commonAjax.viewAlert("Please select date", "warning");
-                    e.preventDefault();
-                    return;
-                }
+                    if (type === 1) { // EMAIL
 
-                if (date < minDate) {
-                    commonAjax.viewAlert("Date cannot be before yesterday", "warning");
-                    e.preventDefault();
-                    return;
-                }
-            });
+                        if (!$('#email_subject').val().trim()) {
+                            isValid = false;
+                            errorMsg = "Email Subject is required";
+                        } else if (!$('#email_content').val().trim()) {
+                            isValid = false;
+                            errorMsg = "Email Content is required";
+                        }
 
-            function waitForOptions(selector, callback, retry = 0) {
+                    } else if (type === 3) { // PUSH
 
-                if ($(selector + ' option').length > 1) {
-                    callback();
-                    return;
-                }
+                        if (!$('#push_title').val().trim()) {
+                            isValid = false;
+                            errorMsg = "Push Title is required";
+                        } else if (!$('#push_body').val().trim()) {
+                            isValid = false;
+                            errorMsg = "Push Body is required";
+                        }
 
-                if (retry >= 80) return;
+                    } else if (type === 2) { // SMS
 
-                setTimeout(function() {
-                    waitForOptions(selector, callback, retry + 1);
-                }, 100);
-            }
+                        if (!$('#sms_content').val().trim()) {
+                            isValid = false;
+                            errorMsg = "SMS Content is required";
+                        }
 
-            $(document).ready(function() {
+                    } else if (type === 4) { // WHATSAPP
 
-                // Select2 init 
-                $('#operator').select2({
-                    placeholder: "Select Bus Operator",
-                    dropdownParent: $('body')
-                });
-
-                $('#bus').select2({
-                    placeholder: "Select Bus",
-                    dropdownParent: $('body')
-                });
-
-                commonAjax.loadBusOperatorDropdown();
-
-                waitForOptions('#operator', function() {
-                    restoreSelection();
-                });
-
-                commonAjax.initClearableInputs();
-
-                $('#bus').on('focus', function() {
-                    let operator_id = $('#operator').val();
-                    if (!operator_id) {
-                        commonAjax.viewAlert("Please select operator first", "warning");
-                        $(this).blur();
-                    }
-                });
-
-                let today = new Date();
-                today.setDate(today.getDate() - 1);
-                $('#date').attr('min', today.toISOString().split('T')[0]);
-
-                $('#btnReset').click(function() {
-                    $('#backoffice-form')[0].reset();
-                    $('.form-select').val('').trigger('change');
-                    selectedOperators = [];
-                    renderOperators();
-                    $('#scheduleContainer').html('');
-                });
-
-
-
-            });
-
-            // Operator change load buses
-            $('#operator').on('change', function() {
-
-                let operator_id = $(this).val();
-                if (!operator_id || isRestoring) return;
-
-                if ($('#pageLoader').length === 0) {
-                    $('body').append(`
-            <div id="pageLoader" style="
-                position:fixed;
-                top:0;
-                left:0;
-                width:100%;
-                height:100%;
-                background:rgba(255,255,255,0.75);
-                z-index:99999;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                flex-direction:column;
-            ">
-                <div class="spinner-border text-primary"></div>
-                <div class="mt-2 fw-semibold">Loading buses...</div>
-            </div>
-        `);
-                }
-
-                commonAjax.loadBusListByOperator('#bus', operator_id);
-                let checkBusLoaded = setInterval(function() {
-
-                    if ($('#bus option').length > 1) {
-                        clearInterval(checkBusLoaded);
-                        $('#pageLoader').remove();
-                    }
-                }, 300);
-
-                // fail-safe remove after 5 sec
-                setTimeout(function() {
-                    clearInterval(checkBusLoaded);
-                    $('#pageLoader').remove();
-                }, 5000);
-
-            });
-
-
-            // Bus change → load schedule
-            $('#bus').on('change', function() {
-
-                let bus_id = $(this).val();
-                if (!bus_id || isRestoring) return;
-
-                loadSchedule(bus_id);
-            });
-
-            let scheduleRequest = null;
-
-            function loadSchedule(bus_id) {
-
-                $('#scheduleContainer').html(`
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary"></div>
-                        <p class="mt-2">Loading schedule...</p>
-                    </div>
-                `);
-
-                if (scheduleRequest) {
-                    scheduleRequest.abort();
-                }
-
-                scheduleRequest = $.ajax({
-                    type: "POST",
-                    url: "/admin/get-schedule-dates",
-                    data: {
-                        bus_id: bus_id,
-                        _token: $('meta[name="csrf-token"]').attr("content")
-                    },
-                    success: function(response) {
-
-                        if (typeof response === 'object') {
-
-                            $('#scheduleContainer').html(response.html);
-
-                            if (response.running_cycle) {
-                                $('#running_cycle').val(response.running_cycle).trigger('change');
-                            }
-
-                            if (response.last_date) {
-                                $('#date').val(response.last_date);
-                            }
-
-                        } else {
-                            $('#scheduleContainer').html(response);
+                        if (!$('#whatsapp_content').val().trim()) {
+                            isValid = false;
+                            errorMsg = "WhatsApp Content is required";
                         }
                     }
-                });
-            }
+                }
 
+                if (!isValid) {
+                    commonAjax.viewAlert(errorMsg, "warning");
+                    return false;
+                }
+                commonAjax.confirmAlert('Are you sure to proceed !');
 
-            let selectedOperator = "{{ $data['row']->operator_id ?? (old('operator') ?? '') }}";
-            let selectedBus = "{{ $data['row']->bus_id ?? (old('bus') ?? '') }}";
-            let lastScheduleDate = "{{ $data['lastDate'] ?? '' }}";
-            let selectedCycle = "{{ $data['row']->running_cycle ?? '' }}";
-
-
-            function restoreSelection() {
-
-                if (!selectedOperator) return;
-
-                isRestoring = true;
-
-                $('#operator').val(selectedOperator).trigger('change.select2');
-
-                commonAjax.loadBusListByOperator('#bus', selectedOperator);
-
-                waitForOptions('#bus', function() {
-
-                    if (selectedBus) {
-                        $('#bus').val(selectedBus).trigger('change.select2');
-                        loadSchedule(selectedBus);
-                    }
-
-                    if (selectedCycle) {
-                        $('#running_cycle').val(selectedCycle);
-                    }
-
-                    if (lastScheduleDate) {
-                        $('#date').val(lastScheduleDate);
-                    }
-
-                    if (selectedOperator && selectedBus) {
-                        $('#operator').prop('disabled', true).trigger('change.select2');
-                        $('#bus').prop('disabled', true).trigger('change.select2');
-                    }
-
-                    isRestoring = false;
-                });
-            }
-            @if(session('level') == 'success')
-
-            let bus_id = "{{ old('bus') }}";
-
-            if (bus_id) {
-                waitForOptions('#bus', function() {
-                    loadSchedule(bus_id);
-                });
-            }
-
-            @endif
-
-            function renderOperators() {
-
-                let html = '';
-
-                selectedOperators.forEach((op, index) => {
-                    html += `<span class="selected-tag" data-index="${index}">
-                    ${op.text}
-                    <span class="remove">×</span>
-                 </span>`;
+                $('#btnConfirmOk').off('click').on('click', function() {
+                    $('#backoffice-form')[0].submit();
                 });
 
-                $('#selectedOperators').html(html);
-                $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
-                $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
-            }
+            });
+
+
+            $('#name').on('input', function() {
+
+                let value = $(this).val();
+
+                let slug = value
+                    .toLowerCase() // small case
+                    .trim() // remove start/end space
+                    .replace(/\s+/g, '-') // space → hyphen
+                    .replace(/[^a-z0-9\-]/g, '') // remove special chars
+                    .replace(/\-+/g, '-'); // multiple hyphen → single
+
+                $('#slug').val(slug);
+            });
         </script>
         @endpush

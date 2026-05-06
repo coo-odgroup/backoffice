@@ -437,7 +437,6 @@
                         $('#date').val(lastScheduleDate);
                     }
 
-                    /* 🔥 FINAL FIX */
                     if (selectedOperator && selectedBus) {
 
                         $('#operator').next('.select2-container')

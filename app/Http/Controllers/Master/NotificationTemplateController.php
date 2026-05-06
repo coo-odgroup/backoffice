@@ -27,65 +27,81 @@ class NotificationTemplateController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $operator  = request('operator') !== null && request('operator') !== '' ? (int)request('operator') : null;
-            $bus       = request('bus') !== null && request('bus') !== '' ? (int)request('bus') : null;
-            $status    = request('selStatus') !== null && request('selStatus') !== '' ? (int)request('selStatus') : null;
-            $runningCycle = request('runningCycle') !== null && request('runningCycle') !== '' ? (int)request('runningCycle') : null;
-
+            $status    =  (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $type      = (int) request('type');
+            $category  = (int) request('category');
+            $trigger   = (int) request('trigger');
 
             $start  = request('start', 0);
             $length = request('length', 10);
 
-            $query = DB::table('odbusdev.bus_schedule as bs')
+            $query = DB::table('odbusmaster.mst_notification_templates as nt')
                 ->select(
-                    'bs.id',
-                    'bs.operator_id',
-                    'bs.bus_id',
-                    'bs.running_cycle',
+                    'nt.id',
+                    'nt.name',
+                    'nt.type',
+                    'nt.category',
+                    'nt.event_trigger',
+                    'nt.active_status',
+                    'nt.created_at',
+                    'nt.updated_at',
 
-                    DB::raw('(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_name'),
-                    DB::raw('(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_number'),
+                    // TYPE (annexture_type_id = 19)
+                    DB::raw('(
+                        SELECT annexture_name
+                        FROM odbusmaster.mst_annexture
+                        WHERE annexture_type_id = 19
+                        AND annexture_value = nt.type
+                        LIMIT 1
+                    ) as type_name'),
 
-                    DB::raw('(SELECT organization_name
-                    FROM odbusmaster.users
-                    WHERE id = bs.operator_id
-                    AND user_role = 9
-                    LIMIT 1) as operator_name'),
+                    // CATEGORY (annexture_type_id = 21)
+                    DB::raw('(
+                        SELECT annexture_name
+                        FROM odbusmaster.mst_annexture
+                        WHERE annexture_type_id = 21
+                        AND annexture_value = nt.category
+                        LIMIT 1
+                    ) as category_name'),
 
-                    'bs.active_status',
-                    'bs.created_at',
-                    'bs.updated_at',
+                    //  TRIGGER (annexture_type_id = 22)
+                    DB::raw('(
+                        SELECT annexture_name
+                        FROM odbusmaster.mst_annexture
+                        WHERE annexture_type_id = 22
+                        AND annexture_value = nt.event_trigger
+                        LIMIT 1
+                    ) as trigger_name'),
 
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.updated_by LIMIT 1) as updated_by_name')
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = nt.created_by LIMIT 1) as created_by_name'),
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = nt.updated_by LIMIT 1) as updated_by_name')
                 );
+            $recordsTotal = DB::table('odbusmaster.mst_notification_templates')->count();
 
-            $recordsTotal = DB::table('odbusdev.bus_schedule')->count();
-
-            if (!empty(trim($txtSearch))) {
-                $search = trim($txtSearch);
-
-                $query->where(function ($q) use ($search) {
-                    $q->whereRaw("(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("(SELECT organization_name FROM odbusmaster.users WHERE id = bs.operator_id LIMIT 1) LIKE ?", ["%{$search}%"]);
+            if ($txtSearch !== null && $txtSearch !== '') {
+                $query->where(function ($q) use ($txtSearch) {
+                    $q->where('nt.name', 'like', "%{$txtSearch}%")
+                        ->orWhere('nt.subject', 'like', "%{$txtSearch}%")
+                        ->orWhere('nt.title', 'like', "%{$txtSearch}%")
+                        ->orWhere('nt.body', 'like', "%{$txtSearch}%")
+                        ->orWhere('nt.short_text', 'like', "%{$txtSearch}%");
                 });
             }
-
-            if (!empty($operator)) {
-                $query->where('bs.operator_id', $operator);
+            
+            if ($type > 0) {
+                $query->where('nt.type', $type);
             }
 
-            if (!empty($bus)) {
-                $query->where('bs.bus_id', $bus);
+            if ($category > 0) {
+                $query->where('nt.category', $category);
             }
 
-            if (!empty($runningCycle)) {
-                $query->where('bs.running_cycle', $runningCycle);
+            if ($trigger > 0) {
+                $query->where('nt.event_trigger', $trigger);
             }
 
             if ($status !== null && $status !== '') {
-                $query->where('bs.active_status', $status);
+                $query->where('nt.active_status', $status);
             }
 
             $recordsFiltered = (clone $query)->count();
@@ -94,20 +110,18 @@ class NotificationTemplateController extends Controller
                 $query->offset($start)->limit($length);
             }
 
-            $rows = $query->orderBy('bs.id', 'desc')->get();
+            $rows = $query->orderBy('nt.id', 'desc')->get();
 
             foreach ($rows as $row) {
 
                 $data[] = [
                     'id' => $row->id,
+                    'enc_id' => Crypt::encryptString($row->id),
 
-                    'bus_schedule_id' => $row->id,
-                    'enc_bus_schedule_id' => Crypt::encryptString($row->id),
-
-                    'operator_name' => $row->operator_name ?? '--',
-
-                    'bus_name' => trim(($row->bus_name ?? '') . ' - ( ' . ($row->bus_number ?? '') . ' )'),
-                    'running_cycle' => $row->running_cycle ?? '--',
+                    'notification_name' => $row->name ?? '--',
+                    'notification_type' => $row->type_name ?? '--',
+                    'notification_category' => $row->category_name ?? '--',
+                    'notification_trigger' => $row->trigger_name ?? '--',
 
                     'created_date' => $row->created_at
                         ? date('d-M-Y H:i:s', strtotime($row->created_at))
@@ -121,14 +135,11 @@ class NotificationTemplateController extends Controller
                     'updated_by_name' => $row->updated_by_name ?? '--',
 
                     'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-
-                    'enc_bustype_id' => Crypt::encryptString($row->bus_id),
-                    'layout_name' => $row->bus_name ?? 'Bus'
                 ];
             }
         } catch (\Throwable $t) {
 
-            Log::error("BusScheduleController Error", [
+            Log::error("NotificationTemplate Error", [
                 'message' => $t->getMessage()
             ]);
 
@@ -138,6 +149,7 @@ class NotificationTemplateController extends Controller
                 'data' => []
             ]);
         }
+
         return response()->json([
             'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
@@ -155,9 +167,7 @@ class NotificationTemplateController extends Controller
         try {
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
-
             $row = null;
-            $scheduleDates = [];
 
             if ($id > 0) {
 
@@ -165,63 +175,26 @@ class NotificationTemplateController extends Controller
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = DB::table('odbusdev.bus_schedule')
+                $row = DB::table('odbusmaster.mst_notification_templates')
                     ->where('id', $id)
                     ->first();
 
                 if (!$row) {
-                    return redirect("bus-schedule");
+                    return redirect()->route('notification-template.index');
                 }
 
                 $data['row'] = $row;
-
-                $lastDate = DB::table('odbusdev.bus_schedule_date')
-                    ->where('bus_schedule_id', $id)
-                    ->orderByDesc('entry_date')
-                    ->value('entry_date');
-
-                $data['lastDate'] = $lastDate;
-
-                $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                    ->where('bus_schedule_id', $id)
-                    ->orderBy('entry_date', 'asc')
-                    ->pluck('entry_date')
-                    ->toArray();
-
-                $bus_id = $row->bus_id;
-            } else {
-
-                $bus_id = request('bus') ?? old('bus');
-
-                if ($bus_id) {
-
-                    $schedule = DB::table('odbusdev.bus_schedule')
-                        ->where('bus_id', $bus_id)
-                        ->where('active_status', 1)
-                        ->orderByDesc('id')
-                        ->first();
-
-                    if ($schedule) {
-
-                        $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                            ->where('bus_schedule_id', $schedule->id)
-                            ->orderBy('entry_date', 'asc')
-                            ->limit(30)
-                            ->pluck('entry_date')
-                            ->toArray();
-                    }
-                }
             }
 
-            $data['scheduleDates'] = $scheduleDates;
-
+            // ================= POST =================
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'operator'      => 'required|integer',
-                    'bus'           => 'required|integer',
-                    'running_cycle' => 'required|integer|min:1|max:5',
-                    'date'          => 'required|date',
+                    'name'     => 'required|string|max:100',
+                    'slug'     => 'required|string|max:100',
+                    'type'     => 'required|integer',
+                    'category' => 'required',
+                    'trigger'  => 'required',
                 ]);
 
                 if ($validator->fails()) {
@@ -230,146 +203,93 @@ class NotificationTemplateController extends Controller
 
                 DB::beginTransaction();
 
-                $operator_id   = request('operator');
-                $bus_id        = request('bus');
-                $running_cycle = (int) request('running_cycle');
-                $start_date    = request('date');
+                // ✅ NOW type IS annexture_value directly
+                $typeValue = (int) request('type');
+
+                $subject = null;
+                $title   = null;
+                $body    = null;
 
                 /*
-            Prevent duplicate active schedule for same bus
+            1 = Email
+            2 = SMS
+            3 = Push
+            4 = WhatsApp
             */
-                $duplicateQuery = DB::table('odbusdev.bus_schedule')
-                    ->where('bus_id', $bus_id)
-                    ->where('active_status', 1);
 
-                if ($id > 0) {
-                    $duplicateQuery->where('id', '!=', $id);
+                switch ($typeValue) {
+
+                    case 1: // EMAIL
+                        $subject = request('email_subject');
+                        $body    = request('emailContent');
+                        break;
+
+                    case 2: // SMS
+                        $body = request('smsContent');
+                        break;
+
+                    case 3: // PUSH
+                        $title = request('title');
+                        $body  = request('body');
+                        break;
+
+                    case 4: // WHATSAPP
+                        $body = request('whatsappContent');
+                        break;
+
+                    default:
+                        DB::rollBack();
+                        return back()->withInput()->with([
+                            'level' => 'danger',
+                            'message' => 'Invalid Notification Type'
+                        ]);
                 }
 
-                if ($duplicateQuery->exists()) {
-
-                    DB::rollBack();
-
-                    return back()->withInput()->with([
-                        'level'   => 'danger',
-                        'message' => 'This bus already has a schedule.'
-                    ]);
-                }
+                $insertData = [
+                    'name'           => request('name'),
+                    'slug'           => request('slug'),
+                    'type'           => $typeValue, // ✅ direct value
+                    'category'       => request('category'),
+                    'event_trigger'  => request('trigger'),
+                    'subject'        => $subject,
+                    'title'          => $title,
+                    'body'           => $body,
+                    'short_text'     => null,
+                    'variables_json' => null,
+                    'active_status'  => 1,
+                ];
 
                 if ($id > 0) {
 
-                    $oldData = DB::table('odbusdev.bus_schedule')
-                        ->where('id', $id)
-                        ->first();
-
-                    $newData = [
-                        'operator_id'   => $operator_id,
-                        'bus_id'        => $bus_id,
-                        'running_cycle' => $running_cycle,
-                    ];
-
-                    $oldChanged = [];
-                    $newChanged = [];
-
-                    foreach ($newData as $key => $value) {
-
-                        $oldValue = $oldData->$key ?? null;
-
-                        if ((string)$oldValue !== (string)$value) {
-                            $oldChanged[$key] = $oldValue;
-                            $newChanged[$key] = $value;
-                        }
-                    }
-
-                    if (!empty($newChanged)) {
-
-                        app(CommonController::class)->auditLog(
-                            'bus_schedule',
-                            $id,
-                            'UPDATE',
-                            $oldChanged,
-                            $newChanged
-                        );
-                    }
-
-                    DB::table('odbusdev.bus_schedule')
+                    DB::table('odbusmaster.mst_notification_templates')
                         ->where('id', $id)
                         ->update([
-                            'operator_id'   => $operator_id,
-                            'bus_id'        => $bus_id,
-                            'running_cycle' => $running_cycle,
-                            'updated_by'    => 1,
-                            'updated_at'    => now()
+                            ...$insertData,
+                            'updated_by' => 1,
+                            'updated_at' => now()
                         ]);
-
-                    DB::table('odbusdev.bus_schedule_date')
-                        ->where('bus_schedule_id', $id)
-                        ->delete();
-
-                    $schedule_id = $id;
                 } else {
 
-                    $insertData = [
-                        'operator_id'   => $operator_id,
-                        'bus_id'        => $bus_id,
-                        'running_cycle' => $running_cycle,
-                        'active_status' => 1
-                    ];
-
-                    app(CommonController::class)->auditLog(
-                        'bus_schedule',
-                        null,
-                        'INSERT',
-                        [],
-                        $insertData
-                    );
-
-                    $schedule_id = DB::table('odbusdev.bus_schedule')
-                        ->insertGetId([
+                    DB::table('odbusmaster.mst_notification_templates')
+                        ->insert([
                             ...$insertData,
                             'created_by' => 1,
                             'created_at' => now()
                         ]);
                 }
 
-                $dates = [];
-                $current = \Carbon\Carbon::parse($start_date);
-
-                for ($i = 0; $i < 30; $i++) {
-
-                    $dates[] = [
-                        'bus_schedule_id' => $schedule_id,
-                        'entry_date'      => $current->format('Y-m-d'),
-                        'created_by'      => 1,
-                        'created_at'      => now()
-                    ];
-
-                    $current->addDays($running_cycle);
-                }
-
-                DB::table('odbusdev.bus_schedule_date')->insert($dates);
-
-                DB::table('odbusdev.bus')
-                    ->where('id', $bus_id)
-                    ->update([
-                        'running_cycle' => $running_cycle,
-                        'updated_at'    => now()
-                    ]);
-
                 DB::commit();
 
-                return redirect()->back()
-                    ->withInput()
-                    ->with([
-                        'level'   => 'success',
-                        'message' => 'Bus Schedule ' . ($id ? 'updated' : 'created') . ' successfully'
-                    ]);
+                return redirect()->back()->with([
+                    'level'   => 'success',
+                    'message' => 'Notification Template ' . ($id ? 'updated' : 'created') . ' successfully'
+                ]);
             }
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("BusScheduleController Error", [
+            Log::error("NotificationTemplate Error", [
                 'method' => $data['strPage'],
                 'error'  => $t->getMessage()
             ]);
@@ -382,153 +302,265 @@ class NotificationTemplateController extends Controller
 
         return view('Master.addNotificationTemplate', compact('data'));
     }
+
     public function edit($encId)
     {
         return $this->add($encId);
     }
 
-    public function getScheduleDates(Request $request)
+    public function getNotificationDetails(Request $request)
     {
         try {
 
-            $bus_id = $request->bus_id;
-            $schedule_id = $request->bus_schedule_id;
+            $id = $request->id;
 
-            $scheduleDates = [];
-            $runningCycle = null;
-            $lastDate = null;
-            $busName = '';
-            $busNumber = '';
+            $template = DB::table('odbusmaster.mst_notification_templates')
+                ->where('id', $id)
+                ->first();
 
-            $today = \Carbon\Carbon::today();
-
-            if (!empty($schedule_id)) {
-
-                $schedule = DB::table('odbusdev.bus_schedule')
-                    ->where('id', $schedule_id)
-                    ->first();
-
-                if ($schedule) {
-
-                    $runningCycle = $schedule->running_cycle;
-
-                    $bus = DB::table('odbusdev.bus')
-                        ->where('id', $schedule->bus_id)
-                        ->first();
-
-                    if ($bus) {
-                        $busName = ($bus->name ?? '');
-                        $busNumber = ($bus->bus_number ?? '');
-                    }
-
-                    $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                        ->where('bus_schedule_id', $schedule_id)
-                        ->orderBy('entry_date', 'asc')
-                        ->limit(30)
-                        ->pluck('entry_date')
-                        ->toArray();
-
-                    $lastDate = DB::table('odbusdev.bus_schedule_date')
-                        ->where('bus_schedule_id', $schedule_id)
-                        ->orderByDesc('entry_date')
-                        ->value('entry_date');
-                }
-            } elseif (!empty($bus_id)) {
-
-                $schedule = DB::table('odbusdev.bus_schedule')
-                    ->where('bus_id', $bus_id)
-                    ->where('active_status', 1)
-                    ->orderByDesc('id')
-                    ->first();
-
-                if ($schedule) {
-
-                    $runningCycle = $schedule->running_cycle;
-
-                    $bus = DB::table('odbusdev.bus')
-                        ->where('id', $schedule->bus_id)
-                        ->first();
-
-                    if ($bus) {
-                        $busName = ($bus->name ?? '');
-                        $busNumber = ($bus->bus_number ?? '');
-                    }
-
-                    $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                        ->where('bus_schedule_id', $schedule->id)
-                        ->orderBy('entry_date', 'asc')
-                        ->limit(30)
-                        ->pluck('entry_date')
-                        ->toArray();
-
-                    $lastDate = DB::table('odbusdev.bus_schedule_date')
-                        ->where('bus_schedule_id', $schedule->id)
-                        ->orderByDesc('entry_date')
-                        ->value('entry_date');
-                }
+            if (!$template) {
+                return response('<div class="text-danger text-center p-4">Data not found</div>');
             }
+
+            $type = (int) $template->type;
+
+            /*
+        1 = Email
+        2 = SMS
+        3 = Push
+        4 = WhatsApp
+        */
+
+            // 🔥 TYPE LABEL
+            $typeMap = [
+                1 => 'Email',
+                2 => 'SMS',
+                3 => 'Push Notification',
+                4 => 'WhatsApp'
+            ];
 
             $html = '
-                <div id="modalBusTitle" style="display:none;"> - (' . $busNumber . ')</div>';
+            <div class="container-fluid">
 
-            if (!empty($scheduleDates)) {
+                <div class="text-center mb-4">
+                    <span class="badge bg-primary px-3 py-2 fs-6">
+                        ' . ($typeMap[$type] ?? 'Unknown') . '
+                    </span>
+                </div>
 
-                $columns = 3;
-                $chunkSize = ceil(count($scheduleDates) / $columns);
-                $chunks = array_chunk($scheduleDates, $chunkSize);
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+            ';
 
-                $html .= '<div class="row">';
 
-                foreach ($chunks as $chunk) {
-
-                    $html .= '<div class="col-md-4">';
-
-                    foreach ($chunk as $date) {
-
-                        $dateObj = \Carbon\Carbon::parse($date);
-
-                        $style = '';
-
-                        if ($dateObj->lt($today)) {
-                            $style = 'color:#6c757d;
-                          text-decoration:line-through;
-                          text-decoration-color:red;
-                          text-decoration-thickness:2px;';
-                        }
-
-                        $html .= '
-            <div class="date-box text-center mb-2 p-2 border rounded bg-light" style="' . $style . '">
-                ' . $dateObj->format('d-M-Y') . '
-            </div>';
-                    }
-
-                    $html .= '</div>';
-                }
-
-                $html .= '</div>';
-            } else {
+            // ================= EMAIL =================
+            if ($type === 1) {
 
                 $html .= '
-                    <div class="text-center text-muted p-4">
-                        Bus is not scheduled
-                    </div>';
+
+                    <div class="text-center mb-3">
+                        <span class="text-muted small fw-semibold">' . ($template->name ?? 'Email Notification') . '</span>
+                    </div>
+
+                    <div style="
+                        background: linear-gradient(135deg, #f5f7fb, #eef1f7);
+                        padding:20px;
+                        border-radius:12px;
+                    ">
+
+                        <div class="d-flex justify-content-center">
+
+                            <div style="
+                                background:#e4e6eb;
+                                padding:12px 14px;
+                                border-radius:18px;
+                                font-size:14px;
+                                max-width:85%;
+                                color:#222;
+                                text-align:left;
+                            ">
+
+                                <!-- Subject -->
+                                <div style="font-weight:600; margin-bottom:6px;">
+                                    ' . ($template->subject ?? '--') . '
+                                </div>
+
+                                <!-- Divider -->
+                                <div style="
+                                    height:1px;
+                                    background:#ccc;
+                                    margin:6px 0 8px 0;
+                                "></div>
+
+                                <!-- Body -->
+                                <div style="color:#333; line-height:1.5;">
+                                    ' . nl2br($template->body ?? '--') . '
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                ';
             }
 
-            if (!empty($bus_id)) {
-                return response()->json([
-                    'status' => !empty($scheduleDates),
-                    'html' => $html,
-                    'running_cycle' => $runningCycle,
-                    'last_date' => $lastDate
-                ]);
+            // ================= SMS =================
+            elseif ($type === 2) {
+
+                $html .= '
+
+                    <div class="text-center mb-3">
+                        <span class="text-muted small fw-semibold">' . ($template->name ?? 'SMS Notification') . '</span>
+                    </div>
+
+                    <div style="
+                        background: linear-gradient(135deg, #f5f7fb, #eef1f7);
+                        padding:20px;
+                        border-radius:12px;
+                    ">
+
+                        <div class="d-flex justify-content-center">
+
+                            
+
+                                <!-- SMS Bubble -->
+                                
+                                    <div style="
+                                        background:#e4e6eb;
+                                        padding:10px 14px;
+                                        border-radius:18px;
+                                        font-size:14px;
+                                        max-width:85%;
+                                        color:#222;
+                                    ">
+                                        ' . nl2br($template->body ?? '--') . '
+                                    </div>
+                                </div>
+
+                                <!-- Timestamp -->
+                                <div style="
+                                    font-size:11px;
+                                    color:#999;
+                                    margin-top:6px;
+                                    text-align:right;
+                                ">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                ';
             }
+
+            // ================= PUSH =================
+            elseif ($type === 3) {
+
+                $html .= '
+
+                        <div class="text-center mb-3">
+                            <span class="text-muted small fw-semibold">' . ($template->name ?? 'Notification') . '</span>
+                        </div>
+
+                        <div style="
+                            background: linear-gradient(135deg, #f5f7fb, #eef1f7);
+                            padding:20px;
+                            border-radius:12px;
+                        ">
+
+                            <div class="d-flex justify-content-center">
+                                <div style="
+                                    width:320px;
+                                    background:#ffffff;
+                                    border-radius:14px;
+                                    padding:14px;
+                                    box-shadow:0 6px 18px rgba(0,0,0,0.15);
+                                    border:1px solid #e6e6e6;
+                                ">
+
+                                    <!-- Header -->
+                                    <div style="display:flex; align-items:center; margin-bottom:10px;">
+                                        
+                                        <div style="
+                                            width:36px;
+                                            height:36px;
+                                            border-radius:50%;
+                                            background:linear-gradient(135deg,#0d6efd,#4da3ff);
+                                            color:#fff;
+                                            display:flex;
+                                            align-items:center;
+                                            justify-content:center;
+                                            font-size:16px;
+                                            margin-right:10px;
+                                            box-shadow:0 2px 6px rgba(13,110,253,0.4);
+                                        ">
+                                            🔔
+                                        </div>
+
+                                
+
+                                    </div>
+
+                                    <!-- Title -->
+                                    <div style="font-size:15px; font-weight:600; color:#111;">
+                                        ' . ($template->title ?? '--') . '
+                                    </div>
+
+                                    <!-- Body -->
+                                    <div style="font-size:13px; color:#555; margin-top:4px;">
+                                        ' . nl2br($template->body ?? '--') . '
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    ';
+            }
+
+
+            // ================= WHATSAPP =================
+            elseif ($type === 4) {
+
+                $html .= '
+
+                    <h6 class="text-muted mb-3">' . ($template->name ?? 'Notification') . '</h6>
+
+                    <div class="d-flex justify-content-center">
+                        <div style="
+                            max-width:280px;
+                            background:#dcf8c6;
+                            padding:12px 15px;
+                            border-radius:12px;
+                            text-align:left;
+                            font-size:14px;
+                            box-shadow:0 1px 3px rgba(0,0,0,0.1);
+                        ">
+                            ' . nl2br($template->body ?? '--') . '
+                        </div>
+                    </div>
+
+                ';
+            }
+
+
+            // CLOSE
+            $html .= '
+                    </div>
+                </div>
+            </div>';
 
             return response($html);
         } catch (\Exception $e) {
 
             return response('
             <div class="text-danger text-center p-4">
-                Failed to load schedule
+                Failed to load notification details
             </div>');
         }
     }

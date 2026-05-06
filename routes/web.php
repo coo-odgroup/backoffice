@@ -555,6 +555,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'notification-template/add', [NotificationTemplateController::class, 'add'])->name('notification-template.add');
     Route::post('notification-template/dataTableView', [NotificationTemplateController::class, 'dataTableView'])->name('notification-template.dataTableView');
     Route::match(['get', 'post'], 'notification-template/edit/{encId}', [NotificationTemplateController::class, 'edit'])->name('notification-template.edit');
+    Route::post('get-notification-details', [NotificationTemplateController::class, 'getNotificationDetails']);
 
     Route::get('/cron-job', [CronJobController::class, 'index'])->name('cron-job.index');
     Route::match(['get', 'post'], 'cron-job/add', [CronJobController::class, 'add'])->name('cron-job.add');
