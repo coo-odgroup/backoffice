@@ -141,14 +141,17 @@ class CronJobController extends Controller
                 $data[] = [
 
                     'id' => $row->id,
-                    'cron_job_id' => $row->id,
-                    'enc_cron_job_id' => Crypt::encryptString($row->id),
+                    'enc_id' => Crypt::encryptString($row->id),
                     'cron_name' => $row->name ?? '--',
-                    'cron_type' => $row->type_name ?? '--',
+                    'cron_type' => $row->type ?? '--',
                     'scheduler_type' => $row->scheduler_name ?? '--',
                     'execution_type' => $row->execution_type ?? '--',
                     'interval_minutes' => $row->interval_minutes ?? '--',
-                    'run_times_json' => $row->run_times_json ?? '--',
+                    'run_times_json' => json_encode(
+                        array_values(
+                            array_filter(request('runTime', []))
+                        )
+                    ),
                     'cron_expression' => $row->cron_expression ?? '--',
                     'job_class' => $row->job_class ?? '--',
                     'command_name' => $row->command_name ?? '--',
@@ -251,7 +254,13 @@ class CronJobController extends Controller
                     'type'              => request('type'),
                     'schedule_type'     => request('scheduler'),
                     'interval_minutes'  => request('interval') ?: null,
-                    'run_times_json'    => request('runTime') ?: null,
+                    'run_times_json' => !empty(request('runTime'))
+                        ? json_encode(
+                            array_values(
+                                array_filter(request('runTime'))
+                            )
+                        )
+                        : null,
                     'cron_expression'   => request('cron') ?: null,
                     'execution_type'    => request('execution'),
                     'job_class'         => request('job') ?: null,
@@ -279,7 +288,7 @@ class CronJobController extends Controller
 
                         $oldValue = $oldData->$key ?? null;
 
-                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                        if (json_encode($oldValue) !== json_encode($value)) {
 
                             $oldChanged[$key] = $oldValue;
                             $newChanged[$key] = $value;
@@ -311,17 +320,17 @@ class CronJobController extends Controller
                         'created_at' => now()
                     ];
 
+                    $insertId = DB::table('odbusmaster.mst_cron_jobs')
+                        ->insertGetId($rowData);
+
                     // AUDIT LOG
                     app(CommonController::class)->auditLog(
                         'mst_cron_jobs',
-                        null,
+                        $insertId,
                         'INSERT',
                         [],
                         $rowData
                     );
-
-                    DB::table('odbusmaster.mst_cron_jobs')
-                        ->insert($rowData);
                 }
 
                 DB::commit();
@@ -348,6 +357,7 @@ class CronJobController extends Controller
 
         return view('Master.addCronJob', compact('data'));
     }
+
     public function edit($encId)
     {
         return $this->add($encId);

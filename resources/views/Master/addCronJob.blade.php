@@ -107,13 +107,100 @@
                                                             <input type="text" class="form-control form-control-sm clearable" id="interval" name="interval" value="{{ $data['row']->interval_minutes ?? '' }}" placeholder="Enter Interval Minutes" maxlength="2">
                                                         </div>
                                                         <div class="mb-2">
-                                                            <label for="runTime">Run Time Json</label>
-                                                            <input type="text" class="form-control form-control-sm clearable" id="runTime" name="runTime" value="{{ $data['row']->run_times_json ?? '' }}" placeholder="Enter Run Time in Minutes">
-                                                        </div>
-                                                        <div class="mb-2">
                                                             <label for="cron">Cron Expression</label>
                                                             <input type="text" class="form-control form-control-sm clearable" id="cron" name="cron" value="{{ $data['row']->cron_expression ?? '' }}" placeholder="Enter Cron Expression">
                                                         </div>
+                                                        <div id="runTimeContainer">
+
+                                                            @php
+                                                            $runTimes = [];
+
+                                                            if (!empty($data['row']->run_times_json)) {
+
+                                                            $decoded = json_decode($data['row']->run_times_json, true);
+
+                                                            if (is_array($decoded)) {
+                                                            $runTimes = $decoded;
+                                                            }
+                                                            }
+                                                            @endphp
+
+                                                            @if(count($runTimes) > 0)
+
+                                                            @foreach($runTimes as $index => $time)
+
+                                                            <div class="row mb-2 align-items-center run-time-row">
+
+                                                                <div class="col-md-3">
+                                                                    <label class="mb-0">
+                                                                        @if($index == 0)
+                                                                        Run Time
+                                                                        @else
+                                                                        &nbsp;
+                                                                        @endif
+                                                                    </label>
+                                                                </div>
+
+                                                                <div class="col-md-7">
+                                                                    <input type="text"
+                                                                        class="form-control form-control-sm run-time-input clearable"
+                                                                        name="runTime[]"
+                                                                        value="{{ $time }}"
+                                                                        placeholder="Enter Run Time">
+                                                                </div>
+
+                                                                <div class="col-md-2">
+
+                                                                    @if($index == 0)
+
+                                                                    <button type="button"
+                                                                        class="btn btn-outline-primary btn-sm btn-add-runtime">
+                                                                        <i class="fa fa-plus"></i>
+                                                                    </button>
+
+                                                                    @else
+
+                                                                    <button type="button"
+                                                                        class="btn btn-outline-danger btn-sm btn-remove-runtime">
+                                                                        <i class="fa fa-minus"></i>
+                                                                    </button>
+
+                                                                    @endif
+
+                                                                </div>
+
+                                                            </div>
+
+                                                            @endforeach
+
+                                                            @else
+
+                                                            <div class="row mb-2 align-items-center run-time-row">
+
+                                                                <div class="col-md-3">
+                                                                    <label class="mb-0">Run Time</label>
+                                                                </div>
+
+                                                                <div class="col-md-7">
+                                                                    <input type="text"
+                                                                        class="form-control form-control-sm run-time-input clearable"
+                                                                        name="runTime[]"
+                                                                        placeholder="Enter Run Time">
+                                                                </div>
+
+                                                                <div class="col-md-2">
+                                                                    <button type="button"
+                                                                        class="btn btn-outline-primary btn-sm btn-add-runtime">
+                                                                        <i class="fa fa-plus"></i>
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+
+                                                            @endif
+
+                                                        </div>
+
                                                     </div>
                                                 </div>
 
@@ -325,7 +412,56 @@
             $('#execution').on('change', function() {
                 toggleExecutionFields();
             });
+            $(document).ready(function() {
 
+                const container = document.getElementById('runTimeContainer');
+
+                container.addEventListener('click', function(e) {
+
+                    // ADD
+                    if (e.target.closest('.btn-add-runtime')) {
+
+                        const row = document.createElement('div');
+
+                        row.className = 'row mb-2 align-items-center run-time-row';
+
+                        row.innerHTML = `
+                            <div class="col-md-3">
+                                &nbsp;
+                            </div>
+
+                            <div class="col-md-7">
+                                <input type="text"
+                                    class="form-control form-control-sm run-time-input clearable"
+                                    name="runTime[]"
+                                    placeholder="Enter Run Time">
+                            </div>
+
+                            <div class="col-md-2">
+                                <button type="button"
+                                    class="btn btn-outline-danger btn-sm btn-remove-runtime">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                        `;
+
+                        container.appendChild(row);
+                    }
+
+                    // REMOVE
+                    if (e.target.closest('.btn-remove-runtime')) {
+
+                        const rows = container.querySelectorAll('.run-time-row');
+
+                        if (rows.length > 1) {
+
+                            e.target.closest('.run-time-row').remove();
+                        }
+                    }
+
+                });
+
+            });
 
             $('#cronName').on('keyup', function() {
 

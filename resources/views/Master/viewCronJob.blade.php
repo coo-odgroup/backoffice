@@ -40,29 +40,40 @@
                 <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
                     <div class="row align-items-end">
 
-                        <div class="col-lg-3 col-md-6">
-                            <label for="operator">Operator:</label>
-                            <select class="form-select form-select-sm" id="operator" name="operator">
-                                <option value="">Select Operator</option>
-                            </select>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="cronName">Cron Name<span
+                                    class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm clearable" id="cronName" name="cronName" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Cron Name" maxlength="100">
                         </div>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="type">Type <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm"
+                                id="type" name="type">
+                                <option value="">Select Type</option>
+                                <option value="Auto">Auto</option>
+                                <option value="Manual">Manual</option>
 
-                        <div class="col-lg-3 col-md-6">
-                            <label for="bus">Bus:</label>
-                            <select class="form-select form-select-sm" id="bus" name="bus">
-                                <option value="">Select Bus:</option>
                             </select>
                         </div>
 
                         <div class="col-lg-2 col-md-6">
-                            <label for="runningCycle">Running Cycle:</label>
-                            <select class="form-select form-select-sm" id="runningCycle" name="runningCycle">
-                                <option value="">Select Running Cycle:</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
+                            <label for="scheduler">Scheduler Type <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm"
+                                id="scheduler" name="scheduler">
+                                <option value="">Select</option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2 col-md-6">
+                            <label for="execution">Execution Type</label>
+                            <select class="form-select form-select-sm"
+                                id="execution" name="execution">
+                                <option value="">Select Execution Type</option>
+                                <option value="job">Job</option>
+                                <option value="command">Command</option>
                             </select>
                         </div>
 
@@ -141,8 +152,8 @@
                                     </div>
                                 </th>
                                 <th>Sl No</th>
-                                <th>Cron Name</th>
                                 <th>Cron Type</th>
+                                <th>Cron Name</th>
                                 <th>Scheduler Type</th>
                                 <th>Execution Type</th>
                                 <th>Last Modified</th>
@@ -158,7 +169,7 @@
                 {{csrf_field()}}
                 <input name="hdn_ids" id="hdn_ids" type="hidden">
                 <input name="hdn_qs" id="hdn_qs" type="hidden">
-                <input type="hidden" id="hdn_model" value="BusSchedule">
+                <input type="hidden" id="hdn_model" value="CronJob">
 
                 <div class="d-flex justify-content-between align-items-center mt-2">
                     <div id="customTableInfo"></div>
@@ -196,26 +207,6 @@
             e.preventDefault();
         });
 
-        $(document).ready(function() {
-
-            commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-
-            commonAjax.initSelect2('#operator', 'Select Operator');
-            commonAjax.initSelect2('#bus', 'Select Bus');
-            commonAjax.initClearableInputs();
-            commonAjax.loadBusOperatorDropdown();
-
-            $('#operator').on('change', function() {
-                let operator_id = $(this).val();
-                if (!operator_id) return;
-
-                commonAjax.loadBusListByOperator('#bus', operator_id);
-            });
-
-            getDataTableView();
-        });
-
-
         $('#btnReset').click(function() {
             $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
             $('.form-select').val(0);
@@ -223,6 +214,41 @@
             getDataTableView(true);
         });
 
+        commonAjax.initSelect2('#type', 'Select Type');
+        commonAjax.initSelect2('#scheduler', 'Select Scheduler Type');
+        commonAjax.initSelect2('#execution', 'Select Execution Type');
+
+        commonAjax.loadAnnextureList([
+            'SCHEDULER_TYPE'
+        ], function(data) {
+
+            renderDropdown(
+                '#scheduler',
+                data.SCHEDULER_TYPE || []
+            );
+
+        });
+
+        function renderDropdown(selector, items = [], selected = '') {
+
+            let options = '<option value="">Select Option</option>';
+
+            $.each(items, function(index, item) {
+
+                let isSelected =
+                    selected == item.annexture_value ?
+                    'selected' :
+                    '';
+
+                options += `
+                    <option value="${item.annexture_value}" ${isSelected}>
+                        ${item.annexture_name}
+                    </option>
+                `;
+            });
+
+            $(selector).html(options).trigger('change');
+        }
         window.getDataTableView = function(reset = true) {
 
 
@@ -255,9 +281,9 @@
             let searchParams = {
                 txtSearch: txtSearch,
                 selStatus: selStatus,
-                operator: operator,
-                bus: bus,
-                runningCycle: runningCycle
+                type: $('#type').val() || '',
+                scheduler: $('#scheduler').val() || '',
+                execution: $('#execution').val() || ''
             };
 
             let displayColumns = [1, 2, 3, 4, 5, 6, 7];
@@ -265,7 +291,7 @@
                     data: '',
                     render: function(data, type, row) {
                         return `<div class="checkbox">
-                                            <input class="chkItem" type="checkbox" value="${row.bus_schedule_id}">
+                                            <input class="chkItem" type="checkbox" value="${row.id}">
                                         </div>`;
                     },
                     className: "noPrint text-center"
@@ -278,20 +304,138 @@
                     className: "text-center"
                 },
                 {
+                    data: 'cron_type',
+                    render: function(data, type, row) {
+
+                        let bgColor = '#1b56e4';
+                        let icon = 'fa-solid fa-user-gear';
+
+                        if ((row.cron_type || '').toLowerCase() == 'auto') {
+
+                            bgColor = '#e4a91b';
+                            icon = 'fa-solid fa-robot';
+                        }
+
+                        return `
+                            <span style="
+                                background:${bgColor};
+                                color:#fff;
+                                padding:4px 10px;
+                                border-radius:6px;
+                                font-size:12px;
+                                font-weight:600;
+                                display:inline-flex;
+                                align-items:center;
+                                gap:5px;
+                                min-width:80px;
+                                justify-content:center;
+                            ">
+                                <i class="${icon}"></i>
+                                ${row.cron_type ?? '--'}
+                            </span>
+                        `;
+                    },
+                    className: "text-center"
+                },
+                {
                     data: 'cron_name',
                     defaultContent: "--"
                 },
                 {
-                    data: 'cron_type',
-                    defaultContent: "--"
-                },
-                {
                     data: 'scheduler_type',
-                    defaultContent: "--"
+                    render: function(data, type, row) {
+
+                        let intervalMinutes = row.interval_minutes ?? '--';
+
+                        let runTimesHtml = '--';
+
+                        if (row.run_times_json && row.run_times_json !== '--') {
+
+                            let times = row.run_times_json.split(',');
+
+                            runTimesHtml = `
+                                <div class='d-flex flex-wrap gap-1 mt-1'>
+                                    ${times.map(time => `
+                                        <span class='badge bg-light text-primary border me-1 mb-1'>
+                                            ${time.trim()}
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            `;
+                        }
+
+                        return `
+                                <span
+                                    class="fw-semibold text-decoration-underline cursor-pointer"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    title="
+                                        <div class='audit-box text-start'>
+
+                                            <div>
+                                                <strong>Interval Minutes:</strong>
+                                                ${intervalMinutes}
+                                            </div>
+
+                                            <hr class='my-1'>
+
+                                            <div>
+                                                <strong>Run Times:</strong>
+                                            </div>
+
+                                            ${runTimesHtml}
+
+                                        </div>
+                                    ">
+                                    ${row.scheduler_type ?? '--'}
+                                </span>
+                            `;
+                    },
+                    className: "text-start"
                 },
                 {
                     data: 'execution_type',
-                    defaultContent: "--"
+                    render: function(data, type, row) {
+
+                        let details = '--';
+                        let label = 'Details';
+
+                        if ((row.execution_type || '').toLowerCase() == 'job') {
+
+                            details = row.job_class ?? '--';
+                            label = 'Job Class';
+
+                        } else if ((row.execution_type || '').toLowerCase() == 'command') {
+
+                            details = row.command_name ?? '--';
+                            label = 'Command Name';
+                        }
+
+                        return `
+                            <span
+                                class="fw-semibold text-decoration-underline cursor-pointer"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-html="true"
+                                title="
+                                    <div class='audit-box text-start'>
+                                        <div>
+                                            <strong>${label}:</strong>
+                                        </div>
+
+                                        <hr class='my-1'>
+
+                                        <div style='word-break:break-word; max-width:250px;'>
+                                            ${details}
+                                        </div>
+                                    </div>
+                                ">
+                                ${row.execution_type ?? '--'}
+                            </span>
+                        `;
+                    },
+                    className: "text-start"
                 },
                 {
                     data: null,
@@ -303,7 +447,6 @@
                         let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                         let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
-                        // Show updated date if exists, else created date
                         let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                         return `
@@ -340,10 +483,10 @@
 
                         return `
                             <span class="btn btn-sm btn-primary btnViewSchedule"
-                                data-id="${row.bus_schedule_id}"
+                                data-id="${row.id}"
                                 data-id="${row.enc_bustype_id}"
                                 data-name="${row.layout_name}">
-                                <i class="fa fa-calendar"></i> View
+                                <i class="fa fa-eye"></i> View
                             </span>
                         `;
                     },
@@ -418,6 +561,11 @@
                     `);
                 }
             });
+
+        });
+        $(document).ready(function() {
+
+            getDataTableView(false);
 
         });
     </script>

@@ -21,13 +21,18 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#busManagement"
-            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-type','admin/annexture','admin/cancellationslab*','admin/cancellationslab-info*','admin/seat-layout*','admin/festive-days*','admin/ticket-fare-slab*','admin/ticketfareslab-info*','admin/bus-schedule*','admin/bus-cancel*','admin/seat-block*','admin/seat-open*','admin/notification-template*','admin/bus*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-type','admin/annexture','admin/cancellationslab*','admin/cancellationslab-info*','admin/seat-layout*','admin/festive-days*','admin/ticket-fare-slab*','admin/ticketfareslab-info*','admin/bus-schedule*','admin/bus-cancel*','admin/seat-block*','admin/seat-open*','admin/notification-template*','admin/bus*','admin/cron-job') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-bus me-2"></i> Bus Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-type','admin/annexture','admin/cancellationslab*','admin/cancellationslab-info*','admin/seat-layout*','admin/festive-days*','admin/ticket-fare-slab*','admin/ticketfareslab-info*','admin/bus-schedule*','admin/bus-cancel*','admin/seat-block*','admin/seat-open*','admin/notification-template*','admin/bus*') ? 'show' : '' }}" id="busManagement">
+        <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-type','admin/annexture','admin/cancellationslab*','admin/cancellationslab-info*','admin/seat-layout*','admin/festive-days*','admin/ticket-fare-slab*','admin/ticketfareslab-info*','admin/bus-schedule*','admin/bus-cancel*','admin/seat-block*','admin/seat-open*','admin/notification-template*','admin/bus*','admin/cron-job') ? 'show' : '' }}" id="busManagement">
+
+            <a href="{{ url('admin/cron-job') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/cron-job*') ? 'active' : '' }}">
+               <i class="fa-solid fa-clock-rotate-left me-2"></i>Cron Job
+            </a>
 
             <a href="{{ url('admin/bus') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/bus*') ? 'active' : '' }}">
