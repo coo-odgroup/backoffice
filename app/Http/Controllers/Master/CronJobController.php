@@ -27,108 +27,149 @@ class CronJobController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $operator  = request('operator') !== null && request('operator') !== '' ? (int)request('operator') : null;
-            $bus       = request('bus') !== null && request('bus') !== '' ? (int)request('bus') : null;
-            $status    = request('selStatus') !== null && request('selStatus') !== '' ? (int)request('selStatus') : null;
-            $runningCycle = request('runningCycle') !== null && request('runningCycle') !== '' ? (int)request('runningCycle') : null;
 
+            $type = request('type') !== null && request('type') !== ''
+                ? request('type')
+                : null;
+
+            $scheduler = request('scheduler') !== null && request('scheduler') !== ''
+                ? request('scheduler')
+                : null;
+
+            $execution = request('execution') !== null && request('execution') !== ''
+                ? request('execution')
+                : null;
+
+            $status = request('selStatus') !== null && request('selStatus') !== ''
+                ? (int) request('selStatus')
+                : null;
 
             $start  = request('start', 0);
             $length = request('length', 10);
 
-            $query = DB::table('odbusdev.bus_schedule as bs')
+            $query = DB::table('odbusmaster.mst_cron_jobs as cj')
                 ->select(
-                    'bs.id',
-                    'bs.operator_id',
-                    'bs.bus_id',
-                    'bs.running_cycle',
 
-                    DB::raw('(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_name'),
-                    DB::raw('(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) as bus_number'),
+                    'cj.id',
+                    'cj.name',
+                    'cj.slug',
+                    'cj.type',
+                    'cj.schedule_type',
 
-                    DB::raw('(SELECT organization_name
-                    FROM odbusmaster.users
-                    WHERE id = bs.operator_id
-                    AND user_role = 9
-                    LIMIT 1) as operator_name'),
+                    // TYPE NAME (SCHEDULER_TYPE)
+                    DB::raw('(
+                            SELECT annexture_name
+                            FROM odbusmaster.mst_annexture
+                            WHERE annexture_type_id = 20
+                            AND annexture_value = cj.type
+                            LIMIT 1
+                        ) as type_name'),
 
-                    'bs.active_status',
-                    'bs.created_at',
-                    'bs.updated_at',
+                    // SCHEDULER NAME (SCHEDULER_TYPE)
+                    DB::raw('(
+                            SELECT annexture_name
+                            FROM odbusmaster.mst_annexture
+                            WHERE annexture_type_id = 20
+                            AND annexture_value = cj.schedule_type
+                            LIMIT 1
+                        ) as scheduler_name'),
+                    'cj.interval_minutes',
+                    'cj.run_times_json',
+                    'cj.cron_expression',
+                    'cj.execution_type',
+                    'cj.job_class',
+                    'cj.command_name',
+                    'cj.active_status',
+                    'cj.created_at',
+                    'cj.updated_at',
 
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = bs.updated_by LIMIT 1) as updated_by_name')
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = cj.created_by LIMIT 1) as created_by_name'),
+
+                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = cj.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            $recordsTotal = DB::table('odbusdev.bus_schedule')->count();
+            $recordsTotal = DB::table('odbusmaster.mst_cron_jobs')->count();
 
+            // SEARCH
             if (!empty(trim($txtSearch))) {
+
                 $search = trim($txtSearch);
 
                 $query->where(function ($q) use ($search) {
-                    $q->whereRaw("(SELECT name FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("(SELECT bus_number FROM odbusdev.bus WHERE id = bs.bus_id LIMIT 1) LIKE ?", ["%{$search}%"])
-                        ->orWhereRaw("(SELECT organization_name FROM odbusmaster.users WHERE id = bs.operator_id LIMIT 1) LIKE ?", ["%{$search}%"]);
+
+                    $q->where('cj.name', 'like', "%{$search}%")
+                        ->orWhere('cj.slug', 'like', "%{$search}%")
+                        ->orWhere('cj.type', 'like', "%{$search}%")
+                        ->orWhere('cj.schedule_type', 'like', "%{$search}%")
+                        ->orWhere('cj.execution_type', 'like', "%{$search}%")
+                        ->orWhere('cj.job_class', 'like', "%{$search}%")
+                        ->orWhere('cj.command_name', 'like', "%{$search}%")
+                        ->orWhere('cj.cron_expression', 'like', "%{$search}%");
                 });
             }
 
-            if (!empty($operator)) {
-                $query->where('bs.operator_id', $operator);
+            // FILTERS
+            if (!empty($type)) {
+                $query->where('cj.type', $type);
             }
 
-            if (!empty($bus)) {
-                $query->where('bs.bus_id', $bus);
+            if (!empty($scheduler)) {
+                $query->where('cj.schedule_type', $scheduler);
             }
 
-            if (!empty($runningCycle)) {
-                $query->where('bs.running_cycle', $runningCycle);
+            if (!empty($execution)) {
+                $query->where('cj.execution_type', $execution);
             }
 
             if ($status !== null && $status !== '') {
-                $query->where('bs.active_status', $status);
+                $query->where('cj.active_status', $status);
             }
 
             $recordsFiltered = (clone $query)->count();
 
+            // PAGINATION
             if ($length != -1) {
-                $query->offset($start)->limit($length);
+
+                $query->offset($start)
+                    ->limit($length);
             }
 
-            $rows = $query->orderBy('bs.id', 'desc')->get();
+            $rows = $query->orderBy('cj.id', 'desc')->get();
 
             foreach ($rows as $row) {
 
                 $data[] = [
+
                     'id' => $row->id,
-
-                    'bus_schedule_id' => $row->id,
-                    'enc_bus_schedule_id' => Crypt::encryptString($row->id),
-
-                    'operator_name' => $row->operator_name ?? '--',
-
-                    'bus_name' => trim(($row->bus_name ?? '') . ' - ( ' . ($row->bus_number ?? '') . ' )'),
-                    'running_cycle' => $row->running_cycle ?? '--',
-
+                    'cron_job_id' => $row->id,
+                    'enc_cron_job_id' => Crypt::encryptString($row->id),
+                    'cron_name' => $row->name ?? '--',
+                    'cron_type' => $row->type_name ?? '--',
+                    'scheduler_type' => $row->scheduler_name ?? '--',
+                    'execution_type' => $row->execution_type ?? '--',
+                    'interval_minutes' => $row->interval_minutes ?? '--',
+                    'run_times_json' => $row->run_times_json ?? '--',
+                    'cron_expression' => $row->cron_expression ?? '--',
+                    'job_class' => $row->job_class ?? '--',
+                    'command_name' => $row->command_name ?? '--',
                     'created_date' => $row->created_at
                         ? date('d-M-Y H:i:s', strtotime($row->created_at))
                         : null,
-
                     'updated_date' => $row->updated_at
                         ? date('d-M-Y H:i:s', strtotime($row->updated_at))
                         : null,
-
                     'created_by_name' => $row->created_by_name ?? '--',
+
                     'updated_by_name' => $row->updated_by_name ?? '--',
 
-                    'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
-
-                    'enc_bustype_id' => Crypt::encryptString($row->bus_id),
-                    'layout_name' => $row->bus_name ?? 'Bus'
+                    'is_active' => $row->active_status == 1
+                        ? 'Active'
+                        : 'Inactive',
                 ];
             }
         } catch (\Throwable $t) {
 
-            Log::error("BusScheduleController Error", [
+            Log::error("CronJobController Error", [
                 'message' => $t->getMessage()
             ]);
 
@@ -138,6 +179,7 @@ class CronJobController extends Controller
                 'data' => []
             ]);
         }
+
         return response()->json([
             'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
@@ -154,137 +196,101 @@ class CronJobController extends Controller
 
         try {
 
-            $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
+            $id = (!empty($encId))
+                ? Crypt::decryptString($encId)
+                : 0;
 
             $row = null;
-            $scheduleDates = [];
+
+            $redirectPage = "admin/cron-job";
 
             if ($id > 0) {
+
+                $redirectPage = "admin/cron-job/edit/" . $encId;
 
                 $data['strPage']   = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = DB::table('odbusdev.bus_schedule')
+                $row = DB::table('odbusmaster.mst_cron_jobs')
                     ->where('id', $id)
                     ->first();
 
                 if (!$row) {
-                    return redirect("bus-schedule");
+                    return redirect()->route('cron-job.index');
                 }
 
                 $data['row'] = $row;
-
-                $lastDate = DB::table('odbusdev.bus_schedule_date')
-                    ->where('bus_schedule_id', $id)
-                    ->orderByDesc('entry_date')
-                    ->value('entry_date');
-
-                $data['lastDate'] = $lastDate;
-
-                $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                    ->where('bus_schedule_id', $id)
-                    ->orderBy('entry_date', 'asc')
-                    ->pluck('entry_date')
-                    ->toArray();
-
-                $bus_id = $row->bus_id;
-            } else {
-
-                $bus_id = request('bus') ?? old('bus');
-
-                if ($bus_id) {
-
-                    $schedule = DB::table('odbusdev.bus_schedule')
-                        ->where('bus_id', $bus_id)
-                        ->where('active_status', 1)
-                        ->orderByDesc('id')
-                        ->first();
-
-                    if ($schedule) {
-
-                        $scheduleDates = DB::table('odbusdev.bus_schedule_date')
-                            ->where('bus_schedule_id', $schedule->id)
-                            ->orderBy('entry_date', 'asc')
-                            ->limit(30)
-                            ->pluck('entry_date')
-                            ->toArray();
-                    }
-                }
             }
 
-            $data['scheduleDates'] = $scheduleDates;
-
+            // ===================== POST =====================
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'operator'      => 'required|integer',
-                    'bus'           => 'required|integer',
-                    'running_cycle' => 'required|integer|min:1|max:5',
-                    'date'          => 'required|date',
+
+                    'cronName'  => 'required|string|max:100',
+                    'slug'      => 'required|string|max:100',
+                    'type'      => 'required',
+                    'scheduler' => 'required',
+                    'execution' => 'required',
+
                 ]);
 
                 if ($validator->fails()) {
-                    return back()->withErrors($validator)->withInput();
+                    return back()
+                        ->withErrors($validator)
+                        ->withInput();
                 }
 
                 DB::beginTransaction();
 
-                $operator_id   = request('operator');
-                $bus_id        = request('bus');
-                $running_cycle = (int) request('running_cycle');
-                $start_date    = request('date');
+                $insertData = [
 
-                /*
-            Prevent duplicate active schedule for same bus
-            */
-                $duplicateQuery = DB::table('odbusdev.bus_schedule')
-                    ->where('bus_id', $bus_id)
-                    ->where('active_status', 1);
+                    'name'              => request('cronName'),
+                    'slug'              => request('slug'),
+                    'type'              => request('type'),
+                    'schedule_type'     => request('scheduler'),
+                    'interval_minutes'  => request('interval') ?: null,
+                    'run_times_json'    => request('runTime') ?: null,
+                    'cron_expression'   => request('cron') ?: null,
+                    'execution_type'    => request('execution'),
+                    'job_class'         => request('job') ?: null,
+                    'command_name'      => request('command') ?: null,
+                    'active_status'     => 1,
 
-                if ($id > 0) {
-                    $duplicateQuery->where('id', '!=', $id);
-                }
-
-                if ($duplicateQuery->exists()) {
-
-                    DB::rollBack();
-
-                    return back()->withInput()->with([
-                        'level'   => 'danger',
-                        'message' => 'This bus already has a schedule.'
-                    ]);
-                }
+                ];
 
                 if ($id > 0) {
 
-                    $oldData = DB::table('odbusdev.bus_schedule')
+                    $oldData = DB::table('odbusmaster.mst_cron_jobs')
                         ->where('id', $id)
                         ->first();
 
                     $newData = [
-                        'operator_id'   => $operator_id,
-                        'bus_id'        => $bus_id,
-                        'running_cycle' => $running_cycle,
+                        ...$insertData,
+                        'updated_by' => 1,
+                        'updated_at' => now()
                     ];
 
                     $oldChanged = [];
                     $newChanged = [];
 
-                    foreach ($newData as $key => $value) {
+                    foreach ($insertData as $key => $value) {
 
                         $oldValue = $oldData->$key ?? null;
 
-                        if ((string)$oldValue !== (string)$value) {
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+
                             $oldChanged[$key] = $oldValue;
                             $newChanged[$key] = $value;
                         }
                     }
 
+                    // AUDIT LOG
                     if (!empty($newChanged)) {
 
                         app(CommonController::class)->auditLog(
-                            'bus_schedule',
+                            'mst_cron_jobs',
                             $id,
                             'UPDATE',
                             $oldChanged,
@@ -292,84 +298,44 @@ class CronJobController extends Controller
                         );
                     }
 
-                    DB::table('odbusdev.bus_schedule')
+                    DB::table('odbusmaster.mst_cron_jobs')
                         ->where('id', $id)
-                        ->update([
-                            'operator_id'   => $operator_id,
-                            'bus_id'        => $bus_id,
-                            'running_cycle' => $running_cycle,
-                            'updated_by'    => 1,
-                            'updated_at'    => now()
-                        ]);
-
-                    DB::table('odbusdev.bus_schedule_date')
-                        ->where('bus_schedule_id', $id)
-                        ->delete();
-
-                    $schedule_id = $id;
+                        ->update($newData);
                 } else {
 
-                    $insertData = [
-                        'operator_id'   => $operator_id,
-                        'bus_id'        => $bus_id,
-                        'running_cycle' => $running_cycle,
-                        'active_status' => 1
+                    // ================= INSERT =================
+
+                    $rowData = [
+                        ...$insertData,
+                        'created_by' => 1,
+                        'created_at' => now()
                     ];
 
+                    // AUDIT LOG
                     app(CommonController::class)->auditLog(
-                        'bus_schedule',
+                        'mst_cron_jobs',
                         null,
                         'INSERT',
                         [],
-                        $insertData
+                        $rowData
                     );
 
-                    $schedule_id = DB::table('odbusdev.bus_schedule')
-                        ->insertGetId([
-                            ...$insertData,
-                            'created_by' => 1,
-                            'created_at' => now()
-                        ]);
+                    DB::table('odbusmaster.mst_cron_jobs')
+                        ->insert($rowData);
                 }
-
-                $dates = [];
-                $current = \Carbon\Carbon::parse($start_date);
-
-                for ($i = 0; $i < 30; $i++) {
-
-                    $dates[] = [
-                        'bus_schedule_id' => $schedule_id,
-                        'entry_date'      => $current->format('Y-m-d'),
-                        'created_by'      => 1,
-                        'created_at'      => now()
-                    ];
-
-                    $current->addDays($running_cycle);
-                }
-
-                DB::table('odbusdev.bus_schedule_date')->insert($dates);
-
-                DB::table('odbusdev.bus')
-                    ->where('id', $bus_id)
-                    ->update([
-                        'running_cycle' => $running_cycle,
-                        'updated_at'    => now()
-                    ]);
 
                 DB::commit();
 
-                return redirect()->back()
-                    ->withInput()
-                    ->with([
-                        'level'   => 'success',
-                        'message' => 'Bus Schedule ' . ($id ? 'updated' : 'created') . ' successfully'
-                    ]);
+                return redirect($redirectPage)->with([
+                    'level'   => 'success',
+                    'message' => 'Cron Job ' . ($id ? 'updated' : 'created') . ' successfully'
+                ]);
             }
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("BusScheduleController Error", [
+            Log::error("CronJobController Error", [
                 'method' => $data['strPage'],
                 'error'  => $t->getMessage()
             ]);

@@ -87,7 +87,7 @@ class NotificationTemplateController extends Controller
                         ->orWhere('nt.short_text', 'like', "%{$txtSearch}%");
                 });
             }
-            
+
             if ($type > 0) {
                 $query->where('nt.type', $type);
             }
@@ -169,6 +169,7 @@ class NotificationTemplateController extends Controller
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
             $row = null;
 
+
             if ($id > 0) {
 
                 $data['strPage']   = 'Edit';
@@ -186,7 +187,6 @@ class NotificationTemplateController extends Controller
                 $data['row'] = $row;
             }
 
-            // ================= POST =================
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
@@ -203,7 +203,6 @@ class NotificationTemplateController extends Controller
 
                 DB::beginTransaction();
 
-                // ✅ NOW type IS annexture_value directly
                 $typeValue = (int) request('type');
 
                 $subject = null;
@@ -211,11 +210,11 @@ class NotificationTemplateController extends Controller
                 $body    = null;
 
                 /*
-            1 = Email
-            2 = SMS
-            3 = Push
-            4 = WhatsApp
-            */
+                1 = Email
+                2 = SMS
+                3 = Push
+                4 = WhatsApp
+                */
 
                 switch ($typeValue) {
 
@@ -248,7 +247,7 @@ class NotificationTemplateController extends Controller
                 $insertData = [
                     'name'           => request('name'),
                     'slug'           => request('slug'),
-                    'type'           => $typeValue, // ✅ direct value
+                    'type'           => $typeValue,
                     'category'       => request('category'),
                     'event_trigger'  => request('trigger'),
                     'subject'        => $subject,
@@ -259,28 +258,71 @@ class NotificationTemplateController extends Controller
                     'active_status'  => 1,
                 ];
 
+                $redirectPage = "admin/notification-template";
+
                 if ($id > 0) {
+
+                    $oldData = DB::table('odbusmaster.mst_notification_templates')
+                        ->where('id', $id)
+                        ->first();
+
+                    $newData = [
+                        ...$insertData,
+                        'updated_by' => 1,
+                        'updated_at' => now()
+                    ];
+
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($insertData as $key => $value) {
+
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+
+                        app(CommonController::class)->auditLog(
+                            'mst_notification_templates',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
 
                     DB::table('odbusmaster.mst_notification_templates')
                         ->where('id', $id)
-                        ->update([
-                            ...$insertData,
-                            'updated_by' => 1,
-                            'updated_at' => now()
-                        ]);
+                        ->update($newData);
                 } else {
 
-                    DB::table('odbusmaster.mst_notification_templates')
-                        ->insert([
-                            ...$insertData,
-                            'created_by' => 1,
-                            'created_at' => now()
-                        ]);
+                    $row = [
+                        ...$insertData,
+                        'created_by' => 1,
+                        'created_at' => now()
+                    ];
+
+                    app(CommonController::class)->auditLog(
+                        'mst_notification_templates',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
+
+                    $insertId = DB::table('odbusmaster.mst_notification_templates')
+                        ->insertGetId($row);
                 }
 
                 DB::commit();
 
-                return redirect()->back()->with([
+                return redirect($redirectPage)->with([
                     'level'   => 'success',
                     'message' => 'Notification Template ' . ($id ? 'updated' : 'created') . ' successfully'
                 ]);
@@ -331,7 +373,7 @@ class NotificationTemplateController extends Controller
         4 = WhatsApp
         */
 
-            // 🔥 TYPE LABEL
+
             $typeMap = [
                 1 => 'Email',
                 2 => 'SMS',
@@ -565,4 +607,3 @@ class NotificationTemplateController extends Controller
         }
     }
 }
-

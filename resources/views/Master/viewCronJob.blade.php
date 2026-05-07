@@ -147,7 +147,7 @@
                                 <th>Execution Type</th>
                                 <th>Last Modified</th>
                                 <th>Status</th>
-                                <th class="no-sort">View Schedule</th>
+                                <th class="no-sort">View Cron Details</th>
                                 <th class="no-sort">Action</th>
                             </tr>
                         </thead>
@@ -278,18 +278,19 @@
                     className: "text-center"
                 },
                 {
-                    data: 'operator_name',
+                    data: 'cron_name',
                     defaultContent: "--"
                 },
                 {
-                    data: 'operator_name',
+                    data: 'cron_type',
                     defaultContent: "--"
                 },
                 {
-                    data: 'bus_name',
+                    data: 'scheduler_type',
                     defaultContent: "--"
-                }, {
-                    data: 'running_cycle',
+                },
+                {
+                    data: 'execution_type',
                     defaultContent: "--"
                 },
                 {
@@ -358,14 +359,14 @@
 
                         return `
                             <a class="btn btn-sm btn-info"
-                                href="${editUrl.replace('ID', row.enc_bus_schedule_id)}">
+                                href="${editUrl.replace('ID', row.enc_cron_job_id)}">
                                 <i class="fa fa-edit"></i> Edit
                             </a>
 
                             <a href="javascript:void(0);"
                                 class="btn btn-sm btn-success btn-view-log"
-                                data-table="bus_schedule"
-                                data-id="${row.enc_bus_schedule_id}">
+                                data-table="mst_cron_jobs"
+                                data-id="${row.enc_cron_job_id}">
                                 <i class="fa fa-history"></i> View Log
                             </a>
                         `;

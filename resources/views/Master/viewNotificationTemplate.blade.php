@@ -403,11 +403,11 @@
                             </a>
 
                             <a href="javascript:void(0);"
-                                        class="btn btn-sm btn-success btn-view-log"
-                                        data-table="mst_districts"
-                                        data-id="${row.enc_district_id}">
-                                            <i class="fa fa-history"></i> View Log
-                                    </a>
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="mst_notification_templates"
+                            data-id="${row.enc_id}">
+                                <i class="fa fa-history"></i> View Log
+                        </a>
                         `;
                     },
                     className: "text-center"
@@ -420,9 +420,7 @@
 
         $(document).on('click', '.btnViewSchedule', function() {
 
-            let id = $(this).data('id');
-
-            // show loader
+            let id = $(this).data('id'); 
             $('#viewScheduleContainer').html(`
                 <div class="text-center p-4">
                     <div class="spinner-border text-primary"></div>
@@ -430,7 +428,6 @@
                 </div>
             `);
 
-            // open modal
             let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
             modal.show();
 

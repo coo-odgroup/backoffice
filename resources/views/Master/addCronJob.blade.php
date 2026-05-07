@@ -67,23 +67,23 @@
                                                 <div class="col-md-6">
                                                     <div class="p-3 border rounded bg-white">
                                                         <div class="mb-2">
-                                                            <label for="operator">Cron Name<span
+                                                            <label for="cronName">Cron Name<span
                                                                     class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Notification Name" maxlength="100">
+                                                            <input type="text" class="form-control form-control-sm clearable" id="cronName" name="cronName" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Cron Name" maxlength="100">
                                                         </div>
 
                                                         <div class="mb-2">
-                                                            <label for="bus">Slug<span
+                                                            <label for="slug">Slug<span
                                                                     class="text-danger">*</span></label>
                                                             <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Slug" maxlength="100">
                                                         </div>
                                                         <div class="mb-2">
                                                             <div class="row">
                                                                 <div class="col-xl-6">
-                                                                    <label for="year">Type <span
+                                                                    <label for="type">Type <span
                                                                             class="text-danger">*</span></label>
                                                                     <select class="form-select form-select-sm"
-                                                                        id="year" name="year">
+                                                                        id="type" name="type">
                                                                         <option value="">Select Type</option>
                                                                         <option value="Auto">Auto</option>
                                                                         <option value="Manual">Manual</option>
@@ -92,10 +92,10 @@
                                                                 </div>
 
                                                                 <div class="col-xl-6">
-                                                                    <label for="month">Scheduler Type <span
+                                                                    <label for="scheduler">Scheduler Type <span
                                                                             class="text-danger">*</span></label>
                                                                     <select class="form-select form-select-sm"
-                                                                        id="month" name="month">
+                                                                        id="scheduler" name="scheduler">
                                                                         <option value="">Select</option>
 
                                                                     </select>
@@ -103,16 +103,16 @@
                                                             </div>
                                                         </div>
                                                         <div class="mb-2">
-                                                            <label for="operator">Interval Minutes</label>
-                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Interval Minutes" maxlength="2">
+                                                            <label for="interval">Interval Minutes</label>
+                                                            <input type="text" class="form-control form-control-sm clearable" id="interval" name="interval" value="{{ $data['row']->interval_minutes ?? '' }}" placeholder="Enter Interval Minutes" maxlength="2">
                                                         </div>
                                                         <div class="mb-2">
-                                                            <label for="operator">Run Time Json</label>
-                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Interval Minutes">
+                                                            <label for="runTime">Run Time Json</label>
+                                                            <input type="text" class="form-control form-control-sm clearable" id="runTime" name="runTime" value="{{ $data['row']->run_times_json ?? '' }}" placeholder="Enter Run Time in Minutes">
                                                         </div>
-                                                         <div class="mb-2">
-                                                            <label for="operator">Cron Expression</label>
-                                                            <input type="text" class="form-control form-control-sm clearable" id="slug" name="slug" value="{{ $data['row']->slug ?? '' }}" placeholder="Enter Cron Expression">
+                                                        <div class="mb-2">
+                                                            <label for="cron">Cron Expression</label>
+                                                            <input type="text" class="form-control form-control-sm clearable" id="cron" name="cron" value="{{ $data['row']->cron_expression ?? '' }}" placeholder="Enter Cron Expression">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -126,22 +126,22 @@
                                                         <div class="card-body" id="scheduleContainer">
 
                                                             <div class="mb-2">
-                                                                <label for="operator">Execution Type</label>
+                                                                <label for="execution">Execution Type</label>
                                                                 <select class="form-select form-select-sm"
-                                                                        id="month" name="month">
-                                                                        <option value="">Select Execution Type</option>
-                                                                        <option value="Job">Job</option>
-                                                                        <option value="Command">Command</option>
+                                                                    id="execution" name="execution">
+                                                                    <option value="">Select Execution Type</option>
+                                                                    <option value="job">Job</option>
+                                                                    <option value="command">Command</option>
                                                                 </select>
                                                             </div>
 
                                                             <div class="mb-2">
-                                                                <label for="operator">Job Class</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Job Class" maxlength="100">
+                                                                <label for="job">Job Class</label>
+                                                                <input type="text" class="form-control form-control-sm clearable" id="job" name="job" value="{{ $data['row']->job_class ?? '' }}" placeholder="Enter Job Class" maxlength="100">
                                                             </div>
                                                             <div class="mb-2">
-                                                                <label for="operator">Command Name</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="name" name="name" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Command Name" maxlength="100">
+                                                                <label for="command">Command Name</label>
+                                                                <input type="text" class="form-control form-control-sm clearable" id="command" name="command" value="{{ $data['row']->command_name ?? '' }}" placeholder="Enter Command Name" maxlength="100">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -170,297 +170,216 @@
                 </div>
         </form>
 
-        <style>
-            .date-pill {
-                padding: 6px 10px;
-                border-radius: 6px;
-                border: 1px solid #adb5bd;
-                background: #e9ecef;
-                font-size: 12px;
-                white-space: nowrap;
-            }
 
-            .date-box {
-                padding: 8px;
-                border-radius: 6px;
-                border: 1px solid #adb5bd;
-                background: #f8f9fa;
-                font-size: 13px;
-            }
-        </style>
 
         @endsection
 
         @push('scripts')
         <script type="module">
-            let isRestoring = false;
-            let selectedOperators = [];
-
-            $('#backoffice-form').on('submit', function(e) {
-
-                let operator = $('#operator').val();
-                let bus = $('#bus').val();
-                let cycle = $('#running_cycle').val();
-                let date = $('#date').val();
-
-                let yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                let minDate = yesterday.toISOString().split('T')[0];
-
-                if (!operator) {
-                    commonAjax.viewAlert("Please select operator", "warning");
-                    e.preventDefault();
-                    return;
-                }
-
-                if (!bus) {
-                    commonAjax.viewAlert("Please select bus", "warning");
-                    e.preventDefault();
-                    return;
-                }
-
-                if (!cycle) {
-                    commonAjax.viewAlert("Please select running cycle", "warning");
-                    e.preventDefault();
-                    return;
-                }
-
-                if (!date) {
-                    commonAjax.viewAlert("Please select date", "warning");
-                    e.preventDefault();
-                    return;
-                }
-
-                if (date < minDate) {
-                    commonAjax.viewAlert("Date cannot be before yesterday", "warning");
-                    e.preventDefault();
-                    return;
-                }
-            });
-
-            function waitForOptions(selector, callback, retry = 0) {
-
-                if ($(selector + ' option').length > 1) {
-                    callback();
-                    return;
-                }
-
-                if (retry >= 80) return;
-
-                setTimeout(function() {
-                    waitForOptions(selector, callback, retry + 1);
-                }, 100);
-            }
-
             $(document).ready(function() {
 
-                // Select2 init 
-                $('#operator').select2({
-                    placeholder: "Select Bus Operator",
-                    dropdownParent: $('body')
+                commonAjax.initSelect2('#type', 'Select Type');
+                commonAjax.initSelect2('#scheduler', 'Select Scheduler Type');
+                commonAjax.initSelect2('#execution', 'Select Execution Type');
+
+                commonAjax.loadAnnextureList([
+                    'SCHEDULER_TYPE'
+                ], function(data) {
+
+                    renderDropdown(
+                        '#scheduler',
+                        data.SCHEDULER_TYPE || [],
+                        "{{ trim($data['row']->schedule_type ?? old('scheduler')) }}"
+                    );
+
                 });
 
-                $('#bus').select2({
-                    placeholder: "Select Bus",
-                    dropdownParent: $('body')
+                $('#type')
+                    .val("{{ $data['row']->type ?? old('type') }}")
+                    .trigger('change');
+
+                setTimeout(function() {
+
+                    $('#scheduler')
+                        .val("{{ $data['row']->schedule_type ?? old('scheduler') }}")
+                        .trigger('change');
+
+                    $('#execution')
+                        .val("{{ $data['row']->execution_type ?? old('execution') }}")
+                        .trigger('change');
+
+                    toggleExecutionFields();
+
+                }, 100);
+
+                $('#execution').on('change', function() {
+                    toggleExecutionFields();
                 });
 
-                commonAjax.loadBusOperatorDropdown();
+                $('#btnReset').click(function() {
 
-                waitForOptions('#operator', function() {
-                    restoreSelection();
+                    $('#backoffice-form')[0].reset();
+
+                    $('.form-select').val('').trigger('change');
+
+                    $('.clearable').val('');
+
+                    toggleExecutionFields();
+
+                });
+                $('#backoffice-form').on('submit', function(e) {
+
+                    if (!validator.blankCheck('cronName', 'Cron Name cannot be left blank')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    if (!validator.maxLength('cronName', 100, 'Cron Name')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    if (!validator.blankCheck('slug', 'Slug cannot be left blank')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    if (!validator.maxLength('slug', 100, 'Slug')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    if (!validator.selectDropdown('type', 'Please select type')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    if (!validator.selectDropdown('scheduler', 'Please select scheduler type')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    if (!validator.selectDropdown('execution', 'Please select execution type')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    if ($('#interval').val() != '') {
+
+                        if (!validator.validNumber('interval', 'Interval Minutes')) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        let interval = parseInt($('#interval').val());
+
+                        if (interval < 1 || interval > 999) {
+
+                            commonAjax.viewAlert(
+                                "Interval Minutes must be between 1 and 59",
+                                "warning"
+                            );
+
+                            $('#interval').focus();
+
+                            e.preventDefault();
+
+                            return;
+                        }
+                    }
+
+                    // JOB
+                    if ($('#execution').val() == 'job') {
+
+                        if (!validator.blankCheck('job', 'Job Class cannot be left blank')) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        if (!validator.maxLength('job', 255, 'Job Class')) {
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+
+                    // COMMAND
+                    if ($('#execution').val() == 'command') {
+
+                        if (!validator.blankCheck('command', 'Command Name cannot be left blank')) {
+                            e.preventDefault();
+                            return;
+                        }
+
+                        if (!validator.maxLength('command', 255, 'Command Name')) {
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+
                 });
 
                 commonAjax.initClearableInputs();
 
-                $('#bus').on('focus', function() {
-                    let operator_id = $('#operator').val();
-                    if (!operator_id) {
-                        commonAjax.viewAlert("Please select operator first", "warning");
-                        $(this).blur();
-                    }
-                });
+            });
 
-                let today = new Date();
-                today.setDate(today.getDate() - 1);
-                $('#date').attr('min', today.toISOString().split('T')[0]);
-
-                $('#btnReset').click(function() {
-                    $('#backoffice-form')[0].reset();
-                    $('.form-select').val('').trigger('change');
-                    selectedOperators = [];
-                    renderOperators();
-                    $('#scheduleContainer').html('');
-                });
+            $('#execution').on('change', function() {
+                toggleExecutionFields();
+            });
 
 
+            $('#cronName').on('keyup', function() {
+
+                let slug = $(this).val()
+                    .toLowerCase()
+                    .trim()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '');
+
+                $('#slug').val(slug);
 
             });
 
-            // Operator change load buses
-            $('#operator').on('change', function() {
+            function renderDropdown(selector, items = [], selected = '') {
 
-                let operator_id = $(this).val();
-                if (!operator_id || isRestoring) return;
+                let options = '<option value="">Select Option</option>';
 
-                if ($('#pageLoader').length === 0) {
-                    $('body').append(`
-            <div id="pageLoader" style="
-                position:fixed;
-                top:0;
-                left:0;
-                width:100%;
-                height:100%;
-                background:rgba(255,255,255,0.75);
-                z-index:99999;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                flex-direction:column;
-            ">
-                <div class="spinner-border text-primary"></div>
-                <div class="mt-2 fw-semibold">Loading buses...</div>
-            </div>
-        `);
+                $.each(items, function(index, item) {
+
+                    let isSelected =
+                        selected == item.annexture_value ?
+                        'selected' :
+                        '';
+
+                    options += `
+                <option value="${item.annexture_value}" ${isSelected}>
+                    ${item.annexture_name}
+                </option>
+            `;
+                });
+
+                $(selector).html(options).trigger('change');
+            }
+
+            function toggleExecutionFields() {
+
+                let execution = $('#execution').val();
+
+                if (execution === 'job') {
+
+                    $('#job').closest('.mb-2').show();
+                    $('#command').closest('.mb-2').hide();
+
+                } else if (execution === 'command') {
+
+                    $('#job').closest('.mb-2').hide();
+                    $('#command').closest('.mb-2').show();
+
+                } else {
+
+                    $('#job').closest('.mb-2').hide();
+                    $('#command').closest('.mb-2').hide();
                 }
-
-                commonAjax.loadBusListByOperator('#bus', operator_id);
-                let checkBusLoaded = setInterval(function() {
-
-                    if ($('#bus option').length > 1) {
-                        clearInterval(checkBusLoaded);
-                        $('#pageLoader').remove();
-                    }
-                }, 300);
-
-                // fail-safe remove after 5 sec
-                setTimeout(function() {
-                    clearInterval(checkBusLoaded);
-                    $('#pageLoader').remove();
-                }, 5000);
-
-            });
-
-
-            // Bus change → load schedule
-            $('#bus').on('change', function() {
-
-                let bus_id = $(this).val();
-                if (!bus_id || isRestoring) return;
-
-                loadSchedule(bus_id);
-            });
-
-            let scheduleRequest = null;
-
-            function loadSchedule(bus_id) {
-
-                $('#scheduleContainer').html(`
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary"></div>
-                        <p class="mt-2">Loading schedule...</p>
-                    </div>
-                `);
-
-                if (scheduleRequest) {
-                    scheduleRequest.abort();
-                }
-
-                scheduleRequest = $.ajax({
-                    type: "POST",
-                    url: "/admin/get-schedule-dates",
-                    data: {
-                        bus_id: bus_id,
-                        _token: $('meta[name="csrf-token"]').attr("content")
-                    },
-                    success: function(response) {
-
-                        if (typeof response === 'object') {
-
-                            $('#scheduleContainer').html(response.html);
-
-                            if (response.running_cycle) {
-                                $('#running_cycle').val(response.running_cycle).trigger('change');
-                            }
-
-                            if (response.last_date) {
-                                $('#date').val(response.last_date);
-                            }
-
-                        } else {
-                            $('#scheduleContainer').html(response);
-                        }
-                    }
-                });
-            }
-
-
-            let selectedOperator = "{{ $data['row']->operator_id ?? (old('operator') ?? '') }}";
-            let selectedBus = "{{ $data['row']->bus_id ?? (old('bus') ?? '') }}";
-            let lastScheduleDate = "{{ $data['lastDate'] ?? '' }}";
-            let selectedCycle = "{{ $data['row']->running_cycle ?? '' }}";
-
-
-            function restoreSelection() {
-
-                if (!selectedOperator) return;
-
-                isRestoring = true;
-
-                $('#operator').val(selectedOperator).trigger('change.select2');
-
-                commonAjax.loadBusListByOperator('#bus', selectedOperator);
-
-                waitForOptions('#bus', function() {
-
-                    if (selectedBus) {
-                        $('#bus').val(selectedBus).trigger('change.select2');
-                        loadSchedule(selectedBus);
-                    }
-
-                    if (selectedCycle) {
-                        $('#running_cycle').val(selectedCycle);
-                    }
-
-                    if (lastScheduleDate) {
-                        $('#date').val(lastScheduleDate);
-                    }
-
-                    if (selectedOperator && selectedBus) {
-                        $('#operator').prop('disabled', true).trigger('change.select2');
-                        $('#bus').prop('disabled', true).trigger('change.select2');
-                    }
-
-                    isRestoring = false;
-                });
-            }
-            @if(session('level') == 'success')
-
-            let bus_id = "{{ old('bus') }}";
-
-            if (bus_id) {
-                waitForOptions('#bus', function() {
-                    loadSchedule(bus_id);
-                });
-            }
-
-            @endif
-
-            function renderOperators() {
-
-                let html = '';
-
-                selectedOperators.forEach((op, index) => {
-                    html += `<span class="selected-tag" data-index="${index}">
-                    ${op.text}
-                    <span class="remove">×</span>
-                 </span>`;
-                });
-
-                $('#selectedOperators').html(html);
-                $('#operator_ids').val(selectedOperators.map(op => op.id).join(','));
-                $('#selectedOperatorsWrapper').toggle(selectedOperators.length > 0);
             }
         </script>
-        @endpush
 
+        @endpush
