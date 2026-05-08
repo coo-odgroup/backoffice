@@ -573,7 +573,7 @@ export function viewBusRecord(id) {
                     Failed to load preview
                 </div>
             `);
-        }
+        },
     });
 }
 
@@ -1505,7 +1505,11 @@ function getLoadAnnextureList(annexture_type = "", type = "") {
         },
     });
 }
-export function loadAnnextureList_bk(key, selected = "", selector = ".annexture") {
+export function loadAnnextureList_bk(
+    key,
+    selected = "",
+    selector = ".annexture",
+) {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-annexture-list",
@@ -1573,9 +1577,7 @@ export function loadAnnextureList_bk(key, selected = "", selector = ".annexture"
 // }
 
 export function loadAnnextureList(annexture_types = [], callback = null) {
-
     $.ajax({
-
         type: "POST",
 
         url: ajaxUrl + "get-annexture-list",
@@ -1587,22 +1589,19 @@ export function loadAnnextureList(annexture_types = [], callback = null) {
 
         dataType: "json",
 
-        success: function(response) {
-
+        success: function (response) {
             if (!response.status) {
                 return;
             }
 
-            if (typeof callback === 'function') {
+            if (typeof callback === "function") {
                 callback(response.data);
             }
-
         },
 
-        error: function() {
+        error: function () {
             console.log("Error loading annexture list");
-        }
-
+        },
     });
 }
 
@@ -1817,7 +1816,7 @@ export function allowNumbersWithComma(ids) {
             value = value.replace(/[^0-9,]/g, "");
 
             // Split by comma, limit each number to 10 digits
-            let numbers = value.split(",").map(num => num.slice(0, 10));
+            let numbers = value.split(",").map((num) => num.slice(0, 10));
 
             // Join back with comma
             value = numbers.join(",");
@@ -1902,7 +1901,7 @@ export function loadUsersList(user_code = "", selected_id = 0) {
                     let selected = selected_id == item.id ? "selected" : "";
 
                     options += `<option value="${item.id}" ${selected}>
-                                    ${item.name}${item.organization_name ? ` ( ${item.organization_name} )` : ''}
+                                    ${item.name}${item.organization_name ? ` ( ${item.organization_name} )` : ""}
                                 </option>`;
                 });
             }
@@ -1915,3 +1914,115 @@ export function loadUsersList(user_code = "", selected_id = 0) {
         },
     });
 }
+
+export function loadCronJobDropdown(selector, selected = "") {
+    $.ajax({
+        type: "POST",
+
+        url: ajaxUrl + "get-cron-job-dropdown",
+
+        data: {
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+
+        dataType: "json",
+
+        success: function (response) {
+            let options = '<option value="">Select Cron Job</option>';
+
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, item) {
+                    let isSelected = selected == item.id ? "selected" : "";
+
+                    options += `
+                        <option value="${item.id}" ${isSelected}>
+                            ${item.name}
+                        </option>
+                    `;
+                });
+            }
+
+            $(selector).html(options).trigger("change");
+        },
+
+        error: function () {
+            console.log("Error loading cron job dropdown");
+        },
+    });
+}
+
+
+export function getNotificationTemplateDropdown(selector, selected = "") {
+    $.ajax({
+        type: "POST",
+
+        url: ajaxUrl + "get-notification-template-dropdown",
+
+        data: {
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+
+        dataType: "json",
+
+        success: function (response) {
+            let options = '<option value="">Select Notification Template </option>';
+
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, item) {
+                    let isSelected = selected == item.id ? "selected" : "";
+
+                    options += `
+                        <option value="${item.id}" ${isSelected}>
+                            ${item.name}
+                        </option>
+                    `;
+                });
+            }
+
+            $(selector).html(options).trigger("change");
+        },
+
+        error: function () {
+            console.log("Error loading notification template dropdown");
+        },
+    });
+}
+
+
+
+export function getRolesDropdown(selector, selected = "") {
+    $.ajax({
+        type: "POST",
+
+        url: ajaxUrl + "get-roles-list",
+
+        data: {
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+
+        dataType: "json",
+
+        success: function (response) {
+            let options = '<option value="">Select Role </option>';
+
+            if (response.status && response.data.length > 0) {
+                $.each(response.data, function (index, item) {
+                    let isSelected = selected == item.id ? "selected" : "";
+
+                    options += `
+                        <option value="${item.id}" ${isSelected}>
+                            ${item.name}
+                        </option>
+                    `;
+                });
+            }
+
+            $(selector).html(options).trigger("change");
+        },
+
+        error: function () {
+            console.log("Error loading roles dropdown");
+        },
+    });
+}
+

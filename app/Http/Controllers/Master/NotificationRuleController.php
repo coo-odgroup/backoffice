@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Master\TicketFareSlabInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -11,11 +10,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CommonController;
 
-class CronJobController extends Controller
+class NotificationRuleController extends Controller
 {
     public function index()
     {
-        return view('Master.viewCronJob');
+        return view('Master.viewNotificationRules');
     }
 
     public function dataTableView()
@@ -206,7 +205,7 @@ class CronJobController extends Controller
 
             $row = null;
 
-            $redirectPage = "admin/cron-job";
+            $redirectPage = "admin/cron-job/edit/" . $encId;
 
             if ($id > 0) {
 
@@ -221,7 +220,7 @@ class CronJobController extends Controller
                     ->first();
 
                 if (!$row) {
-                    return redirect()->route('cron-job.index');
+                    return redirect()->route('notification-rules.index');
                 }
 
                 $data['row'] = $row;
@@ -338,14 +337,14 @@ class CronJobController extends Controller
 
                 return redirect($redirectPage)->with([
                     'level'   => 'success',
-                    'message' => 'Cron Job ' . ($id ? 'updated' : 'created') . ' successfully'
+                    'message' =>  'Notification Rule ' . ($id ? 'updated' : 'created') . ' successfully'
                 ]);
             }
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("CronJobController Error", [
+            Log::error("NotificationRuleController Error", [
                 'method' => $data['strPage'],
                 'error'  => $t->getMessage()
             ]);
@@ -356,7 +355,7 @@ class CronJobController extends Controller
             ])->withInput();
         }
 
-        return view('Master.addCronJob', compact('data'));
+        return view('Master.addNotificationRules', compact('data'));
     }
 
     public function edit($encId)
@@ -510,14 +509,47 @@ class CronJobController extends Controller
         }
     }
 
-        public function cronNotificationRule($encId = null)
+
+    public function getCronJobDetails(Request $request)
     {
-        $data = [];
+        try {
 
-        $data['strPage']   = 'Add';
-        $data['strSubmit'] = 'Submit';
-        $data['strReset']  = 'Reset';
+            $id = $request->id;
 
-        return view('Master.addNotificationRule', compact('data'));
+            $row = DB::table('odbusmaster.mst_cron_jobs')
+                ->select(
+                    'id',
+                    'name',
+                    'type',
+                    'schedule_type',
+                    'interval_minutes',
+                    'run_times_json',
+                    'execution_type',
+                    'job_class',
+                    'command_name',
+                    'active_status'
+                )
+                ->where('id', $id)
+                ->first();
+
+            if (!$row) {
+
+                return response()->json([
+                    'status' => false,
+                    'data'   => null
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'data'   => $row
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => null
+            ]);
+        }
     }
 }

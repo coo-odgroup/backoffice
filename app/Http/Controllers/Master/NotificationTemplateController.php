@@ -606,4 +606,6 @@ class NotificationTemplateController extends Controller
             </div>');
         }
     }
+
+
 }

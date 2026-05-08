@@ -68,7 +68,7 @@ use App\Http\Controllers\Master\ExtraSeatBlockController;
 use App\Http\Controllers\Master\SeatOpenController;
 use App\Http\Controllers\Master\NotificationTemplateController;
 use App\Http\Controllers\Master\CronJobController;
-use App\Http\Controllers\Master\CronJobNotificationController;
+use App\Http\Controllers\Master\NotificationRuleController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -161,6 +161,9 @@ Route::prefix('admin')->group(function () {
     Route::post('get-schedule-dates', [BusScheduleController::class, 'getScheduleDates']);
     Route::post('get-users-list', [CommonController::class, 'getUsersList']);
     Route::post('get-bus-cancel-reasons', [CommonController::class, 'getBusCancelReasons']);
+    Route::post('get-cron-job-dropdown', [CommonController::class, 'getCronJobDropdown']);
+    Route::post('get-notification-template-dropdown',[CommonController::class, 'getNotificationTemplate']);
+    Route::post('get-roles-list',[CommonController::class, 'getRolesList']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -531,7 +534,7 @@ Route::prefix('admin')->group(function () {
     Route::post('seat-block/get-seat-layout-by-bus', [SeatBlockController::class, 'getSeatLayoutByBus'])->name('seat-block.layout.by.bus');
     Route::post('seat-block/history', [SeatBlockController::class, 'getBlockedSeatHistory'])->name('seat-block.history');
     Route::post('seat-block/delete', [SeatBlockController::class, 'delete'])->name('seat-block.delete');
-    Route::post('get-bus-cancelled-dates',[SeatBlockController::class, 'getBusCancelledDates'])->name('seat-block.cancelled.dates');
+    Route::post('get-bus-cancelled-dates', [SeatBlockController::class, 'getBusCancelledDates'])->name('seat-block.cancelled.dates');
 
 
 
@@ -540,10 +543,10 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'seat-open/add', [SeatOpenController::class, 'add'])->name('seat-open.add');
     Route::post('seat-open/dataTableView', [SeatOpenController::class, 'dataTableView'])->name('seat-open.dataTableView');
     Route::match(['get', 'post'], 'seat-open/edit/{encId}', [SeatOpenController::class, 'edit'])->name('seat-open.edit');
-    Route::post('seat-open/get-seat-layout-by-bus',[SeatOpenController::class, 'getSeatLayoutByBus'])->name('seat-open.layout.by.bus');
+    Route::post('seat-open/get-seat-layout-by-bus', [SeatOpenController::class, 'getSeatLayoutByBus'])->name('seat-open.layout.by.bus');
     Route::post('seat-open/history', [SeatOpenController::class, 'getOpenedSeatHistory'])->name('seat-open.history');
     Route::post('seat-open/delete', [SeatOpenController::class, 'delete'])->name('seat-open.delete');
-    Route::post('get-bus-cancelled-dates',[SeatOpenController::class, 'getBusCancelledDates'])->name('seat-open.cancelled.dates');
+    Route::post('get-bus-cancelled-dates', [SeatOpenController::class, 'getBusCancelledDates'])->name('seat-open.cancelled.dates');
 
 
 
@@ -563,10 +566,9 @@ Route::prefix('admin')->group(function () {
     Route::post('cron-job/dataTableView', [CronJobController::class, 'dataTableView'])->name('cron-job.dataTableView');
     Route::match(['get', 'post'], 'cron-job/edit/{encId}', [CronJobController::class, 'edit'])->name('cron-job.edit');
 
-    
-    Route::get('/cron-job-notification', [CronJobNotificationController::class, 'index'])->name('cron-job-notification.index');
-    Route::match(['get', 'post'], 'cron-job-notification/add', [CronJobNotificationController::class, 'add'])->name('cron-job-notification.add');
-    Route::post('cron-job-notification/dataTableView', [CronJobNotificationController::class, 'dataTableView'])->name('cron-job-notification.dataTableView');
-    Route::match(['get', 'post'], 'cron-job-notification/edit/{encId}', [CronJobNotificationController::class, 'edit'])->name('cron-job-notification.edit');
-    
+    Route::get('/notification-rules', [NotificationRuleController::class, 'index'])->name('notification-rules.index');
+    Route::match(['get', 'post'], 'notification-rules/add', [NotificationRuleController::class, 'add'])->name('notification-rules.add');
+    Route::post('notification-rules/dataTableView', [NotificationRuleController::class, 'dataTableView'])->name('notification-rules.dataTableView');
+    Route::match(['get', 'post'], 'notification-rules/edit/{encId}', [NotificationRuleController::class, 'edit'])->name('notification-rules.edit');
+    Route::post('get-cron-job-details',[NotificationRuleController::class, 'getCronJobDetails']);
 });

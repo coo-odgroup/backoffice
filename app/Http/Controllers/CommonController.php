@@ -154,7 +154,7 @@ class CommonController extends Controller
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
-            'BusSchedule' => \App\Models\Bus\BusSchedule::class, 
+            'BusSchedule' => \App\Models\Bus\BusSchedule::class,
             'BusCancel' => \App\Models\Bus\BusCancel::class,
             'NotificationTemplate' => \App\Models\Master\NotificationTemplate::class,
             'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
@@ -847,80 +847,79 @@ class CommonController extends Controller
     // }
 
     public function getAnnextureList(Request $request)
-{
-    try {
+    {
+        try {
 
-        $annextureTypes = $request->annexture_types ?? [];
+            $annextureTypes = $request->annexture_types ?? [];
 
-        if (empty($annextureTypes)) {
+            if (empty($annextureTypes)) {
+
+                return response()->json([
+                    'status' => false,
+                    'data'   => []
+                ]);
+            }
+
+            // GET TYPE IDS
+            $types = DB::table('mst_annexture_type')
+                ->select('id', 'annexture_type')
+                ->whereIn('annexture_type', $annextureTypes)
+                ->where('active_status', 1)
+                ->get();
+
+            if ($types->isEmpty()) {
+
+                return response()->json([
+                    'status' => false,
+                    'data'   => []
+                ]);
+            }
+
+            $typeMap = [];
+
+            foreach ($types as $type) {
+                $typeMap[$type->id] = $type->annexture_type;
+            }
+
+            // GET ALL ANNEXTURES
+            $annextures = DB::table('mst_annexture')
+                ->select(
+                    'id',
+                    'annexture_type_id',
+                    'annexture_name',
+                    'annexture_value'
+                )
+                ->whereIn('annexture_type_id', array_keys($typeMap))
+                ->where('active_status', 1)
+                ->orderBy('annexture_value', 'asc')
+                ->get();
+
+            // GROUP DATA
+            $groupedData = [];
+
+            foreach ($annextures as $item) {
+
+                $typeKey = $typeMap[$item->annexture_type_id];
+
+                $groupedData[$typeKey][] = [
+                    'id' => $item->id,
+                    'annexture_name' => $item->annexture_name,
+                    'annexture_value' => $item->annexture_value
+                ];
+            }
+
+            return response()->json([
+                'status' => true,
+                'data'   => $groupedData
+            ]);
+        } catch (\Throwable $t) {
 
             return response()->json([
                 'status' => false,
                 'data'   => []
             ]);
         }
-
-        // GET TYPE IDS
-        $types = DB::table('mst_annexture_type')
-            ->select('id', 'annexture_type')
-            ->whereIn('annexture_type', $annextureTypes)
-            ->where('active_status', 1)
-            ->get();
-
-        if ($types->isEmpty()) {
-
-            return response()->json([
-                'status' => false,
-                'data'   => []
-            ]);
-        }
-
-        $typeMap = [];
-
-        foreach ($types as $type) {
-            $typeMap[$type->id] = $type->annexture_type;
-        }
-
-        // GET ALL ANNEXTURES
-        $annextures = DB::table('mst_annexture')
-            ->select(
-                'id',
-                'annexture_type_id',
-                'annexture_name',
-                'annexture_value'
-            )
-            ->whereIn('annexture_type_id', array_keys($typeMap))
-            ->where('active_status', 1)
-            ->orderBy('annexture_value', 'asc')
-            ->get();
-
-        // GROUP DATA
-        $groupedData = [];
-
-        foreach ($annextures as $item) {
-
-            $typeKey = $typeMap[$item->annexture_type_id];
-
-            $groupedData[$typeKey][] = [
-                'id' => $item->id,
-                'annexture_name' => $item->annexture_name,
-                'annexture_value' => $item->annexture_value
-            ];
-        }
-
-        return response()->json([
-            'status' => true,
-            'data'   => $groupedData
-        ]);
-
-    } catch (\Throwable $t) {
-
-        return response()->json([
-            'status' => false,
-            'data'   => []
-        ]);
     }
-}
 
     public function getCampaignMasterList()
     {
@@ -1243,4 +1242,84 @@ class CommonController extends Controller
             ]);
         }
     }
+
+    public function getCronJobDropdown()
+    {
+        try {
+
+            $data = DB::table('odbusmaster.mst_cron_jobs')
+                ->select(
+                    'id',
+                    'name'
+                )
+                ->where('active_status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+
+    public function getNotificationTemplate()
+    {
+        try {
+
+            $data = DB::table('odbusmaster.mst_notification_templates')
+                ->select(
+                    'id',
+                    'name'
+                )
+                ->where('active_status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
+       public function getRolesList()
+    {
+        try {
+
+            $data = DB::table('odbusmaster.mst_roles')
+                ->select(
+                    'id',
+                    'name'
+                )
+                ->where('active_status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $t) {
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
+            ]);
+        }
+    }
+
 }

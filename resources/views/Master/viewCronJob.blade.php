@@ -267,8 +267,8 @@
             let txtSearch = '';
             let selStatus = '';
 
-            if ($('#txtSearch').val() != '') {
-                txtSearch = $('#txtSearch').val();
+            if ($('#cronName').val() != '') {
+                txtSearch = $('#cronName').val();
             }
 
             if ($('#selStatus').val() != '') {
@@ -347,50 +347,37 @@
 
                         let intervalMinutes = row.interval_minutes ?? '--';
 
-                        let runTimesHtml = '--';
-
-                        if (row.run_times_json && row.run_times_json !== '--') {
-
-                            let times = row.run_times_json.split(',');
-
-                            runTimesHtml = `
-                                <div class='d-flex flex-wrap gap-1 mt-1'>
-                                    ${times.map(time => `
-                                        <span class='badge bg-light text-primary border me-1 mb-1'>
-                                            ${time.trim()}
-                                        </span>
-                                    `).join('')}
-                                </div>
-                            `;
-                        }
-
                         return `
-                                <span
-                                    class="fw-semibold text-decoration-underline cursor-pointer"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    title="
-                                        <div class='audit-box text-start'>
+            <span
+                class="fw-semibold text-decoration-underline cursor-pointer"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                data-bs-html="true"
+                title="
+                    <div class='audit-box text-start'>
 
-                                            <div>
-                                                <strong>Interval Minutes:</strong>
-                                                ${intervalMinutes}
-                                            </div>
+                        <div>
+                            <strong>Interval Minutes:</strong>
+                            ${intervalMinutes}
+                        </div>
 
-                                            <hr class='my-1'>
+                        <hr class='my-1'>
 
-                                            <div>
-                                                <strong>Run Times:</strong>
-                                            </div>
+                        <div>
+                            <strong>Run Times:</strong><br>
 
-                                            ${runTimesHtml}
+                           ${(row.run_times_json || '--')
+    .split(',')
+    .filter(time => time.trim() !== '')
+    .map(time => '- ' + time.trim())
+    .join('<br>')}
+                        </div>
 
-                                        </div>
-                                    ">
-                                    ${row.scheduler_type ?? '--'}
-                                </span>
-                            `;
+                    </div>
+                ">
+                ${row.scheduler_type ?? '--'}
+            </span>
+        `;
                     },
                     className: "text-start"
                 },
@@ -482,10 +469,9 @@
                     render: function(data, type, row) {
 
                         return `
-                            <span class="btn btn-sm btn-primary btnViewSchedule"
+                          <span class="btn btn-sm btn-primary btnViewSchedule"
                                 data-id="${row.id}"
-                                data-id="${row.enc_bustype_id}"
-                                data-name="${row.layout_name}">
+                                data-name="${row.cron_name}">
                                 <i class="fa fa-eye"></i> View
                             </span>
                         `;
@@ -502,14 +488,14 @@
 
                         return `
                             <a class="btn btn-sm btn-info"
-                                href="${editUrl.replace('ID', row.enc_cron_job_id)}">
+                                href="${editUrl.replace('ID', row.enc_id)}">
                                 <i class="fa fa-edit"></i> Edit
                             </a>
 
                             <a href="javascript:void(0);"
                                 class="btn btn-sm btn-success btn-view-log"
                                 data-table="mst_cron_jobs"
-                                data-id="${row.enc_cron_job_id}">
+                                data-id="${row.enc_id}">
                                 <i class="fa fa-history"></i> View Log
                             </a>
                         `;
