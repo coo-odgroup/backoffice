@@ -1919,7 +1919,7 @@ export function loadCronJobDropdown(selector, selected = "") {
     $.ajax({
         type: "POST",
 
-        url: ajaxUrl + "get-cron-job-dropdown",
+        url: "/admin/get-cron-job-dropdown",
 
         data: {
             _token: $('meta[name="csrf-token"]').attr("content"),
@@ -1942,30 +1942,37 @@ export function loadCronJobDropdown(selector, selected = "") {
                 });
             }
 
-            $(selector).html(options).trigger("change");
+            $(selector).html(options);
         },
 
-        error: function () {
-            console.log("Error loading cron job dropdown");
+        error: function (xhr) {
+            console.log(xhr);
+
+            console.log("Error loading cron dropdown");
         },
     });
 }
-
-
-export function getNotificationTemplateDropdown(selector, selected = "") {
+export function getNotificationTemplateDropdown(
+    selector,
+    selected = "",
+    type = "",
+) {
     $.ajax({
         type: "POST",
 
-        url: ajaxUrl + "get-notification-template-dropdown",
+        url: "/admin/get-notification-template-dropdown",
 
         data: {
+            type: type,
+
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
 
         dataType: "json",
 
         success: function (response) {
-            let options = '<option value="">Select Notification Template </option>';
+            let options =
+                '<option value="">Select Notification Template</option>';
 
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, item) {
@@ -1979,7 +1986,7 @@ export function getNotificationTemplateDropdown(selector, selected = "") {
                 });
             }
 
-            $(selector).html(options).trigger("change");
+            $(selector).html(options);
         },
 
         error: function () {
@@ -1987,8 +1994,6 @@ export function getNotificationTemplateDropdown(selector, selected = "") {
         },
     });
 }
-
-
 
 export function getRolesDropdown(selector, selected = "") {
     $.ajax({
@@ -2025,4 +2030,3 @@ export function getRolesDropdown(selector, selected = "") {
         },
     });
 }
-

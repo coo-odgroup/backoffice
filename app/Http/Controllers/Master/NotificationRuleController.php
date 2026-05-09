@@ -193,6 +193,7 @@ class NotificationRuleController extends Controller
     public function add($encId = null)
     {
         $data = [];
+
         $data['strPage']   = 'Add';
         $data['strSubmit'] = 'Submit';
         $data['strReset']  = 'Reset';
@@ -205,41 +206,52 @@ class NotificationRuleController extends Controller
 
             $row = null;
 
-            $redirectPage = "admin/cron-job/edit/" . $encId;
+            $redirectPage =
+                route('notification-rules.index');
 
+            // EDIT MODE
             if ($id > 0) {
-
-                $redirectPage = "admin/cron-job/edit/" . $encId;
 
                 $data['strPage']   = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
 
-                $row = DB::table('odbusmaster.mst_cron_jobs')
+                $row = DB::table(
+                    'odbusmaster.cron_job_notifications'
+                )
                     ->where('id', $id)
                     ->first();
 
                 if (!$row) {
-                    return redirect()->route('notification-rules.index');
+
+                    return redirect()
+                        ->route('notification-rules.index');
                 }
 
                 $data['row'] = $row;
             }
 
-            // ===================== POST =====================
+            // SAVE
             if (request()->isMethod('post')) {
 
-                $validator = Validator::make(request()->all(), [
+                $validator = Validator::make(
+                    request()->all(),
+                    [
 
-                    'cronName'  => 'required|string|max:100',
-                    'slug'      => 'required|string|max:100',
-                    'type'      => 'required',
-                    'scheduler' => 'required',
-                    'execution' => 'required',
+                        'cron_name'       => 'required',
 
-                ]);
+                        'channel'         => 'required',
+
+                        'template'        => 'required',
+
+                        'recipient'       => 'required',
+
+                        'status_condition' => 'required',
+                    ]
+                );
 
                 if ($validator->fails()) {
+
                     return back()
                         ->withErrors($validator)
                         ->withInput();
@@ -247,115 +259,210 @@ class NotificationRuleController extends Controller
 
                 DB::beginTransaction();
 
+                // CHANNEL MAP
+                $channelMap = [
+
+                    'Email' => 1,
+
+                    'SMS' => 2,
+
+                    'Push Notification' => 3,
+
+                    'Whatsapp' => 4,
+                ];
+
+                $recipientType = request('recipient');
+
+                $roleType = null;
+
+                $recipientValue = null;
+
+                if (
+                    str_contains(
+                        strtolower($recipientType),
+                        'manual'
+                    )
+                ) {
+
+                    $recipientValue =
+                        request('manual_recipient');
+                }
+
+                else if (
+                    str_contains(
+                        strtolower($recipientType),
+                        'dynamic'
+                    )
+                ) {
+
+                    $recipientValue =
+                        request('dynamic_variable');
+                }
+
+                else if (
+                    str_contains(
+                        strtolower($recipientType),
+                        'role'
+                    )
+                ) {
+
+                    $roleType = request('roles');
+
+                    $recipientValue =
+                        !empty(request('selected_users'))
+                        ?
+                        json_encode(
+                            request('selected_users')
+                        )
+                        :
+                        null;
+                }
+
+                $recipientTypeValue = DB::table(
+                    'odbusmaster.mst_annexture'
+                )
+                    ->where('annexture_name', $recipientType)
+                    ->where('annexture_type_id', 23)
+                    ->value('annexture_value');
+
                 $insertData = [
 
-                    'name'              => request('cronName'),
-                    'slug'              => request('slug'),
-                    'type'              => request('type'),
-                    'schedule_type'     => request('scheduler'),
-                    'interval_minutes'  => request('interval') ?: null,
-                    'run_times_json' => !empty(request('runTime'))
-                        ? json_encode(
-                            array_values(
-                                array_filter(request('runTime'))
-                            )
-                        )
-                        : null,
-                    'cron_expression'   => request('cron') ?: null,
-                    'execution_type'    => request('execution'),
-                    'job_class'         => request('job') ?: null,
-                    'command_name'      => request('command') ?: null,
-                    'active_status'     => 1,
+                    'cron_job_id' =>
+                    request('cron_name'),
 
+                    'channel' =>
+                    $channelMap[request('channel')] ?? null,
+                    'reciptent_type' =>
+                    $recipientTypeValue,
+
+                    'recipient_value' =>
+                    $recipientValue,
+
+                    'template_id' =>
+                    request('template'),
+
+                    'role_type' =>
+                    $roleType,
+
+                    'status_condition' =>
+                    request('status_condition'),
+
+                    'active_status' => 1,
                 ];
 
                 if ($id > 0) {
 
-                    $oldData = DB::table('odbusmaster.mst_cron_jobs')
+                    $oldData = DB::table(
+                        'odbusmaster.cron_job_notifications'
+                    )
                         ->where('id', $id)
                         ->first();
 
-                    $newData = [
+                    $updateData = [
+
                         ...$insertData,
+
                         'updated_by' => 1,
-                        'updated_at' => now()
+
+                        'updated_at' => now(),
                     ];
 
-                    $oldChanged = [];
-                    $newChanged = [];
-
-                    foreach ($insertData as $key => $value) {
-
-                        $oldValue = $oldData->$key ?? null;
-
-                        if (json_encode($oldValue) !== json_encode($value)) {
-
-                            $oldChanged[$key] = $oldValue;
-                            $newChanged[$key] = $value;
-                        }
-                    }
-
-                    // AUDIT LOG
-                    if (!empty($newChanged)) {
-
-                        app(CommonController::class)->auditLog(
-                            'mst_cron_jobs',
-                            $id,
-                            'UPDATE',
-                            $oldChanged,
-                            $newChanged
-                        );
-                    }
-
-                    DB::table('odbusmaster.mst_cron_jobs')
+                    DB::table(
+                        'odbusmaster.cron_job_notifications'
+                    )
                         ->where('id', $id)
-                        ->update($newData);
+                        ->update($updateData);
+
+                    app(CommonController::class)
+                        ->auditLog(
+
+                            'cron_job_notifications',
+
+                            $id,
+
+                            'UPDATE',
+
+                            (array)$oldData,
+
+                            $updateData
+                        );
                 } else {
 
-                    // ================= INSERT =================
-
                     $rowData = [
+
                         ...$insertData,
+
                         'created_by' => 1,
-                        'created_at' => now()
+
+                        'created_at' => now(),
                     ];
 
-                    $insertId = DB::table('odbusmaster.mst_cron_jobs')
+                    $insertId = DB::table(
+                        'odbusmaster.cron_job_notifications'
+                    )
                         ->insertGetId($rowData);
+                    app(CommonController::class)
+                        ->auditLog(
 
-                    // AUDIT LOG
-                    app(CommonController::class)->auditLog(
-                        'mst_cron_jobs',
-                        $insertId,
-                        'INSERT',
-                        [],
-                        $rowData
-                    );
+                            'cron_job_notifications',
+
+                            $insertId,
+
+                            'INSERT',
+
+                            [],
+
+                            $rowData
+                        );
                 }
 
                 DB::commit();
 
-                return redirect($redirectPage)->with([
-                    'level'   => 'success',
-                    'message' =>  'Notification Rule ' . ($id ? 'updated' : 'created') . ' successfully'
-                ]);
+                return redirect()
+                    ->route('notification-rules.index')
+                    ->with([
+
+                        'level' => 'success',
+
+                        'message' =>
+                        'Notification Rule ' .
+                            ($id ? 'updated' : 'created') .
+                            ' successfully'
+                    ]);
             }
         } catch (\Throwable $t) {
 
             DB::rollBack();
 
-            Log::error("NotificationRuleController Error", [
-                'method' => $data['strPage'],
-                'error'  => $t->getMessage()
-            ]);
+            Log::error(
+                "NotificationRuleController Error",
+                [
 
-            return back()->with([
-                'level'   => 'danger',
-                'message' => config('constants.SERVER_ERROR_MESSAGE')
-            ])->withInput();
+                    'method' =>
+                    $data['strPage'],
+
+                    'error' =>
+                    $t->getMessage()
+                ]
+            );
+
+            return back()
+                ->with([
+
+                    'level' => 'danger',
+
+                    'message' =>
+                    config(
+                        'constants.SERVER_ERROR_MESSAGE'
+                    )
+                ])
+                ->withInput();
         }
 
-        return view('Master.addNotificationRules', compact('data'));
+        return view(
+            'Master.addNotificationRules',
+            compact('data')
+        );
     }
 
     public function edit($encId)
@@ -550,6 +657,263 @@ class NotificationRuleController extends Controller
                 'status' => false,
                 'data'   => null
             ]);
+        }
+    }
+
+    public function getNotificationDetails(Request $request)
+    {
+        try {
+
+            $id = $request->id;
+
+            $template = DB::table('odbusmaster.mst_notification_templates')
+                ->where('id', $id)
+                ->first();
+
+            if (!$template) {
+                return response('<div class="text-danger text-center p-4">Data not found</div>');
+            }
+
+            $type = (int) $template->type;
+
+            /*
+        1 = Email
+        2 = SMS
+        3 = Push
+        4 = WhatsApp
+        */
+
+
+            $typeMap = [
+                1 => 'Email',
+                2 => 'SMS',
+                3 => 'Push Notification',
+                4 => 'WhatsApp'
+            ];
+
+            $html = '
+            <div class="container-fluid">
+
+                <div class="text-center mb-4">
+                    <span class="badge bg-primary px-3 py-2 fs-6">
+                        ' . ($typeMap[$type] ?? 'Unknown') . '
+                    </span>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+            ';
+
+
+            // ================= EMAIL =================
+            if ($type === 1) {
+
+                $html .= '
+
+                    <div class="text-center mb-3">
+                        <span class="text-muted small fw-semibold">' . ($template->name ?? 'Email Notification') . '</span>
+                    </div>
+
+                    <div style="
+                        background: linear-gradient(135deg, #f5f7fb, #eef1f7);
+                        padding:20px;
+                        border-radius:12px;
+                    ">
+
+                        <div class="d-flex justify-content-center">
+
+                            <div style="
+                                background:#e4e6eb;
+                                padding:12px 14px;
+                                border-radius:18px;
+                                font-size:14px;
+                                max-width:85%;
+                                color:#222;
+                                text-align:left;
+                            ">
+
+                                <!-- Subject -->
+                                <div style="font-weight:600; margin-bottom:6px;">
+                                    ' . ($template->subject ?? '--') . '
+                                </div>
+
+                                <!-- Divider -->
+                                <div style="
+                                    height:1px;
+                                    background:#ccc;
+                                    margin:6px 0 8px 0;
+                                "></div>
+
+                                <!-- Body -->
+                                <div style="color:#333; line-height:1.5;">
+                                    ' . nl2br($template->body ?? '--') . '
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                ';
+            }
+
+            // ================= SMS =================
+            elseif ($type === 2) {
+
+                $html .= '
+
+                    <div class="text-center mb-3">
+                        <span class="text-muted small fw-semibold">' . ($template->name ?? 'SMS Notification') . '</span>
+                    </div>
+
+                    <div style="
+                        background: linear-gradient(135deg, #f5f7fb, #eef1f7);
+                        padding:20px;
+                        border-radius:12px;
+                    ">
+
+                        <div class="d-flex justify-content-center">
+
+                            
+
+                                <!-- SMS Bubble -->
+                                
+                                    <div style="
+                                        background:#e4e6eb;
+                                        padding:10px 14px;
+                                        border-radius:18px;
+                                        font-size:14px;
+                                        max-width:85%;
+                                        color:#222;
+                                    ">
+                                        ' . nl2br($template->body ?? '--') . '
+                                    </div>
+                                </div>
+
+                                <!-- Timestamp -->
+                                <div style="
+                                    font-size:11px;
+                                    color:#999;
+                                    margin-top:6px;
+                                    text-align:right;
+                                ">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                ';
+            }
+
+            // ================= PUSH =================
+            elseif ($type === 3) {
+
+                $html .= '
+
+                        <div class="text-center mb-3">
+                            <span class="text-muted small fw-semibold">' . ($template->name ?? 'Notification') . '</span>
+                        </div>
+
+                        <div style="
+                            background: linear-gradient(135deg, #f5f7fb, #eef1f7);
+                            padding:20px;
+                            border-radius:12px;
+                        ">
+
+                            <div class="d-flex justify-content-center">
+                                <div style="
+                                    width:320px;
+                                    background:#ffffff;
+                                    border-radius:14px;
+                                    padding:14px;
+                                    box-shadow:0 6px 18px rgba(0,0,0,0.15);
+                                    border:1px solid #e6e6e6;
+                                ">
+
+                                    <!-- Header -->
+                                    <div style="display:flex; align-items:center; margin-bottom:10px;">
+                                        
+                                        <div style="
+                                            width:36px;
+                                            height:36px;
+                                            border-radius:50%;
+                                            background:linear-gradient(135deg,#0d6efd,#4da3ff);
+                                            color:#fff;
+                                            display:flex;
+                                            align-items:center;
+                                            justify-content:center;
+                                            font-size:16px;
+                                            margin-right:10px;
+                                            box-shadow:0 2px 6px rgba(13,110,253,0.4);
+                                        ">
+                                            🔔
+                                        </div>
+
+                                
+
+                                    </div>
+
+                                    <!-- Title -->
+                                    <div style="font-size:15px; font-weight:600; color:#111;">
+                                        ' . ($template->title ?? '--') . '
+                                    </div>
+
+                                    <!-- Body -->
+                                    <div style="font-size:13px; color:#555; margin-top:4px;">
+                                        ' . nl2br($template->body ?? '--') . '
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    ';
+            }
+
+
+            // ================= WHATSAPP =================
+            elseif ($type === 4) {
+
+                $html .= '
+
+                    <h6 class="text-muted mb-3">' . ($template->name ?? 'Notification') . '</h6>
+
+                    <div class="d-flex justify-content-center">
+                        <div style="
+                            max-width:280px;
+                            background:#dcf8c6;
+                            padding:12px 15px;
+                            border-radius:12px;
+                            text-align:left;
+                            font-size:14px;
+                            box-shadow:0 1px 3px rgba(0,0,0,0.1);
+                        ">
+                            ' . nl2br($template->body ?? '--') . '
+                        </div>
+                    </div>
+
+                ';
+            }
+
+
+            // CLOSE
+            $html .= '
+                    </div>
+                </div>
+            </div>';
+
+            return response($html);
+        } catch (\Exception $e) {
+
+            return response('
+            <div class="text-danger text-center p-4">
+                Failed to load notification details
+            </div>');
         }
     }
 }

@@ -162,6 +162,10 @@ Route::prefix('admin')->group(function () {
     Route::post('get-users-list', [CommonController::class, 'getUsersList']);
     Route::post('get-bus-cancel-reasons', [CommonController::class, 'getBusCancelReasons']);
     Route::post('get-cron-job-dropdown', [CommonController::class, 'getCronJobDropdown']);
+    Route::post(
+    'get-cron-job-dropdown',
+    [CommonController::class, 'getCronJobDropdown']
+);
     Route::post('get-notification-template-dropdown',[CommonController::class, 'getNotificationTemplate']);
     Route::post('get-roles-list',[CommonController::class, 'getRolesList']);
 
@@ -571,4 +575,5 @@ Route::prefix('admin')->group(function () {
     Route::post('notification-rules/dataTableView', [NotificationRuleController::class, 'dataTableView'])->name('notification-rules.dataTableView');
     Route::match(['get', 'post'], 'notification-rules/edit/{encId}', [NotificationRuleController::class, 'edit'])->name('notification-rules.edit');
     Route::post('get-cron-job-details',[NotificationRuleController::class, 'getCronJobDetails']);
+    Route::post('get-notification-details', [NotificationRuleController::class, 'getNotificationDetails']);
 });

@@ -133,6 +133,100 @@
                                                                     <option value="">Select</option>
 
                                                                 </select>
+
+                                                                <div class="mt-3 d-none" id="roleUsersSection">
+
+                                                                    <label class="fw-semibold mb-2">
+                                                                        Select Users
+                                                                    </label>
+
+                                                                    <div class="border rounded p-2 bg-light">
+
+                                                                        <div class="form-check mb-2">
+
+                                                                            <input class="form-check-input"
+                                                                                type="checkbox"
+                                                                                name="selected_users[]"
+                                                                                value="admin@odbus.com"
+                                                                                id="user1">
+
+                                                                            <label class="form-check-label"
+                                                                                for="user1">
+
+                                                                                admin@odbus.com
+
+                                                                            </label>
+
+                                                                        </div>
+
+                                                                        <div class="form-check mb-2">
+
+                                                                            <input class="form-check-input"
+                                                                                type="checkbox"
+                                                                                value="support@odbus.com"
+                                                                                id="user2">
+
+                                                                            <label class="form-check-label"
+                                                                                for="user2">
+
+                                                                                support@odbus.com
+
+                                                                            </label>
+
+                                                                        </div>
+
+                                                                        <div class="form-check mb-2">
+
+                                                                            <input class="form-check-input"
+                                                                                type="checkbox"
+                                                                                value="booking@odbus.com"
+                                                                                id="user3">
+
+                                                                            <label class="form-check-label"
+                                                                                for="user3">
+
+                                                                                booking@odbus.com
+
+                                                                            </label>
+
+                                                                        </div>
+
+                                                                        <div class="form-check mb-2">
+
+                                                                            <input class="form-check-input"
+                                                                                type="checkbox"
+                                                                                value="accounts@odbus.com"
+                                                                                id="user4">
+
+                                                                            <label class="form-check-label"
+                                                                                for="user4">
+
+                                                                                accounts@odbus.com
+
+                                                                            </label>
+
+                                                                        </div>
+
+                                                                        <div class="form-check">
+
+                                                                            <input class="form-check-input"
+                                                                                type="checkbox"
+                                                                                value="operations@odbus.com"
+                                                                                id="user5">
+
+                                                                            <label class="form-check-label"
+                                                                                for="user5">
+
+                                                                                operations@odbus.com
+
+                                                                            </label>
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
                                                             </div>
                                                             <div class="mb-2" id="recipientSection">
                                                                 <label for="manual_recipient">Recipient (Manual)</label>
@@ -151,142 +245,96 @@
 
                                                 <!-- RIGHT COLUMN -->
                                                 <div class="col-md-5">
-                                                    <div class="p-3 border rounded bg-white">
+
+                                                    <div id="cronDetailsContainer"></div>
+                                                    <div class="mt-3" id="notificationPreviewWrapper">
                                                         <div class="p-3 border rounded schedule-card">
 
-                                                            <div class="cron-info-card">
+                                                            <div class="d-flex align-items-center  justify-content-between mb-3">
 
-                                                                <div class="info-row">
-                                                                    <span class="info-label">
-                                                                        Cron Name:
-                                                                    </span>
+                                                                <h6 class="mb-0">
+                                                                    Notification Template Preview
+                                                                </h6>
 
-                                                                    <span class="info-value" id="cronNameText">
-                                                                        --
-                                                                    </span>
-                                                                </div>
+                                                            </div>
 
-                                                                <div class="info-row">
-                                                                    <span class="info-label">
-                                                                        Cron Type:
-                                                                    </span>
+                                                            <div id="notificationDetailsContainer">
 
-                                                                    <span class="badge bg-primary" id="cronTypeText">
-                                                                        --
-                                                                    </span>
-                                                                </div>
+                                                                <div class="text-center text-muted py-5">
 
-                                                                <div class="info-row align-items-start">
-                                                                    <span class="info-label">
-                                                                        Scheduler Type:
-                                                                    </span>
+                                                                    Select Template To Preview
 
-                                                                    <div class="scheduler-box">
-
-                                                                        <div>
-                                                                            <strong>Interval Minutes:</strong>
-                                                                            <span id="intervalMinutesText">--</span>
-                                                                        </div>
-
-                                                                        <hr class="my-1">
-
-                                                                        <div>
-                                                                            <strong>Run Times:</strong>
-                                                                        </div>
-
-                                                                        <ul class="mb-0 ps-3" id="runTimesText">
-                                                                            <li>--</li>
-                                                                        </ul>
-
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="info-row align-items-start">
-                                                                    <span class="info-label">
-                                                                        Execution Type
-                                                                    </span>
-
-                                                                    <div class="execution-box">
-
-                                                                        <div>
-                                                                            <strong id="executionLabel">
-                                                                                --
-                                                                            </strong>
-                                                                        </div>
-
-                                                                        <hr class="my-1">
-
-                                                                        <div class="small text-break"
-                                                                            id="executionValue">
-                                                                            --
-                                                                        </div>
-
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="info-row">
-                                                                    <span class="info-label">
-                                                                        Status
-                                                                    </span>
-
-                                                                    <span class="badge bg-success"
-                                                                        id="cronStatusText">
-                                                                        --
-                                                                    </span>
                                                                 </div>
 
                                                             </div>
+
                                                         </div>
 
-                                                        <div class="p-3 border rounded schedule-card mt-4">
-
-                                                            <div class="mb-2">
-                                                                <label for="execution">Execution Type</label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="execution" name="execution">
-                                                                    <option value="">Select Execution Type</option>
-                                                                    <option value="job">Job</option>
-                                                                    <option value="command">Command</option>
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="mb-2">
-                                                                <label for="job">Job Class</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="job" name="job" value="{{ $data['row']->job_class ?? '' }}" placeholder="Enter Job Class" maxlength="100">
-                                                            </div>
-                                                            <div class="mb-2">
-                                                                <label for="command">Command Name</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="command" name="command" value="{{ $data['row']->command_name ?? '' }}" placeholder="Enter Command Name" maxlength="100">
-                                                            </div>
-                                                        </div>
                                                     </div>
+
+                                                </div>
+
+                                            </div>
+
+                                            <!-- Buttons -->
+                                            <div class="row mt-3">
+                                                <div class="col-12 d-flex gap-2">
+                                                    <button class="btn btn-primary btn-sm" type="submit">
+                                                        {{ $data['strSubmit'] }}
+                                                    </button>
+                                                    <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                                        {{ $data['strReset'] }}
+                                                    </button>
                                                 </div>
                                             </div>
 
                                         </div>
-
-                                        <!-- Buttons -->
-                                        <div class="row mt-3">
-                                            <div class="col-12 d-flex gap-2">
-                                                <button class="btn btn-primary btn-sm" type="submit">
-                                                    {{ $data['strSubmit'] }}
-                                                </button>
-                                                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                                    {{ $data['strReset'] }}
-                                                </button>
-                                            </div>
-                                        </div>
-
                                     </div>
-                                </div>
 
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <!-- CRON DETAILS MODAL -->
+                    <div class="modal fade"
+                        id="cronDetailsModal"
+                        tabindex="-1"
+                        aria-hidden="true">
+
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+
+                                    <h5 class="modal-title">
+                                        Cron Job Details
+                                    </h5>
+
+                                    <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal">
+                                    </button>
+
+                                </div>
+
+                                <div class="modal-body"
+                                    id="cronDetailsBody">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
         </form>
 
         <style>
+            #notificationPreviewWrapper {
+                display: none;
+            }
+
             .cron-info-card {
                 display: flex;
                 flex-direction: column;
@@ -341,12 +389,16 @@
             .execution-box hr {
                 border-color: rgba(255, 255, 255, 0.2);
             }
+
+            
         </style>
 
         @endsection
 
         @push('scripts')
         <script type="module">
+            $('#roleUsersSection').addClass('d-none');
+
             $(document).ready(function() {
 
                 commonAjax.initSelect2('#cron_name', 'Select Cron Name');
@@ -408,20 +460,91 @@
 
                 });
 
-                $('#cron_name').on('change', function() {
+                $(document).on('change', '#cron_name', function() {
 
                     let id = $(this).val();
 
+                    console.log('SELECTED ID => ', id);
+
                     if (!id) {
+
+                        $('#cronDetailsContainer').html('');
                         return;
                     }
 
                     loadCronJobDetails(id);
-
                 });
 
 
+                $(document).on('change', '#template', function() {
+
+                    let id = $(this).val();
+
+                    if (!id) {
+
+                        $('#notificationPreviewWrapper').hide();
+
+                        $('#notificationDetailsContainer').html('');
+
+                        return;
+                    }
+
+                    $('#notificationPreviewWrapper').show();
+
+                    loadNotificationDetails(id);
+                });
             });
+
+
+
+            function loadNotificationDetails(id) {
+
+                $('#notificationDetailsContainer').html(`
+
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary"></div>
+                            <p class="mt-2">
+                                Loading Notification...
+                            </p>
+                        </div>
+
+                    `);
+
+                $.ajax({
+
+                    type: "POST",
+
+                    url: "/admin/get-notification-details",
+
+                    data: {
+
+                        id: id,
+
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+
+                    success: function(response) {
+
+                        $('#notificationDetailsContainer')
+                            .html(response);
+                    },
+
+                    error: function(xhr) {
+
+                        console.log(xhr);
+
+                        $('#notificationDetailsContainer').html(`
+
+                            <div class="alert alert-danger">
+                                Failed to Load Notification
+                            </div>
+
+                        `);
+                    }
+                });
+            }
+
+
 
             function renderDropdown(
                 selector,
@@ -449,11 +572,63 @@
                     `;
                 });
 
-                $(selector)
-                    .html(options)
-                    .trigger('change');
+                $(selector).html(options);
 
             }
+
+
+            $('#channel').on('change', function() {
+
+                let channel = $(this).val();
+
+                // RESET TEMPLATE
+                $('#template')
+                    .val('')
+                    .trigger('change');
+
+                // HIDE TEMPLATE PREVIEW
+                $('#notificationPreviewWrapper').hide();
+
+                // CLEAR TEMPLATE HTML
+                $('#notificationDetailsContainer').html(`
+                        <div class="text-center text-muted py-5">
+                            Select Template To Preview
+                        </div>
+                `);
+
+                let type = '';
+
+                if (
+                    channel.toLowerCase() == 'email'
+                ) {
+
+                    type = 1;
+
+                } else if (
+                    channel.toLowerCase() == 'sms'
+                ) {
+
+                    type = 2;
+
+                } else if (
+                    channel.toLowerCase() == 'push notification'
+                ) {
+
+                    type = 3;
+
+                } else if (
+                    channel.toLowerCase() == 'whatsapp'
+                ) {
+
+                    type = 4;
+                }
+
+                commonAjax.getNotificationTemplateDropdown(
+                    '#template',
+                    '',
+                    type
+                );
+            });
 
 
             function loadCronJobDetails(id) {
@@ -462,50 +637,46 @@
 
                     type: "POST",
 
-                    url: ajaxUrl + "get-cron-job-details",
+                    url: "/admin/get-cron-job-details",
 
                     data: {
 
                         id: id,
 
-                        _token: $('meta[name="csrf-token"]').attr("content"),
+                        _token: $('meta[name="csrf-token"]').attr('content')
                     },
 
                     dataType: "json",
 
                     success: function(response) {
 
+                        console.log(response);
+
                         if (
-                            !response.status ||
-                            !response.data
+                            response.status == false ||
+                            response.data == null
                         ) {
+
+                            $('#cronDetailsContainer').html(`
+                                <div class="alert alert-danger">
+                                    No Cron Details Found
+                                </div>
+                            `);
+
                             return;
                         }
 
                         let row = response.data;
 
-                        // NAME
-                        $('#cronNameText')
-                            .text(row.name ?? '--');
-
-                        // TYPE
-                        $('#cronTypeText')
-                            .text(row.type ?? '--');
-
                         // STATUS
-                        let status =
+                        let statusBadge =
                             row.active_status == 1 ?
-                            'Active' :
-                            'Inactive';
-
-                        $('#cronStatusText')
-                            .text(status);
-
-                        // INTERVAL
-                        $('#intervalMinutesText')
-                            .text(
-                                row.interval_minutes ?? '--'
-                            );
+                            `<span class="badge bg-success">
+                                Active
+                            </span>` :
+                            `<span class="badge bg-danger">
+                                Inactive
+                            </span>`;
 
                         // RUN TIMES
                         let runTimesHtml = '<li>--</li>';
@@ -517,20 +688,26 @@
                                 let times =
                                     JSON.parse(row.run_times_json);
 
-                                runTimesHtml = '';
+                                if (
+                                    Array.isArray(times) &&
+                                    times.length > 0
+                                ) {
 
-                                $.each(times, function(i, val) {
+                                    runTimesHtml = '';
 
-                                    runTimesHtml += `
-                            <li>${val}</li>
-                        `;
-                                });
+                                    $.each(times, function(index, time) {
 
-                            } catch (e) {}
+                                        runTimesHtml += `
+                                <li>${time}</li>
+                            `;
+                                    });
+                                }
+
+                            } catch (e) {
+
+                                console.log(e);
+                            }
                         }
-
-                        $('#runTimesText')
-                            .html(runTimesHtml);
 
                         // EXECUTION
                         let executionLabel =
@@ -543,18 +720,148 @@
                             row.job_class :
                             row.command_name;
 
-                        $('#executionLabel')
-                            .text(executionLabel);
+                        // FINAL HTML
+                        let html = `
 
-                        $('#executionValue')
-                            .text(executionValue ?? '--');
+                <div class="p-3 border rounded bg-white">
+
+                    <div class="p-3  schedule-card">
+
+                        <div class="cron-info-card">
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Cron Name:
+                                </span>
+
+                                <span class="info-value">
+                                    ${row.name ?? '--'}
+                                </span>
+
+                            </div>
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Cron Type:
+                                </span>
+
+                                <span class="badge bg-primary">
+                                    ${row.type ?? '--'}
+                                </span>
+
+                            </div>
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Schedule Type:
+                                </span>
+
+                                <span class="info-value">
+                                    ${row.schedule_type ?? '--'}
+                                </span>
+
+                            </div>
+
+                            <div class="info-row align-items-start">
+
+                                <span class="info-label">
+                                    Scheduler:
+                                </span>
+
+                                <div class="scheduler-box">
+
+                                    <div>
+
+                                        <strong>
+                                            Interval Minutes:
+                                        </strong>
+
+                                        ${row.interval_minutes ?? '--'}
+
+                                    </div>
+
+                                    <hr class="my-1">
+
+                                    <div>
+
+                                        <strong>
+                                            Run Times:
+                                        </strong>
+
+                                        <ul class="mb-0 ps-3">
+                                            ${runTimesHtml}
+                                        </ul>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="info-row align-items-start">
+
+                                <span class="info-label">
+                                    Execution:
+                                </span>
+
+                                <div class="execution-box">
+
+                                    <div>
+
+                                        <strong>
+                                            ${executionLabel}
+                                        </strong>
+
+                                    </div>
+
+                                    <hr class="my-1">
+
+                                    <div class="small text-break">
+
+                                        ${executionValue ?? '--'}
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Status:
+                                </span>
+
+                                <span>
+                                    ${statusBadge}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+                        $('#cronDetailsContainer').html(html);
                     },
 
-                    error: function() {
+                    error: function(xhr) {
 
-                        console.log(
-                            'Error loading cron job details'
-                        );
+                        console.log(xhr);
+
+                        $('#cronDetailsContainer').html(`
+
+                <div class="alert alert-danger">
+                    Failed to Load Cron Details
+                </div>
+
+            `);
                     }
                 });
             }
@@ -580,6 +887,7 @@
 
                     $('#recipientConfigSection').show();
                     $('#rolesSection').show();
+                    $('#roleUsersSection').removeClass('d-none');
                 }
 
                 // MANUAL SELECTION
@@ -599,6 +907,26 @@
                     $('#recipientConfigSection').show();
                     $('#dynamicVariableSection').show();
                 }
+            }
+
+
+            function resetCronCard() {
+
+                $('#cronNameText').text('--');
+
+                $('#cronTypeText').text('--');
+
+                $('#intervalMinutesText').text('--');
+
+                $('#runTimesText').html('<li>--</li>');
+
+                $('#executionLabel').text('--');
+
+                $('#executionValue').text('--');
+
+                $('#cronStatusText')
+                    .removeClass('bg-success bg-danger')
+                    .text('--');
             }
         </script>
 

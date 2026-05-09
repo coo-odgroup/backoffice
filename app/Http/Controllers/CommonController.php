@@ -1270,22 +1270,33 @@ class CommonController extends Controller
     }
 
 
-    public function getNotificationTemplate()
+    public function getNotificationTemplate(Request $request)
     {
         try {
 
-            $data = DB::table('odbusmaster.mst_notification_templates')
+            $type = $request->type;
+
+            $query = DB::table('mst_notification_templates')
                 ->select(
                     'id',
-                    'name'
+                    'name',
+                    'type'
                 )
-                ->where('active_status', 1)
-                ->orderBy('name', 'asc')
+                ->where('active_status', 1);
+
+            // FILTER BY TYPE
+            if (!empty($type)) {
+
+                $query->where('type', $type);
+            }
+
+            $rows = $query
+                ->orderBy('name')
                 ->get();
 
             return response()->json([
                 'status' => true,
-                'data'   => $data
+                'data'   => $rows
             ]);
         } catch (\Throwable $t) {
 
@@ -1296,7 +1307,7 @@ class CommonController extends Controller
         }
     }
 
-       public function getRolesList()
+    public function getRolesList()
     {
         try {
 
@@ -1321,5 +1332,4 @@ class CommonController extends Controller
             ]);
         }
     }
-
 }
