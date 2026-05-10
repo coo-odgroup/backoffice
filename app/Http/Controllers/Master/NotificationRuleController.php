@@ -25,115 +25,70 @@ class NotificationRuleController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtSearch'));
+            $draw = request('draw');
 
-            $type = request('type') !== null && request('type') !== ''
-                ? request('type')
-                : null;
-
-            $scheduler = request('scheduler') !== null && request('scheduler') !== ''
-                ? request('scheduler')
-                : null;
-
-            $execution = request('execution') !== null && request('execution') !== ''
-                ? request('execution')
-                : null;
-
-            $status = request('selStatus') !== null && request('selStatus') !== ''
-                ? (int) request('selStatus')
-                : null;
+            $txtSearch = request('txtSearch');
+            $status    = request('selStatus');
 
             $start  = request('start', 0);
             $length = request('length', 10);
 
-            $query = DB::table('odbusmaster.mst_cron_jobs as cj')
-                ->select(
 
-                    'cj.id',
-                    'cj.name',
-                    'cj.slug',
-                    'cj.type',
-                    'cj.schedule_type',
+            $baseQuery = DB::table('odbusmaster.cron_job_notifications as cjn')
+                ->leftJoin('odbusmaster.mst_cron_jobs as cj', 'cj.id', '=', 'cjn.cron_job_id')
 
-                    // TYPE NAME (SCHEDULER_TYPE)
-                    DB::raw('(
-                            SELECT annexture_name
-                            FROM odbusmaster.mst_annexture
-                            WHERE annexture_type_id = 20
-                            AND annexture_value = cj.type
-                            LIMIT 1
-                        ) as type_name'),
+                ->leftJoin('odbusmaster.mst_notification_templates as mt', 'mt.id', '=', 'cjn.template_id')
+                ->leftJoin('odbusmaster.mst_roles as mr', 'mr.id', '=', 'cjn.role_type');
 
-                    // SCHEDULER NAME (SCHEDULER_TYPE)
-                    DB::raw('(
-                            SELECT annexture_name
-                            FROM odbusmaster.mst_annexture
-                            WHERE annexture_type_id = 20
-                            AND annexture_value = cj.schedule_type
-                            LIMIT 1
-                        ) as scheduler_name'),
-                    'cj.interval_minutes',
-                    'cj.run_times_json',
-                    'cj.cron_expression',
-                    'cj.execution_type',
-                    'cj.job_class',
-                    'cj.command_name',
-                    'cj.active_status',
-                    'cj.created_at',
-                    'cj.updated_at',
-
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = cj.created_by LIMIT 1) as created_by_name'),
-
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = cj.updated_by LIMIT 1) as updated_by_name')
-                );
-
-            $recordsTotal = DB::table('odbusmaster.mst_cron_jobs')->count();
-
-            // SEARCH
-            if (!empty(trim($txtSearch))) {
-
-                $search = trim($txtSearch);
-
-                $query->where(function ($q) use ($search) {
-
-                    $q->where('cj.name', 'like', "%{$search}%")
-                        ->orWhere('cj.slug', 'like', "%{$search}%")
-                        ->orWhere('cj.type', 'like', "%{$search}%")
-                        ->orWhere('cj.schedule_type', 'like', "%{$search}%")
-                        ->orWhere('cj.execution_type', 'like', "%{$search}%")
-                        ->orWhere('cj.job_class', 'like', "%{$search}%")
-                        ->orWhere('cj.command_name', 'like', "%{$search}%")
-                        ->orWhere('cj.cron_expression', 'like', "%{$search}%");
-                });
+            // 🔍 SEARCH
+            if (!empty($txtSearch)) {
+                $baseQuery->where('cj.name', 'like', "%{$txtSearch}%");
             }
 
-            // FILTERS
-            if (!empty($type)) {
-                $query->where('cj.type', $type);
+            // 🎯 STATUS FILTER
+            if ($status !== null && $status !== '') {
+                $baseQuery->where('cjn.active_status', (int)$status);
             }
 
-            if (!empty($scheduler)) {
-                $query->where('cj.schedule_type', $scheduler);
-            }
+            // ✅ TOTAL COUNT
+            $recordsTotal = DB::table('odbusmaster.cron_job_notifications')->count();
 
-            if (!empty($execution)) {
-                $query->where('cj.execution_type', $execution);
+            // ✅ FILTERED COUNT
+            $countQuery = DB::table('odbusmaster.cron_job_notifications as cjn')
+                ->leftJoin('odbusmaster.mst_cron_jobs as cj', 'cj.id', '=', 'cjn.cron_job_id');
+
+            if (!empty($txtSearch)) {
+                $countQuery->where('cj.name', 'like', "%{$txtSearch}%");
             }
 
             if ($status !== null && $status !== '') {
-                $query->where('cj.active_status', $status);
+                $countQuery->where('cjn.active_status', (int)$status);
             }
 
-            $recordsFiltered = (clone $query)->count();
+            $recordsFiltered = $countQuery->count();
 
-            // PAGINATION
+            // ✅ FINAL SELECT (RAW INTEGER VALUES)
+            $query = $baseQuery->select(
+                'cjn.id',
+                'cjn.channel',
+                'cjn.reciptent_type',
+                'cjn.recipient_value',
+                'cjn.template_id',
+                'mt.name as template_name',
+                'mr.name as role_name',
+                'cjn.role_type',
+                'cjn.status_condition',
+                'cjn.active_status',
+                'cjn.created_at',
+                'cj.name as cron_name'
+            );
+
+            // 📄 PAGINATION
             if ($length != -1) {
-
-                $query->offset($start)
-                    ->limit($length);
+                $query->offset($start)->limit($length);
             }
 
-            $rows = $query->orderBy('cj.id', 'desc')->get();
+            $rows = $query->orderBy('cjn.id', 'desc')->get();
 
             foreach ($rows as $row) {
 
@@ -141,42 +96,53 @@ class NotificationRuleController extends Controller
 
                     'id' => $row->id,
                     'enc_id' => Crypt::encryptString($row->id),
-                    'cron_name' => $row->name ?? '--',
-                    'cron_type' => $row->type ?? '--',
-                    'scheduler_type' => $row->scheduler_name ?? '--',
-                    'execution_type' => $row->execution_type ?? '--',
-                    'interval_minutes' => $row->interval_minutes ?? '--',
-                    'run_times_json' => !empty($row->run_times_json)
-                        ? implode(
-                            ',',
-                            json_decode($row->run_times_json, true) ?? []
-                        )
-                        : '--',
-                    'cron_expression' => $row->cron_expression ?? '--',
-                    'job_class' => $row->job_class ?? '--',
-                    'command_name' => $row->command_name ?? '--',
+
+                    // ✅ CHANNEL MAPPING
+                    'channel' => match ((int)$row->channel) {
+                        1 => 'Email',
+                        2 => 'SMS',
+                        3 => 'Push Notification',
+                        4 => 'WhatsApp',
+                        default => '--'
+                    },
+
+                    // ✅ RECIPIENT TYPE MAPPING
+                    'recipient_type' => match ((int)$row->reciptent_type) {
+                        1 => 'Manual',
+                        2 => 'Role Based',
+                        3 => 'Dynamic Variable',
+                        default => '--'
+                    },
+
+                    // 🔹 KEEP RAW VALUES FOR NOW
+                    'recipient_value' => $row->recipient_value ?? '--',
+                    'template_id'     => $row->template_name ?? '--',
+                    'role_type'       => $row->role_name ?? '--',
+                    'status_condition' => $row->status_condition ?? '--',
+
+                    // ✅ DATE
                     'created_date' => $row->created_at
                         ? date('d-M-Y H:i:s', strtotime($row->created_at))
-                        : null,
-                    'updated_date' => $row->updated_at
-                        ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                        : null,
-                    'created_by_name' => $row->created_by_name ?? '--',
+                        : '--',
 
-                    'updated_by_name' => $row->updated_by_name ?? '--',
+                    'created_by_name' => '--',
+                    'updated_by_name' => '--',
+                    'updated_date'    => '--',
 
-                    'is_active' => $row->active_status == 1
-                        ? 'Active'
-                        : 'Inactive',
+                    // ✅ STATUS
+                    'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
+
+                    'cron_name' => $row->cron_name ?? '--'
                 ];
             }
         } catch (\Throwable $t) {
 
-            Log::error("CronJobController Error", [
+            Log::error("NotificationRuleController Error", [
                 'message' => $t->getMessage()
             ]);
 
             return response()->json([
+                'draw' => intval(request('draw')),
                 'recordsTotal' => 0,
                 'recordsFiltered' => 0,
                 'data' => []
@@ -184,6 +150,7 @@ class NotificationRuleController extends Controller
         }
 
         return response()->json([
+            'draw'            => intval($draw),
             'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data'            => $data,
@@ -286,9 +253,7 @@ class NotificationRuleController extends Controller
 
                     $recipientValue =
                         request('manual_recipient');
-                }
-
-                else if (
+                } else if (
                     str_contains(
                         strtolower($recipientType),
                         'dynamic'
@@ -297,9 +262,7 @@ class NotificationRuleController extends Controller
 
                     $recipientValue =
                         request('dynamic_variable');
-                }
-
-                else if (
+                } else if (
                     str_contains(
                         strtolower($recipientType),
                         'role'

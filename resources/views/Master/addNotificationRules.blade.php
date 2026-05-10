@@ -1,225 +1,279 @@
-        @extends('admin.layouts.master')
-        @section('page_title', 'Notification Rules')
-        @section('content')
+            @extends('admin.layouts.master')
+            @section('page_title', 'Notification Rules')
+            @section('content')
 
-        <?php
-        $page_name = 'All ' . trim($__env->yieldContent('page_title'));
-        $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
-        ?>
+                <?php
+                $page_name = 'All ' . trim($__env->yieldContent('page_title'));
+                $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
+                ?>
 
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item">Master</li>
-                <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
-            </ol>
-        </nav>
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item">Master</li>
+                        <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
+                    </ol>
+                </nav>
 
-        <!-- HEADER -->
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 id="page_title">@yield('page_title')</h5>
-            <div>
-                <a href="{{ route('notification-rules.index') }}" class="btn btn-success btn-sm">
-                    View @yield('page_title')
-                </a>
-            </div>
-        </div>
+                <!-- HEADER -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 id="page_title">@yield('page_title')</h5>
+                    <div>
+                        <a href="{{ route('notification-rules.index') }}" class="btn btn-success btn-sm">
+                            View @yield('page_title')
+                        </a>
+                    </div>
+                </div>
 
-        <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
-            {{ csrf_field() }}
+                <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
+                    {{ csrf_field() }}
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
 
-                            <div class="mb-3">
-                                <div>
-                                    <div class="row">
-
-                                        <!-- Alerts -->
-                                        @if (session('message'))
-                                        <div
-                                            class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show">
-                                            {{ session('message') }}
-                                            <button type="button" class="btn-close"
-                                                data-bs-dismiss="alert"></button>
-                                        </div>
-                                        @endif
-
-                                        @if ($errors->any())
-                                        <div class="alert alert-danger alert-dismissible fade show">
-                                            <ul class="mb-0">
-                                                @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                            <button type="button" class="btn-close"
-                                                data-bs-dismiss="alert"></button>
-                                        </div>
-                                        @endif
-
-                                        <div class="col-12">
+                                    <div class="mb-3">
+                                        <div>
                                             <div class="row">
-                                                <!-- LEFT COLUMN -->
-                                                <div class="col-md-7">
-                                                    <div class="p-3 border rounded bg-white">
-                                                        <div class="row">
 
-                                                            <div class="col-md-6 mb-2">
-                                                                <label for="cron_name">
-                                                                    Cron Name <span class="text-danger">*</span>
-                                                                </label>
+                                                <!-- Alerts -->
+                                                @if (session('message'))
+                                                    <div
+                                                        class="alert alert-{{ session('level') ?? 'success' }} alert-dismissible fade show">
+                                                        {{ session('message') }}
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="alert"></button>
+                                                    </div>
+                                                @endif
 
-                                                                <select class="form-select form-select-sm"
-                                                                    id="cron_name"
-                                                                    name="cron_name">
+                                                @if ($errors->any())
+                                                    <div class="alert alert-danger alert-dismissible fade show">
+                                                        <ul class="mb-0">
+                                                            @foreach ($errors->all() as $error)
+                                                                <li>{{ $error }}</li>
+                                                            @endforeach
+                                                        </ul>
+                                                        <button type="button" class="btn-close"
+                                                            data-bs-dismiss="alert"></button>
+                                                    </div>
+                                                @endif
 
-                                                                    <option value="">Select</option>
+                                                <div class="col-12">
+                                                    <div class="row">
+                                                        <!-- LEFT COLUMN -->
+                                                        <div class="col-md-7">
+                                                            <div class="p-3 border rounded bg-white">
+                                                                <div class="row">
 
-                                                                </select>
+                                                                    <div class="col-md-6 mb-2">
+                                                                        <label for="cron_name">
+                                                                            Cron Name <span class="text-danger">*</span>
+                                                                        </label>
+
+                                                                        <select class="form-select form-select-sm"
+                                                                            id="cron_name" name="cron_name">
+
+                                                                            <option value="">Select</option>
+
+                                                                        </select>
+                                                                    </div>
+
+                                                                    <div class="col-md-6 mb-2">
+                                                                        <label for="channel">
+                                                                            Channel <span class="text-danger">*</span>
+                                                                        </label>
+
+                                                                        <select class="form-select form-select-sm"
+                                                                            id="channel" name="channel">
+
+                                                                            <option value="">Select</option>
+
+                                                                        </select>
+                                                                    </div>
+
+
+                                                                    <div class="col-md-6 mb-2">
+                                                                        <label for="template">Template <span
+                                                                                class="text-danger">*</span></label>
+                                                                        <select class="form-select form-select-sm"
+                                                                            id="template" name="template">
+                                                                            <option value="">Select</option>
+
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-md-6 mb-2">
+                                                                        <label for="status_condition">Status Condition<span
+                                                                                class="text-danger">*</span></label>
+                                                                        <select class="form-select form-select-sm"
+                                                                            id="status_condition" name="status_condition">
+                                                                            <option value="">Select</option>
+
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class=" mb-2 mt-3">
+                                                                        <label for="recipient">Recipient Type<span
+                                                                                class="text-danger">*</span></label>
+                                                                        <select class="form-select form-select-sm"
+                                                                            id="recipient" name="recipient">
+                                                                            <option value="">Select</option>
+
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="p-3  border rounded bg-white mt-3"
+                                                                    id="recipientConfigSection">
+                                                                    <div class=" mb-2" id="rolesSection">
+                                                                        <label for="roles">Role Type <span
+                                                                                class="text-danger">*</span></label>
+                                                                        <select class="form-select form-select-sm"
+                                                                            id="roles" name="roles">
+                                                                            <option value="">Select</option>
+
+                                                                        </select>
+
+                                                                        <div class="mt-3 d-none" id="roleUsersSection">
+
+                                                                            <label class="fw-semibold mb-2">
+                                                                                Select Users
+                                                                            </label>
+
+                                                                            <div class="border rounded p-2 bg-light">
+
+                                                                                <div class="form-check mb-2">
+
+                                                                                    <input class="form-check-input"
+                                                                                        type="checkbox"
+                                                                                        name="selected_users[]"
+                                                                                        value="admin@odbus.com"
+                                                                                        id="user1">
+
+                                                                                    <label class="form-check-label"
+                                                                                        for="user1">
+
+                                                                                        admin@odbus.com
+
+                                                                                    </label>
+
+                                                                                </div>
+
+                                                                                <div class="form-check mb-2">
+
+                                                                                    <input class="form-check-input"
+                                                                                        type="checkbox"
+                                                                                        value="support@odbus.com"
+                                                                                        id="user2">
+
+                                                                                    <label class="form-check-label"
+                                                                                        for="user2">
+
+                                                                                        support@odbus.com
+
+                                                                                    </label>
+
+                                                                                </div>
+
+                                                                                <div class="form-check mb-2">
+
+                                                                                    <input class="form-check-input"
+                                                                                        type="checkbox"
+                                                                                        value="booking@odbus.com"
+                                                                                        id="user3">
+
+                                                                                    <label class="form-check-label"
+                                                                                        for="user3">
+
+                                                                                        booking@odbus.com
+
+                                                                                    </label>
+
+                                                                                </div>
+
+                                                                                <div class="form-check mb-2">
+
+                                                                                    <input class="form-check-input"
+                                                                                        type="checkbox"
+                                                                                        value="accounts@odbus.com"
+                                                                                        id="user4">
+
+                                                                                    <label class="form-check-label"
+                                                                                        for="user4">
+
+                                                                                        accounts@odbus.com
+
+                                                                                    </label>
+
+                                                                                </div>
+
+                                                                                <div class="form-check">
+
+                                                                                    <input class="form-check-input"
+                                                                                        type="checkbox"
+                                                                                        value="operations@odbus.com"
+                                                                                        id="user5">
+
+                                                                                    <label class="form-check-label"
+                                                                                        for="user5">
+
+                                                                                        operations@odbus.com
+
+                                                                                    </label>
+
+                                                                                </div>
+
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                    </div>
+                                                                    <div class="mb-2" id="recipientSection">
+                                                                        <label for="manual_recipient">Recipient
+                                                                            (Manual)</label>
+                                                                        <input type="text"
+                                                                            class="form-control form-control-sm clearable"
+                                                                            id="manual_recipient" name="manual_recipient"
+                                                                            value="{{ $data['row']->manual_recipient ?? '' }}"
+                                                                            placeholder="Enter Recipient" maxlength="100">
+                                                                    </div>
+                                                                    <div class="mb-2" id="dynamicVariableSection">
+                                                                        <label for="dynamic_variable">Dynamic
+                                                                            Variable</label>
+                                                                        <input type="text"
+                                                                            class="form-control form-control-sm clearable"
+                                                                            id="dynamic_variable" name="dynamic_variable"
+                                                                            value="{{ $data['row']->dynamic_variable ?? '' }}"
+                                                                            placeholder="Enter Dynamic Variable"
+                                                                            maxlength="100">
+                                                                    </div>
+
+                                                                </div>
                                                             </div>
 
-                                                            <div class="col-md-6 mb-2">
-                                                                <label for="channel">
-                                                                    Channel <span class="text-danger">*</span>
-                                                                </label>
-
-                                                                <select class="form-select form-select-sm"
-                                                                    id="channel"
-                                                                    name="channel">
-
-                                                                    <option value="">Select</option>
-
-                                                                </select>
-                                                            </div>
-
-
-                                                            <div class="col-md-6 mb-2">
-                                                                <label for="template">Template <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="template" name="template">
-                                                                    <option value="">Select</option>
-
-                                                                </select>
-                                                            </div>
-                                                            <div class="col-md-6 mb-2">
-                                                                <label for="status_condition">Status Condition<span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="status_condition" name="status_condition">
-                                                                    <option value="">Select</option>
-
-                                                                </select>
-                                                            </div>
-                                                            <div class=" mb-2 mt-3">
-                                                                <label for="recipient">Recipient Type<span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="recipient" name="recipient">
-                                                                    <option value="">Select</option>
-
-                                                                </select>
-                                                            </div>
                                                         </div>
-                                                        <div class="p-3  border rounded bg-white mt-3" id="recipientConfigSection">
-                                                            <div class=" mb-2" id="rolesSection">
-                                                                <label for="roles">Role Type <span
-                                                                        class="text-danger">*</span></label>
-                                                                <select class="form-select form-select-sm"
-                                                                    id="roles" name="roles">
-                                                                    <option value="">Select</option>
 
-                                                                </select>
 
-                                                                <div class="mt-3 d-none" id="roleUsersSection">
+                                                        <!-- RIGHT COLUMN -->
+                                                        <div class="col-md-5">
 
-                                                                    <label class="fw-semibold mb-2">
-                                                                        Select Users
-                                                                    </label>
+                                                            <div id="cronDetailsContainer"></div>
+                                                            <div class="mt-3" id="notificationPreviewWrapper">
+                                                                <div class="p-3 border rounded schedule-card">
 
-                                                                    <div class="border rounded p-2 bg-light">
+                                                                    <div
+                                                                        class="d-flex align-items-center  justify-content-between mb-3">
 
-                                                                        <div class="form-check mb-2">
+                                                                        <h6 class="mb-0">
+                                                                            Notification Template Preview
+                                                                        </h6>
 
-                                                                            <input class="form-check-input"
-                                                                                type="checkbox"
-                                                                                name="selected_users[]"
-                                                                                value="admin@odbus.com"
-                                                                                id="user1">
+                                                                    </div>
 
-                                                                            <label class="form-check-label"
-                                                                                for="user1">
+                                                                    <div id="notificationDetailsContainer">
 
-                                                                                admin@odbus.com
+                                                                        <div class="text-center text-muted py-5">
 
-                                                                            </label>
-
-                                                                        </div>
-
-                                                                        <div class="form-check mb-2">
-
-                                                                            <input class="form-check-input"
-                                                                                type="checkbox"
-                                                                                value="support@odbus.com"
-                                                                                id="user2">
-
-                                                                            <label class="form-check-label"
-                                                                                for="user2">
-
-                                                                                support@odbus.com
-
-                                                                            </label>
-
-                                                                        </div>
-
-                                                                        <div class="form-check mb-2">
-
-                                                                            <input class="form-check-input"
-                                                                                type="checkbox"
-                                                                                value="booking@odbus.com"
-                                                                                id="user3">
-
-                                                                            <label class="form-check-label"
-                                                                                for="user3">
-
-                                                                                booking@odbus.com
-
-                                                                            </label>
-
-                                                                        </div>
-
-                                                                        <div class="form-check mb-2">
-
-                                                                            <input class="form-check-input"
-                                                                                type="checkbox"
-                                                                                value="accounts@odbus.com"
-                                                                                id="user4">
-
-                                                                            <label class="form-check-label"
-                                                                                for="user4">
-
-                                                                                accounts@odbus.com
-
-                                                                            </label>
-
-                                                                        </div>
-
-                                                                        <div class="form-check">
-
-                                                                            <input class="form-check-input"
-                                                                                type="checkbox"
-                                                                                value="operations@odbus.com"
-                                                                                id="user5">
-
-                                                                            <label class="form-check-label"
-                                                                                for="user5">
-
-                                                                                operations@odbus.com
-
-                                                                            </label>
+                                                                            Select Template To Preview
 
                                                                         </div>
 
@@ -228,706 +282,655 @@
                                                                 </div>
 
                                                             </div>
-                                                            <div class="mb-2" id="recipientSection">
-                                                                <label for="manual_recipient">Recipient (Manual)</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="manual_recipient" name="manual_recipient" value="{{ $data['row']->manual_recipient ?? '' }}" placeholder="Enter Recipient" maxlength="100">
-                                                            </div>
-                                                            <div class="mb-2" id="dynamicVariableSection">
-                                                                <label for="dynamic_variable">Dynamic Variable</label>
-                                                                <input type="text" class="form-control form-control-sm clearable" id="dynamic_variable" name="dynamic_variable" value="{{ $data['row']->dynamic_variable ?? '' }}" placeholder="Enter Dynamic Variable" maxlength="100">
-                                                            </div>
-
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-
-                                                <!-- RIGHT COLUMN -->
-                                                <div class="col-md-5">
-
-                                                    <div id="cronDetailsContainer"></div>
-                                                    <div class="mt-3" id="notificationPreviewWrapper">
-                                                        <div class="p-3 border rounded schedule-card">
-
-                                                            <div class="d-flex align-items-center  justify-content-between mb-3">
-
-                                                                <h6 class="mb-0">
-                                                                    Notification Template Preview
-                                                                </h6>
-
-                                                            </div>
-
-                                                            <div id="notificationDetailsContainer">
-
-                                                                <div class="text-center text-muted py-5">
-
-                                                                    Select Template To Preview
-
-                                                                </div>
-
-                                                            </div>
 
                                                         </div>
 
                                                     </div>
 
-                                                </div>
+                                                    <!-- Buttons -->
+                                                    <div class="row mt-3">
+                                                        <div class="col-12 d-flex gap-2">
+                                                            <button class="btn btn-primary btn-sm" type="submit">
+                                                                {{ $data['strSubmit'] }}
+                                                            </button>
+                                                            <button class="btn btn-secondary btn-sm" id="btnReset"
+                                                                type="button">
+                                                                {{ $data['strReset'] }}
+                                                            </button>
+                                                        </div>
+                                                    </div>
 
-                                            </div>
-
-                                            <!-- Buttons -->
-                                            <div class="row mt-3">
-                                                <div class="col-12 d-flex gap-2">
-                                                    <button class="btn btn-primary btn-sm" type="submit">
-                                                        {{ $data['strSubmit'] }}
-                                                    </button>
-                                                    <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                                        {{ $data['strReset'] }}
-                                                    </button>
                                                 </div>
                                             </div>
 
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- CRON DETAILS MODAL -->
+                            <div class="modal fade" id="cronDetailsModal" tabindex="-1" aria-hidden="true">
+
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+
+                                    <div class="modal-content">
+
+                                        <div class="modal-header">
+
+                                            <h5 class="modal-title">
+                                                Cron Job Details
+                                            </h5>
+
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal">
+                                            </button>
+
+                                        </div>
+
+                                        <div class="modal-body" id="cronDetailsBody">
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                </form>
 
-                    <!-- CRON DETAILS MODAL -->
-                    <div class="modal fade"
-                        id="cronDetailsModal"
-                        tabindex="-1"
-                        aria-hidden="true">
-
-                        <div class="modal-dialog modal-lg modal-dialog-centered">
-
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-
-                                    <h5 class="modal-title">
-                                        Cron Job Details
-                                    </h5>
-
-                                    <button type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="modal">
-                                    </button>
-
-                                </div>
-
-                                <div class="modal-body"
-                                    id="cronDetailsBody">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
-        </form>
-
-        <style>
-            #notificationPreviewWrapper {
-                display: none;
-            }
-
-            .cron-info-card {
-                display: flex;
-                flex-direction: column;
-                gap: 14px;
-            }
-
-            .info-row {
-
-                display: grid;
-
-                grid-template-columns: 180px 1fr;
-
-                align-items: start;
-
-                gap: 20px;
-
-                border-bottom: 1px dashed #dcdcdc;
-
-                padding-bottom: 12px;
-            }
-
-            .info-label {
-                font-weight: 600;
-                color: #444;
-                min-width: 130px;
-            }
-
-            .info-value {
-                font-weight: 500;
-                color: #111;
-            }
-
-            .scheduler-box,
-            .execution-box {
-
-                background: #f8f9fa;
-
-                border: 1px solid #dfe3e7;
-
-                border-radius: 8px;
-
-                padding: 10px 14px;
-
-                min-width: 220px;
-
-                font-size: 13px;
-
-                color: #212529;
-            }
-
-            .scheduler-box hr,
-            .execution-box hr {
-                border-color: rgba(255, 255, 255, 0.2);
-            }
-
-            
-        </style>
-
-        @endsection
-
-        @push('scripts')
-        <script type="module">
-            $('#roleUsersSection').addClass('d-none');
-
-            $(document).ready(function() {
-
-                commonAjax.initSelect2('#cron_name', 'Select Cron Name');
-                commonAjax.initSelect2('#template', 'Select Notification Template');
-                commonAjax.initSelect2('#channel', 'Select Channel');
-                commonAjax.initSelect2('#status_condition', 'Select Status Condition');
-                commonAjax.initSelect2('#recipient', 'Select Recipient Type');
-                commonAjax.initSelect2('#roles', 'Select Role');
-
-                let cronNameVal = "{{ $data['row']->cron_name ?? '' }}";
-                let notificationTemplateVal = "{{ $data['row']->notification_template ?? '' }}";
-                let channelVal = "{{ $data['row']->channel ?? '' }}";
-                let statusConditionVal = "{{ $data['row']->status_condition ?? '' }}";
-                let rolesVal = "{{ $data['row']->roles ?? '' }}";
-
-                let recipientVal =
-                    "{{ $data['row']->recipient ?? '' }}";
-
-                commonAjax.loadCronJobDropdown('#cron_name', cronNameVal);
-                commonAjax.getNotificationTemplateDropdown('#template', notificationTemplateVal);
-                commonAjax.getRolesDropdown('#roles', rolesVal);
-                commonAjax.loadAnnextureList([
-
-                    'NOTIFICATION_TYPE',
-                    'STATUS_CONDITION',
-                    'RECEIPTENT_TYPE'
-
-                ], function(data) {
-
-                    renderDropdown('#channel', data.NOTIFICATION_TYPE || [], channelVal);
-                    renderDropdown('#status_condition', data.STATUS_CONDITION || [], statusConditionVal);
-                    renderDropdown('#recipient', data.RECEIPTENT_TYPE || [], recipientVal);
-
-                    if (channelVal) {
-                        $('#channel')
-                            .val(channelVal)
-                            .trigger('change');
+                <style>
+                    #notificationPreviewWrapper {
+                        display: none;
                     }
 
-                    if (statusConditionVal) {
-                        $('#status_condition')
-                            .val(statusConditionVal)
-                            .trigger('change');
+                    .cron-info-card {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 14px;
                     }
 
-                    if (recipientVal) {
-                        $('#recipient')
-                            .val(recipientVal)
-                            .trigger('change');
-                    }
-                    toggleRecipientSections();
-                });
+                    .info-row {
 
+                        display: grid;
 
+                        grid-template-columns: 180px 1fr;
 
-                $('#recipient').on('change', function() {
+                        align-items: start;
 
-                    toggleRecipientSections();
+                        gap: 20px;
 
-                });
+                        border-bottom: 1px dashed #dcdcdc;
 
-                $(document).on('change', '#cron_name', function() {
-
-                    let id = $(this).val();
-
-                    console.log('SELECTED ID => ', id);
-
-                    if (!id) {
-
-                        $('#cronDetailsContainer').html('');
-                        return;
+                        padding-bottom: 12px;
                     }
 
-                    loadCronJobDetails(id);
-                });
-
-
-                $(document).on('change', '#template', function() {
-
-                    let id = $(this).val();
-
-                    if (!id) {
-
-                        $('#notificationPreviewWrapper').hide();
-
-                        $('#notificationDetailsContainer').html('');
-
-                        return;
+                    .info-label {
+                        font-weight: 600;
+                        color: #444;
+                        min-width: 130px;
                     }
 
-                    $('#notificationPreviewWrapper').show();
+                    .info-value {
+                        font-weight: 500;
+                        color: #111;
+                    }
 
-                    loadNotificationDetails(id);
-                });
-            });
+                    .scheduler-box,
+                    .execution-box {
+
+                        background: #f8f9fa;
+
+                        border: 1px solid #dfe3e7;
+
+                        border-radius: 8px;
+
+                        padding: 10px 14px;
+
+                        min-width: 220px;
+
+                        font-size: 13px;
+
+                        color: #212529;
+                    }
+
+                    .scheduler-box hr,
+                    .execution-box hr {
+                        border-color: rgba(255, 255, 255, 0.2);
+                    }
+                </style>
+
+            @endsection
+
+            @push('scripts')
+                <script type="module">
+                    $('#roleUsersSection').addClass('d-none');
+
+                    $(document).ready(function() {
+
+                        commonAjax.initSelect2('#cron_name', 'Select Cron Name');
+                        commonAjax.initSelect2('#template', 'Select Notification Template');
+                        commonAjax.initSelect2('#channel', 'Select Channel');
+                        commonAjax.initSelect2('#status_condition', 'Select Status Condition');
+                        commonAjax.initSelect2('#recipient', 'Select Recipient Type');
+                        commonAjax.initSelect2('#roles', 'Select Role');
+
+                        let cronNameVal = "{{ $data['row']->cron_name ?? '' }}";
+                        let notificationTemplateVal = "{{ $data['row']->notification_template ?? '' }}";
+                        let channelVal = "{{ $data['row']->channel ?? '' }}";
+                        let statusConditionVal = "{{ $data['row']->status_condition ?? '' }}";
+                        let rolesVal = "{{ $data['row']->roles ?? '' }}"
+
+                        let recipientVal =
+                            "{{ $data['row']->recipient ?? '' }}";
+
+                        commonAjax.loadCronJobDropdown('#cron_name', cronNameVal);
+                        commonAjax.getNotificationTemplateDropdown('#template', notificationTemplateVal);
+                        commonAjax.getRolesDropdown('#roles', rolesVal);
+                        commonAjax.loadAnnextureList([
+
+                            'NOTIFICATION_TYPE',
+                            'STATUS_CONDITION',
+                            'RECEIPTENT_TYPE'
+
+                        ], function(data) {
+
+                            renderDropdown('#channel', data.NOTIFICATION_TYPE || [], channelVal);
+                            renderDropdown('#status_condition', data.STATUS_CONDITION || [], statusConditionVal);
+                            renderDropdown('#recipient', data.RECEIPTENT_TYPE || [], recipientVal);
+
+                            if (channelVal) {
+                                $('#channel')
+                                    .val(channelVal)
+                                    .trigger('change');
+                            }
+
+                            if (statusConditionVal) {
+                                $('#status_condition')
+                                    .val(statusConditionVal)
+                                    .trigger('change');
+                            }
+
+                            if (recipientVal) {
+                                $('#recipient')
+                                    .val(recipientVal)
+                                    .trigger('change');
+                            }
+                            toggleRecipientSections();
+                        });
 
 
 
-            function loadNotificationDetails(id) {
+                        $('#recipient').on('change', function() {
 
-                $('#notificationDetailsContainer').html(`
+                            toggleRecipientSections();
 
-                        <div class="text-center p-4">
-                            <div class="spinner-border text-primary"></div>
-                            <p class="mt-2">
-                                Loading Notification...
-                            </p>
-                        </div>
+                        });
 
-                    `);
+                        $(document).on('change', '#cron_name', function() {
 
-                $.ajax({
+                            let id = $(this).val();
 
-                    type: "POST",
+                            console.log('SELECTED ID => ', id);
 
-                    url: "/admin/get-notification-details",
+                            if (!id) {
 
-                    data: {
+                                $('#cronDetailsContainer').html('');
+                                return;
+                            }
 
-                        id: id,
+                            loadCronJobDetails(id);
+                        });
 
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
 
-                    success: function(response) {
+                        $(document).on('change', '#template', function() {
 
-                        $('#notificationDetailsContainer')
-                            .html(response);
-                    },
+                            let id = $(this).val();
 
-                    error: function(xhr) {
+                            if (!id) {
 
-                        console.log(xhr);
+                                $('#notificationPreviewWrapper').hide();
+
+                                $('#notificationDetailsContainer').html('');
+
+                                return;
+                            }
+
+                            $('#notificationPreviewWrapper').show();
+
+                            loadNotificationDetails(id);
+                        });
+                    });
+
+
+
+                    function loadNotificationDetails(id) {
 
                         $('#notificationDetailsContainer').html(`
 
-                            <div class="alert alert-danger">
-                                Failed to Load Notification
+                            <div class="text-center p-4">
+                                <div class="spinner-border text-primary"></div>
+                                <p class="mt-2">
+                                    Loading Notification...
+                                </p>
                             </div>
 
                         `);
+
+                        $.ajax({
+
+                            type: "POST",
+
+                            url: "/admin/get-notification-details",
+
+                            data: {
+
+                                id: id,
+
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+
+                            success: function(response) {
+
+                                $('#notificationDetailsContainer')
+                                    .html(response);
+                            },
+
+                            error: function(xhr) {
+
+                                console.log(xhr);
+
+                                $('#notificationDetailsContainer').html(`
+
+                                <div class="alert alert-danger">
+                                    Failed to Load Notification
+                                </div>
+
+                            `);
+                            }
+                        });
                     }
-                });
-            }
 
 
 
-            function renderDropdown(
-                selector,
-                data,
-                selectedValue = ''
-            ) {
+                    function renderDropdown(
+                        selector,
+                        data,
+                        selectedValue = ''
+                    ) {
 
-                let options =
-                    '<option value="">Select</option>';
+                        let options =
+                            '<option value="">Select</option>';
 
-                $.each(data, function(index, item) {
+                        $.each(data, function(index, item) {
 
-                    let selected =
-                        selectedValue == item.annexture_name ?
-                        'selected' :
-                        '';
+                            let selected =
+                                selectedValue == item.annexture_name ?
+                                'selected' :
+                                '';
 
-                    options += `
-                        <option
-                            value="${item.annexture_name}"
-                            ${selected}
-                        >
-                            ${item.annexture_name}
-                        </option>
-                    `;
-                });
+                            options += `
+                            <option
+                                value="${item.annexture_name}"
+                                ${selected}
+                            >
+                                ${item.annexture_name}
+                            </option>
+                        `;
+                        });
 
-                $(selector).html(options);
+                        $(selector).html(options);
 
-            }
-
-
-            $('#channel').on('change', function() {
-
-                let channel = $(this).val();
-
-                // RESET TEMPLATE
-                $('#template')
-                    .val('')
-                    .trigger('change');
-
-                // HIDE TEMPLATE PREVIEW
-                $('#notificationPreviewWrapper').hide();
-
-                // CLEAR TEMPLATE HTML
-                $('#notificationDetailsContainer').html(`
-                        <div class="text-center text-muted py-5">
-                            Select Template To Preview
-                        </div>
-                `);
-
-                let type = '';
-
-                if (
-                    channel.toLowerCase() == 'email'
-                ) {
-
-                    type = 1;
-
-                } else if (
-                    channel.toLowerCase() == 'sms'
-                ) {
-
-                    type = 2;
-
-                } else if (
-                    channel.toLowerCase() == 'push notification'
-                ) {
-
-                    type = 3;
-
-                } else if (
-                    channel.toLowerCase() == 'whatsapp'
-                ) {
-
-                    type = 4;
-                }
-
-                commonAjax.getNotificationTemplateDropdown(
-                    '#template',
-                    '',
-                    type
-                );
-            });
+                    }
 
 
-            function loadCronJobDetails(id) {
+                    $('#channel').on('change', function() {
 
-                $.ajax({
+                        let channel = $(this).val();
 
-                    type: "POST",
+                        // RESET TEMPLATE
+                        $('#template')
+                            .val('')
+                            .trigger('change');
 
-                    url: "/admin/get-cron-job-details",
+                        // HIDE TEMPLATE PREVIEW
+                        $('#notificationPreviewWrapper').hide();
 
-                    data: {
+                        // CLEAR TEMPLATE HTML
+                        $('#notificationDetailsContainer').html(`
+                            <div class="text-center text-muted py-5">
+                                Select Template To Preview
+                            </div>
+                    `);
 
-                        id: id,
-
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-
-                    dataType: "json",
-
-                    success: function(response) {
-
-                        console.log(response);
+                        let type = '';
 
                         if (
-                            response.status == false ||
-                            response.data == null
+                            channel.toLowerCase() == 'email'
                         ) {
 
-                            $('#cronDetailsContainer').html(`
-                                <div class="alert alert-danger">
-                                    No Cron Details Found
-                                </div>
-                            `);
+                            type = 1;
 
-                            return;
+                        } else if (
+                            channel.toLowerCase() == 'sms'
+                        ) {
+
+                            type = 2;
+
+                        } else if (
+                            channel.toLowerCase() == 'push notification'
+                        ) {
+
+                            type = 3;
+
+                        } else if (
+                            channel.toLowerCase() == 'whatsapp'
+                        ) {
+
+                            type = 4;
                         }
 
-                        let row = response.data;
+                        commonAjax.getNotificationTemplateDropdown(
+                            '#template',
+                            '',
+                            type
+                        );
+                    });
 
-                        // STATUS
-                        let statusBadge =
-                            row.active_status == 1 ?
-                            `<span class="badge bg-success">
-                                Active
-                            </span>` :
-                            `<span class="badge bg-danger">
-                                Inactive
-                            </span>`;
 
-                        // RUN TIMES
-                        let runTimesHtml = '<li>--</li>';
+                    function loadCronJobDetails(id) {
 
-                        if (row.run_times_json) {
+                        $.ajax({
 
-                            try {
+                            type: "POST",
 
-                                let times =
-                                    JSON.parse(row.run_times_json);
+                            url: "/admin/get-cron-job-details",
+
+                            data: {
+
+                                id: id,
+
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+
+                            dataType: "json",
+
+                            success: function(response) {
+
+                                console.log(response);
 
                                 if (
-                                    Array.isArray(times) &&
-                                    times.length > 0
+                                    response.status == false ||
+                                    response.data == null
                                 ) {
 
-                                    runTimesHtml = '';
+                                    $('#cronDetailsContainer').html(`
+                                    <div class="alert alert-danger">
+                                        No Cron Details Found
+                                    </div>
+                                `);
 
-                                    $.each(times, function(index, time) {
-
-                                        runTimesHtml += `
-                                <li>${time}</li>
-                            `;
-                                    });
+                                    return;
                                 }
 
-                            } catch (e) {
+                                let row = response.data;
 
-                                console.log(e);
-                            }
-                        }
+                                // STATUS
+                                let statusBadge =
+                                    row.active_status == 1 ?
+                                    `<span class="badge bg-success">
+                                    Active
+                                </span>` :
+                                    `<span class="badge bg-danger">
+                                    Inactive
+                                </span>`;
 
-                        // EXECUTION
-                        let executionLabel =
-                            row.execution_type == 'job' ?
-                            'Job Class' :
-                            'Command Name';
+                                // RUN TIMES
+                                let runTimesHtml = '<li>--</li>';
 
-                        let executionValue =
-                            row.execution_type == 'job' ?
-                            row.job_class :
-                            row.command_name;
+                                if (row.run_times_json) {
 
-                        // FINAL HTML
-                        let html = `
+                                    try {
 
-                <div class="p-3 border rounded bg-white">
+                                        let times =
+                                            JSON.parse(row.run_times_json);
 
-                    <div class="p-3  schedule-card">
+                                        if (
+                                            Array.isArray(times) &&
+                                            times.length > 0
+                                        ) {
 
-                        <div class="cron-info-card">
+                                            runTimesHtml = '';
 
-                            <div class="info-row">
+                                            $.each(times, function(index, time) {
 
-                                <span class="info-label">
-                                    Cron Name:
-                                </span>
+                                                runTimesHtml += `
+                                    <li>${time}</li>
+                                `;
+                                            });
+                                        }
 
-                                <span class="info-value">
-                                    ${row.name ?? '--'}
-                                </span>
+                                    } catch (e) {
 
-                            </div>
+                                        console.log(e);
+                                    }
+                                }
 
-                            <div class="info-row">
+                                // EXECUTION
+                                let executionLabel =
+                                    row.execution_type == 'job' ?
+                                    'Job Class' :
+                                    'Command Name';
 
-                                <span class="info-label">
-                                    Cron Type:
-                                </span>
+                                let executionValue =
+                                    row.execution_type == 'job' ?
+                                    row.job_class :
+                                    row.command_name;
 
-                                <span class="badge bg-primary">
-                                    ${row.type ?? '--'}
-                                </span>
+                                // FINAL HTML
+                                let html = `
 
-                            </div>
+                    <div class="p-3 border rounded bg-white">
 
-                            <div class="info-row">
+                        <div class="p-3  schedule-card">
 
-                                <span class="info-label">
-                                    Schedule Type:
-                                </span>
+                            <div class="cron-info-card">
 
-                                <span class="info-value">
-                                    ${row.schedule_type ?? '--'}
-                                </span>
+                                <div class="info-row">
 
-                            </div>
+                                    <span class="info-label">
+                                        Cron Name:
+                                    </span>
 
-                            <div class="info-row align-items-start">
+                                    <span class="info-value">
+                                        ${row.name ?? '--'}
+                                    </span>
 
-                                <span class="info-label">
-                                    Scheduler:
-                                </span>
+                                </div>
 
-                                <div class="scheduler-box">
+                                <div class="info-row">
 
-                                    <div>
+                                    <span class="info-label">
+                                        Cron Type:
+                                    </span>
 
-                                        <strong>
-                                            Interval Minutes:
-                                        </strong>
+                                    <span class="badge bg-primary">
+                                        ${row.type ?? '--'}
+                                    </span>
 
-                                        ${row.interval_minutes ?? '--'}
+                                </div>
 
-                                    </div>
+                                <div class="info-row">
 
-                                    <hr class="my-1">
+                                    <span class="info-label">
+                                        Schedule Type:
+                                    </span>
 
-                                    <div>
+                                    <span class="info-value">
+                                        ${row.schedule_type ?? '--'}
+                                    </span>
 
-                                        <strong>
-                                            Run Times:
-                                        </strong>
+                                </div>
 
-                                        <ul class="mb-0 ps-3">
-                                            ${runTimesHtml}
-                                        </ul>
+                                <div class="info-row align-items-start">
+
+                                    <span class="info-label">
+                                        Scheduler:
+                                    </span>
+
+                                    <div class="scheduler-box">
+
+                                        <div>
+
+                                            <strong>
+                                                Interval Minutes:
+                                            </strong>
+
+                                            ${row.interval_minutes ?? '--'}
+
+                                        </div>
+
+                                        <hr class="my-1">
+
+                                        <div>
+
+                                            <strong>
+                                                Run Times:
+                                            </strong>
+
+                                            <ul class="mb-0 ps-3">
+                                                ${runTimesHtml}
+                                            </ul>
+
+                                        </div>
 
                                     </div>
 
                                 </div>
 
-                            </div>
+                                <div class="info-row align-items-start">
 
-                            <div class="info-row align-items-start">
+                                    <span class="info-label">
+                                        Execution:
+                                    </span>
 
-                                <span class="info-label">
-                                    Execution:
-                                </span>
+                                    <div class="execution-box">
 
-                                <div class="execution-box">
+                                        <div>
 
-                                    <div>
+                                            <strong>
+                                                ${executionLabel}
+                                            </strong>
 
-                                        <strong>
-                                            ${executionLabel}
-                                        </strong>
+                                        </div>
 
-                                    </div>
+                                        <hr class="my-1">
 
-                                    <hr class="my-1">
+                                        <div class="small text-break">
 
-                                    <div class="small text-break">
+                                            ${executionValue ?? '--'}
 
-                                        ${executionValue ?? '--'}
+                                        </div>
 
                                     </div>
 
                                 </div>
 
-                            </div>
+                                <div class="info-row">
 
-                            <div class="info-row">
+                                    <span class="info-label">
+                                        Status:
+                                    </span>
 
-                                <span class="info-label">
-                                    Status:
-                                </span>
+                                    <span>
+                                        ${statusBadge}
+                                    </span>
 
-                                <span>
-                                    ${statusBadge}
-                                </span>
+                                </div>
 
                             </div>
 
                         </div>
 
                     </div>
+                `;
 
-                </div>
-            `;
+                                $('#cronDetailsContainer').html(html);
+                            },
 
-                        $('#cronDetailsContainer').html(html);
-                    },
+                            error: function(xhr) {
 
-                    error: function(xhr) {
+                                console.log(xhr);
 
-                        console.log(xhr);
+                                $('#cronDetailsContainer').html(`
 
-                        $('#cronDetailsContainer').html(`
+                    <div class="alert alert-danger">
+                        Failed to Load Cron Details
+                    </div>
 
-                <div class="alert alert-danger">
-                    Failed to Load Cron Details
-                </div>
-
-            `);
+                `);
+                            }
+                        });
                     }
-                });
-            }
 
-            function toggleRecipientSections() {
+                    function toggleRecipientSections() {
 
-                let recipientType =
-                    ($('#recipient').val() || '')
-                    .toLowerCase()
-                    .trim()
-                    .replace(/\s+/g, '');
+                        let recipientType =
+                            ($('#recipient').val() || '')
+                            .toLowerCase()
+                            .trim()
+                            .replace(/\s+/g, '');
 
-                // HIDE ALL
-                $('#recipientConfigSection').hide();
-                $('#rolesSection').hide();
-                $('#recipientSection').hide();
-                $('#dynamicVariableSection').hide();
+                        // HIDE ALL
+                        $('#recipientConfigSection').hide();
+                        $('#rolesSection').hide();
+                        $('#recipientSection').hide();
+                        $('#dynamicVariableSection').hide();
 
-                // ROLE BASED
-                if (
-                    recipientType.includes('role')
-                ) {
+                        // ROLE BASED
+                        if (
+                            recipientType.includes('role')
+                        ) {
 
-                    $('#recipientConfigSection').show();
-                    $('#rolesSection').show();
-                    $('#roleUsersSection').removeClass('d-none');
-                }
+                            $('#recipientConfigSection').show();
+                            $('#rolesSection').show();
+                            $('#roleUsersSection').removeClass('d-none');
+                        }
 
-                // MANUAL SELECTION
-                else if (
-                    recipientType.includes('manual')
-                ) {
+                        // MANUAL SELECTION
+                        else if (
+                            recipientType.includes('manual')
+                        ) {
 
-                    $('#recipientConfigSection').show();
-                    $('#recipientSection').show();
-                }
+                            $('#recipientConfigSection').show();
+                            $('#recipientSection').show();
+                        }
 
-                // DYNAMIC VARIABLE
-                else if (
-                    recipientType.includes('dynamic')
-                ) {
+                        // DYNAMIC VARIABLE
+                        else if (
+                            recipientType.includes('dynamic')
+                        ) {
 
-                    $('#recipientConfigSection').show();
-                    $('#dynamicVariableSection').show();
-                }
-            }
+                            $('#recipientConfigSection').show();
+                            $('#dynamicVariableSection').show();
+                        }
+                    }
 
 
-            function resetCronCard() {
+                    function resetCronCard() {
 
-                $('#cronNameText').text('--');
+                        $('#cronNameText').text('--');
 
-                $('#cronTypeText').text('--');
+                        $('#cronTypeText').text('--');
 
-                $('#intervalMinutesText').text('--');
+                        $('#intervalMinutesText').text('--');
 
-                $('#runTimesText').html('<li>--</li>');
+                        $('#runTimesText').html('<li>--</li>');
 
-                $('#executionLabel').text('--');
+                        $('#executionLabel').text('--');
 
-                $('#executionValue').text('--');
+                        $('#executionValue').text('--');
 
-                $('#cronStatusText')
-                    .removeClass('bg-success bg-danger')
-                    .text('--');
-            }
-        </script>
-
-        @endpush
+                        $('#cronStatusText')
+                            .removeClass('bg-success bg-danger')
+                            .text('--');
+                    }
+                </script>
+            @endpush

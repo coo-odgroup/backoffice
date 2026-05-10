@@ -2,441 +2,322 @@
     @section('page_title', 'Notification Rules')
     @section('content')
 
-    <?php
-    $page_name = 'All ' . trim($__env->yieldContent('page_title'));
-    $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
-    ?>
+        <?php
+        $page_name = 'All ' . trim($__env->yieldContent('page_title'));
+        $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
+        ?>
 
 
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item">Master</li>
-            <li class="breadcrumb-item active">@yield('page_title')</li>
-        </ol>
-    </nav>
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item">Master</li>
+                <li class="breadcrumb-item active">@yield('page_title')</li>
+            </ol>
+        </nav>
 
-    <!-- Booking Report Card -->
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <h5 id="page_title">@yield('page_title')</h5>
-        <div>
-            <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-magnifying-glass me-1"></i>
-                <span class="btn-text">Filter</span>
-            </button>
-            <a href="{{ route('notification-rules.add') }}" class="btn btn-success btn-sm">
-                + Add @yield('page_title')
-            </a>
+        <!-- Booking Report Card -->
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 id="page_title">@yield('page_title')</h5>
+            <div>
+                <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i>
+                    <span class="btn-text">Filter</span>
+                </button>
+                <a href="{{ route('notification-rules.add') }}" class="btn btn-success btn-sm">
+                    + Add @yield('page_title')
+                </a>
+            </div>
         </div>
-    </div>
 
-    <!-- TABLE -->
-    <form id="backoffice-form" name="backoffice-form" method="post" novalidate>
-        <div class="card">
-            <div class="card-body">
-                <!-- FILTER -->
-                <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
-                    <div class="row align-items-end">
+        <!-- TABLE -->
+        <form id="backoffice-form" name="backoffice-form" method="post" novalidate>
+            <div class="card">
+                <div class="card-body">
+                    <!-- FILTER -->
+                    <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
+                        <div class="row align-items-end">
 
-                        <div class="col-lg-2 col-md-6">
-                            <label for="cronName">Cron Name<span
-                                    class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-sm clearable" id="cronName" name="cronName" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Cron Name" maxlength="100">
-                        </div>
-                        <div class="col-lg-2 col-md-6">
-                            <label for="type">Type <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm"
-                                id="type" name="type">
-                                <option value="">Select Type</option>
-                                <option value="Auto">Auto</option>
-                                <option value="Manual">Manual</option>
+                            <div class="col-lg-2 col-md-6">
+                                <label for="cronName">Cron Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm clearable" id="cronName"
+                                    name="cronName" value="{{ $data['row']->name ?? '' }}" placeholder="Enter Cron Name"
+                                    maxlength="100">
+                            </div>
+                            <div class="col-lg-2 col-md-6">
+                                <label for="type">Type <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="type" name="type">
+                                    <option value="">Select Type</option>
+                                    <option value="Auto">Auto</option>
+                                    <option value="Manual">Manual</option>
 
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <div class="col-lg-2 col-md-6">
-                            <label for="scheduler">Scheduler Type <span
-                                    class="text-danger">*</span></label>
-                            <select class="form-select form-select-sm"
-                                id="scheduler" name="scheduler">
-                                <option value="">Select</option>
+                            <div class="col-lg-2 col-md-6">
+                                <label for="scheduler">Scheduler Type <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-sm" id="scheduler" name="scheduler">
+                                    <option value="">Select</option>
 
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <div class="col-lg-2 col-md-6">
-                            <label for="execution">Execution Type</label>
-                            <select class="form-select form-select-sm"
-                                id="execution" name="execution">
-                                <option value="">Select Execution Type</option>
-                                <option value="job">Job</option>
-                                <option value="command">Command</option>
-                            </select>
-                        </div>
+                            <div class="col-lg-2 col-md-6">
+                                <label for="execution">Execution Type</label>
+                                <select class="form-select form-select-sm" id="execution" name="execution">
+                                    <option value="">Select Execution Type</option>
+                                    <option value="job">Job</option>
+                                    <option value="command">Command</option>
+                                </select>
+                            </div>
 
-                        <div class="col-lg-2 col-md-6">
-                            <label for="selStatus">Status:</label>
-                            <select class="form-select form-select-sm" id="selStatus" name="selStatus">
-                                <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
-                        </div>
+                            <div class="col-lg-2 col-md-6">
+                                <label for="selStatus">Status:</label>
+                                <select class="form-select form-select-sm" id="selStatus" name="selStatus">
+                                    <option value="">Select Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
 
-                        <!-- Buttons -->
-                        <div class="col-lg-2 col-md-12 d-flex justify-content-end flex-wrap action-btns gap-1">
-                            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-search me-1"></i>Search
-                            </button>
+                            <!-- Buttons -->
+                            <div class="col-lg-2 col-md-12 d-flex justify-content-end flex-wrap action-btns gap-1">
+                                <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
+                                    <i class="fa-solid fa-search me-1"></i>Search
+                                </button>
 
-                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                <i class="fa-solid fa-rotate-left me-1"></i>Reset
-                            </button>
-                        </div>
+                                <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                    <i class="fa-solid fa-rotate-left me-1"></i>Reset
+                                </button>
+                            </div>
 
-                    </div>
-                </div>
-                <!-- Table start -->
-                <div id="tableActions">
-                    <div class="d-flex justify-content-between mb-2">
-                        <select id="pageSizeDatatable" class="form-select form-select-sm page-size">
-                            <option value="10" selected="selected">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="-1">All</option>
-                        </select>
-                        <div>
-                            <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none" onclick="actionRec('D');">
-                                <i class="fa-solid fa-trash me-1"></i>
-                                Delete
-                            </button>
-                            <button type="button" id="btnActive" class="btn btn-success btn-sm text-white" onclick="actionRec('A');">
-                                <i class="fa-solid fa-circle-check me-1"></i>
-                                Active
-                            </button>
-                            <button type="button" id="btnInactive" class="btn btn-danger btn-sm" onclick="actionRec('UN');">
-                                <i class="fa-solid fa-times me-1"></i>
-                                Inactive
-                            </button>
                         </div>
                     </div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <div id="utilitiesTop">
-                        <button type="button" id="btnExcel" class="btn btn-success btn-sm">
-                            <i class="fa-solid fa-file-excel me-1"></i>
-                        </button>
-                        <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white">
-                            <i class="fa-solid fa-file-pdf me-1"></i>
-                        </button>
-                        <button type="button" id="btnPrint" class="btn btn-danger btn-sm">
-                            <i class="fa-solid fa-print me-1"></i>
-                        </button>
+                    <!-- Table start -->
+                    <div id="tableActions">
+                        <div class="d-flex justify-content-between mb-2">
+                            <select id="pageSizeDatatable" class="form-select form-select-sm page-size">
+                                <option value="10" selected="selected">10</option>
+                                <option value="25">25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="-1">All</option>
+                            </select>
+                            <div>
+                                <button type="button" id="btnDelete" class="btn btn-warning btn-sm d-none"
+                                    onclick="actionRec('D');">
+                                    <i class="fa-solid fa-trash me-1"></i>
+                                    Delete
+                                </button>
+                                <button type="button" id="btnActive" class="btn btn-success btn-sm text-white"
+                                    onclick="actionRec('A');">
+                                    <i class="fa-solid fa-circle-check me-1"></i>
+                                    Active
+                                </button>
+                                <button type="button" id="btnInactive" class="btn btn-danger btn-sm"
+                                    onclick="actionRec('UN');">
+                                    <i class="fa-solid fa-times me-1"></i>
+                                    Inactive
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div id="customPaginationTop"></div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                        data-url="{{ route('cron-job.dataTableView') }}"
-                        data-edit-url="{{ route('cron-job.edit', 'ID') }}">
-                        <thead class="table-secondary">
-                            <tr>
-                                <th class="noPrint no-sort">
-                                    <div class="checkbox">
-                                        <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
-                                    </div>
-                                </th>
-                                <th>Sl No</th>
-                                <th>Cron Type</th>
-                                <th>Cron Name</th>
-                                <th>Scheduler Type</th>
-                                <th>Execution Type</th>
-                                <th>Last Modified</th>
-                                <th>Status</th>
-                                <th class="no-sort">View Cron Details</th>
-                                <th class="no-sort">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-                {{csrf_field()}}
-                <input name="hdn_ids" id="hdn_ids" type="hidden">
-                <input name="hdn_qs" id="hdn_qs" type="hidden">
-                <input type="hidden" id="hdn_model" value="CronJob">
 
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                    <div id="customTableInfo"></div>
-                    <div id="customPagination"></div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div id="utilitiesTop">
+                            <button type="button" id="btnExcel" class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-file-excel me-1"></i>
+                            </button>
+                            <button type="button" id="btnPdf" class="btn btn-warning btn-sm text-white">
+                                <i class="fa-solid fa-file-pdf me-1"></i>
+                            </button>
+                            <button type="button" id="btnPrint" class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-print me-1"></i>
+                            </button>
+                        </div>
+                        <div id="customPaginationTop"></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered align-middle table-sm table-responsive"
+                            id="datatable" data-url="{{ route('notification-rules.dataTableView') }}"
+                            data-edit-url="{{ route('notification-rules.edit', 'ID') }}">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th class="noPrint no-sort">
+                                        <div class="checkbox">
+                                            <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                        </div>
+                                    </th>
+                                    <th>Sl No</th>
+                                    <th>Cron Job Name</th>
+                                    <th>Channel</th>
+                                    <th>Recipient Type</th>
+                                    <th>Recipient Value</th>
+                                    <th>Template</th>
+                                    <th>Role</th>
+                                    <th>Condition</th>
+                                    <th>Last Modefied</th>
+                                    <th> Status</th>
+                                    <th class="no-sort">View Cron Details</th>
+                                    <th class="no-sort" width="150">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="footer-background border-success text-center" id="norecord" style="display:none">No
+                        record found.</div>
+                    {{ csrf_field() }}
+                    <input name="hdn_ids" id="hdn_ids" type="hidden">
+                    <input name="hdn_qs" id="hdn_qs" type="hidden">
+                    <input type="hidden" id="hdn_model" value="CronJob">
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div id="customTableInfo"></div>
+                        <div id="customPagination"></div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </form>
+
+        <div class="modal fade" id="viewScheduleModal" tabindex="-1" data-bs-backdrop="static"
+            data-bs-keyboard="false" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Bus Schedule Dates
+                            <span id="modalBusHeading" class="ms-2 fw-bold text- dark"></span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" style="overflow-y:auto">
+                        <div id="viewScheduleContainer"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
-    </form>
-
-    <div class="modal fade" id="viewScheduleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        Bus Schedule Dates
-                        <span id="modalBusHeading" class="ms-2 fw-bold text- dark"></span>
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" style="overflow-y:auto">
-                    <div id="viewScheduleContainer"></div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     @endsection
     @push('scripts')
+        <script type="module">
+            window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
 
-    <script type="module">
-        window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
-
-        $('#backoffice-form').on('submit', function(e) {
-            e.preventDefault();
-        });
-
-        $('#btnReset').click(function() {
-            $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
-            $('.form-select').val(0);
-            $('.form-select').val('').trigger('change');
-            getDataTableView(true);
-        });
-
-        commonAjax.initSelect2('#type', 'Select Type');
-        commonAjax.initSelect2('#scheduler', 'Select Scheduler Type');
-        commonAjax.initSelect2('#execution', 'Select Execution Type');
-
-        commonAjax.loadAnnextureList([
-            'SCHEDULER_TYPE'
-        ], function(data) {
-
-            renderDropdown(
-                '#scheduler',
-                data.SCHEDULER_TYPE || []
-            );
-
-        });
-
-        function renderDropdown(selector, items = [], selected = '') {
-
-            let options = '<option value="">Select Option</option>';
-
-            $.each(items, function(index, item) {
-
-                let isSelected =
-                    selected == item.annexture_value ?
-                    'selected' :
-                    '';
-
-                options += `
-                    <option value="${item.annexture_value}" ${isSelected}>
-                        ${item.annexture_name}
-                    </option>
-                `;
+            $('#backoffice-form').on('submit', function(e) {
+                e.preventDefault();
             });
 
-            $(selector).html(options).trigger('change');
-        }
-        window.getDataTableView = function(reset = true) {
+            $('#btnReset').click(function() {
+                $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
+                $('.form-select').val(0);
+                $('.form-select').val('').trigger('change');
+                getDataTableView(true);
+            });
 
 
-            if (window.dataTableInstance && reset) {
 
-                window.dataTableInstance.state.clear();
+
+            window.getDataTableView = function(reset = true) {
+
+
+                if (window.dataTableInstance && reset) {
+
+                    window.dataTableInstance.state.clear();
+
+                    $('#pageSizeDatatable').val(10);
+
+                    window.dataTableInstance.page.len(10);
+
+                    window.dataTableInstance.page(0);
+                }
 
                 $('#pageSizeDatatable').val(10);
+                let txtSearch = '';
+                let selStatus = '';
 
-                window.dataTableInstance.page.len(10);
+                if ($('#cronName').val() != '') {
+                    txtSearch = $('#cronName').val();
+                }
 
-                window.dataTableInstance.page(0);
-            }
-
-            $('#pageSizeDatatable').val(10);
-            let txtSearch = '';
-            let selStatus = '';
-
-            if ($('#cronName').val() != '') {
-                txtSearch = $('#cronName').val();
-            }
-
-            if ($('#selStatus').val() != '') {
-                selStatus = $('#selStatus').val();
-            }
+                if ($('#selStatus').val() != '') {
+                    selStatus = $('#selStatus').val();
+                }
 
 
-            let tableId = 'datatable';
-            let orderBy = [2, 'asc'];
-            let searchParams = {
-                txtSearch: txtSearch,
-                selStatus: selStatus,
-                type: $('#type').val() || '',
-                scheduler: $('#scheduler').val() || '',
-                execution: $('#execution').val() || ''
-            };
+                let tableId = 'datatable';
+                let orderBy = [1, 'asc'];
+                let searchParams = {
+                    txtSearch: txtSearch,
+                    selStatus: selStatus,
+                    type: $('#type').val() || '',
+                    scheduler: $('#scheduler').val() || '',
+                    execution: $('#execution').val() || ''
+                };
 
-            let displayColumns = [1, 2, 3, 4, 5, 6, 7];
-            let dataTableColumns = [{
-                    data: '',
-                    render: function(data, type, row) {
-                        return `<div class="checkbox">
+                let displayColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                let dataTableColumns = [{
+                        data: '',
+                        render: function(data, type, row) {
+                            return `<div class="checkbox">
                                             <input class="chkItem" type="checkbox" value="${row.id}">
                                         </div>`;
+                        },
+                        className: "noPrint text-center"
                     },
-                    className: "noPrint text-center"
-                },
-                {
-                    data: 'slNo',
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
+                    {
+                        data: 'slNo',
+                        render: function(data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        },
+                        className: "text-center"
                     },
-                    className: "text-center"
-                },
-                {
-                    data: 'cron_type',
-                    render: function(data, type, row) {
-
-                        let bgColor = '#1b56e4';
-                        let icon = 'fa-solid fa-user-gear';
-
-                        if ((row.cron_type || '').toLowerCase() == 'auto') {
-
-                            bgColor = '#e4a91b';
-                            icon = 'fa-solid fa-robot';
-                        }
-
-                        return `
-                            <span style="
-                                background:${bgColor};
-                                color:#fff;
-                                padding:4px 10px;
-                                border-radius:6px;
-                                font-size:12px;
-                                font-weight:600;
-                                display:inline-flex;
-                                align-items:center;
-                                gap:5px;
-                                min-width:80px;
-                                justify-content:center;
-                            ">
-                                <i class="${icon}"></i>
-                                ${row.cron_type ?? '--'}
-                            </span>
-                        `;
+                    {
+                        data: 'cron_name',
+                        defaultContent: "--"
                     },
-                    className: "text-center"
-                },
-                {
-                    data: 'cron_name',
-                    defaultContent: "--"
-                },
-                {
-                    data: 'scheduler_type',
-                    render: function(data, type, row) {
-
-                        let intervalMinutes = row.interval_minutes ?? '--';
-
-                        return `
-            <span
-                class="fw-semibold text-decoration-underline cursor-pointer"
-                data-bs-toggle="tooltip"
-                data-bs-placement="top"
-                data-bs-html="true"
-                title="
-                    <div class='audit-box text-start'>
-
-                        <div>
-                            <strong>Interval Minutes:</strong>
-                            ${intervalMinutes}
-                        </div>
-
-                        <hr class='my-1'>
-
-                        <div>
-                            <strong>Run Times:</strong><br>
-
-                           ${(row.run_times_json || '--')
-    .split(',')
-    .filter(time => time.trim() !== '')
-    .map(time => '- ' + time.trim())
-    .join('<br>')}
-                        </div>
-
-                    </div>
-                ">
-                ${row.scheduler_type ?? '--'}
-            </span>
-        `;
+                    {
+                        data: 'channel',
+                        defaultContent: "--"
                     },
-                    className: "text-start"
-                },
-                {
-                    data: 'execution_type',
-                    render: function(data, type, row) {
-
-                        let details = '--';
-                        let label = 'Details';
-
-                        if ((row.execution_type || '').toLowerCase() == 'job') {
-
-                            details = row.job_class ?? '--';
-                            label = 'Job Class';
-
-                        } else if ((row.execution_type || '').toLowerCase() == 'command') {
-
-                            details = row.command_name ?? '--';
-                            label = 'Command Name';
-                        }
-
-                        return `
-                            <span
-                                class="fw-semibold text-decoration-underline cursor-pointer"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                data-bs-html="true"
-                                title="
-                                    <div class='audit-box text-start'>
-                                        <div>
-                                            <strong>${label}:</strong>
-                                        </div>
-
-                                        <hr class='my-1'>
-
-                                        <div style='word-break:break-word; max-width:250px;'>
-                                            ${details}
-                                        </div>
-                                    </div>
-                                ">
-                                ${row.execution_type ?? '--'}
-                            </span>
-                        `;
+                    {
+                        data: 'recipient_type',
+                        defaultContent: "--"
                     },
-                    className: "text-start"
-                },
-                {
-                    data: null,
-                    render: function(data, type, row) {
+                    {
+                        data: 'recipient_value',
+                        defaultContent: "--"
 
-                        let createdBy = row.created_by_name ?? '--';
-                        let createdAt = row.created_date ?? '--';
+                    },
+                    {
+                        data: 'template_id',
+                        defaultContent: "--"
 
-                        let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
-                        let updatedAt = (row.updated_date) ? row.updated_date : '--';
+                    },
+                    {
+                        data: 'role_type',
+                        defaultContent: "--"
 
-                        let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
+                    }, {
+                        data: 'status_condition',
+                        defaultContent: "--"
 
-                        return `
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+
+                            let createdBy = row.created_by_name ?? '--';
+                            let createdAt = row.created_date ?? '--';
+
+                            let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
+                            let updatedAt = (row.updated_date) ? row.updated_date : '--';
+
+                            let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
+
+                            return `
                             <span
                                 class="fw-semibold text-decoration-underline cursor-pointer"
                                 data-bs-toggle="tooltip"
@@ -454,39 +335,39 @@
                                 ${displayDate}
                             </span>
                         `;
-                    }
-                },
-                {
-                    data: 'is_active',
-                    render: function(data, type, row) {
-                        var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
-                        return '<span class="' + cls + '">' + row.is_active + '</span>';
+                        }
                     },
-                    className: "text-center"
-                },
-                {
-                    data: '',
-                    render: function(data, type, row) {
+                    {
+                        data: 'is_active',
+                        render: function(data, type, row) {
+                            var cls = ((row.is_active == 'Active') ? 'badge bg-success' : 'badge bg-danger');
+                            return '<span class="' + cls + '">' + row.is_active + '</span>';
+                        },
+                        className: "text-center"
+                    },
+                    {
+                        data: '',
+                        render: function(data, type, row) {
 
-                        return `
+                            return `
                           <span class="btn btn-sm btn-primary btnViewSchedule"
                                 data-id="${row.id}"
                                 data-name="${row.cron_name}">
                                 <i class="fa fa-eye"></i> View
                             </span>
                         `;
+                        },
+                        className: "noPrint text-center"
                     },
-                    className: "noPrint text-center"
-                },
-                {
-                    data: '',
-                    render: function(data, type, row) {
+                    {
+                        data: '',
+                        render: function(data, type, row) {
 
-                        let editUrl = $('#' + tableId).data('edit-url');
+                            let editUrl = $('#' + tableId).data('edit-url');
 
-                        if (!editUrl) return '';
+                            if (!editUrl) return '';
 
-                        return `
+                            return `
                             <a class="btn btn-sm btn-info"
                                 href="${editUrl.replace('ID', row.enc_id)}">
                                 <i class="fa fa-edit"></i> Edit
@@ -499,60 +380,60 @@
                                 <i class="fa fa-history"></i> View Log
                             </a>
                         `;
-                    },
-                    className: "noPrint text-center"
-                }
-            ]
-
-            loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
-        }
-        $(document).on('click', '.btnViewSchedule', function() {
-
-            let id = $(this).data('id');
-
-            // show loader
-            $('#viewScheduleContainer').html(`
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary"></div>
-                    <p class="mt-2">Loading schedule...</p>
-                </div>
-            `);
-
-            // open modal
-            let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
-            modal.show();
-
-            $.ajax({
-                type: "POST",
-                url: "/admin/get-schedule-dates",
-                data: {
-                    bus_schedule_id: id,
-                    _token: $('meta[name="csrf-token"]').attr("content")
-                },
-                success: function(response) {
-
-                    $('#viewScheduleContainer').html(response);
-
-                    let busTitle = $('#viewScheduleContainer').find('#modalBusTitle').text();
-
-                    if (busTitle !== '') {
-                        $('#modalBusHeading').text(busTitle);
+                        },
+                        className: "noPrint text-center"
                     }
-                },
-                error: function() {
-                    $('#viewScheduleContainer').html(`
+                ]
+
+                loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+            }
+            $(document).on('click', '.btnViewSchedule', function() {
+
+                let id = $(this).data('id');
+
+                // show loader
+                $('#viewScheduleContainer').html(`
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary"></div>
+                            <p class="mt-2">Loading schedule...</p>
+                        </div>
+                    `);
+
+                // open modal
+                let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
+                modal.show();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/get-schedule-dates",
+                    data: {
+                        bus_schedule_id: id,
+                        _token: $('meta[name="csrf-token"]').attr("content")
+                    },
+                    success: function(response) {
+
+                        $('#viewScheduleContainer').html(response);
+
+                        let busTitle = $('#viewScheduleContainer').find('#modalBusTitle').text();
+
+                        if (busTitle !== '') {
+                            $('#modalBusHeading').text(busTitle);
+                        }
+                    },
+                    error: function() {
+                        $('#viewScheduleContainer').html(`
                         <div class="text-danger text-center p-4">
                             Failed to load schedule
                         </div>
                     `);
-                }
+                    }
+                });
+
             });
+            $(document).ready(function() {
 
-        });
-        $(document).ready(function() {
+                getDataTableView(false);
 
-            getDataTableView(false);
-
-        });
-    </script>
+            });
+        </script>
     @endpush
