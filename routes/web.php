@@ -576,4 +576,8 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'notification-rules/edit/{encId}', [NotificationRuleController::class, 'edit'])->name('notification-rules.edit');
     Route::post('get-cron-job-details',[NotificationRuleController::class, 'getCronJobDetails']);
     Route::post('get-notification-details', [NotificationRuleController::class, 'getNotificationDetails']);
+    Route::post('get-cron-notification-rules',[NotificationRuleController::class,'getCronNotificationRules']);
+    Route::post('get-cron-summary',[NotificationRuleController::class,'getCronSummary']);
+
+
 });

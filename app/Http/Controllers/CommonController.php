@@ -158,6 +158,7 @@ class CommonController extends Controller
             'BusCancel' => \App\Models\Bus\BusCancel::class,
             'NotificationTemplate' => \App\Models\Master\NotificationTemplate::class,
             'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
+            'NotificationRules' => \App\Models\Master\NotificationRules::class,
             'CronJob' => \App\Models\Master\CronJob::class,
         ];
 
