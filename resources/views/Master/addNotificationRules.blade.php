@@ -412,14 +412,12 @@
                         commonAjax.initSelect2('#recipient', 'Select Recipient Type');
                         commonAjax.initSelect2('#roles', 'Select Role');
 
-                        let cronNameVal = "{{ $data['row']->cron_name ?? '' }}";
-                        let notificationTemplateVal = "{{ $data['row']->notification_template ?? '' }}";
+                        let cronNameVal = "{{ $data['row']->cron_job_id ?? '' }}";
+                        let notificationTemplateVal = "{{ $data['row']->template_id ?? '' }}";
                         let channelVal = "{{ $data['row']->channel ?? '' }}";
                         let statusConditionVal = "{{ $data['row']->status_condition ?? '' }}";
-                        let rolesVal = "{{ $data['row']->roles ?? '' }}"
-
-                        let recipientVal =
-                            "{{ $data['row']->recipient ?? '' }}";
+                        let rolesVal = "{{ $data['row']->role_type ?? '' }}";
+                        let recipientVal = "{{ $data['row']->reciptent_type ?? '' }}";
 
                         commonAjax.loadCronJobDropdown('#cron_name', cronNameVal);
                         commonAjax.getNotificationTemplateDropdown('#template', notificationTemplateVal);
@@ -436,10 +434,19 @@
                             renderDropdown('#status_condition', data.STATUS_CONDITION || [], statusConditionVal);
                             renderDropdown('#recipient', data.RECEIPTENT_TYPE || [], recipientVal);
 
+                            // ✅ FORCE SELECT AFTER RENDER (no race condition)
+
                             if (channelVal) {
-                                $('#channel')
-                                    .val(channelVal)
-                                    .trigger('change');
+                                $('#channel').val(channelVal).trigger('change');
+                            }
+
+                            if (statusConditionVal) {
+                                $('#status_condition').val(statusConditionVal).trigger('change');
+                            }
+
+                            if (recipientVal) {
+                                $('#recipient').val(recipientVal).trigger('change');
+                                toggleRecipientSections();
                             }
 
                             if (statusConditionVal) {
@@ -456,7 +463,13 @@
                             toggleRecipientSections();
                         });
 
+                        let selectedUsers = {!! json_encode(json_decode($data['row']->recipient_value ?? '[]')) !!};
 
+                        if (selectedUsers && selectedUsers.length > 0) {
+                            selectedUsers.forEach(function(user) {
+                                $(`input[value="${user}"]`).prop('checked', true);
+                            });
+                        }
 
                         $('#recipient').on('change', function() {
 
@@ -497,9 +510,59 @@
 
                             loadNotificationDetails(id);
                         });
+                        // ✅ RESTORE EDIT VALUES (Seat Block style)
+
+                        // CRON
+                        waitForOptions('#cron_name', function() {
+
+                            if (cronNameVal) {
+                                $('#cron_name').val(cronNameVal).trigger('change');
+
+                                // load cron details also
+                                loadCronJobDetails(cronNameVal);
+                            }
+
+                        });
+
+
+
+                        // TEMPLATE (IMPORTANT — depends on channel)
+                        waitForOptions('#template', function() {
+
+                            if (notificationTemplateVal) {
+                                $('#template').val(notificationTemplateVal).trigger('change');
+
+                                // show preview also
+                                loadNotificationDetails(notificationTemplateVal);
+                            }
+
+                        });
+
+                        // ROLES
+                        waitForOptions('#roles', function() {
+
+                            if (rolesVal) {
+                                $('#roles').val(rolesVal).trigger('change');
+                            }
+
+                        });
+
                     });
 
 
+                    function waitForOptions(selector, callback, retry = 0) {
+
+                        if ($(selector + ' option').length > 1) {
+                            callback();
+                            return;
+                        }
+
+                        if (retry > 50) return;
+
+                        setTimeout(function() {
+                            waitForOptions(selector, callback, retry + 1);
+                        }, 200);
+                    }
 
                     function loadNotificationDetails(id) {
 
