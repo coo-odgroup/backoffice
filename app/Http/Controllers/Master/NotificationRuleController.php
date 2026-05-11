@@ -213,7 +213,6 @@ class NotificationRuleController extends Controller
             $redirectPage =
                 route('notification-rules.index');
 
-            // EDIT MODE
             if ($id > 0) {
 
                 $data['strPage']   = 'Edit';
@@ -367,25 +366,49 @@ class NotificationRuleController extends Controller
                         'updated_at' => now(),
                     ];
 
+                    // ONLY CHANGED DATA
+                    $oldChanged = [];
+
+                    $newChanged = [];
+
+                    foreach ($insertData as $key => $value) {
+
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (
+                            trim((string)$oldValue)
+                            !==
+                            trim((string)$value)
+                        ) {
+
+                            $oldChanged[$key] = $oldValue;
+
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
                     DB::table(
                         'odbusmaster.cron_job_notifications'
                     )
                         ->where('id', $id)
                         ->update($updateData);
 
-                    app(CommonController::class)
-                        ->auditLog(
+                    if (!empty($newChanged)) {
 
-                            'cron_job_notifications',
+                        app(CommonController::class)
+                            ->auditLog(
 
-                            $id,
+                                'cron_job_notifications',
 
-                            'UPDATE',
+                                $id,
 
-                            (array)$oldData,
+                                'UPDATE',
 
-                            $updateData
-                        );
+                                $oldChanged,
+
+                                $newChanged
+                            );
+                    }
                 } else {
 
                     $rowData = [

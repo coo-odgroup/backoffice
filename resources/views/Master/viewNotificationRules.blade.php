@@ -526,12 +526,12 @@
                                 <i class="fa fa-edit"></i> Edit
                             </a>
 
-                            <a href="javascript:void(0);"
+                           <a href="javascript:void(0);"
                                 class="btn btn-sm btn-success btn-view-log"
-                                data-table="NotificationRules"
+                                data-table="cron_job_notifications"
                                 data-id="${row.enc_id}">
                                 <i class="fa fa-history"></i> View Log
-                            </a>
+                           </a>
                         `;
                     },
                     className: "noPrint text-center"
@@ -652,7 +652,7 @@
                             `<span class="badge bg-success">
                                 Active
                             </span>` :
-                                            `<span class="badge bg-danger">
+                            `<span class="badge bg-danger">
                                 Inactive
                             </span>`
                         );
