@@ -251,200 +251,108 @@
         </div>
     </form>
 
-   <div class="modal fade"
-    id="viewScheduleModal"
-    tabindex="-1"
-    data-bs-backdrop="static"
-    data-bs-keyboard="false"
-    aria-hidden="true">
+    <div class="modal fade"
+        id="viewScheduleModal"
+        tabindex="-1"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        aria-hidden="true">
 
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
 
-        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-content border-0 shadow-lg">
 
-            <!-- HEADER -->
-            <div class="modal-header bg-primary text-white">
-
-                <div>
-
-                    <h5 class="modal-title mb-1">
-
-                        <i class="fa fa-bell me-2"></i>
-
-                        Cron Notification Rules
-
-                    </h5>
-
+                <!-- HEADER -->
+                <div class="modal-header bg-primary text-white">
+                    <div>
+                        <h5 class="modal-title mb-1">
+                            <i class="fa fa-bell me-2"></i>
+                            Cron Job Details
+                        </h5>
+                    </div>
+                    <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                    </button>
                 </div>
 
-                <button type="button"
-                    class="btn-close btn-close-white"
-                    data-bs-dismiss="modal">
-                </button>
+                <!-- BODY -->
+                <div class="modal-body bg-light">
+                    <!-- CRON SUMMARY -->
+                    <div class="card border-0 shadow-sm mb-3">
 
-            </div>
+                        <div class="card-body p-0">
 
-            <!-- BODY -->
-            <div class="modal-body bg-light">
+                            <div class="table-responsive">
 
-                <!-- CRON SUMMARY -->
-                <div class="cron-summary-card mb-4">
+                                <table class="table table-bordered align-middle mb-0">
 
-                    <div class="row g-2 align-items-center">
+                                    <thead class="table-primary">
 
-                        <div class="col">
-                            <div class="summary-item">
+                                        <tr>
+                                            <th>Cron Name</th>
+                                            <th>Cron Type</th>
+                                            <th>Execution Type</th>
+                                            <th>Schedule Type</th>
+                                            <th>Scheduled Time</th>
+                                            <th>Status</th>
+                                        </tr>
 
-                                <div class="summary-label">
-                                    Cron Name
-                                </div>
+                                    </thead>
 
-                                <div class="summary-value"
-                                    id="summaryCronNameModal">
+                                    <tbody>
 
-                                    --
-                                </div>
+                                        <tr>
 
-                            </div>
-                        </div>
+                                            <td id="summaryCronNameModal">
+                                                --
+                                            </td>
 
-                        <div class="col">
-                            <div class="summary-item">
+                                            <td id="summaryCronTypeModal">
+                                                --
+                                            </td>
 
-                                <div class="summary-label">
-                                    Cron Type
-                                </div>
+                                            <td id="summaryExecutionTypeModal">
+                                                --
+                                            </td>
 
-                                <div class="summary-value"
-                                    id="summaryCronTypeModal">
+                                            <td id="summaryScheduleTypeModal">
+                                                --
+                                            </td>
 
-                                    --
-                                </div>
+                                            <td id="summarySchedulerModal">
+                                                --
+                                            </td>
 
-                            </div>
-                        </div>
+                                            <td id="summaryStatusModal">
+                                                --
+                                            </td>
 
-                        <div class="col">
-                            <div class="summary-item">
+                                        </tr>
 
-                                <div class="summary-label">
-                                    Execution Type
-                                </div>
+                                    </tbody>
 
-                                <div class="summary-value"
-                                    id="summaryExecutionTypeModal">
-
-                                    --
-                                </div>
+                                </table>
 
                             </div>
-                        </div>
 
-                        <div class="col">
-                            <div class="summary-item">
-
-                                <div class="summary-label">
-                                    Schedule Type
-                                </div>
-
-                                <div class="summary-value"
-                                    id="summaryScheduleTypeModal">
-
-                                    --
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="summary-item">
-
-                                <div class="summary-label">
-                                    Scheduled Time
-                                </div>
-
-                                <div class="summary-value"
-                                    id="summarySchedulerModal">
-
-                                    --
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="col">
-                            <div class="summary-item">
-
-                                <div class="summary-label">
-                                    Status
-                                </div>
-
-                                <div class="summary-value"
-                                    id="summaryStatusModal">
-
-                                    --
-                                </div>
-
-                            </div>
                         </div>
 
                     </div>
-
                 </div>
 
-                <!-- RULE TABLE -->
-                <div class="card border-0 shadow-sm">
-
-                    <div class="card-body p-0">
-
-                        <div class="table-responsive">
-
-                            <table class="table table-hover align-middle mb-0">
-
-                                <thead class="table-primary">
-
-                                    <tr>
-
-                                        <th width="60">Sl No</th>
-                                        <th>Channel</th>
-                                        <th>Template</th>
-                                        <th>Status Condition</th>
-                                        <th>Recipient Type</th>
-                                        <th>Recipient</th>
-                                        <th width="120">
-                                            Status
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody id="viewScheduleContainer">
-                                    <tr>
-                                        <td colspan="7"
-                                            class="text-center py-5">
-                                            <div class="spinner-border text-primary mb-2"></div>
-                                            <div>
-                                                Loading Rules...
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                <!-- FOOTER -->
+                <div class="modal-footer bg-white">
+                    <button type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-bs-dismiss="modal">
+                        Close
+                    </button>
                 </div>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="modal-footer bg-white">
-                <button type="button"
-                    class="btn btn-secondary btn-sm"
-                    data-bs-dismiss="modal">
-                    Close
-                </button>
             </div>
         </div>
-    </div>
 
-</div>
+    </div>
 
     @endsection
     @push('scripts')
@@ -680,40 +588,87 @@
 
             let id = $(this).data('id');
 
-            // show loader
-            $('#viewScheduleContainer').html(`
-                        <div class="text-center p-4">
-                            <div class="spinner-border text-primary"></div>
-                            <p class="mt-2">Loading schedule...</p>
-                        </div>
-                    `);
-
             // open modal
-            let modal = new bootstrap.Modal(document.getElementById('viewScheduleModal'));
+            let modalEl = document.getElementById('viewScheduleModal');
+
+            let modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+            $('#summaryCronNameModal').html('--');
+            $('#summaryCronTypeModal').html('--');
+            $('#summaryExecutionTypeModal').html('--');
+            $('#summaryScheduleTypeModal').html('--');
+            $('#summarySchedulerModal').html('--');
+            $('#summaryStatusModal').html('--');
+
             modal.show();
 
             $.ajax({
+
                 type: "POST",
-                url: "/admin/get-schedule-dates",
+
+                url: "/admin/get-cron-summary",
+
                 data: {
-                    bus_schedule_id: id,
-                    _token: $('meta[name="csrf-token"]').attr("content")
+
+                    cron_id: id,
+
+                    _token: $('meta[name="csrf-token"]')
+                        .attr("content")
                 },
+
                 success: function(response) {
 
-                    $('#viewScheduleContainer').html(response);
+                    console.log(response);
 
-                    let busTitle = $('#viewScheduleContainer').find('#modalBusTitle').text();
+                    if (
+                        response.status == true &&
+                        response.data
+                    ) {
 
-                    if (busTitle !== '') {
-                        $('#modalBusHeading').text(busTitle);
+                        let row = response.data;
+
+                        $('#summaryCronNameModal').html(
+                            row.name ?? '--'
+                        );
+
+                        $('#summaryCronTypeModal').html(
+                            row.cron_type ?? '--'
+                        );
+
+                        $('#summaryExecutionTypeModal').html(
+                            row.execution_type ?? '--'
+                        );
+
+                        $('#summaryScheduleTypeModal').html(
+                            row.schedule_type ?? '--'
+                        );
+
+                        $('#summarySchedulerModal').html(
+                            row.scheduler ?? '--'
+                        );
+
+                        $('#summaryStatusModal').html(
+                            row.active_status == 1 ?
+                            `<span class="badge bg-success">
+                                Active
+                            </span>` :
+                                            `<span class="badge bg-danger">
+                                Inactive
+                            </span>`
+                        );
                     }
                 },
+
                 error: function() {
-                    $('#viewScheduleContainer').html(`
-                        <div class="text-danger text-center p-4">
-                            Failed to load schedule
-                        </div>
+                    $('#summaryCronNameModal').html('--');
+                    $('#summaryCronTypeModal').html('--');
+                    $('#summaryExecutionTypeModal').html('--');
+                    $('#summaryScheduleTypeModal').html('--');
+                    $('#summarySchedulerModal').html('--');
+                    $('#summaryStatusModal').html(`
+                        <span class="badge bg-danger">
+                            Failed
+                        </span>
                     `);
                 }
             });

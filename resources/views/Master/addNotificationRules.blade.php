@@ -684,7 +684,7 @@
                         }
                     });
 
-                    let selectedUsers = {!!json_encode(json_decode($data['row'] -> recipient_value ?? '[]')) !!};
+                     let selectedUsers = {!!json_encode(json_decode($data['row'] -> recipient_value ?? '[]')) !!};
 
                     if (selectedUsers && selectedUsers.length > 0) {
                         selectedUsers.forEach(function(user) {
@@ -780,7 +780,7 @@
                         }
 
                     });
-
+                    toggleRecipientSections();
                 });
 
 
@@ -1193,40 +1193,53 @@
                     let recipientType =
                         ($('#recipient').val() || '')
                         .toLowerCase()
-                        .trim()
-                        .replace(/\s+/g, '');
+                        .trim();
 
-                    // HIDE ALL
+                    // HIDE WHOLE SECTION FIRST
                     $('#recipientConfigSection').hide();
+
+                    // HIDE INNER SECTIONS
                     $('#rolesSection').hide();
+
                     $('#recipientSection').hide();
+
                     $('#dynamicVariableSection').hide();
+
+                    $('#roleUsersSection').addClass('d-none');
+
+                    // NOTHING SELECTED
+                    if (!recipientType) {
+
+                        return;
+                    }
+
+                    // SHOW MAIN CONTAINER
+                    $('#recipientConfigSection').show();
 
                     // ROLE BASED
                     if (
-                        recipientType.includes('role')
+                        recipientType == 'role based'
                     ) {
 
-                        $('#recipientConfigSection').show();
                         $('#rolesSection').show();
-                        $('#roleUsersSection').removeClass('d-none');
+
+                        $('#roleUsersSection')
+                            .removeClass('d-none');
                     }
 
-                    // MANUAL SELECTION
+                    // MANUAL
                     else if (
-                        recipientType.includes('manual')
+                        recipientType == 'manual'
                     ) {
 
-                        $('#recipientConfigSection').show();
                         $('#recipientSection').show();
                     }
 
                     // DYNAMIC VARIABLE
                     else if (
-                        recipientType.includes('dynamic')
+                        recipientType == 'dynamic variable'
                     ) {
 
-                        $('#recipientConfigSection').show();
                         $('#dynamicVariableSection').show();
                     }
                 }

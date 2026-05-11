@@ -1977,7 +1977,6 @@ export function getNotificationTemplateDropdown(
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, item) {
                     let isSelected = selected == item.id ? "selected" : "";
-
                     options += `
                         <option value="${item.id}" ${isSelected}>
                             ${item.name}
