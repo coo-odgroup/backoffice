@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CommonController;
+use Mews\Purifier\Facades\Purifier;
 
 class NotificationTemplateController extends Controller
 {
@@ -27,16 +28,35 @@ class NotificationTemplateController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $status    =  (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $type      = (int) request('type');
-            $category  = (int) request('category');
-            $trigger   = (int) request('trigger');
 
-            $start  = request('start', 0);
-            $length = request('length', 10);
+            $status = (
+                request('selStatus') !== null &&
+                request('selStatus') !== ''
+            ) ? (int) request('selStatus') : '';
 
-            $query = DB::table('odbusmaster.mst_notification_templates as nt')
+            $type = (int) request('type');
+
+            $category = (int) request('category');
+
+            $trigger = (int) request('trigger');
+
+            $start = request()->input('start', 0);
+            $length = request()->input('length', 10);
+
+            $start = is_numeric($start)
+                ? (int) $start
+                : 0;
+
+            $length = is_numeric($length)
+                ? (int) $length
+                : 10;
+
+            $dataQuery = DB::table(
+                'odbusmaster.mst_notification_templates as nt'
+            )
+
                 ->select(
+
                     'nt.id',
                     'nt.name',
                     'nt.type',
@@ -46,114 +66,228 @@ class NotificationTemplateController extends Controller
                     'nt.created_at',
                     'nt.updated_at',
 
-                    // TYPE (annexture_type_id = 19)
                     DB::raw('(
-                        SELECT annexture_name
-                        FROM odbusmaster.mst_annexture
-                        WHERE annexture_type_id = 19
-                        AND annexture_value = nt.type
-                        LIMIT 1
-                    ) as type_name'),
+                    SELECT annexture_name
+                    FROM odbusmaster.mst_annexture
+                    WHERE annexture_type_id = 19
+                    AND annexture_value = nt.type
+                    LIMIT 1
+                ) as type_name'),
 
-                    // CATEGORY (annexture_type_id = 21)
                     DB::raw('(
-                        SELECT annexture_name
-                        FROM odbusmaster.mst_annexture
-                        WHERE annexture_type_id = 21
-                        AND annexture_value = nt.category
-                        LIMIT 1
-                    ) as category_name'),
+                    SELECT annexture_name
+                    FROM odbusmaster.mst_annexture
+                    WHERE annexture_type_id = 21
+                    AND annexture_value = nt.category
+                    LIMIT 1
+                ) as category_name'),
 
-                    //  TRIGGER (annexture_type_id = 22)
                     DB::raw('(
-                        SELECT annexture_name
-                        FROM odbusmaster.mst_annexture
-                        WHERE annexture_type_id = 22
-                        AND annexture_value = nt.event_trigger
-                        LIMIT 1
-                    ) as trigger_name'),
+                    SELECT annexture_name
+                    FROM odbusmaster.mst_annexture
+                    WHERE annexture_type_id = 22
+                    AND annexture_value = nt.event_trigger
+                    LIMIT 1
+                ) as trigger_name'),
 
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = nt.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM odbusmaster.users WHERE id = nt.updated_by LIMIT 1) as updated_by_name')
+                    DB::raw('(
+                    SELECT name
+                    FROM odbusmaster.users
+                    WHERE id = nt.created_by
+                    LIMIT 1
+                ) as created_by_name'),
+
+                    DB::raw('(
+                    SELECT name
+                    FROM odbusmaster.users
+                    WHERE id = nt.updated_by
+                    LIMIT 1
+                ) as updated_by_name')
                 );
-            $recordsTotal = DB::table('odbusmaster.mst_notification_templates')->count();
 
-            if ($txtSearch !== null && $txtSearch !== '') {
-                $query->where(function ($q) use ($txtSearch) {
-                    $q->where('nt.name', 'like', "%{$txtSearch}%")
-                        ->orWhere('nt.subject', 'like', "%{$txtSearch}%")
-                        ->orWhere('nt.title', 'like', "%{$txtSearch}%")
-                        ->orWhere('nt.body', 'like', "%{$txtSearch}%")
-                        ->orWhere('nt.short_text', 'like', "%{$txtSearch}%");
+            // SEARCH
+            if (!empty($txtSearch)) {
+
+                $dataQuery->where(function ($q) use ($txtSearch) {
+
+                    $q->where(
+                        'nt.name',
+                        'like',
+                        "%{$txtSearch}%"
+                    )
+
+                        ->orWhere(
+                            'nt.subject',
+                            'like',
+                            "%{$txtSearch}%"
+                        )
+
+                        ->orWhere(
+                            'nt.title',
+                            'like',
+                            "%{$txtSearch}%"
+                        )
+
+                        ->orWhere(
+                            'nt.body',
+                            'like',
+                            "%{$txtSearch}%"
+                        )
+
+                        ->orWhere(
+                            'nt.short_text',
+                            'like',
+                            "%{$txtSearch}%"
+                        );
                 });
             }
 
+            // FILTERS
             if ($type > 0) {
-                $query->where('nt.type', $type);
+                $dataQuery->where('nt.type', $type);
             }
 
             if ($category > 0) {
-                $query->where('nt.category', $category);
+                $dataQuery->where('nt.category', $category);
             }
 
             if ($trigger > 0) {
-                $query->where('nt.event_trigger', $trigger);
+                $dataQuery->where('nt.event_trigger', $trigger);
             }
 
-            if ($status !== null && $status !== '') {
-                $query->where('nt.active_status', $status);
+            if (
+                isset($status) &&
+                $status !== ''
+            ) {
+
+                $dataQuery->where(
+                    'nt.active_status',
+                    $status
+                );
             }
 
-            $recordsFiltered = (clone $query)->count();
+            $count = $dataQuery->count('nt.id');
 
-            if ($length != -1) {
-                $query->offset($start)->limit($length);
-            }
+            // ORDERING
+            if (!empty(request('order'))) {
 
-            $rows = $query->orderBy('nt.id', 'desc')->get();
+                $columns = [
 
-            foreach ($rows as $row) {
-
-                $data[] = [
-                    'id' => $row->id,
-                    'enc_id' => Crypt::encryptString($row->id),
-
-                    'notification_name' => $row->name ?? '--',
-                    'notification_type' => $row->type_name ?? '--',
-                    'notification_category' => $row->category_name ?? '--',
-                    'notification_trigger' => $row->trigger_name ?? '--',
-
-                    'created_date' => $row->created_at
-                        ? date('d-M-Y H:i:s', strtotime($row->created_at))
-                        : null,
-
-                    'updated_date' => $row->updated_at
-                        ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                        : null,
-
-                    'created_by_name' => $row->created_by_name ?? '--',
-                    'updated_by_name' => $row->updated_by_name ?? '--',
-
-                    'is_active' => $row->active_status == 1 ? 'Active' : 'Inactive',
+                    2 => 'nt.name',
+                    3 => 'type_name',
+                    4 => 'category_name',
+                    5 => 'trigger_name',
+                    6 => 'nt.created_at',
+                    7 => 'nt.active_status'
                 ];
+
+                $orderBy = request('order');
+
+                $orderColumn =
+                    $columns[$orderBy[0]['column']] ?? 'nt.id';
+
+                $orderType =
+                    $orderBy[0]['dir'];
+            } else {
+
+                $orderColumn = 'nt.id';
+
+                $orderType = 'desc';
             }
+
+            $dataQuery = $dataQuery->orderBy(
+                $orderColumn,
+                $orderType
+            );
+
+            // PAGINATION
+            if ($length == -1) {
+
+                $arrRes = $dataQuery->get();
+            } else {
+
+                $arrRes = $dataQuery
+                    ->limit($length)
+                    ->offset($start)
+                    ->get();
+            }
+
+            // FORMAT DATA
+            if (count($arrRes) > 0) {
+
+                foreach ($arrRes as $val) {
+
+                    $val->enc_id =
+                        Crypt::encryptString(
+                            $val->id
+                        );
+
+                    $val->notification_name =
+                        $val->name ?? '--';
+
+                    $val->notification_type =
+                        $val->type_name ?? '--';
+
+                    $val->notification_category =
+                        $val->category_name ?? '--';
+
+                    $val->notification_trigger =
+                        $val->trigger_name ?? '--';
+
+                    $val->created_date =
+                        $val->created_at
+                        ?
+                        date(
+                            'd-M-Y H:i:s',
+                            strtotime($val->created_at)
+                        )
+                        :
+                        null;
+
+                    $val->updated_date =
+                        $val->updated_at
+                        ?
+                        date(
+                            'd-M-Y H:i:s',
+                            strtotime($val->updated_at)
+                        )
+                        :
+                        null;
+
+                    $val->created_by_name = $val->created_by_name ?? '--';
+                    $val->updated_by_name = $val->updated_by_name ?? '--';
+                    $val->is_active = ($val->active_status == 1)?'Active':'Inactive';
+                }
+            }
+
+            $recordsTotal = $count;
+            $recordsFiltered = $count;
+            $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::error("NotificationTemplate Error", [
-                'message' => $t->getMessage()
+            Log::info(
+                "Exception occurred in NotificationTemplateController@dataTableView",
+                [
+                    'error_message' => $t->getMessage(),
+                    'trace' => $t->getTraceAsString()
+                ]
+            );
+
+            Log::error("Error", [
+                'Controller' => 'NotificationTemplateController',
+                'Method' => 'dataTableView',
+                'Error' => config('constants.SERVER_ERROR_MESSAGE')
             ]);
 
-            return response()->json([
-                'recordsTotal' => 0,
-                'recordsFiltered' => 0,
-                'data' => []
-            ]);
+            $recordsTotal = 0;
+            $recordsFiltered = 0;
+            $data = [];
         }
 
         return response()->json([
-            'recordsTotal'    => $recordsTotal,
+            'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data'            => $data,
+            'data' => $data,
         ]);
     }
 
@@ -168,7 +302,6 @@ class NotificationTemplateController extends Controller
 
             $id = (!empty($encId)) ? Crypt::decryptString($encId) : 0;
             $row = null;
-
 
             if ($id > 0) {
 
@@ -203,11 +336,15 @@ class NotificationTemplateController extends Controller
 
                 DB::beginTransaction();
 
-                $typeValue = (int) request('type');
+                $name = htmlEncode(ucwords(strtolower(Purifier::clean(request('name')))));
+                $slug = htmlEncode(strtolower(Purifier::clean(request('slug'))));
+                $typeValue = (int) Purifier::clean(request('type'));
+                $category = (int) Purifier::clean(request('category'));
+                $trigger = (int) Purifier::clean(request('trigger'));
 
                 $subject = null;
-                $title   = null;
-                $body    = null;
+                $title = null;
+                $body = null;
 
                 /*
                 1 = Email
@@ -218,30 +355,39 @@ class NotificationTemplateController extends Controller
 
                 switch ($typeValue) {
 
-                    case 1: // EMAIL
-                        $subject = request('email_subject');
-                        $body    = request('emailContent');
+                    case 1:
+
+                        $subject = htmlEncode(Purifier::clean(request('email_subject')));
+                        $body = htmlEncode(Purifier::clean(request('emailContent')));
                         break;
 
-                    case 2: // SMS
-                        $body = request('smsContent');
+                    case 2:
+
+                        $body = htmlEncode(Purifier::clean(request('smsContent')));
                         break;
 
-                    case 3: // PUSH
-                        $title = request('title');
-                        $body  = request('body');
+                    case 3:
+
+                        $title = htmlEncode(Purifier::clean(request('title')));
+                        $body = htmlEncode(Purifier::clean(request('body')));
                         break;
 
-                    case 4: // WHATSAPP
-                        $body = request('whatsappContent');
+                    case 4:
+
+                        $body = htmlEncode(Purifier::clean(request('whatsappContent')));
                         break;
 
                     default:
+
                         DB::rollBack();
-                        return back()->withInput()->with([
-                            'level' => 'danger',
-                            'message' => 'Invalid Notification Type'
-                        ]);
+
+                        return back()
+                            ->withInput()
+                            ->with([
+                                'level' => 'danger',
+                                'message' =>
+                                'Invalid Notification Type'
+                            ]);
                 }
 
                 $insertData = [
@@ -606,5 +752,4 @@ class NotificationTemplateController extends Controller
             </div>');
         }
     }
-
 }
