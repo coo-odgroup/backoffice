@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class NotificationRules extends Model
 {
-    protected $table = 'mst_notification_templates';
+    protected $table = 'cron_job_notifications';
 
 
     protected $fillable = [

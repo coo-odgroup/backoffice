@@ -215,6 +215,9 @@
 
         $(document).ready(function() {
 
+
+            commonAjax.initClearableInputs();
+            commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
             commonAjax.initSelect2('#type', 'Select Type');
             commonAjax.initSelect2('#category', 'Select Category');
             commonAjax.initSelect2('#trigger', 'Select Event Trigger');
@@ -420,7 +423,7 @@
 
         $(document).on('click', '.btnViewSchedule', function() {
 
-            let id = $(this).data('id'); 
+            let id = $(this).data('id');
             $('#viewScheduleContainer').html(`
                 <div class="text-center p-4">
                     <div class="spinner-border text-primary"></div>

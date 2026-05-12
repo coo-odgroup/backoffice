@@ -117,7 +117,7 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                            <div class="p-3  border rounded bg-white mt-3"
+                                                            <div class="p-3 border rounded bg-white mt-3 d-none"
                                                                 id="recipientConfigSection">
                                                                 <div class=" mb-2" id="rolesSection">
                                                                     <label for="roles">Role Type <span
@@ -559,6 +559,16 @@
 
                     background: #f8fbff;
                 }
+
+                #dynamic_variable,
+                #manual_recipient {
+
+                    pointer-events: auto !important;
+
+                    position: relative;
+
+                    z-index: 9999;
+                }
             </style>
 
             @endsection
@@ -684,7 +694,11 @@
                         }
                     });
 
-                     let selectedUsers = {!!json_encode(json_decode($data['row'] -> recipient_value ?? '[]')) !!};
+                   let selectedUsers = {!!json_encode(json_decode($data['row'] -> recipient_value ?? '[]')) !!};
+ 
+
+
+
 
                     if (selectedUsers && selectedUsers.length > 0) {
                         selectedUsers.forEach(function(user) {
@@ -707,22 +721,17 @@
                         if (!id) {
 
                             $('#cronDetailsContainer').html('');
-
                             $('#cronSummaryWrapper')
                                 .addClass('d-none');
-
                             $('#notificationRuleTableWrapper')
                                 .addClass('d-none');
-
                             return;
                         }
 
                         $('#cronSummaryWrapper')
                             .removeClass('d-none');
-
                         $('#notificationRuleTableWrapper')
                             .removeClass('d-none');
-
                         loadCronJobDetails(id);
                     });
 
@@ -730,46 +739,32 @@
                     $(document).on('change', '#template', function() {
 
                         let id = $(this).val();
-
                         if (!id) {
 
                             $('#notificationPreviewWrapper').hide();
-
                             $('#notificationDetailsContainer').html('');
-
                             return;
                         }
 
                         $('#notificationPreviewWrapper').show();
-
                         loadNotificationDetails(id);
                     });
-                    // ✅ RESTORE EDIT VALUES (Seat Block style)
 
                     // CRON
                     waitForOptions('#cron_name', function() {
-
                         if (cronNameVal) {
                             $('#cron_name').val(cronNameVal).trigger('change');
-
-                            // load cron details also
                             loadCronJobDetails(cronNameVal);
                         }
-
                     });
-
-
 
                     // TEMPLATE (IMPORTANT — depends on channel)
                     waitForOptions('#template', function() {
 
                         if (notificationTemplateVal) {
                             $('#template').val(notificationTemplateVal).trigger('change');
-
-                            // show preview also
                             loadNotificationDetails(notificationTemplateVal);
                         }
-
                     });
 
                     // ROLES
@@ -1044,129 +1039,83 @@
 
                             // FINAL HTML
                             let html = `
-
                                             <div class="p-3 border rounded bg-white">
-
                                                 <div class="p-3  schedule-card">
-
                                                     <div class="cron-info-card">
-
                                                         <div class="info-row">
-
                                                             <span class="info-label">
                                                                 Cron Name:
                                                             </span>
-
                                                             <span class="info-value">
                                                                 ${row.name ?? '--'}
                                                             </span>
-
                                                         </div>
-
                                                         <div class="info-row">
-
                                                             <span class="info-label">
                                                                 Cron Type:
                                                             </span>
-
                                                             <span class="badge bg-primary">
                                                                 ${row.type ?? '--'}
                                                             </span>
-
                                                         </div>
-
                                                         <div class="info-row">
-
                                                             <span class="info-label">
                                                                 Schedule Type:
                                                             </span>
-
                                                             <span class="info-value">
                                                                 ${row.schedule_type ?? '--'}
                                                             </span>
 
                                                         </div>
-
                                                         <div class="info-row align-items-start">
-
                                                             <span class="info-label">
                                                                 Scheduler:
                                                             </span>
-
                                                             <div class="scheduler-box">
-
                                                                 <div>
-
                                                                     <strong>
                                                                         Interval Minutes:
                                                                     </strong>
-
                                                                     ${row.interval_minutes ?? '--'}
 
                                                                 </div>
-
                                                                 <hr class="my-1">
-
                                                                 <div>
-
                                                                     <strong>
                                                                         Run Times:
                                                                     </strong>
-
                                                                     <ul class="mb-0 ps-3">
                                                                         ${runTimesHtml}
                                                                     </ul>
-
                                                                 </div>
-
                                                             </div>
-
                                                         </div>
-
                                                         <div class="info-row align-items-start">
-
                                                             <span class="info-label">
                                                                 Execution:
                                                             </span>
-
                                                             <div class="execution-box">
-
                                                                 <div>
-
                                                                     <strong>
                                                                         ${executionLabel}
                                                                     </strong>
-
                                                                 </div>
-
                                                                 <hr class="my-1">
-
                                                                 <div class="small text-break">
-
                                                                     ${executionValue ?? '--'}
-
                                                                 </div>
-
                                                             </div>
-
                                                         </div>
-
                                                         <div class="info-row">
-
                                                             <span class="info-label">
                                                                 Status:
                                                             </span>
-
                                                             <span>
                                                                 ${statusBadge}
                                                             </span>
-
                                                         </div>
-
-                                                    </div>
-
+                                                 </div>
                                                 </div>
-
                                             </div>
                                         `;
 
@@ -1195,17 +1144,22 @@
                         .toLowerCase()
                         .trim();
 
-                    // HIDE WHOLE SECTION FIRST
-                    $('#recipientConfigSection').hide();
+                    // HIDE ALL
+                    $('#recipientConfigSection')
+                        .addClass('d-none');
 
-                    // HIDE INNER SECTIONS
-                    $('#rolesSection').hide();
+                    $('#rolesSection')
+                        .addClass('d-none');
 
-                    $('#recipientSection').hide();
+                    $('#recipientSection')
+                        .addClass('d-none');
 
-                    $('#dynamicVariableSection').hide();
+                    $('#dynamicVariableSection')
+                        .addClass('d-none');
 
-                    $('#roleUsersSection').addClass('d-none');
+                    $('#roleUsersSection')
+                        .addClass('d-none');
+
 
                     // NOTHING SELECTED
                     if (!recipientType) {
@@ -1213,36 +1167,52 @@
                         return;
                     }
 
-                    // SHOW MAIN CONTAINER
-                    $('#recipientConfigSection').show();
+                    // SHOW MAIN BOX
+                    $('#recipientConfigSection')
+                        .removeClass('d-none');
 
                     // ROLE BASED
-                    if (
-                        recipientType == 'role based'
-                    ) {
+                    if (recipientType == 'role based') {
 
-                        $('#rolesSection').show();
+                        $('#rolesSection')
+                            .removeClass('d-none');
 
                         $('#roleUsersSection')
                             .removeClass('d-none');
-                    }
-
-                    // MANUAL
-                    else if (
+                    } else if (
                         recipientType == 'manual'
                     ) {
 
-                        $('#recipientSection').show();
-                    }
+                        $('#recipientSection')
+                            .removeClass('d-none');
 
-                    // DYNAMIC VARIABLE
-                    else if (
-                        recipientType == 'dynamic variable'
+                        $('#manual_recipient')
+                            .removeAttr('disabled')
+                            .css('pointer-events', 'auto');
+
+                        setTimeout(function() {
+
+                            $('#manual_recipient').focus();
+
+                        }, 200);
+
+
+                    } else if (
+                       recipientType.includes('dynamic')
                     ) {
 
-                        $('#dynamicVariableSection').show();
+                        $('#dynamicVariableSection')
+                            .removeClass('d-none');
+
+                        setTimeout(function() {
+
+                            $('#dynamic_variable')
+                                .focus();
+
+                        }, 100);
                     }
                 }
+
                 $(document).on('change', '#cron_name', function() {
 
                     let cronId = $(this).val();
@@ -1261,11 +1231,8 @@
                     $.ajax({
 
                         type: "POST",
-
                         url: "/admin/get-cron-summary",
-
                         data: {
-
                             cron_id: cronId,
 
                             _token: $('meta[name="csrf-token"]')

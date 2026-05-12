@@ -399,7 +399,7 @@
             let orderBy = [1, 'asc'];
 
             let searchParams = {
-                txtSearch: $('#cronName').val() || '',
+                cronName: $('#cronName').val() || '',
                 selStatus: $('#selStatus').val() || '',
                 channel: $('#channel').val() || '',
                 recipient: $('#recipient').val() || '',
@@ -407,16 +407,17 @@
             };
 
             let displayColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-            let dataTableColumns = [{
+            let dataTableColumns = [
+            {
                     data: '',
                     render: function(data, type, row) {
                         return `<div class="checkbox">
-                                    <input class="chkItem"
-                                        type="checkbox"
-                                        id="check${row.id}"
-                                        name="chk${row.id}"
-                                        value="${row.id}">
-                                </div>`;
+                            <input class="chkItem"
+                                type="checkbox"
+                                id="check${row.id}"
+                                name="chk${row.id}"
+                                value="${row.id}">
+                        </div>`;
                     },
                     className: "noPrint text-center"
                 },
@@ -464,10 +465,8 @@
 
                         let createdBy = row.created_by_name ?? '--';
                         let createdAt = row.created_date ?? '--';
-
                         let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                         let updatedAt = (row.updated_date) ? row.updated_date : '--';
-
                         let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                         return `
@@ -527,10 +526,10 @@
                             </a>
 
                            <a href="javascript:void(0);"
-                                class="btn btn-sm btn-success btn-view-log"
-                                data-table="cron_job_notifications"
-                                data-id="${row.enc_id}">
-                                <i class="fa fa-history"></i> View Log
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="cron_job_notifications"
+                            data-id="${row.enc_id}">
+                            <i class="fa fa-history"></i> View Log
                            </a>
                         `;
                     },
@@ -545,42 +544,9 @@
             }
 
             $('#datatable tbody').html('');
-            console.log(searchParams);
+
             loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
 
-            $(document).off('change', '.chkAll');
-            $(document).on(
-                'change',
-                '.chkAll',
-                function() {
-
-                    $('.chkItem').prop(
-                        'checked',
-                        $(this).is(':checked')
-                    );
-                }
-            );
-
-            // SINGLE CHECKBOX
-            $(document).off('change', '.chkItem');
-
-            $(document).on(
-                'change',
-                '.chkItem',
-                function() {
-
-                    let total =
-                        $('.chkItem').length;
-
-                    let checked =
-                        $('.chkItem:checked').length;
-
-                    $('.chkAll').prop(
-                        'checked',
-                        total == checked
-                    );
-                }
-            );
         }
 
         window.getDataTableView = getDataTableView;
@@ -675,8 +641,9 @@
 
         });
         $(document).ready(function() {
-
-            getDataTableView(false);
+        commonAjax.initClearableInputs();
+        commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+            getDataTableView();
 
         });
     </script>

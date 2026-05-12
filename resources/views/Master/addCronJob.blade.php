@@ -375,6 +375,30 @@
                         }
                     }
 
+                    // CRON EXPRESSION
+                    if ($('#cron').val() != '') {
+
+                        let cron =
+                            $('#cron').val().trim();
+
+                        let cronRegex =
+                            /^[0-9*\/,\-\s]+$/;
+
+                        if (!cronRegex.test(cron)) {
+
+                            commonAjax.viewAlert(
+                                'Invalid Cron Expression',
+                                'warning'
+                            );
+
+                            $('#cron').focus();
+
+                            e.preventDefault();
+
+                            return;
+                        }
+                    }
+
                     // JOB
                     if ($('#execution').val() == 'job') {
 
@@ -495,6 +519,52 @@
 
                 $(selector).html(options).trigger('change');
             }
+
+
+            // AUTO FORMAT + VALIDATE TIME
+            $(document).on('input', '.run-time-input', function() {
+
+                let value = $(this).val()
+                    .replace(/\D/g, '')
+                    .substring(0, 4);
+
+                // AUTO ADD :
+                if (value.length >= 3) {
+
+                    value =
+                        value.substring(0, 2) +
+                        ':' +
+                        value.substring(2);
+                }
+
+                $(this).val(value);
+            });
+
+            // VALIDATE HH:MM FORMAT
+            $(document).on('blur', '.run-time-input', function() {
+
+                let value = $(this).val().trim();
+
+                if (value == '') {
+                    return;
+                }
+
+                let timeRegex =
+                    /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+                if (!timeRegex.test(value)) {
+
+                    commonAjax.viewAlert(
+                        'Please enter valid time format (HH:MM)',
+                        'warning'
+                    );
+
+                    $(this).val('');
+
+                    $(this).focus();
+                }
+            });
+
 
             function toggleExecutionFields() {
 

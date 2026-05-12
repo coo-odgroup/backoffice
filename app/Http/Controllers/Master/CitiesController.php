@@ -266,14 +266,6 @@ class CitiesController extends Controller
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
                         ->orWhere('c.alias', 'like', "%{$txtSearch}%");
 
-                    // Synonym search using EXISTS (no join)
-                    //    ->orWhereExists(function ($sub) use ($txtSearch) {
-                    //         $sub->select(DB::raw(1))
-                    //             ->from('cities_synonyms as cs')
-                    //             ->whereRaw('cs.city_id = c.id')
-                    //             ->where('cs.active_status', 1)
-                    //             ->where('cs.synonym', 'like', "%{$txtSearch}%");
-                    //     });
                 });
             }
 
