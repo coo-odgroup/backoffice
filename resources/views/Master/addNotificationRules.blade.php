@@ -630,9 +630,11 @@
                             break;
                     }
 
-                    commonAjax.loadCronJobDropdown('#cron_name', cronNameVal);
-                    commonAjax.getNotificationTemplateDropdown('#template', notificationTemplateVal);
-                    commonAjax.getRolesDropdown('#roles', rolesVal);
+                    commonAjax.loadCronJobDropdown(
+                        '#cron_name',
+                        cronNameVal
+                    );
+
                     commonAjax.loadAnnextureList([
 
                         'NOTIFICATION_TYPE',
@@ -694,8 +696,9 @@
                         }
                     });
 
-                   let selectedUsers = {!!json_encode(json_decode($data['row'] -> recipient_value ?? '[]')) !!};
+                     let selectedUsers = {!!json_encode(json_decode($data['row'] -> recipient_value ?? '[]')) !!};
  
+
 
 
 
@@ -707,6 +710,20 @@
                     }
 
                     $('#recipient').on('change', function() {
+
+                        toggleRecipientSections();
+
+                        if (
+                            $('#recipient').val()
+                            .toLowerCase()
+                            .trim() == 'role based'
+                        ) {
+
+                            commonAjax.getRolesDropdown(
+                                '#roles',
+                                rolesVal
+                            );
+                        }
 
                         toggleRecipientSections();
 
@@ -872,7 +889,6 @@
 
                 }
 
-
                 $('#channel').on('change', function() {
 
                     let channel = $(this).val();
@@ -880,49 +896,37 @@
                     let existingTemplate =
                         "{{ $data['row']->template_id ?? '' }}";
 
-                    let isEditMode =
-                        existingTemplate != '';
+                        $('#template').html(`
+                            <option value="">
+                                Select
+                            </option>
+                        `);
 
-                    // RESET ONLY IN ADD MODE
-                    if (!isEditMode) {
+                    if (!channel) {
 
-                        $('#template')
-                            .val('')
-                            .trigger('change');
-
-                        $('#notificationPreviewWrapper')
-                            .hide();
-
-                        $('#notificationDetailsContainer')
-                            .html(`
-                <div class="text-center text-muted py-5">
-                    Select Template To Preview
-                </div>
-            `);
+                        return;
                     }
 
                     let type = '';
 
-                    if (
-                        channel.toLowerCase() == 'email'
-                    ) {
+                    if (channel.toLowerCase() == 'email') {
 
                         type = 1;
 
-                    } else if (
-                        channel.toLowerCase() == 'sms'
-                    ) {
+                    } else if (channel.toLowerCase() == 'sms') {
 
                         type = 2;
 
                     } else if (
-                        channel.toLowerCase() == 'push notification'
+                        channel.toLowerCase() ==
+                        'push notification'
                     ) {
 
                         type = 3;
 
                     } else if (
-                        channel.toLowerCase() == 'whatsapp'
+                        channel.toLowerCase() ==
+                        'whatsapp'
                     ) {
 
                         type = 4;
@@ -933,18 +937,6 @@
                         existingTemplate,
                         type
                     );
-
-                    // RESELECT TEMPLATE AFTER LOAD
-                    setTimeout(function() {
-
-                        if (existingTemplate) {
-
-                            $('#template')
-                                .val(existingTemplate)
-                                .trigger('change');
-                        }
-
-                    }, 500);
                 });
 
 
@@ -1198,7 +1190,7 @@
 
 
                     } else if (
-                       recipientType.includes('dynamic')
+                        recipientType.includes('dynamic')
                     ) {
 
                         $('#dynamicVariableSection')

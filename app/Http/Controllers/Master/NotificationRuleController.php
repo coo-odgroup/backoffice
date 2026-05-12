@@ -18,204 +18,237 @@ class NotificationRuleController extends Controller
         return view('Master.viewNotificationRules');
     }
 
-  public function dataTableView()
-{
-    $recordsTotal = 0;
-    $recordsFiltered = 0;
-    $data = [];
-
-    try {
-
-        $draw = request('draw');
-
-        $txtSearch = htmlEncode(request('cronName'));
-
-        $status = (request('selStatus') !== null && request('selStatus') !== '')
-            ? (int) request('selStatus')
-            : '';
-
-        $channel = (request('channel') !== null && request('channel') !== '')
-            ? (int) request('channel')
-            : '';
-
-        $recipient = (request('recipient') !== null && request('recipient') !== '')
-            ? (int) request('recipient')
-            : '';
-
-        $condition = htmlEncode(request('condition'));
-
-        $start = request()->input('start', 0);
-        $length = request()->input('length', 10);
-
-        $start = is_numeric($start) ? (int) $start : 0;
-        $length = is_numeric($length) ? (int) $length : 10;
-
-        $dataQuery = DB::table('odbusmaster.cron_job_notifications as cjn')
-
-            ->leftJoin(
-                'odbusmaster.mst_cron_jobs as cj',
-                'cj.id',
-                '=',
-                'cjn.cron_job_id'
-            )
-
-            ->leftJoin(
-                'odbusmaster.mst_notification_templates as mt',
-                'mt.id',
-                '=',
-                'cjn.template_id'
-            )
-
-            ->leftJoin(
-                'odbusmaster.mst_roles as mr',
-                'mr.id',
-                '=',
-                'cjn.role_type'
-            )
-
-            ->select(
-                'cjn.id',
-                'cjn.channel',
-                'cjn.reciptent_type',
-                'cjn.recipient_value',
-                'cjn.template_id',
-                'mt.name as template_name',
-                'mr.name as role_name',
-                'cjn.role_type',
-                'cjn.status_condition',
-                'cjn.active_status',
-                'cjn.created_at',
-                'cj.name as cron_name'
-            );
-
-        if (!empty($txtSearch)) {
-
-            $dataQuery->where(function ($q) use ($txtSearch) {
-
-                $q->where('cj.name', 'like', "%{$txtSearch}%")
-                    ->orWhere('cjn.recipient_value', 'like', "%{$txtSearch}%")
-                    ->orWhere('mt.name', 'like', "%{$txtSearch}%")
-                    ->orWhere('mr.name', 'like', "%{$txtSearch}%")
-                    ->orWhere('cjn.status_condition', 'like', "%{$txtSearch}%");
-            });
-        }
-
-        if (isset($status) && $status !== '') {
-            $dataQuery->where('cjn.active_status', $status);
-        }
-
-        if (!empty($channel)) {
-            $dataQuery->where('cjn.channel', $channel);
-        }
-
-        if (!empty($recipient)) {
-            $dataQuery->where('cjn.reciptent_type', $recipient);
-        }
-
-        if (!empty($condition)) {
-            $dataQuery->where('cjn.status_condition', $condition);
-        }
-
-        $count = $dataQuery->count('cjn.id');
-
-        if (!empty(request('order'))) {
-
-            $columns = [
-                2 => 'cj.name',
-                3 => 'cjn.channel',
-                4 => 'cjn.reciptent_type',
-                5 => 'cjn.recipient_value',
-                6 => 'mt.name',
-                7 => 'mr.name',
-                8 => 'cjn.status_condition',
-                9 => 'cjn.created_at',
-                10 => 'cjn.active_status'
-            ];
-
-            $orderBy = request('order');
-            $orderColumn = $columns[$orderBy[0]['column']] ?? 'cjn.id';
-            $orderType = $orderBy[0]['dir'];
-
-        } else {
-
-            $orderColumn = 'cjn.id';
-            $orderType = 'desc';
-        }
-
-        $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
-
-        if ($length == -1) {
-
-            $arrRes = $dataQuery->get();
-
-        } else {
-
-            $arrRes = $dataQuery
-                ->limit($length)
-                ->offset($start)
-                ->get();
-        }
-
-        if (count($arrRes) > 0) {
-
-            foreach ($arrRes as $val) {
-
-                $val->enc_id = Crypt::encryptString($val->id);
-
-                $val->channel = match ((int) $val->channel) {
-                    1 => 'Email',
-                    2 => 'SMS',
-                    3 => 'Push Notification',
-                    4 => 'WhatsApp',
-                    default => '--'
-                };
-
-                $val->recipient_type = match ((int) $val->reciptent_type) {
-                    1 => 'Manual',
-                    2 => 'Role Based',
-                    3 => 'Dynamic Variable',
-                    default => '--'
-                };
-
-                $val->recipient_value = $val->recipient_value ?? '--';
-                $val->template_id = $val->template_name ?? '--';
-                $val->role_type = $val->role_name ?? '--';
-                $val->status_condition = $val->status_condition ?? '--';
-                $val->created_date = $val->created_at? date('d-M-Y H:i:s', strtotime($val->created_at)): '--';
-                $val->created_by_name = '--';
-                $val->updated_by_name = '--';
-                $val->updated_date = '--';
-                $val->is_active = ($val->active_status == 1)? 'Active': 'Inactive';
-                $val->cron_name = $val->cron_name ?? '--';
-            }
-        }
-
-        $recordsTotal = $count;
-        $recordsFiltered = $count;
-        $data = $arrRes;
-
-    } catch (\Throwable $t) {
-
-        Log::info(
-            "Exception occurred in NotificationRuleController@dataTableView",
-            [
-                'error_message' => $t->getMessage(),
-                'trace' => $t->getTraceAsString()
-            ]
-        );
-
+    public function dataTableView()
+    {
         $recordsTotal = 0;
         $recordsFiltered = 0;
         $data = [];
-    }
 
-    return response()->json([
-        'draw' => intval($draw),
-        'recordsTotal' => $recordsTotal,
-        'recordsFiltered' => $recordsFiltered,
-        'data' => $data,
-    ]);
-}
+        try {
+
+            $draw = request('draw');
+            $txtSearch = htmlEncode(request('cronName'));
+            $status = (request('selStatus') !== null && request('selStatus') !== '')? (int) request('selStatus'): '';
+            $channel = (request('channel') !== null && request('channel') !== '')? (int) request('channel'): '';
+            $recipient = (request('recipient') !== null && request('recipient') !== '')? (int) request('recipient'): '';
+            $condition = htmlEncode(request('condition'));
+
+            $start = request()->input('start', 0);
+            $length = request()->input('length', 10);
+
+            $start = is_numeric($start) ? (int) $start : 0;
+            $length = is_numeric($length) ? (int) $length : 10;
+
+            $dataQuery = DB::table('odbusmaster.cron_job_notifications as cjn')
+
+                ->select(
+
+                    'cjn.id',
+                    'cjn.channel',
+                    'cjn.reciptent_type',
+                    'cjn.recipient_value',
+                    'cjn.template_id',
+                    'cjn.role_type',
+                    'cjn.status_condition',
+                    'cjn.active_status',
+                    'cjn.created_at',
+
+                    DB::raw('(
+                    SELECT name
+                    FROM odbusmaster.mst_cron_jobs
+                    WHERE id = cjn.cron_job_id
+                    LIMIT 1
+                ) as cron_name'),
+
+                    DB::raw('(
+                    SELECT name
+                    FROM odbusmaster.mst_notification_templates
+                    WHERE id = cjn.template_id
+                    LIMIT 1
+                ) as template_name'),
+
+                    DB::raw('(
+                    SELECT name
+                    FROM odbusmaster.mst_roles
+                    WHERE id = cjn.role_type
+                    LIMIT 1
+                ) as role_name')
+                );
+
+            if (!empty($txtSearch)) {
+
+                $dataQuery->where(function ($q) use ($txtSearch) {
+
+                    $q->whereRaw("
+                        (
+                            SELECT name
+                            FROM odbusmaster.mst_cron_jobs
+                            WHERE id = cjn.cron_job_id
+                            LIMIT 1
+                        ) LIKE ?
+                    ", ["%{$txtSearch}%"])
+
+                        ->orWhere(
+                            'cjn.recipient_value',
+                            'like',
+                            "%{$txtSearch}%"
+                        )
+
+                        ->orWhereRaw("
+                        (
+                            SELECT name
+                            FROM odbusmaster.mst_notification_templates
+                            WHERE id = cjn.template_id
+                            LIMIT 1
+                        ) LIKE ?
+                    ", ["%{$txtSearch}%"])
+
+                        ->orWhereRaw("
+                        (
+                            SELECT name
+                            FROM odbusmaster.mst_roles
+                            WHERE id = cjn.role_type
+                            LIMIT 1
+                        ) LIKE ?
+                    ", ["%{$txtSearch}%"])
+
+                        ->orWhere(
+                            'cjn.status_condition',
+                            'like',
+                            "%{$txtSearch}%"
+                        );
+                });
+            }
+
+            if (isset($status) && $status !== '') {
+                $dataQuery->where('cjn.active_status', $status);
+            }
+
+            if (!empty($channel)) {
+                $dataQuery->where('cjn.channel', $channel);
+            }
+
+            if (!empty($recipient)) {
+                $dataQuery->where('cjn.reciptent_type', $recipient);
+            }
+
+            if (!empty($condition)) {
+                $dataQuery->where('cjn.status_condition', $condition);
+            }
+
+            $count = $dataQuery->count('cjn.id');
+
+            if (!empty(request('order'))) {
+
+                $columns = [
+                    2 => 'cron_name',
+                    3 => 'cjn.channel',
+                    4 => 'cjn.reciptent_type',
+                    5 => 'cjn.recipient_value',
+                    6 => 'template_name',
+                    7 => 'role_name',
+                    8 => 'cjn.status_condition',
+                    9 => 'cjn.created_at',
+                    10 => 'cjn.active_status'
+                ];
+
+                $orderBy = request('order');
+
+                $orderColumn = $columns[$orderBy[0]['column']] ?? 'cjn.id';
+
+                $orderType = $orderBy[0]['dir'];
+            } else {
+
+                $orderColumn = 'cjn.id';
+
+                $orderType = 'desc';
+            }
+
+            $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
+
+            if ($length == -1) {
+
+                $arrRes = $dataQuery->get();
+            } else {
+
+                $arrRes = $dataQuery
+                    ->limit($length)
+                    ->offset($start)
+                    ->get();
+            }
+
+            if (count($arrRes) > 0) {
+
+                foreach ($arrRes as $val) {
+
+                    $val->enc_id = Crypt::encryptString($val->id);
+
+                    $val->channel = match ((int) $val->channel) {
+                        1 => 'Email',
+                        2 => 'SMS',
+                        3 => 'Push Notification',
+                        4 => 'WhatsApp',
+                        default => '--'
+                    };
+
+                    $val->recipient_type = match ((int) $val->reciptent_type) {
+                        1 => 'Manual',
+                        2 => 'Role Based',
+                        3 => 'Dynamic Variable',
+                        default => '--'
+                    };
+
+                    $val->recipient_value = $val->recipient_value ?? '--';
+
+                    $val->template_id = $val->template_name ?? '--';
+
+                    $val->role_type = $val->role_name ?? '--';
+
+                    $val->status_condition = $val->status_condition ?? '--';
+
+                    $val->created_date = $val->created_at
+                        ? date('d-M-Y H:i:s', strtotime($val->created_at))
+                        : '--';
+
+                    $val->created_by_name = '--';
+
+                    $val->updated_by_name = '--';
+
+                    $val->updated_date = '--';
+
+                    $val->is_active = ($val->active_status == 1)
+                        ? 'Active'
+                        : 'Inactive';
+
+                    $val->cron_name = $val->cron_name ?? '--';
+                }
+            }
+
+            $recordsTotal = $count;
+            $recordsFiltered = $count;
+            $data = $arrRes;
+        } catch (\Throwable $t) {
+
+            Log::info(
+                "Exception occurred in NotificationRuleController@dataTableView",
+                [
+                    'error_message' => $t->getMessage(),
+                    'trace' => $t->getTraceAsString()
+                ]
+            );
+
+            $recordsTotal = 0;
+            $recordsFiltered = 0;
+            $data = [];
+        }
+
+        return response()->json([
+            'draw' => intval($draw),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data,
+        ]);
+    }
 
     public function add($encId = null)
     {
@@ -570,10 +603,10 @@ class NotificationRuleController extends Controller
                         }
 
                         $html .= '
-            <div class="date-box text-center mb-2 p-2 border rounded bg-light" style="' . $style . '">
-                ' . $dateObj->format('d-M-Y') . '
-            </div>';
-                    }
+                        <div class="date-box text-center mb-2 p-2 border rounded bg-light" style="' . $style . '">
+                            ' . $dateObj->format('d-M-Y') . '
+                        </div>';
+                                }
 
                     $html .= '</div>';
                 }
