@@ -416,7 +416,6 @@
                     className: "text-center"
                 }
             ];
-            console.log(searchParams);
             loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
         }
 

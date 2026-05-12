@@ -291,8 +291,12 @@
                     data: '',
                     render: function(data, type, row) {
                         return `<div class="checkbox">
-                                            <input class="chkItem" type="checkbox" value="${row.id}">
-                                        </div>`;
+                            <input class="chkItem"
+                                type="checkbox"
+                                id="check${row.id}"
+                                name="chk${row.id}"
+                                value="${row.id}">
+                        </div>`;
                     },
                     className: "noPrint text-center"
                 },
@@ -503,7 +507,7 @@
                     className: "noPrint text-center"
                 }
             ]
-
+            commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
             loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
         }
         $(document).on('click', '.btnViewSchedule', function() {
