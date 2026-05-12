@@ -264,11 +264,11 @@
             }
 
             $('#pageSizeDatatable').val(10);
-            let txtSearch = '';
+            let cronName = '';
             let selStatus = '';
 
             if ($('#cronName').val() != '') {
-                txtSearch = $('#cronName').val();
+                cronName = $('#cronName').val();
             }
 
             if ($('#selStatus').val() != '') {
@@ -279,7 +279,7 @@
             let tableId = 'datatable';
             let orderBy = [2, 'asc'];
             let searchParams = {
-                txtSearch: txtSearch,
+                cronName: cronName,
                 selStatus: selStatus,
                 type: $('#type').val() || '',
                 scheduler: $('#scheduler').val() || '',
@@ -348,13 +348,13 @@
                         let intervalMinutes = row.interval_minutes ?? '--';
 
                         return `
-            <span
-                class="fw-semibold text-decoration-underline cursor-pointer"
-                data-bs-toggle="tooltip"
-                data-bs-placement="top"
-                data-bs-html="true"
-                title="
-                    <div class='audit-box text-start'>
+                            <span
+                                class="fw-semibold text-decoration-underline cursor-pointer"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-html="true"
+                                title="
+                                    <div class='audit-box text-start'>
 
                         <div>
                             <strong>Interval Minutes:</strong>
@@ -366,18 +366,18 @@
                         <div>
                             <strong>Run Times:</strong><br>
 
-                           ${(row.run_times_json || '--')
-    .split(',')
-    .filter(time => time.trim() !== '')
-    .map(time => '- ' + time.trim())
-    .join('<br>')}
-                        </div>
+                                                    ${(row.run_times_json || '--')
+                                .split(',')
+                                .filter(time => time.trim() !== '')
+                                .map(time => '- ' + time.trim())
+                                .join('<br>')}
+                                                    </div>
 
-                    </div>
-                ">
-                ${row.scheduler_type ?? '--'}
-            </span>
-        `;
+                                                </div>
+                                            ">
+                                            ${row.scheduler_type ?? '--'}
+                                        </span>
+                                    `;
                     },
                     className: "text-start"
                 },

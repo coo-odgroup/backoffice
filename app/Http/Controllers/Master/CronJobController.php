@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CommonController;
+use Mews\Purifier\Facades\Purifier;
 
 class CronJobController extends Controller
 {
@@ -26,23 +27,11 @@ class CronJobController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtSearch'));
-
-            $type = request('type') !== null && request('type') !== ''
-                ? request('type')
-                : null;
-
-            $scheduler = request('scheduler') !== null && request('scheduler') !== ''
-                ? request('scheduler')
-                : null;
-
-            $execution = request('execution') !== null && request('execution') !== ''
-                ? request('execution')
-                : null;
-
-            $status = request('selStatus') !== null && request('selStatus') !== ''
-                ? (int) request('selStatus')
-                : null;
+            $cronName = htmlEncode(Purifier::clean(request('cronName') ));
+            $type = request('type') !== null && request('type') !== ''? request('type'): null;
+            $scheduler = request('scheduler') !== null && request('scheduler') !== '' ? request('scheduler') : null;
+            $execution = request('execution') !== null && request('execution') !== '' ? request('execution') : null;
+            $status = request('selStatus') !== null && request('selStatus') !== '' ? (int) request('selStatus') : null;
 
             $start  = request('start', 0);
             $length = request('length', 10);
@@ -56,7 +45,6 @@ class CronJobController extends Controller
                     'cj.type',
                     'cj.schedule_type',
 
-                    // TYPE NAME (SCHEDULER_TYPE)
                     DB::raw('(
                             SELECT annexture_name
                             FROM odbusmaster.mst_annexture
@@ -65,35 +53,32 @@ class CronJobController extends Controller
                             LIMIT 1
                         ) as type_name'),
 
-                    // SCHEDULER NAME (SCHEDULER_TYPE)
                     DB::raw('(
                             SELECT annexture_name
                             FROM odbusmaster.mst_annexture
                             WHERE annexture_type_id = 20
                             AND annexture_value = cj.schedule_type
                             LIMIT 1
-                        ) as scheduler_name'),
-                    'cj.interval_minutes',
-                    'cj.run_times_json',
-                    'cj.cron_expression',
-                    'cj.execution_type',
-                    'cj.job_class',
-                    'cj.command_name',
-                    'cj.active_status',
-                    'cj.created_at',
-                    'cj.updated_at',
+                                ) as scheduler_name'),
+                            'cj.interval_minutes',
+                            'cj.run_times_json',
+                            'cj.cron_expression',
+                            'cj.execution_type',
+                            'cj.job_class',
+                            'cj.command_name',
+                            'cj.active_status',
+                            'cj.created_at',
+                            'cj.updated_at',
 
                     DB::raw('(SELECT name FROM odbusmaster.users WHERE id = cj.created_by LIMIT 1) as created_by_name'),
-
                     DB::raw('(SELECT name FROM odbusmaster.users WHERE id = cj.updated_by LIMIT 1) as updated_by_name')
                 );
 
             $recordsTotal = DB::table('odbusmaster.mst_cron_jobs')->count();
+    
+            if (!empty(trim($cronName))) {
 
-            // SEARCH
-            if (!empty(trim($txtSearch))) {
-
-                $search = trim($txtSearch);
+                $search = trim($cronName);
 
                 $query->where(function ($q) use ($search) {
 
@@ -108,7 +93,7 @@ class CronJobController extends Controller
                 });
             }
 
-            // FILTERS
+
             if (!empty($type)) {
                 $query->where('cj.type', $type);
             }
@@ -248,26 +233,81 @@ class CronJobController extends Controller
 
                 DB::beginTransaction();
 
+                $cronName = htmlEncode(ucwords(strtolower(Purifier::clean(request('cronName')))));
+
+
+                $slug = htmlEncode(strtolower(Purifier::clean(
+                    request('slug')))
+                    );
+
+
+                $type = (int) Purifier::clean(
+                    request('type')
+                );
+
+                $scheduler = (int) Purifier::clean(
+                    request('scheduler')
+                );
+
+                $interval = Purifier::clean(
+                    request('interval')
+                );
+
+                $execution = htmlEncode(
+                    Purifier::clean(
+                        request('execution')
+                    )
+                );
+
+                $cron = htmlEncode(
+                    Purifier::clean(
+                        request('cron')
+                    )
+                );
+
+                $job = htmlEncode(
+                    Purifier::clean(
+                        request('job')
+                    )
+                );
+
+                $command = htmlEncode(
+                    Purifier::clean(
+                        request('command')
+                    )
+                );
+
+                $runTimes = [];
+
+                if (!empty(request('runTime'))) {
+
+                    foreach (request('runTime') as $time) {
+
+                        $time = trim(
+                            htmlEncode(
+                                Purifier::clean($time)
+                            )
+                        );
+
+                        if (!empty($time)) {
+                            $runTimes[] = $time;
+                        }
+                    }
+                }
+
                 $insertData = [
 
-                    'name'              => request('cronName'),
-                    'slug'              => request('slug'),
-                    'type'              => request('type'),
-                    'schedule_type'     => request('scheduler'),
-                    'interval_minutes'  => request('interval') ?: null,
-                    'run_times_json' => !empty(request('runTime'))
-                        ? json_encode(
-                            array_values(
-                                array_filter(request('runTime'))
-                            )
-                        )
-                        : null,
-                    'cron_expression'   => request('cron') ?: null,
-                    'execution_type'    => request('execution'),
-                    'job_class'         => request('job') ?: null,
-                    'command_name'      => request('command') ?: null,
-                    'active_status'     => 1,
-
+                    'name' => $cronName,
+                    'slug' => $slug,
+                    'type' => $type,
+                    'schedule_type' => $scheduler,
+                    'interval_minutes' =>!empty($interval)? $interval : null,
+                    'run_times_json' =>!empty($runTimes)? json_encode(array_values($runTimes)) : null,
+                    'cron_expression' =>!empty($cron) ? $cron : null,
+                    'execution_type' => $execution,
+                    'job_class' =>!empty($job)? $job : null,
+                    'command_name' =>!empty($command) ? $command : null,
+                    'active_status' => 1,
                 ];
 
                 if ($id > 0) {
@@ -510,7 +550,7 @@ class CronJobController extends Controller
         }
     }
 
-        public function cronNotificationRule($encId = null)
+    public function cronNotificationRule($encId = null)
     {
         $data = [];
 
