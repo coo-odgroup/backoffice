@@ -259,9 +259,7 @@
         aria-hidden="true">
 
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-
             <div class="modal-content border-0 shadow-lg">
-
                 <!-- HEADER -->
                 <div class="modal-header bg-primary text-white">
                     <div>
@@ -280,15 +278,10 @@
                 <div class="modal-body bg-light">
                     <!-- CRON SUMMARY -->
                     <div class="card border-0 shadow-sm mb-3">
-
                         <div class="card-body p-0">
-
                             <div class="table-responsive">
-
                                 <table class="table table-bordered align-middle mb-0">
-
                                     <thead class="table-primary">
-
                                         <tr>
                                             <th>Cron Name</th>
                                             <th>Cron Type</th>
@@ -297,47 +290,20 @@
                                             <th>Scheduled Time</th>
                                             <th>Status</th>
                                         </tr>
-
                                     </thead>
-
                                     <tbody>
-
                                         <tr>
-
-                                            <td id="summaryCronNameModal">
-                                                --
-                                            </td>
-
-                                            <td id="summaryCronTypeModal">
-                                                --
-                                            </td>
-
-                                            <td id="summaryExecutionTypeModal">
-                                                --
-                                            </td>
-
-                                            <td id="summaryScheduleTypeModal">
-                                                --
-                                            </td>
-
-                                            <td id="summarySchedulerModal">
-                                                --
-                                            </td>
-
-                                            <td id="summaryStatusModal">
-                                                --
-                                            </td>
-
+                                            <td id="summaryCronNameModal">--</td>
+                                            <td id="summaryCronTypeModal">--</td>
+                                            <td id="summaryExecutionTypeModal">--</td>
+                                            <td id="summaryScheduleTypeModal">--</td>
+                                            <td id="summarySchedulerModal">--</td>
+                                            <td id="summaryStatusModal">--</td>
                                         </tr>
-
                                     </tbody>
-
                                 </table>
-
                             </div>
-
                         </div>
-
                     </div>
                 </div>
 

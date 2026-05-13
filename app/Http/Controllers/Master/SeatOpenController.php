@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CommonController;
+use Mews\Purifier\Facades\Purifier;
 
 class SeatOpenController extends Controller
 {
@@ -207,15 +208,27 @@ class SeatOpenController extends Controller
 
         try {
 
-            $value = (!empty($encId)) ? Crypt::decryptString($encId) : '';
+            $value = (!empty($encId))
+    ? htmlEncode(
+        Purifier::clean(
+            Crypt::decryptString($encId)
+        )
+    )
+    : '';
 
             if (!empty($value)) {
 
                 $arr = explode('|', $value);
 
-                $busId  = $arr[0] ?? 0;
-                $opDate = $arr[1] ?? '';
+                $busId = (int) Purifier::clean(
+    $arr[0] ?? 0
+);
 
+$opDate = htmlEncode(
+    Purifier::clean(
+        $arr[1] ?? ''
+    )
+);
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
@@ -258,7 +271,10 @@ class SeatOpenController extends Controller
                     return back()->withErrors($validator)->withInput();
                 }
 
-                $seatOperations = json_decode(request('seat_operations'), true);
+                $seatOperations = json_decode(
+                    Purifier::clean(request('seat_operations')),
+                    true
+                );
 
                 if ($method == 'Edit' && empty($seatOperations)) {
 
@@ -328,8 +344,15 @@ class SeatOpenController extends Controller
 
                 $userId   = session('userid') ?? auth()->id() ?? 1;
                 $now      = now();
-                $busId    = request('bus');
-                $reasonId = request('reason');
+                $busId = (int) Purifier::clean(
+                    request('bus')
+                );
+
+                $reasonId = htmlEncode(
+                    Purifier::clean(
+                        request('reason')
+                    )
+                );
 
                 $reason = DB::connection('mysql_dev')
                     ->table('odbusmaster.mst_annexture as ma')
@@ -342,18 +365,20 @@ class SeatOpenController extends Controller
                     ->where('mat.annexture_type', 'REASON')
                     ->where('ma.annexture_value', $reasonId)
                     ->where('ma.active_status', 1)
-                    ->value('ma.annexture_value'); // ✅ STORE VALUE (2,3,...)
+                    ->value('ma.annexture_value');
 
                 $reason = $reason ?: 'Other';
-
-                $layoutId = $seatOperations[0]['seat_layout_id'] ?? 0;
+                $layoutId = (int) Purifier::clean(
+                    $seatOperations[0]['seat_layout_id'] ?? 0
+                );
 
                 $validRows = [];
 
                 foreach ($seatOperations as $seat) {
 
-                    $operationDate = $seat['operation_date'] ?? null;
-                    $seatCode      = trim((string)($seat['seat_code'] ?? ''));
+                    $operationDate = htmlEncode(Purifier::clean($seat['operation_date'] ?? null));
+                    $seatCode = trim(htmlEncode(Purifier::clean((string)($seat['seat_code'] ?? ''))));
+                    
 
                     if (!$operationDate || $seatCode == '') {
                         continue;
@@ -415,13 +440,17 @@ class SeatOpenController extends Controller
 
                 if ($method == 'Edit') {
 
-                    $editDate = $seatOperations[0]['operation_date'] ?? ($opDate ?? null);
+                   $editDate = htmlEncode(Purifier::clean($seatOperations[0]['operation_date'] ?? ($opDate ?? null)));
 
                     if ($editDate) {
 
-                        $selectedSeats = collect($seatOperations)
+                        $selectedSeats = collect(Purifier::clean($seatOperations))
                             ->pluck('seat_code')
-                            ->map(fn($v) => trim((string)$v))
+                            ->map(fn($v) => trim(
+                                htmlEncode(
+                                    Purifier::clean((string)$v)
+                                )
+                            ))
                             ->filter()
                             ->values()
                             ->toArray();
@@ -469,9 +498,7 @@ class SeatOpenController extends Controller
                     }
                 }
 
-                /*
-            Insert only new seats
-            */
+
                 if (!empty($validRows)) {
 
                     foreach ($validRows as $row) {
@@ -480,40 +507,30 @@ class SeatOpenController extends Controller
                             ->table('bus_seat_operation')
                             ->insertGetId($row);
 
-                        /*
-        Default:
-        New seat opened in Add
-        */
+
                         $action      = 1;
                         $oldCategory = null;
                         $newCategory = 1;
 
-                        /*
-        Check previously unopened then reopened
-        */
+
                         $deletedRecord = DB::connection('mysql_dev')
                             ->table('bus_seat_operation')
                             ->where('bus_id', $row['bus_id'])
                             ->where('category', 1)
-                            ->where('seat_code', $row['seat_code'])
-                            ->whereDate('operation_date', $row['operation_date'])
+                            ->where('seat_code',htmlEncode(Purifier::clean($row['seat_code'])))
+                            ->whereDate('operation_date',htmlEncode(Purifier::clean($row['operation_date'])))
                             ->whereNotNull('deleted_at')
                             ->orderByDesc('id')
                             ->first();
 
                         if ($deletedRecord) {
 
-                            /*
-            Re-open already unopened seat
-            */
+
                             $action = 4;
                             $oldCategory = 1;
                             $newCategory = 2;
                         } elseif ($method == 'Edit') {
 
-                            /*
-            New seat opened in edit
-            */
                             $action = 2;
                             $oldCategory = null;
                             $newCategory = 2;

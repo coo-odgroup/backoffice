@@ -424,20 +424,53 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
         commonAjax.loadBusOperatorDropdown('');
-        commonAjax.loadAnnextureList('REASON',  '#reason');
+        commonAjax.loadAnnextureList([
+            'REASON'
+        ], function(data) {
+
+            renderDropdown(
+                '#reason',
+                data.REASON || []
+            );
+
+            renderDropdown(
+                '#delete_reason',
+                data.REASON || []
+            );
+
+        });
 
         setTimeout(function() {
-            commonAjax.loadCityList('#source');
-            commonAjax.loadCityList('#destination');
+            commonAjax.loadCityList('.selCity');
         }, 300);
-        
-        console.log(commonAjax.loadCityList.toString())
 
+        console.log(commonAjax.loadCityList.toString())
         commonAjax.initClearableInputs();
 
         getDataTableView();
     });
 
+
+    function renderDropdown(selector, items = [], selected = '') {
+
+        let options = '<option value="">Select Option</option>';
+
+        $.each(items, function(index, item) {
+
+            let isSelected =
+                selected == item.annexture_value ?
+                'selected' :
+                '';
+
+            options += `
+            <option value="${item.annexture_value}" ${isSelected}>
+                ${item.annexture_name}
+            </option>
+        `;
+        });
+
+        $(selector).html(options).trigger('change');
+    }
     $('#operator').on('change', function() {
 
         let operator_id = $(this).val();
@@ -647,19 +680,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $('#delete_enc_id').val(encId);
 
-        $('#delete_reason').html('<option value="">Loading...</option>');
+        $('#delete_reason').val('').trigger('change');
 
         let modal = new bootstrap.Modal(
             document.getElementById('deleteReasonModal')
         );
 
         modal.show();
-
-        commonAjax.loadAnnextureList('REASON', '', '#delete_reason');
-
-        setTimeout(function() {
-            $('#delete_reason').trigger('change');
-        }, 300);
     };
 
     window.confirmDeleteSeat = function() {

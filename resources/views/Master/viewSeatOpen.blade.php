@@ -314,17 +314,49 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initSelect2('#destination', 'Select Destination');
 
         commonAjax.loadBusOperatorDropdown('');
-        commonAjax.loadAnnextureList('REASON', '#reason');
+        commonAjax.loadAnnextureList([
+            'REASON'
+        ], function(data) {
+
+            renderDropdown(
+                '#reason',
+                data.REASON || []
+            );
+
+            renderDropdown(
+                '#delete_reason',
+                data.REASON || []
+            );
+
+        });
 
         setTimeout(function() {
-            commonAjax.loadCityList('#source');
-            commonAjax.loadCityList('#destination');
+            commonAjax.loadCityList('.selCity');
         }, 300);
 
         commonAjax.initClearableInputs();
-
         getDataTableView();
     });
+
+    function renderDropdown(selector, items = [], selected = '') {
+
+        let options = '<option value="">Select Option</option>';
+        $.each(items, function(index, item) {
+
+            let isSelected =
+                selected == item.annexture_value ?
+                'selected' :
+                '';
+
+            options += `
+            <option value="${item.annexture_value}" ${isSelected}>
+                ${item.annexture_name}
+            </option>
+        `;
+        });
+
+        $(selector).html(options).trigger('change');
+    }
 
     $('#operator').on('change', function() {
 
@@ -344,79 +376,72 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     window.deleteSingleRecord = function(encId) {
 
         $('#delete_enc_id').val(encId);
-
-        $('#delete_reason').html('<option value="">Loading...</option>');
+        $('#delete_reason').val('').trigger('change');
 
         let modal = new bootstrap.Modal(
             document.getElementById('deleteReasonModal')
         );
 
         modal.show();
-
-        commonAjax.loadAnnextureList('REASON', '', '#delete_reason');
-
-        setTimeout(function() {
-            $('#delete_reason').trigger('change');
-        }, 300);
     };
 
     window.confirmDeleteSeat = function() {
 
-    let encId  = $('#delete_enc_id').val();
-    let reason = $('#delete_reason').val();
+        let encId = $('#delete_enc_id').val();
+        let reason = $('#delete_reason').val();
 
-    if (reason == '') {
-        commonAjax.viewAlert('Please select reason');
-        return;
-    }
-
-    $.ajax({
-        url: "{{ route('seat-open.delete') }}",
-        type: "POST",
-        dataType: "json",
-
-        data: {
-            _token: "{{ csrf_token() }}",
-            id: encId,
-            reason: reason
-        },
-
-        beforeSend: function() {
-
-            $('.seat-delete-btn')
-                .prop('disabled', true)
-                .html('<i class="fa fa-spinner fa-spin me-1"></i>Deleting...');
-        },
-
-        success: function(res) {
-
-            let modalEl = document.getElementById('deleteReasonModal');
-            let modal = bootstrap.Modal.getInstance(modalEl);
-
-            if (modal) {
-                modal.hide();
-            }
-
-            $('#delete_reason').val('').trigger('change');
-            $('#delete_enc_id').val('');
-
-            getDataTableView(false);
-        },
-
-        error: function(xhr) {
-
-            console.log(xhr.responseText);
-            commonAjax.viewAlert('Delete failed');
-        },
-
-        complete: function() {
-
-            $('.seat-delete-btn')
-                .prop('disabled', false)
-                .html('<i class="fa fa-trash me-1"></i>Delete');
+        if (reason == '') {
+            commonAjax.viewAlert('Please select reason');
+            return;
         }
-    });
-};
+
+        $.ajax({
+            url: "{{ route('seat-open.delete') }}",
+            type: "POST",
+            dataType: "json",
+
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: encId,
+                reason: reason
+            },
+
+            beforeSend: function() {
+
+                $('.seat-delete-btn')
+                    .prop('disabled', true)
+                    .html('<i class="fa fa-spinner fa-spin me-1"></i>Deleting...');
+            },
+
+            success: function(res) {
+
+                let modalEl = document.getElementById('deleteReasonModal');
+                let modal = bootstrap.Modal.getInstance(modalEl);
+
+                if (modal) {
+                    modal.hide();
+                }
+
+                $('#delete_reason').val('').trigger('change');
+                $('#delete_enc_id').val('');
+
+                getDataTableView(false);
+            },
+
+            error: function(xhr) {
+
+                console.log(xhr.responseText);
+                commonAjax.viewAlert('Delete failed');
+            },
+
+            complete: function() {
+
+                $('.seat-delete-btn')
+                    .prop('disabled', false)
+                    .html('<i class="fa fa-trash me-1"></i>Delete');
+            }
+        });
+    };
 
     window.getDataTableView = function(reset = true) {
 

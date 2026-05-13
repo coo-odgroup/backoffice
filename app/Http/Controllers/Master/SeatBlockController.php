@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\CommonController;
+use Mews\Purifier\Facades\Purifier;
 
 class SeatBlockController extends Controller
 {
@@ -70,15 +71,15 @@ class SeatBlockController extends Controller
                     'bso.category',
 
                     DB::raw("(
-                    SELECT ma.annexture_name
-                    FROM odbusmaster.mst_annexture ma
-                    JOIN odbusmaster.mst_annexture_type mat 
-                        ON mat.id = ma.annexture_type_id
-                    WHERE mat.annexture_type = 'REASON'
-                    AND ma.annexture_value = bso.reason
-                    AND ma.active_status = 1
-                    LIMIT 1
-                ) as reason"),
+                                SELECT ma.annexture_name
+                                FROM odbusmaster.mst_annexture ma
+                                JOIN odbusmaster.mst_annexture_type mat 
+                                    ON mat.id = ma.annexture_type_id
+                                WHERE mat.annexture_type = 'REASON'
+                                AND ma.annexture_value = bso.reason
+                                AND ma.active_status = 1
+                                LIMIT 1
+                            ) as reason"),
 
                     'bso.created_at',
                     'bso.updated_at',
@@ -285,7 +286,7 @@ class SeatBlockController extends Controller
                     return back()->withErrors($validator)->withInput();
                 }
 
-                $seatOperations = json_decode(request('seat_operations'), true);
+                $seatOperations = json_decode(Purifier::clean(request('seat_operations')), true);
 
                 /* Edit mode: no seat selected = unblock all */
                 if ($method == 'Edit' && empty($seatOperations)) {
@@ -323,20 +324,20 @@ class SeatBlockController extends Controller
 
                 $userId   = session('userid') ?? auth()->id() ?? 1;
                 $now      = now();
-                $reasonId = request('reason');
 
-              $reason = request('reason');
+                $reasonId = htmlEncode(Purifier::clean(request('reason')));
+                $reason = htmlEncode(Purifier::clean(request('reason')));
 
                 $validRows = [];
 
                 if ($method == 'Edit') {
 
                     $editDate = $seatOperations[0]['operation_date'] ?? ($opDate ?? null);
-                    $busId = request('bus');
+                    $busId = (int) Purifier::clean(request('bus'));
 
                     $submittedIds = collect($seatOperations)
                         ->pluck('bus_seat_id')
-                        ->map(fn($v) => (int)$v)
+                        ->map(fn($v) => (int) Purifier::clean($v))
                         ->toArray();
 
                     $removedSeats = DB::connection('mysql_dev')
@@ -392,16 +393,17 @@ class SeatBlockController extends Controller
 
                 foreach ($seatOperations as $seat) {
 
-                    $busSeatId      = (int)($seat['bus_seat_id'] ?? 0);
-                    $operationDate  = $seat['operation_date'] ?? null;
+                    $busSeatId = (int) Purifier::clean($seat['bus_seat_id'] ?? 0);
+                    $operationDate = htmlEncode(Purifier::clean($seat['operation_date'] ?? null));
 
                     if ($busSeatId <= 0 || empty($operationDate)) {
                         continue;
                     }
 
-                    $seatCode = trim((string)($seat['seat_code'] ?? ''));
-                    $layoutId = (int)($seat['seat_layout_id'] ?? 0);
-                    $category = (int)($seat['category'] ?? 2);
+                    $seatCode = trim(htmlEncode(Purifier::clean((string)($seat['seat_code'] ?? ''))));
+                    $layoutId = (int) Purifier::clean($seat['seat_layout_id'] ?? 0);
+                    $category = (int) Purifier::clean($seat['category'] ?? 2);
+
                     $existing = DB::connection('mysql_dev')
                         ->table('bus_seat_operation')
                         ->where('bus_seat_id', $busSeatId)
