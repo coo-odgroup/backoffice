@@ -227,6 +227,17 @@ class BusScheduleController extends Controller
                     ->pluck('entry_date')
                     ->toArray();
 
+                $data['selectedWeekDays'] = DB::table('odbusdev.bus_schedule_days')
+                    ->where('bus_schedule_id', $id)
+                    ->pluck('day_number')
+                    ->toArray();
+
+                $data['selectedCustomDates'] = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $id)
+                    ->orderBy('entry_date')
+                    ->pluck('entry_date')
+                    ->toArray();
+
                 $bus_id = $row->bus_id;
             } else {
 
@@ -285,7 +296,7 @@ class BusScheduleController extends Controller
                 $custom_dates = htmlEncode(Purifier::clean(request('custom_dates')));
 
                 if (
-                    $schedule_type == 'Daily' &&
+                    $schedule_type == 'daily' &&
                     empty($running_cycle)
                 ) {
 
@@ -296,7 +307,7 @@ class BusScheduleController extends Controller
                 }
 
                 if (
-                    $schedule_type == 'Weekly' &&
+                    $schedule_type == 'weekly' &&
                     empty($week_days)
                 ) {
 
@@ -343,7 +354,7 @@ class BusScheduleController extends Controller
                     'bus_id'        => $bus_id,
                     'schedule_type' => $schedule_type,
                     'start_date'    => $from_date,
-                    'running_cycle' => ($schedule_type == 'Daily') ? $running_cycle : null,
+                    'running_cycle' => ($schedule_type == 'daily') ? $running_cycle : null,
                     'active_status' => 1,
                 ];
 
@@ -359,7 +370,7 @@ class BusScheduleController extends Controller
                         'bus_id'        => $bus_id,
                         'schedule_type' => $schedule_type,
                         'start_date'    => $from_date,
-                        'running_cycle' => ($schedule_type == 'Daily')
+                        'running_cycle' => ($schedule_type == 'daily')
                             ? $running_cycle
                             : null,
                         'active_status' => 1,
@@ -436,7 +447,7 @@ class BusScheduleController extends Controller
                 }
 
                 $dates = [];
-                if ($schedule_type == 'Daily') {
+                if ($schedule_type == 'daily') {
 
                     $current = \Carbon\Carbon::parse($from_date);
                     for ($i = 0; $i < 30; $i++) {
@@ -452,7 +463,7 @@ class BusScheduleController extends Controller
                     }
                 }
 
-                if ($schedule_type == 'Weekly') {
+                if ($schedule_type == 'weekly') {
 
                     $dates = $this->prepareWeeklyBusScheduleDates(
                         $schedule_id,
@@ -513,7 +524,7 @@ class BusScheduleController extends Controller
                 DB::table('odbusdev.bus')
                     ->where('id', $bus_id)
                     ->update([
-                        'running_cycle' => ($schedule_type == 'Daily') ? $running_cycle : null,
+                        'running_cycle' => ($schedule_type == 'daily') ? $running_cycle : null,
                         'updated_at' => now()
 
                     ]);

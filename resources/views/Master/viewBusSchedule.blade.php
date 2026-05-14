@@ -58,9 +58,9 @@
                             <label for="scheduleType">Schedule Type:</label>
                             <select class="form-select form-select-sm" id="scheduleType" name="scheduleType">
                                 <option value="">Select Schedule Type:</option>
-                                <option value="Daily">Daily</option>
-                                <option value="Weekly">Weekly</option>
-                                <option value="Custom">Custom</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="custom">Custom</option>
                             </select>
                         </div>
 

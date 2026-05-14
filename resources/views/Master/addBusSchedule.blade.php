@@ -93,8 +93,8 @@
                                                                 name="schedule_type">
 
                                                                 <option value="">Select Schedule Type</option>
-                                                                <option value="Daily">Daily</option>
-                                                                <option value="Weekly">Weekly</option>
+                                                                <option value="daily">Daily</option>
+                                                                <option value="weekly">Weekly</option>
                                                                 <option value="custom">Custom</option>
 
                                                             </select>
@@ -445,26 +445,26 @@
                     return;
                 }
                 if (!bus) {
-                    commonAjax.viewAlert("Please select bus","warning");
+                    commonAjax.viewAlert("Please select bus", "warning");
                     e.preventDefault();
                     return;
                 }
                 if (!scheduleType) {
-                    commonAjax.viewAlert("Please select schedule type","warning");
+                    commonAjax.viewAlert("Please select schedule type", "warning");
                     e.preventDefault();
                     return;
                 }
-                if (scheduleType === 'Daily') {
+                if (scheduleType === 'daily') {
                     if (!cycle) {
-                        commonAjax.viewAlert("Please select running cycle","warning");
+                        commonAjax.viewAlert("Please select running cycle", "warning");
                         e.preventDefault();
                         return;
                     }
                 }
-                if (scheduleType === 'Weekly') {
+                if (scheduleType === 'weekly') {
 
                     if (weekDays <= 0) {
-                        commonAjax.viewAlert("Please select at least one weekly day","warning");
+                        commonAjax.viewAlert("Please select at least one weekly day", "warning");
                         e.preventDefault();
                         return;
                     }
@@ -472,18 +472,18 @@
                 if (scheduleType === 'custom') {
 
                     if (!customDates) {
-                        commonAjax.viewAlert("Please select custom dates","warning");
+                        commonAjax.viewAlert("Please select custom dates", "warning");
                         e.preventDefault();
                         return;
                     }
                 }
                 if (!fromDate) {
-                    commonAjax.viewAlert("Please select from date","warning");
+                    commonAjax.viewAlert("Please select from date", "warning");
                     e.preventDefault();
                     return;
                 }
                 if (fromDate < minDate) {
-                    commonAjax.viewAlert("From date cannot be before yesterday","warning");
+                    commonAjax.viewAlert("From date cannot be before yesterday", "warning");
                     e.preventDefault();
                     return;
                 }
@@ -581,7 +581,7 @@
                 $('#customDatesWrapper').addClass('d-none');
                 $('#runningCycleWrapper').addClass('d-none');
 
-                if (type === 'Weekly') {
+                if (type === 'weekly') {
                     $('#weekDaysWrapper').removeClass('d-none');
 
                 }
@@ -599,7 +599,7 @@
 
                 }
 
-                if (type === 'Daily') {
+                if (type === 'daily') {
 
                     $('#runningCycleWrapper').removeClass('d-none');
 
@@ -627,21 +627,46 @@
 
             }, 300);
 
-            $('#operator').on('change', function() {
+          $('#operator').on('change', function() {
 
-                let operator_id = $(this).val();
-                if (!operator_id) return;
+    let operator_id = $(this).val();
 
-                $('#bus').html('');
-                freezePage();
+    if (!operator_id) return;
 
-                commonAjax.loadBusListByOperator('#bus', operator_id);
-                waitForOptions('#bus', function() {
-                    unfreezePage();
-                });
+    // prevent clearing during edit restore
+    if (!isRestoring) {
 
-                setTimeout(unfreezePage, 5000);
-            });
+        $('#bus').html('');
+
+    }
+
+    freezePage();
+
+    commonAjax.loadBusListByOperator(
+        '#bus',
+        operator_id
+    );
+
+    waitForOptions('#bus', function() {
+
+        // edit mode auto select
+        if (
+            isRestoring &&
+            selectedBus
+        ) {
+
+            $('#bus')
+                .val(String(selectedBus))
+                .trigger('change');
+
+        }
+
+        unfreezePage();
+
+    });
+
+    setTimeout(unfreezePage, 5000);
+});
 
 
             $('#bus').on('change', function() {
@@ -700,6 +725,9 @@
             let selectedBus = "{{ $data['row']->bus_id ?? (old('bus') ?? '') }}";
             let lastScheduleDate = "{{ $data['lastDate'] ?? '' }}";
             let selectedCycle = "{{ $data['row']->running_cycle ?? '' }}";
+            let selectedScheduleType = "{{ $data['row']->schedule_type ?? old('schedule_type') ?? '' }}";
+            let selectedWeekDays = @json($data['selectedWeekDays'] ?? []);
+            let selectedCustomDates = @json($data['selectedCustomDates'] ?? []);
 
 
             function restoreSelection() {
@@ -707,7 +735,7 @@
                 if (!selectedOperator) return;
 
                 isRestoring = true;
-                $('#operator').val(selectedOperator).trigger('change');
+                $('#operator').val(String(selectedOperator)).trigger('change.select2');
 
                 freezePage();
                 commonAjax.loadBusListByOperator('#bus', selectedOperator);
@@ -723,21 +751,102 @@
                     if (optionExists) {
 
                         clearInterval(interval);
+                        $('#bus').val(String(selectedBus)).trigger('change');
+                        $('#bus').trigger({
+                            type: 'select2:select'
+                        });
+                        setTimeout(function() {
 
-                        $('#bus').val(String(selectedBus)).trigger('change.select2');
+                            $('#bus').val(String(selectedBus));
+                            loadSchedule(selectedBus);
 
-                        loadSchedule(selectedBus);
+                        }, 300);
 
-                        if (selectedCycle) {
-                            $('#running_cycle').val(selectedCycle);
+                        if (selectedScheduleType) {
+
+                            setTimeout(function() {
+
+                                $('#schedule_type')
+                                    .val(selectedScheduleType);
+
+                                $('#schedule_type').trigger('change');
+
+                                toggleScheduleFields();
+
+                                // DAILY
+                                if (
+                                    selectedScheduleType === 'daily' &&
+                                    selectedCycle
+                                ) {
+
+                                    $('#runningCycleWrapper')
+                                        .removeClass('d-none');
+
+                                    $('#running_cycle')
+                                        .val(selectedCycle)
+                                        .trigger('change');
+                                }
+
+                                // WEEKLY
+                                if (
+                                    selectedScheduleType === 'weekly' &&
+                                    selectedWeekDays.length > 0
+                                ) {
+
+                                    $('#weekDaysWrapper')
+                                        .removeClass('d-none');
+
+                                    $('input[name="week_days[]"]')
+                                        .prop('checked', false);
+
+                                    selectedWeekDays.forEach(function(day) {
+
+                                        $('input[name="week_days[]"][value="' + day + '"]')
+                                            .prop('checked', true);
+
+                                    });
+                                }
+
+                                // CUSTOM
+                                if (
+                                    selectedScheduleType === 'custom' &&
+                                    selectedCustomDates.length > 0
+                                ) {
+
+                                    $('#customDatesWrapper')
+                                        .removeClass('d-none');
+
+                                    $('#custom_dates')
+                                        .val(selectedCustomDates.join(','));
+
+                                    setTimeout(function() {
+
+                                        if (window.customDatePicker) {
+
+                                            window.customDatePicker.setDate(
+                                                selectedCustomDates,
+                                                true
+                                            );
+                                        }
+
+                                    }, 500);
+                                }
+
+                            }, 300);
                         }
 
-                        if (lastScheduleDate) {
+
+
+
+                        if (selectedOperator && lastScheduleDate) {
                             $('#from_date').val(lastScheduleDate);
-                        }
 
+                        }
                         $('#operator').next('.select2-container').css('pointer-events', 'none').css('opacity', '0.8');
                         $('#bus').next('.select2-container').css('pointer-events', 'none').css('opacity', '0.8');
+
+                        $('#bus').prop('readonly', true);
+                        $('#bus').prop('disabled', false);
 
                         isRestoring = false;
                         unfreezePage();
