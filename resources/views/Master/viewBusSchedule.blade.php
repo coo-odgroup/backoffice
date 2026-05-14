@@ -40,17 +40,27 @@
                 <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
                     <div class="row align-items-end">
 
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-2 col-md-6">
                             <label for="operator">Operator:</label>
                             <select class="form-select form-select-sm" id="operator" name="operator">
                                 <option value="">Select Operator</option>
                             </select>
                         </div>
 
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-2 col-md-6">
                             <label for="bus">Bus:</label>
                             <select class="form-select form-select-sm" id="bus" name="bus">
                                 <option value="">Select Bus:</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2 col-md-6">
+                            <label for="scheduleType">Schedule Type:</label>
+                            <select class="form-select form-select-sm" id="scheduleType" name="scheduleType">
+                                <option value="">Select Schedule Type:</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Custom">Custom</option>
                             </select>
                         </div>
 
@@ -141,10 +151,11 @@
                                     </div>
                                 </th>
                                 <th>Sl No</th>
-                                <th>Opeator</th>
+                                <th>Operator</th>
                                 <!-- <th>Route</th> -->
                                 <th>Bus Name/No</th>
-                                <th>Runing Cycle</th>
+                                <th>Schedule Type</th>
+                                <th>Running Cycle</th>
                                 <th>Last Modified</th>
                                 <th>Status</th>
                                 <th class="no-sort">View Schedule</th>
@@ -227,19 +238,16 @@
 
 
             if (window.dataTableInstance && reset) {
-
                 window.dataTableInstance.state.clear();
-
                 $('#pageSizeDatatable').val(10);
-
                 window.dataTableInstance.page.len(10);
-
                 window.dataTableInstance.page(0);
             }
 
             $('#pageSizeDatatable').val(10);
             let txtSearch = '';
             let selStatus = '';
+            let scheduleType = '';
 
             if ($('#txtSearch').val() != '') {
                 txtSearch = $('#txtSearch').val();
@@ -247,6 +255,10 @@
 
             if ($('#selStatus').val() != '') {
                 selStatus = $('#selStatus').val();
+            }
+
+            if ($('#scheduleType').val() != '') {
+                scheduleType = $('#scheduleType').val();
             }
 
 
@@ -257,7 +269,8 @@
                 selStatus: selStatus,
                 operator: operator,
                 bus: bus,
-                runningCycle: runningCycle
+                runningCycle: runningCycle,
+                scheduleType: scheduleType
             };
 
             let displayColumns = [1, 2, 3, 4, 5, 6, 7];
@@ -284,7 +297,43 @@
                 {
                     data: 'bus_name',
                     defaultContent: "--"
-                }, {
+                },
+                {
+                    data: null,
+                    render: function(data, type, row) {
+
+                        let scheduleType = row.schedule_type ?? '--';
+                        let tooltipText = scheduleType;
+
+                        if (
+                            scheduleType.toLowerCase() === 'weekly' &&
+                            row.week_day_name &&
+                            row.week_day_name !== '--'
+                        ) {
+
+                            tooltipText = `
+                                <div class="text-start">
+                                    <strong>Scheduled Days:</strong><br>
+                                    ${row.week_day_name}
+                                </div>
+                            `;
+                        }
+
+                        return `
+                            <span
+                                class="fw-semibold text-decoration-underline"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                data-bs-html="true"
+                                title='${tooltipText}'>
+
+                                ${scheduleType}
+
+                            </span>
+                        `;
+                    }
+                },
+                {
                     data: 'running_cycle',
                     defaultContent: "--"
                 },
