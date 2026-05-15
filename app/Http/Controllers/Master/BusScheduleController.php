@@ -370,9 +370,7 @@ class BusScheduleController extends Controller
                         'bus_id'        => $bus_id,
                         'schedule_type' => $schedule_type,
                         'start_date'    => $from_date,
-                        'running_cycle' => ($schedule_type == 'daily')
-                            ? $running_cycle
-                            : null,
+                        'running_cycle' => ($schedule_type == 'daily') ? $running_cycle: null,
                         'active_status' => 1,
                     ];
 
@@ -503,12 +501,10 @@ class BusScheduleController extends Controller
                         if (!empty($date)) {
 
                             $dates[] = [
-
                                 'bus_schedule_id' => $schedule_id,
                                 'entry_date' => $date,
                                 'created_by' => 1,
                                 'created_at' => now()
-
                             ];
                         }
                     }
@@ -526,20 +522,17 @@ class BusScheduleController extends Controller
                     ->update([
                         'running_cycle' => ($schedule_type == 'daily') ? $running_cycle : null,
                         'updated_at' => now()
-
                     ]);
 
                 DB::commit();
 
                 return redirect()->back()
                     ->withInput()
-                    ->with([
-
+                    ->with([ 
                         'level' => 'success',
                         'message' => 'Bus Schedule ' .
                             ($id ? 'updated' : 'created') .
                             ' successfully'
-
                     ]);
             }
         } catch (\Throwable $t) {

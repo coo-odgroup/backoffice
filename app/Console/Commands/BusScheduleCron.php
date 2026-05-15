@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class BusScheduleCron extends Command
 {
@@ -50,7 +50,7 @@ class BusScheduleCron extends Command
                 ->delete();
 
 
-       
+
             $seatDeleteBefore = Carbon::today()->subDays(30)->format('Y-m-d');
 
             DB::table('odbusdev.bus_seat_operation')
@@ -67,36 +67,111 @@ class BusScheduleCron extends Command
             foreach ($schedules as $schedule) {
 
                 $busScheduleId = $schedule->id;
-                $runningCycle  = (int) $schedule->running_cycle;
+                $scheduleType  = strtolower($schedule->schedule_type);
 
-                $gap = ($runningCycle <= 1) ? 1 : $runningCycle;
+                // limit max 100 schedule dates
+                $existingCount = DB::table('odbusdev.bus_schedule_date')
+                    ->where('bus_schedule_id', $busScheduleId)
+                    ->count();
+
+                if ($existingCount >= 100) {
+                    continue;
+                }
 
                 $lastDate = DB::table('odbusdev.bus_schedule_date')
                     ->where('bus_schedule_id', $busScheduleId)
                     ->max('entry_date');
 
-                if ($lastDate) {
-                    $nextDate = Carbon::parse($lastDate)->addDays($gap);
-                } else {
-                    $nextDate = Carbon::today();
+                $baseDate = $lastDate
+                    ? Carbon::parse($lastDate)
+                    : Carbon::today();
+
+
+                    // Daily schedules
+
+                if ($scheduleType == 'daily') {
+
+                    $runningCycle = (int) $schedule->running_cycle;
+
+                    $gap = ($runningCycle <= 1) ? 1 : $runningCycle;
+
+                    $nextDate = $baseDate
+                        ->copy()
+                        ->addDays($gap);
+
+                    $date = $nextDate->format('Y-m-d');
+
+                    $exists = DB::table('odbusdev.bus_schedule_date')
+                        ->where('bus_schedule_id', $busScheduleId)
+                        ->where('entry_date', $date)
+                        ->exists();
+
+                    if (!$exists) {
+
+                        $insertData[] = [
+
+                            'bus_schedule_id' => $busScheduleId,
+                            'entry_date'      => $date,
+                            'created_at'      => now(),
+                            'created_by'      => 1
+
+                        ];
+                    }
                 }
 
-                $date = $nextDate->format('Y-m-d');
 
-                $exists = DB::table('odbusdev.bus_schedule_date')
-                    ->where('bus_schedule_id', $busScheduleId)
-                    ->where('entry_date', $date)
-                    ->exists();
+                //Weekly Schedules
 
-                if (!$exists) {
+                if ($scheduleType == 'weekly') {
 
-                    $insertData[] = [
-                        'bus_schedule_id' => $busScheduleId,
-                        'entry_date'      => $date,
-                        'created_at'      => now(),
-                        'created_by'      => 1
-                    ];
+                    $weekDays = DB::table('odbusdev.bus_schedule_days')
+                        ->where('bus_schedule_id', $busScheduleId)
+                        ->pluck('day_number')
+                        ->toArray();
+
+                    if (empty($weekDays)) {
+                        continue;
+                    }
+
+                    // generate next 30 days check
+                    for ($i = 1; $i <= 30; $i++) {
+
+                        $nextDate = $baseDate
+                            ->copy()
+                            ->addDays($i);
+
+                        // Carbon: Sunday=0 ... Saturday=6
+                        $carbonDay = $nextDate->dayOfWeek;
+                        $mappedDay = ($carbonDay == 0) ? 1 : $carbonDay + 1;
+
+                        if (in_array($mappedDay, $weekDays)) {
+
+                            $date = $nextDate->format('Y-m-d');
+
+                            $exists = DB::table('odbusdev.bus_schedule_date')
+                                ->where('bus_schedule_id', $busScheduleId)
+                                ->where('entry_date', $date)
+                                ->exists();
+
+                            if (!$exists) {
+
+                                $insertData[] = [
+
+                                    'bus_schedule_id' => $busScheduleId,
+                                    'entry_date'      => $date,
+                                    'created_at'      => now(),
+                                    'created_by'      => 1
+
+                                ];
+
+                                break;
+                            }
+                        }
+                    }
                 }
+
+
+                // custom schedules are manually managed
             }
 
             if (!empty($insertData)) {

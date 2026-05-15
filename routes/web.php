@@ -90,7 +90,6 @@ Route::prefix('admin/bus')->group(function () {
 
     Route::get('/copy/{encId?}', [BusWizardController::class, 'copy'])->name('bus.copy');
     Route::get('/clone/{encId?}', [BusWizardController::class, 'clone'])->name('bus.clone');
-
     Route::post('/view', [BusWizardController::class, 'viewBusRecord'])->name('bus.viewbusrecord');
 });
 
@@ -162,9 +161,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-users-list', [CommonController::class, 'getUsersList']);
     Route::post('get-bus-cancel-reasons', [CommonController::class, 'getBusCancelReasons']);
     Route::post('get-cron-job-dropdown', [CommonController::class, 'getCronJobDropdown']);
-    Route::post(
-    'get-cron-job-dropdown',
-    [CommonController::class, 'getCronJobDropdown']
+    Route::post('get-cron-job-dropdown',[CommonController::class, 'getCronJobDropdown']
 );
     Route::post('get-notification-template-dropdown',[CommonController::class, 'getNotificationTemplate']);
     Route::post('get-roles-list',[CommonController::class, 'getRolesList']);
@@ -188,7 +185,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
 
     Route::post('/get-amenity-list', [CommonController::class, 'getAmenities']);
-
     Route::get('search-amenities', [CommonController::class, 'searchAmenities']);
     Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
 
@@ -467,7 +463,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'campaign/edit/{encId}', [CampaignController::class, 'edit'])->name('campaign.edit');
 
 
-    // ---------------------------------------------------------------------------------------------------------------
+   
 
 
 
