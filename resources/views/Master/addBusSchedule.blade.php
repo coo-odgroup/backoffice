@@ -81,24 +81,17 @@
                                                         </div>
 
                                                         <div class="mb-2">
-
                                                             <label for="schedule_type">
                                                                 Schedule Type
-                                                                <span class="text-danger">*</span>
+                                                                <span class="text-danger">*</span>  
                                                             </label>
-
                                                             <select
-                                                                class="form-select form-select-sm"
-                                                                id="schedule_type"
-                                                                name="schedule_type">
-
+                                                                class="form-select form-select-sm" id="schedule_type" name="schedule_type">
                                                                 <option value="">Select Schedule Type</option>
                                                                 <option value="daily">Daily</option>
                                                                 <option value="weekly">Weekly</option>
                                                                 <option value="custom">Custom</option>
-
                                                             </select>
-
                                                         </div>
 
                                                         <!-- WEEKLY DAYS -->
@@ -116,7 +109,6 @@
                                                                     id="day_sun"
                                                                     name="week_days[]"
                                                                     value="1">
-
                                                                 <label class="btn btn-outline-primary btn-sm"
                                                                     for="day_sun">Sun</label>
 
@@ -125,7 +117,6 @@
                                                                     id="day_mon"
                                                                     name="week_days[]"
                                                                     value="2">
-
                                                                 <label class="btn btn-outline-primary btn-sm"
                                                                     for="day_mon">Mon</label>
 
@@ -173,9 +164,7 @@
 
                                                                 <label class="btn btn-outline-primary btn-sm"
                                                                     for="day_sat">Sat</label>
-
                                                             </div>
-
                                                         </div>
 
                                                         <!-- CUSTOM DATES -->

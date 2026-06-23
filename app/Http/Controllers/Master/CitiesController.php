@@ -265,7 +265,6 @@ class CitiesController extends Controller
                 $dataQuery->where(function ($q) use ($txtSearch) {
                     $q->where('c.city_name', 'like', "%{$txtSearch}%")
                         ->orWhere('c.alias', 'like', "%{$txtSearch}%");
-
                 });
             }
 

@@ -194,6 +194,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                     <label for="meta_keywords">Meta Keywords</label>
                                                                     <textarea class="form-control clearable form-select-sm" id="meta_keywords" name="meta_keywords" placeholder="Enter Meta Keywords">{{ $data['row']->meta_keywords ?? old('meta_keywords') }}</textarea>
                                                                 </div>
+                                                                <div class="col-md-12 mb-3">
+                                                                    <label for="breadcrumb_schema">Bread Crumb Schema</label>
+                                                                    <textarea class="form-control clearable form-select-sm" id="breadcrumb_schema" name="breadcrumb_schema" rows="10" placeholder="Enter Bread Crumb Schema">{{ $data['row']->breadcrumb_schema  ?? old('breadcrumb_schema ') }}</textarea>
+                                                                </div>
                                                             </div>
                                                         </div>
 
@@ -421,16 +425,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         this.value = this.value.replace(/\s+/g, ' ').trimStart();
 
-        let cityName = this.value;
+        let aliasName = this.value;
 
-        let alias = cityName
-            .toLowerCase() // convert to lowercase
-            .trim() // remove extra spaces
-            .replace(/[^a-z0-9-\s]/g, '') // remove special characters
+        let alias = aliasName
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9-\s]/g, '')
             .replace(/\s+/g, '-') // replace spaces with -
             .replace(/-+/g, '-'); // remove duplicate -
 
         document.getElementById('categoryAlias').value = alias;
+
+        const siteUrl = "{{rtrim(config('app.url'), '/')}}";
+
+        document.getElementById('canonical_url').value = siteUrl + '/admin/blog-category/' + alias;
+
+        generateBreadcrumbSchema();
     });
 
     document.getElementById('categoryAlias').addEventListener('input', function() {
@@ -441,6 +451,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             .replace(/-+/g, '-') // remove duplicate -
             .replace(/^-+$/g, ''); // remove hyphen from start & end
 
+        const siteUrl = "{{ rtrim(config('app.url'), '/') }}";
+
+        document.getElementById('canonical_url').value =
+            siteUrl + '/admin/blog-category/' + this.value;
+
+        generateBreadcrumbSchema();
+
+    });
+
+    document.getElementById('canonical_url').addEventListener('input', function() {
+        generateBreadcrumbSchema();
     });
 
 
@@ -497,5 +518,41 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         });
 
     });
+
+    function generateBreadcrumbSchema() {
+
+        const categoryName = document.getElementById('categoryName').value.trim();
+        const alias = document.getElementById('categoryAlias').value.trim();
+
+        const siteUrl = "{{ rtrim(config('app.url'), '/') }}";
+
+        const canonicalUrl =
+            document.getElementById('canonical_url').value ||
+            siteUrl + '/blog-category/' + alias;
+
+        const schema = {
+            "@context": "https://schema.org/",
+            "@type": "BreadcrumbList",
+            "itemListElement": [{
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": siteUrl
+            }, {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Blog Category",
+                "item": siteUrl + "/blog-category"
+            }, {
+                "@type": "ListItem",
+                "position": 3,
+                "name": categoryName,
+                "item": canonicalUrl
+            }]
+        };
+
+        document.getElementById('breadcrumb_schema').value =
+            JSON.stringify(schema, null, 2);
+    }
 </script>
 @endpush

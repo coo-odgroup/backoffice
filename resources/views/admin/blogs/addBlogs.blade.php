@@ -1,4 +1,4 @@
-@extends('admin.layouts.master')
+    @extends('admin.layouts.master')
 @section('page_title', 'Blogs')
 @section('content')
 
