@@ -1,142 +1,167 @@
-import $ from 'jquery';
-import { Modal } from 'bootstrap';
-import { viewAlert } from './commonAjax';
+import $ from "jquery";
+import { Modal } from "bootstrap";
+import { viewAlert } from "./commonAjax";
 
-$(document).ready(function() {
-    $('input[type=text],input[type=password]').not('.arabic, .french').on('keyup', function() {
-        return blockspecialchar_first(this);
-    });
+$(document).ready(function () {
+    $("input[type=text],input[type=password]")
+        .not(".arabic, .french")
+        .on("keyup", function () {
+            return blockspecialchar_first(this);
+        });
 
-    $('input[type=text],textarea').not('#dqs, .arabic, .french').on('blur', function() {
-        var thisVal = $(this).val().trim();
-        $(this).val(thisVal);
-    });
+    $("input[type=text],textarea")
+        .not("#dqs, .arabic, .french")
+        .on("blur", function () {
+            var thisVal = $(this).val().trim();
+            $(this).val(thisVal);
+        });
 
-    $(document).on('input change', '.clsNumeric', function(e) {
-
+    $(document).on("input change", ".clsNumeric", function (e) {
         var val = $(this).val();
 
         var match = val.match(/\D/);
 
         if (match) {
-
-            $(this).val('');
-            viewAlert('Please enter numeric value', $(this).attr('id'));
-
+            $(this).val("");
+            viewAlert("Please enter numeric value", $(this).attr("id"));
         }
     });
 
-    $(".disableCP").bind("cut copy paste", function(e) {
+    $(".disableCP").bind("cut copy paste", function (e) {
         e.preventDefault();
     });
 
-    $('input[type=text]').attr('autocomplete', 'off');
+    $("input[type=text]").attr("autocomplete", "off");
 
-    //FUnction to disable speacial characters on keyup :by: T Ketaki Debadarshini 
-    $('input[type=text],textarea').not('.amhfld,#dqs, .arabic, .french, .odia').on('keypress', function(e) {
+    // //FUnction to disable speacial characters on keyup :by: T Ketaki Debadarshini
+    // $("input[type=text],textarea")
+    //     .not(".amhfld,#dqs, .arabic, .french, .odia")
+    //     .on("keypress", function (e) {
+    //         var key = e.keyCode || e.which;
 
-        var key = e.keyCode || e.which;        
+    //         var regex = new RegExp("^[a-zA-Z0-9\-_(),.@+:/\n\\s]*$");
+    //         var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+    //         if (
+    //             regex.test(str) ||
+    //             key === 9 ||
+    //             key === 13 ||
+    //             key === 8 ||
+    //             key === 37 ||
+    //             key === 38 ||
+    //             key === 39 ||
+    //             key === 40
+    //         ) {
+    //             return true;
+    //         }
+    //         return false;
+    //     })
+    //     .keyup(function () {
+    //         // the addition, which whill check the value after a keyup (triggered by Ctrl+V)
+    //         // We take the same regex as for allowedChars, but we add ^ after the first bracket : it means "all character BUT these"
+    //         var forbiddenChars = new RegExp(
+    //             "[^a-zA-Z0-9\-_(),.@+:'/\n\\s]",
+    //             "g",
+    //         );
+    //         if (
+    //             !forbiddenChars.test($(this).val()) ||
+    //             forbiddenChars.test($(this).val())
+    //         ) {
+    //             $(this).val($(this).val().replace(forbiddenChars, ""));
+    //         }
+    //     });
 
-        var regex = new RegExp("^[a-zA-Z0-9\-_(),.@+:/\n\\s]*$");
-        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
-        if (regex.test(str) || key === 9 || key === 13 || key === 8 || key === 37 || key === 38 || key === 39 || key === 40) {
+    $("input[type=text].amhfld,textarea.amhfld")
+        .on("input", function (e) {
+            var key = e.keyCode || e.which;
 
-            return true;
-        }
-        return false;
+            var forbiddenChars = new RegExp("[';=]+");
 
-    }).keyup(function() {
-        // the addition, which whill check the value after a keyup (triggered by Ctrl+V)
-        // We take the same regex as for allowedChars, but we add ^ after the first bracket : it means "all character BUT these"
-        var forbiddenChars = new RegExp("[^a-zA-Z0-9\-_(),.@+:'/\n\\s]", 'g');
-        if (!forbiddenChars.test($(this).val()) || forbiddenChars.test($(this).val())) {
-            $(this).val($(this).val().replace(forbiddenChars, ''));
-        }
-    });
+            var str = $(this).val();
 
-    $('input[type=text].amhfld,textarea.amhfld').on('input', function(e) {
-        var key = e.keyCode || e.which;
+            if (!XRegExp("\\p{Ethiopic}").test(str)) {
+                $(this).val("");
+                return true;
+            }
 
-        var forbiddenChars = new RegExp("[';=]+");
+            re = /[a-zA-Z0-9`~!#$%^&*()@_|+\-=?;:'"<>\{\}\[\]\\\/]/gi;
+            var isSplChar = re.test(str);
+            if (isSplChar) {
+                var no_spl_char = str.replace(
+                    /[a-zA-Z0-9`~!#$%^&*()@_|+\-=?;:'"<>\{\}\[\]\\\/]/gi,
+                    "",
+                );
+                $(this).val(no_spl_char);
+            }
 
-        var str = $(this).val();
-
-        if (!XRegExp('\\p{Ethiopic}').test(str)) {
-
-            $(this).val('');
-            return true;
-        }
-
-        re = /[a-zA-Z0-9`~!#$%^&*()@_|+\-=?;:'"<>\{\}\[\]\\\/]/gi;
-        var isSplChar = re.test(str);
-        if (isSplChar) {
-            var no_spl_char = str.replace(/[a-zA-Z0-9`~!#$%^&*()@_|+\-=?;:'"<>\{\}\[\]\\\/]/gi, '');
-            $(this).val(no_spl_char);
-        }
-
-
-
-        return false;
-
-    }).keypress(function(e) {
-
-
-        var char = String.fromCharCode(!e.charCode ? e.which : e.charCode);
-
-        if (!XRegExp('\\p{Ethiopic}').test(char) && char != ' ') {
-            e.preventDefault();
             return false;
-        }
+        })
+        .keypress(function (e) {
+            var char = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
-        // var key = e.keyCode || e.which;
-        // console.log('char detected: '+char);
-        // var regex = new RegExp("[';=]+");
-        // if ( regex.test(char) ){ 
+            if (!XRegExp("\\p{Ethiopic}").test(char) && char != " ") {
+                e.preventDefault();
+                return false;
+            }
 
-        //     console.log('sql chars detected')
-        //     e.preventDefault();
-        //     return false;
-        // }else{
-        //     return true;
-        // }            
+            // var key = e.keyCode || e.which;
+            // console.log('char detected: '+char);
+            // var regex = new RegExp("[';=]+");
+            // if ( regex.test(char) ){
 
-    })
+            //     console.log('sql chars detected')
+            //     e.preventDefault();
+            //     return false;
+            // }else{
+            //     return true;
+            // }
+        });
 
+    //FUnction to disable speacial characters on keyup :by: T Ketaki Debadarshini
+    $("input[type=password]")
+        .on("keypress", function (e) {
+            var key = e.keyCode || e.which;
 
-    //FUnction to disable speacial characters on keyup :by: T Ketaki Debadarshini 
-    $('input[type=password]').on('keypress', function(e) {
-        var key = e.keyCode || e.which;
-
-        var regex = new RegExp("^[a-zA-Z0-9\_@$#/\n ]*$");
-        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
-        if (regex.test(str) || key === 9 || key === 13 || key === 8 || key === 37 || key === 38 || key === 39 || key === 40) {
-            return true;
-        }
-        return false;
-
-    }).keyup(function() {
-        // the addition, which whill check the value after a keyup (triggered by Ctrl+V)
-        // We take the same regex as for allowedChars, but we add ^ after the first bracket : it means "all character BUT these"
-        var forbiddenChars = new RegExp("[^a-zA-Z0-9\_@$#/\n ]", 'g');
-        if (forbiddenChars.test($(this).val())) {
-            $(this).val($(this).val().replace(forbiddenChars, ''));
-        }
-    });
+            var regex = new RegExp("^[a-zA-Z0-9\_@$#/\n ]*$");
+            var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+            if (
+                regex.test(str) ||
+                key === 9 ||
+                key === 13 ||
+                key === 8 ||
+                key === 37 ||
+                key === 38 ||
+                key === 39 ||
+                key === 40
+            ) {
+                return true;
+            }
+            return false;
+        })
+        .keyup(function () {
+            // the addition, which whill check the value after a keyup (triggered by Ctrl+V)
+            // We take the same regex as for allowedChars, but we add ^ after the first bracket : it means "all character BUT these"
+            var forbiddenChars = new RegExp("[^a-zA-Z0-9\_@$#/\n ]", "g");
+            if (forbiddenChars.test($(this).val())) {
+                $(this).val($(this).val().replace(forbiddenChars, ""));
+            }
+        });
 });
 //============ Function to check maximum length of the field ===============
 export function maxLength(controlId, ctrlLen, fieldName) {
-
-    const element = $('#' + controlId);
+    const element = $("#" + controlId);
 
     if (element.length === 0) {
         console.warn(`Element #${controlId} not found`);
         return false;
     }
 
-    const value = element.val() || '';
+    const value = element.val() || "";
 
     if (value.length > ctrlLen) {
-        viewAlert(`${fieldName} cannot be more than ${ctrlLen} characters !!!`, controlId);
+        viewAlert(
+            `${fieldName} cannot be more than ${ctrlLen} characters !!!`,
+            controlId,
+        );
         element.focus();
         return false;
     }
@@ -144,51 +169,65 @@ export function maxLength(controlId, ctrlLen, fieldName) {
     return true;
 }
 //============ Function to check minimum length of the field ===============
-export  function minLength(controlId, ctrlLen, fieldName) {
-    if ($('#' + controlId).val().length < ctrlLen && $('#' + controlId).val().length > 0) {
-        viewAlert(fieldName + ' cannot be less than ' + ctrlLen + ' characters !!!', controlId);
-        $('#' + controlId).focus();
+export function minLength(controlId, ctrlLen, fieldName) {
+    if (
+        $("#" + controlId).val().length < ctrlLen &&
+        $("#" + controlId).val().length > 0
+    ) {
+        viewAlert(
+            fieldName + " cannot be less than " + ctrlLen + " characters !!!",
+            controlId,
+        );
+        $("#" + controlId).focus();
         return false;
     }
     return true;
 }
 //============ Function to check equal length of the field ===============
-export  function equalLength(controlId, ctrlLen, fieldName) {
-    if ($('#' + controlId).val().length != ctrlLen && $('#' + controlId).val().length > 0) {
-        viewAlert(fieldName + ' should be ' + ctrlLen + ' digits length !!!', controlId);
-        $('#' + controlId).focus();
+export function equalLength(controlId, ctrlLen, fieldName) {
+    if (
+        $("#" + controlId).val().length != ctrlLen &&
+        $("#" + controlId).val().length > 0
+    ) {
+        viewAlert(
+            fieldName + " should be " + ctrlLen + " digits length !!!",
+            controlId,
+        );
+        $("#" + controlId).focus();
         return false;
     }
     return true;
 }
 //============ Function to check field having no value ===============
-export  function blankCheck(controlId, msg) {
-    if ($('#' + controlId).val() == '') {
-
+export function blankCheck(controlId, msg) {
+    if ($("#" + controlId).val() == "") {
         viewAlert(msg, controlId);
-        $('#' + controlId).focus();
+        $("#" + controlId).focus();
         return false;
     }
     return true;
 }
 
-export  function blankCheckN(controlId, msg) {
-
-    if ($('#' + controlId).val() == '') {
-
+export function blankCheckN(controlId, msg) {
+    if ($("#" + controlId).val() == "") {
         viewAlert(msg, controlId);
         //alert($('#'+controlId).parent().parent().parent().parent().attr('id'));
-        var parentId = $('#' + controlId).parent().parent().parent().parent().attr('id');
-        $('#' + parentId).addClass('in');
-        $('#' + parentId).attr('aria-expanded', true);
-        $("#" + parentId).removeAttr("style")
-        $('#' + controlId).focus();
+        var parentId = $("#" + controlId)
+            .parent()
+            .parent()
+            .parent()
+            .parent()
+            .attr("id");
+        $("#" + parentId).addClass("in");
+        $("#" + parentId).attr("aria-expanded", true);
+        $("#" + parentId).removeAttr("style");
+        $("#" + controlId).focus();
         return false;
     }
     return true;
 }
 //============ Function to check radio button or checkbox validation ===============
-export  function blankChkRad(controlName, msg) {
+export function blankChkRad(controlName, msg) {
     if ($('input[name="' + controlName + '"]:checked').length <= 0) {
         viewAlert(msg);
         $('input[name="' + controlName + '"]:first').focus();
@@ -197,117 +236,104 @@ export  function blankChkRad(controlName, msg) {
     return true;
 }
 //============ Function to block special characters on first place of the field on key press ===============
-export  function blockspecialchar_first(e) {
+export function blockspecialchar_first(e) {
     var str;
     str = e.value;
     var idName = e.id;
     // alert(str.charCodeAt(0));
     switch (str.charCodeAt(0)) {
-        case 44:
-            {
-                //viewAlert(", Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 44: {
+            //viewAlert(", Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 47:
-            {
-                //viewAlert("/ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 47: {
+            //viewAlert("/ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 58:
-            {
-                //viewAlert(": Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 58: {
+            //viewAlert(": Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 46:
-            {
-                //viewAlert(". Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 46: {
+            //viewAlert(". Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 39:
-            {
-                //viewAlert("Single Quote not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 39: {
+            //viewAlert("Single Quote not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 32:
-            {
-                //viewAlert("White Space not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 32: {
+            //viewAlert("White Space not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 40:
-            {
-                //viewAlert("( Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 40: {
+            //viewAlert("( Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 41:
-            {
-                //viewAlert(") Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 41: {
+            //viewAlert(") Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 45:
-            {
-                //viewAlert("- Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 45: {
+            //viewAlert("- Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 95:
-            {
-                //viewAlert("_ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 95: {
+            //viewAlert("_ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 59:
-            {
-                //viewAlert("; Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 59: {
+            //viewAlert("; Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 124:
-            {
-                //viewAlert("| Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 124: {
+            //viewAlert("| Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 63:
-            {
-                //viewAlert("? Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 63: {
+            //viewAlert("? Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-            /*case 64:
+        /*case 64:
              {
              viewAlert("@ Not allowed in 1st Place!!!");
              e.value = "";
@@ -315,365 +341,305 @@ export  function blockspecialchar_first(e) {
              return false;
              }*/
 
-        case 34:
-            {
-                //viewAlert('" Not allowed in 1st Place!!!', idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 34: {
+            //viewAlert('" Not allowed in 1st Place!!!', idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 35:
-            {
-                //viewAlert("# Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 35: {
+            //viewAlert("# Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 36:
-            {
-                //viewAlert("$ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 36: {
+            //viewAlert("$ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 38:
-            {
-                //viewAlert("& Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 38: {
+            //viewAlert("& Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 126:
-            {
-                //viewAlert("~ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 126: {
+            //viewAlert("~ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 96:
-            {
-                //viewAlert("` Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 96: {
+            //viewAlert("` Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 33:
-            {
-                //viewAlert("! Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 33: {
+            //viewAlert("! Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 37:
-            {
-                //viewAlert("% Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 37: {
+            //viewAlert("% Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 94:
-            {
-                //viewAlert("^ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 94: {
+            //viewAlert("^ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 42:
-            {
-                //viewAlert("* Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
-        case 92:
-            {
-                //viewAlert("\\ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 42: {
+            //viewAlert("* Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
+        case 92: {
+            //viewAlert("\\ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 43:
-            {
-                //viewAlert("+ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
-        case 61:
-            {
-                //viewAlert("= Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
-        case 123:
-            {
-                //viewAlert("{ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 43: {
+            //viewAlert("+ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
+        case 61: {
+            //viewAlert("= Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
+        case 123: {
+            //viewAlert("{ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 125:
-            {
-                //viewAlert("} Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 125: {
+            //viewAlert("} Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 91:
-            {
-                //viewAlert("[ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 91: {
+            //viewAlert("[ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 93:
-            {
-                //viewAlert("] Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 93: {
+            //viewAlert("] Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 60:
-            {
-                //viewAlert("< Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 60: {
+            //viewAlert("< Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
 
-        case 62:
-            {
-                //viewAlert("> Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
-        case 64:
-            {
-                //viewAlert("@ Not allowed in 1st Place!!!", idName);
-                e.value = "";
-                e.focus();
-                return false;
-            }
+        case 62: {
+            //viewAlert("> Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
+        case 64: {
+            //viewAlert("@ Not allowed in 1st Place!!!", idName);
+            e.value = "";
+            e.focus();
+            return false;
+        }
     }
-
 }
 
 export function isOnlyCharSpace(evt) {
-
-    let charCode = (evt.which) ? evt.which : evt.keyCode;
+    let charCode = evt.which ? evt.which : evt.keyCode;
 
     // Allow backspace, delete, tab, enter
     if (charCode === 8 || charCode === 9 || charCode === 13 || charCode === 32)
         return true;
 
     // Allow A-Z
-    if (charCode >= 65 && charCode <= 90)
-        return true;
+    if (charCode >= 65 && charCode <= 90) return true;
 
     // Allow a-z
-    if (charCode >= 97 && charCode <= 122)
-        return true;
+    if (charCode >= 97 && charCode <= 122) return true;
 
     return false;
 }
-
 
 //============ Function to block special characters in the field on key press ===============
 export function blockspecialchar(event) {
     var str;
     str = event.keyCode;
     switch (str) {
-        case 44:
-            {
-                return false;
-            }
+        case 44: {
+            return false;
+        }
 
-        case 47:
-            {
-                return false;
-            }
+        case 47: {
+            return false;
+        }
 
-        case 58:
-            {
-                return false;
-            }
+        case 58: {
+            return false;
+        }
 
-        case 46:
-            {
-                return false;
-            }
+        case 46: {
+            return false;
+        }
 
-        case 39:
-            {
-                return false;
-            }
+        case 39: {
+            return false;
+        }
 
-        case 32:
-            {
-                return false;
-            }
+        case 32: {
+            return false;
+        }
 
-        case 40:
-            {
-                return false;
-            }
+        case 40: {
+            return false;
+        }
 
-        case 41:
-            {
-                return false;
-            }
+        case 41: {
+            return false;
+        }
 
-        case 45:
-            {
-                return false;
-            }
+        case 45: {
+            return false;
+        }
 
-        case 95:
-            {
-                return false;
-            }
+        case 95: {
+            return false;
+        }
 
-        case 59:
-            {
-                return false;
-            }
+        case 59: {
+            return false;
+        }
 
-        case 124:
-            {
-                return false;
-            }
+        case 124: {
+            return false;
+        }
 
-        case 63:
-            {
-                return false;
-            }
+        case 63: {
+            return false;
+        }
 
-        case 64:
-            {
-                return false;
-            }
+        case 64: {
+            return false;
+        }
 
-        case 34:
-            {
-                return false;
-            }
+        case 34: {
+            return false;
+        }
 
-        case 35:
-            {
-                return false;
-            }
+        case 35: {
+            return false;
+        }
 
-        case 36:
-            {
-                return false;
-            }
+        case 36: {
+            return false;
+        }
 
-        case 38:
-            {
-                return false;
-            }
+        case 38: {
+            return false;
+        }
 
-        case 126:
-            {
-                return false;
-            }
+        case 126: {
+            return false;
+        }
 
-        case 96:
-            {
-                return false;
-            }
+        case 96: {
+            return false;
+        }
 
-        case 33:
-            {
-                return false;
-            }
+        case 33: {
+            return false;
+        }
 
-        case 37:
-            {
-                return false;
-            }
+        case 37: {
+            return false;
+        }
 
-        case 94:
-            {
-                return false;
-            }
+        case 94: {
+            return false;
+        }
 
-        case 42:
-            {
-                return false;
-            }
-        case 92:
-            {
-                return false;
-            }
+        case 42: {
+            return false;
+        }
+        case 92: {
+            return false;
+        }
 
-        case 43:
-            {
-                return false;
-            }
-        case 61:
-            {
-                return false;
-            }
-        case 123:
-            {
-                return false;
-            }
+        case 43: {
+            return false;
+        }
+        case 61: {
+            return false;
+        }
+        case 123: {
+            return false;
+        }
 
-        case 125:
-            {
-                return false;
-            }
+        case 125: {
+            return false;
+        }
 
-        case 91:
-            {
-                return false;
-            }
+        case 91: {
+            return false;
+        }
 
-        case 93:
-            {
-                return false;
-            }
+        case 93: {
+            return false;
+        }
 
-        case 60:
-            {
-                return false;
-            }
+        case 60: {
+            return false;
+        }
 
-        case 62:
-            {
-                return false;
-            }
+        case 62: {
+            return false;
+        }
     }
 }
-//============ Function to block characters entry in the field on key press ===============	
+//============ Function to block characters entry in the field on key press ===============
 export function isNumberKey(evt) {
-    var charCode = (evt.which) ? evt.which : evt.keyCode
-    if (charCode > 31 && (charCode < 48 || charCode > 57))
-        return false;
+    var charCode = evt.which ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) return false;
 
     return true;
-
 }
-//============ Function to block Numeric value entry in the field on key press ===============	
+//============ Function to block Numeric value entry in the field on key press ===============
 export function isCharCon(evt) {
-    var charCode = (evt.which) ? evt.which : event.keyCode
+    var charCode = evt.which ? evt.which : event.keyCode;
 
     if (charCode == 32 || charCode == 64 || charCode == 44 || charCode == 46)
         return false;
@@ -681,37 +647,43 @@ export function isCharCon(evt) {
 }
 
 export function isCharKey(evt) {
-
-    var charCode = (evt.which) ? evt.which : event.keyCode
-    if ((charCode > 31 && (charCode < 48 || charCode > 57)) || charCode == 13 || charCode == 8)
+    var charCode = evt.which ? evt.which : event.keyCode;
+    if (
+        (charCode > 31 && (charCode < 48 || charCode > 57)) ||
+        charCode == 13 ||
+        charCode == 8
+    )
         return true;
 
     return false;
 }
-//============ Function to block Numeric value entry only characters on key press ===============	
+//============ Function to block Numeric value entry only characters on key press ===============
 export function isOnlyChar(evt) {
-
-    var charCode2 = (evt.which) ? evt.which : event.keyCode
-    if (charCode2 > 31 && (charCode2 < 65 || charCode2 > 90) &&
-        (charCode2 < 97 || charCode2 > 122)) {
+    var charCode2 = evt.which ? evt.which : event.keyCode;
+    if (
+        charCode2 > 31 &&
+        (charCode2 < 65 || charCode2 > 90) &&
+        (charCode2 < 97 || charCode2 > 122)
+    ) {
         //alert("Enter letters only.");
         return false;
     }
     return true;
-
 }
 //============ Function to check field value is decimal ===============
 export function isDecimal(controlId) {
-    var data = $('#' + controlId).val();
+    var data = $("#" + controlId).val();
 
-    if (data != ' ') {
+    if (data != " ") {
         var reg = new RegExp(/^[0-9]+(\.[0-9]{1,2})?$/);
-        if (reg.test(data) == true)
-            return true;
+        if (reg.test(data) == true) return true;
         else {
-            if (data != '') {
-                viewAlert("Enter only decimal values having 2 digit after decimal", controlId);
-                $('#' + controlId).focus();
+            if (data != "") {
+                viewAlert(
+                    "Enter only decimal values having 2 digit after decimal",
+                    controlId,
+                );
+                $("#" + controlId).focus();
                 return false;
             } else {
                 return true;
@@ -722,135 +694,166 @@ export function isDecimal(controlId) {
 //============ Function to check field value is decimal with 2 digit after decimal and maxLength ===============
 export function checkMaxDecimal(controlId, maxlen) {
     var reg = new RegExp(/^\d+(\.\d{1,2})?$/);
-    var eVal = $('#' + controlId).val();
+    var eVal = $("#" + controlId).val();
     var flen = eVal.indexOf(".");
     var spl = eVal.split(".");
     if (flen == -1) {
         if (eVal.length > maxlen) {
-            viewAlert("Enter decimal value of total " + maxlen + " character with 2 digit after decimal", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                "Enter decimal value of total " +
+                    maxlen +
+                    " character with 2 digit after decimal",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
-        } else
-            return true;
+        } else return true;
     } else if (spl[0].length <= 10 && reg.test(eVal) == true) {
         return true;
     } else {
-        viewAlert("Enter decimal value of total " + maxlen + " character with 2 digit after decimal", controlId);
-        $('#' + controlId).focus();
+        viewAlert(
+            "Enter decimal value of total " +
+                maxlen +
+                " character with 2 digit after decimal",
+            controlId,
+        );
+        $("#" + controlId).focus();
         return false;
     }
 }
 
 //Function to textcounter.
-export function TextCounter(ctlTxtName, lblCouter, numTextSize) { 
-    var txtName = $('#' + ctlTxtName).val();
+export function TextCounter(ctlTxtName, lblCouter, numTextSize) {
+    var txtName = $("#" + ctlTxtName).val();
     //console.log(txtName)
     var txtNameLength = txtName.length;
     if (parseInt(txtNameLength) > parseInt(numTextSize)) {
         var txtMaxTextSize = txtName.substr(0, numTextSize);
         $("#" + ctlTxtName).val(txtMaxTextSize);
         //alert("Entered Text Exceeds '" + numTextSize + "' Characters.");
-        viewAlert("Entered Text Exceeds '" + numTextSize + "' Characters.", ctlTxtName);
-        $('#' + ctlTxtName).focus();
+        viewAlert(
+            "Entered Text Exceeds '" + numTextSize + "' Characters.",
+            ctlTxtName,
+        );
+        $("#" + ctlTxtName).focus();
         $("#" + lblCouter).text(0);
         return false;
     } else {
-        $("#" + lblCouter).text(parseInt(numTextSize) - parseInt(txtNameLength));
+        $("#" + lblCouter).text(
+            parseInt(numTextSize) - parseInt(txtNameLength),
+        );
         return true;
     }
 }
 
-
 //============ Function to check field value is decimal with variable no. of digit before decimal and variable no. of digit after decimal and maxLength ===============
-export function checkMaxDecimalWithLimit(controlId, maxlen, leftValue, rightValue) {
+export function checkMaxDecimalWithLimit(
+    controlId,
+    maxlen,
+    leftValue,
+    rightValue,
+) {
     var testPattern = "^\\d{1," + leftValue + "}\\.\\d{1," + rightValue + "}?$";
 
     var reg = new RegExp(testPattern, "i");
-    var eVal = $('#' + controlId).val();
+    var eVal = $("#" + controlId).val();
     var flen = eVal.indexOf(".");
     var spl = eVal.split(".");
 
     if (flen == -1) {
         if (Number(eVal.length) > Number(leftValue)) {
             //viewAlert("Enter decimal value of "+leftValue+" digit before decimal and "+rightValue+" digit after decimal", controlId);
-            viewAlert("Enter decimal value of maximum " + leftValue + " digit", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                "Enter decimal value of maximum " + leftValue + " digit",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
-        } else
-            return true;
-    } else if (spl[0].length <= leftValue && spl[1].length <= rightValue && reg.test(eVal) == true) {
+        } else return true;
+    } else if (
+        spl[0].length <= leftValue &&
+        spl[1].length <= rightValue &&
+        reg.test(eVal) == true
+    ) {
         return true;
     } else {
-
-        viewAlert("Enter decimal value of " + leftValue + " digit before decimal and " + rightValue + " digit after decimal", controlId);
-        $('#' + controlId).focus();
+        viewAlert(
+            "Enter decimal value of " +
+                leftValue +
+                " digit before decimal and " +
+                rightValue +
+                " digit after decimal",
+            controlId,
+        );
+        $("#" + controlId).focus();
         return false;
     }
 }
 //============ Function to check field value is only numeric ===============
 export function validateNumber(controlId) {
     var numPattern = new RegExp(/^\d+$/);
-    var txtVal = $('#' + controlId).val();
-    if (txtVal != '') {
-        if (numPattern.test(txtVal) == true)
-            return true;
+    var txtVal = $("#" + controlId).val();
+    if (txtVal != "") {
+        if (numPattern.test(txtVal) == true) return true;
         else {
             viewAlert("Enter only numeric values", controlId);
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 
 export function validateCharOnly(controlId) {
     var charPattern = new RegExp(/^[a-zA-Z]+$/);
-    var txtVal = $('#' + controlId).val();
-    if (txtVal != '') {
-        if (charPattern.test(txtVal) == true)
-            return true;
+    var txtVal = $("#" + controlId).val();
+    if (txtVal != "") {
+        if (charPattern.test(txtVal) == true) return true;
         else {
             viewAlert("Enter only characters", controlId);
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 //========== Function to validate char and number only By Sunil Kumar Parida  on 11-Mar-2015 ===============
 export function validateCharNumber(controlId, fieldName) {
-    var txtVal = $('#' + controlId).val();
-    if (txtVal != '') {
+    var txtVal = $("#" + controlId).val();
+    if (txtVal != "") {
         if (/^[a-zA-Z0-9]+$/.test(txtVal)) {
             return true;
         } else {
-            viewAlert(fieldName + ' accept only number and characters', controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                fieldName + " accept only number and characters",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 //============ Function to check space in last position ===============
 export function whiteSpaceLast(controlId) {
-    var myString = $('#' + controlId).val();
+    var myString = $("#" + controlId).val();
     var lastChar = myString[myString.length - 1];
-    if (lastChar == ' ') {
-        viewAlert('Please remove space from last', controlId);
-        $('#' + controlId).focus();
+    if (lastChar == " ") {
+        viewAlert("Please remove space from last", controlId);
+        $("#" + controlId).focus();
         return false;
     }
     return true;
 }
 //============ Function to check special character  ===============
 export function checkSpecialChar(controlId) {
-    var splArr = ["'", "%", "=", "<", ">", "\\", "\"", "--"];
+    var splArr = ["'", "%", "=", "<", ">", "\\", '"', "--"];
     //var splArr = ["%", "<", ">", "\\", "\""];
-    var str = $('#' + controlId).val();
+    var str = $("#" + controlId).val();
     for (var i = 0; i < splArr.length; i++) {
         if (str.indexOf(splArr[i]) > 0) {
-            viewAlert("Special character " + splArr[i] + " is not allowed !!!", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                "Special character " + splArr[i] + " is not allowed !!!",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
         }
     }
@@ -858,13 +861,16 @@ export function checkSpecialChar(controlId) {
 }
 //============ Function to check special character  ===============
 export function checkSpecialChar2(controlId) {
-    var splArr = ["=", "<", ">", "\\", "\"", "--"];
+    var splArr = ["=", "<", ">", "\\", '"', "--"];
     //var splArr = ["%", "<", ">", "\\", "\""];
-    var str = $('#' + controlId).val();
+    var str = $("#" + controlId).val();
     for (var i = 0; i < splArr.length; i++) {
         if (str.indexOf(splArr[i]) > 0) {
-            viewAlert("Special character " + splArr[i] + " is not allowed !!!", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                "Special character " + splArr[i] + " is not allowed !!!",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
         }
     }
@@ -872,180 +878,197 @@ export function checkSpecialChar2(controlId) {
 }
 //============ Function to check dropdown is selected  ===============
 export function selectDropdown(controlId, msg) {
-    var ddlVal = $('#' + controlId).val();
-    if (ddlVal == '0' || ddlVal == '' || ddlVal == null) {
+    var ddlVal = $("#" + controlId).val();
+    if (ddlVal == "0" || ddlVal == "" || ddlVal == null) {
         viewAlert(msg, controlId);
-        $('#' + controlId).focus();
+        $("#" + controlId).focus();
         return false;
     }
     return true;
 }
 //============ Function to allow valid decimal value on ley press ===============
 export function validDesimal(evt, obj) {
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
-    var txtVal = $('#' + obj).val();
+    var charCode = evt.which ? evt.which : evt.keyCode;
+    var txtVal = $("#" + obj).val();
     var txtValLen = txtVal.length;
     if ((charCode > 47 && charCode < 58) || charCode == 46 || charCode == 8) {
-        if (txtVal.indexOf(".") > 0 && charCode == 46)
-            return false;
-        else
-            return true;
+        if (txtVal.indexOf(".") > 0 && charCode == 46) return false;
+        else return true;
     }
     return false;
 }
 
 //============ Function to allow valid decimal value on ley press with Class ===============
 export function validDesimalCls(evt, obj) {
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
-    var txtVal = $('.' + obj).val();
+    var charCode = evt.which ? evt.which : evt.keyCode;
+    var txtVal = $("." + obj).val();
     var txtValLen = txtVal.length;
     if ((charCode > 47 && charCode < 58) || charCode == 46 || charCode == 8) {
-        if (txtVal.indexOf(".") > 0 && charCode == 46)
-            return false;
-        else
-            return true;
+        if (txtVal.indexOf(".") > 0 && charCode == 46) return false;
+        else return true;
     }
     return false;
 }
 
 //============ Function to allow valid decimal value on ley press ===============
 export function isValidDesimal(evt, obj) {
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    var charCode = evt.which ? evt.which : evt.keyCode;
     var txtVal = $(obj).val();
     var txtValLen = txtVal.length;
     if ((charCode > 47 && charCode < 58) || charCode == 46 || charCode == 8) {
-        if (txtVal.indexOf(".") > 0 && charCode == 46)
-            return false;
-        else
-            return true;
+        if (txtVal.indexOf(".") > 0 && charCode == 46) return false;
+        else return true;
     }
     return false;
 }
 //============ Function to check upload file types ===============
 export function IsCheckFile(ControlName, msg, strFileType) {
-
-    var arrFileType = strFileType.split(',');
-    var filename = $('#' + ControlName).val();
+    var arrFileType = strFileType.split(",");
+    var filename = $("#" + ControlName).val();
     var fileLength = filename.length;
-    if (fileLength == 0)
-        return true;
+    if (fileLength == 0) return true;
     else {
         var extnIndex = filename.lastIndexOf(".") + 1;
         var fileType = filename.substring(extnIndex, fileLength).toLowerCase();
 
         for (var i = 0; i < arrFileType.length; i++) {
-            if (fileType == arrFileType[i])
-                return true;
+            if (fileType == arrFileType[i]) return true;
         }
-        viewAlert(msg + ' Upload (<span class="fileTypeS">.' + strFileType + '</span>) file only', ControlName);
-        $('#' + ControlName).focus();
+        viewAlert(
+            msg +
+                ' Upload (<span class="fileTypeS">.' +
+                strFileType +
+                "</span>) file only",
+            ControlName,
+        );
+        $("#" + ControlName).focus();
         return false;
     }
 }
 //============ Function to validate email ===============
 export function validEmail(controlId) {
-    var pattern = new RegExp(/^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/);
-    var email = $('#' + controlId).val();
-    if (email != '') {
-        if (pattern.test(email) == true)
-            return true;
+    var pattern = new RegExp(
+        /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/,
+    );
+    var email = $("#" + controlId).val();
+    if (email != "") {
+        if (pattern.test(email) == true) return true;
         else {
             viewAlert("Please enter a valid email id", controlId);
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 
 //=============== Function to compare date ==============
-export function compareDate(firstControl, secondControl, field1Name, field2Name, msg) {
-
-    var firstDate = $('#' + firstControl).val();
-    var secondDate = $('#' + secondControl).val();
+export function compareDate(
+    firstControl,
+    secondControl,
+    field1Name,
+    field2Name,
+    msg,
+) {
+    var firstDate = $("#" + firstControl).val();
+    var secondDate = $("#" + secondControl).val();
     var splitFirstDt = firstDate.split("-");
-    firstDate = splitFirstDt[2] + '-' + splitFirstDt[1] + '-' + splitFirstDt[0];
+    firstDate = splitFirstDt[2] + "-" + splitFirstDt[1] + "-" + splitFirstDt[0];
     var splitSecondDt = secondDate.split("-");
-    secondDate = splitSecondDt[2] + '-' + splitSecondDt[1] + '-' + splitSecondDt[0];
+    secondDate =
+        splitSecondDt[2] + "-" + splitSecondDt[1] + "-" + splitSecondDt[0];
     firstDate = new Date(firstDate);
     secondDate = new Date(secondDate);
 
     if (firstDate >= secondDate) {
         if (typeof msg == "undefined")
-            viewAlert(field1Name + " cannot be greater than or equal to " + field2Name, firstControl);
-        else
-            viewAlert(msg, firstControl);
-        $('#' + secondControl).focus();
+            viewAlert(
+                field1Name +
+                    " cannot be greater than or equal to " +
+                    field2Name,
+                firstControl,
+            );
+        else viewAlert(msg, firstControl);
+        $("#" + secondControl).focus();
         return false;
-    } else
-        return true;
+    } else return true;
 }
 
-export function compareDate2(firstControl, secondControl, field1Name, field2Name, msg) {
-    var firstDate = $('#' + firstControl).val();
-    var secondDate = $('#' + secondControl).val();
+export function compareDate2(
+    firstControl,
+    secondControl,
+    field1Name,
+    field2Name,
+    msg,
+) {
+    var firstDate = $("#" + firstControl).val();
+    var secondDate = $("#" + secondControl).val();
     var splitFirstDt = firstDate.split("-");
-    firstDate = splitFirstDt[2] + '-' + splitFirstDt[1] + '-' + splitFirstDt[0];
+    firstDate = splitFirstDt[2] + "-" + splitFirstDt[1] + "-" + splitFirstDt[0];
     var splitSecondDt = secondDate.split("-");
-    secondDate = splitSecondDt[2] + '-' + splitSecondDt[1] + '-' + splitSecondDt[0];
+    secondDate =
+        splitSecondDt[2] + "-" + splitSecondDt[1] + "-" + splitSecondDt[0];
     firstDate = new Date(firstDate);
     secondDate = new Date(secondDate);
 
     if (firstDate > secondDate) {
         if (typeof msg == "undefined")
-            viewAlert(field1Name + " cannot be greater than to " + field2Name, firstControl);
-        else
-            viewAlert(msg, firstControl);
-        $('#' + secondControl).focus();
+            viewAlert(
+                field1Name + " cannot be greater than to " + field2Name,
+                firstControl,
+            );
+        else viewAlert(msg, firstControl);
+        $("#" + secondControl).focus();
         return false;
-    } else
-        return true;
+    } else return true;
 }
 
 //=============== Function to compare date with current date ==============
 export function compareCurDate(controlId, fieldName, flag) {
     //================ set flag as 'g' for not greater than current date and 'l' for not less than current date ========
-    var fieldDate = $('#' + controlId).val();
+    var fieldDate = $("#" + controlId).val();
     var splFieldDt = fieldDate.split("-");
-    fieldDate = splFieldDt[2] + '-' + splFieldDt[1] + '-' + splFieldDt[0];
-    var curDate = new Date((new Date()).setHours(0, 0, 0, 0));
-    fieldDate = new Date((new Date(fieldDate)).setHours(0, 0, 0, 0));
-    if (flag.toLowerCase() == 'g') {
+    fieldDate = splFieldDt[2] + "-" + splFieldDt[1] + "-" + splFieldDt[0];
+    var curDate = new Date(new Date().setHours(0, 0, 0, 0));
+    fieldDate = new Date(new Date(fieldDate).setHours(0, 0, 0, 0));
+    if (flag.toLowerCase() == "g") {
         if (fieldDate > curDate) {
-            viewAlert(fieldName + " cannot be greater than current date", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                fieldName + " cannot be greater than current date",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
-        } else
-            return true;
+        } else return true;
     } else {
         if (curDate > fieldDate) {
-            viewAlert(fieldName + " cannot be less than current date", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                fieldName + " cannot be less than current date",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
-        } else
-            return true;
+        } else return true;
     }
 }
 //=============== Function to for alias ==============
 export function checkAlias(controlId) {
-
-    var $input = $('#' + controlId);
+    var $input = $("#" + controlId);
     var value = $input.val();
 
     // 1️⃣ Convert spaces to hyphen
-    value = value.replace(/\s+/g, '-');
+    value = value.replace(/\s+/g, "-");
 
     // 2️⃣ Convert to lowercase (optional but recommended)
     value = value.toLowerCase();
 
     // 3️⃣ Remove all characters except a-z, 0-9 and hyphen
-    value = value.replace(/[^a-z0-9-]/g, '-');
+    value = value.replace(/[^a-z0-9-]/g, "-");
 
     // 4️⃣ Prevent multiple consecutive hyphens
-    value = value.replace(/-+/g, '-');
+    value = value.replace(/-+/g, "-");
 
     // 5️⃣ Prevent hyphen at start or end
-    value = value.replace(/^-|-$/g, '');
+    value = value.replace(/^-|-$/g, "");
 
     // Set cleaned value back to input
     $input.val(value);
@@ -1065,156 +1088,138 @@ export function checkAlias(controlId) {
 //============ Function to Number and slash By Rasmi Ranjan swain on 15-oct-2014 ===============
 function validateNumberSlash(controlId, msg) {
     var numPattern = new RegExp(/^\d\/\d$/);
-    var txtVal = $('#' + controlId).val();
-    if (txtVal != '') {
-        if (numPattern.test(txtVal) == true)
-            return true;
+    var txtVal = $("#" + controlId).val();
+    if (txtVal != "") {
+        if (numPattern.test(txtVal) == true) return true;
         else {
-
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             viewAlert(msg, controlId);
             return false;
         }
-    } else
-        return true;
-
+    } else return true;
 }
 
 //============ Function to check Valid URL By Rasmi Ranjan swain on 06-Jan-2015 ===============
 function validURL(controlId, msg) {
-    var numPattern = new RegExp(/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/);
-    var txtVal = $('#' + controlId).val();
-    if (txtVal != '') {
-        if (numPattern.test(txtVal) == true)
-            return true;
+    var numPattern = new RegExp(
+        /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/,
+    );
+    var txtVal = $("#" + controlId).val();
+    if (txtVal != "") {
+        if (numPattern.test(txtVal) == true) return true;
         else {
-
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             viewAlert(msg, controlId);
             return false;
         }
-    } else
-        return true;
-
+    } else return true;
 }
 
 function validURLWHTTP(controlId, msg) {
     //    var numPattern = new RegExp(/(^|\s)((https?:\/\/)?[\w-]+(\.[\w-]+)+\.?(:\d+)?(\/\S*)?)/);
-    var numPattern = new RegExp(/^((ftp|http|https)?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/);
-    var txtVal = $('#' + controlId).val();
-    if (txtVal != '') {
-        if (numPattern.test(txtVal) == true)
-            return true;
+    var numPattern = new RegExp(
+        /^((ftp|http|https)?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/,
+    );
+    var txtVal = $("#" + controlId).val();
+    if (txtVal != "") {
+        if (numPattern.test(txtVal) == true) return true;
         else {
-
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             viewAlert(msg, controlId);
             return false;
         }
-    } else
-        return true;
-
+    } else return true;
 }
 
 function isAlphaNumeric(controlId, msg) {
     var numPattern = new RegExp(/^([0-9]|[a-z])+([a-z]+)$/i);
-    var txtVal = $('#' + controlId).val();
-    if (txtVal != '') {
-        if (numPattern.test(txtVal) == true)
-            return true;
+    var txtVal = $("#" + controlId).val();
+    if (txtVal != "") {
+        if (numPattern.test(txtVal) == true) return true;
         else {
-
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             viewAlert(msg, controlId);
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 //============ Function to check Valid Phone No By Rasmi Ranjan swain on 28-Jan-2015 ===============
 function validatePhone(controlId, msg) {
-    var txtVal = $('#' + controlId).val();
-    var filter = /^((\+[1-9]{1,4}[ \-]*)|(\([0-9]{2,3}\)[ \-]*)|([0-9]{2,4})[ \-]*)*?[0-9]{3,4}?[ \-]*[0-9]{3,4}?$/;
+    var txtVal = $("#" + controlId).val();
+    var filter =
+        /^((\+[1-9]{1,4}[ \-]*)|(\([0-9]{2,3}\)[ \-]*)|([0-9]{2,4})[ \-]*)*?[0-9]{3,4}?[ \-]*[0-9]{3,4}?$/;
     //var filter = /^[0-9]{4}[ \-][0-9]{7}?$/;
-    if (txtVal != '') {
-        if (filter.test(txtVal))
-            return true;
+    if (txtVal != "") {
+        if (filter.test(txtVal)) return true;
         else {
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             viewAlert(msg);
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
-
 
 //============ Function to check Valid Phone No By Rasmi Ranjan swain on 28-Jan-2015 ===============
 function validateTel(txtVal, msg) {
     // var txtVal = $('#'+controlId).val();
-    var filter = /^((\+[1-9]{1,4}[ \-]*)|(\([0-9]{2,3}\)[ \-]*)|([0-9]{2,4})[ \-]*)*?[0-9]{3,4}?[ \-]*[0-9]{3,4}?$/;
+    var filter =
+        /^((\+[1-9]{1,4}[ \-]*)|(\([0-9]{2,3}\)[ \-]*)|([0-9]{2,4})[ \-]*)*?[0-9]{3,4}?[ \-]*[0-9]{3,4}?$/;
     //var filter = /^[0-9]{4}[ \-][0-9]{7}?$/;
-    if (txtVal != '') {
-        if (filter.test(txtVal))
-            return true;
+    if (txtVal != "") {
+        if (filter.test(txtVal)) return true;
         else {
-
             viewAlert(msg);
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
-
-
 
 //============ Function to validate valid name No By Rasmi Ranjan swain on 28-Jan-2015 ===============
 function validateName(controlId, msg) {
-    var txtVal = $('#' + controlId).val();
+    var txtVal = $("#" + controlId).val();
     var filter = /^[A-Za-z]{1}/;
-    if (txtVal != '') {
-        if (filter.test(txtVal))
-            return true;
+    if (txtVal != "") {
+        if (filter.test(txtVal)) return true;
         else {
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             viewAlert(msg, controlId);
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 //============ Function to validate valid name No By Rasmi Ranjan swain on 28-Jan-2015 ===============
 function validMobileNo(controlId, msg) {
-    var txtVal = $('#' + controlId).val();
+    var txtVal = $("#" + controlId).val();
     var filter = /^[6-9][0-9]{9}$/;
-    if (txtVal != '') {
-        if (filter.test(txtVal))
-            return true;
+    if (txtVal != "") {
+        if (filter.test(txtVal)) return true;
         else {
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             viewAlert(msg, controlId);
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 //============ Function to validate valid name No By Rasmi Ranjan swain on 28-Jan-2015 ===============
 function validPHno(evt, obj) {
-    var charCode = (evt.which) ? evt.which : event.keyCode;
-    var txtVal = $('#' + obj).val();
+    var charCode = evt.which ? evt.which : event.keyCode;
+    var txtVal = $("#" + obj).val();
     var txtValLen = txtVal.length;
     if ((charCode > 47 && charCode < 58) || charCode == 45 || charCode == 8) {
-        if (txtVal.indexOf("-") > 0 && charCode == 45)
-            return false;
-        else
-            return true;
+        if (txtVal.indexOf("-") > 0 && charCode == 45) return false;
+        else return true;
     }
     return false;
 }
 //============ Function to validate valid name No By Rasmi Ranjan swain on 28-Jan-2015 ===============
 function validUserName(evt) {
-    var charCode = (evt.which) ? evt.which : event.keyCode;
-    if ((charCode > 47 && charCode <= 57) || (charCode >= 64 && charCode <= 122) || charCode == 36 || charCode == 8) {
+    var charCode = evt.which ? evt.which : event.keyCode;
+    if (
+        (charCode > 47 && charCode <= 57) ||
+        (charCode >= 64 && charCode <= 122) ||
+        charCode == 36 ||
+        charCode == 8
+    ) {
         return true;
     }
     return false;
@@ -1224,16 +1229,15 @@ function validUserName(evt) {
 function checkLetterNo(controlId) {
     // Patterns = /^[a-zA-Z\d._\/\- ]+$/
     var Patterns = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9_\-\/]+)$/;
-    var str = $('#' + controlId).val();
+    var str = $("#" + controlId).val();
     var objregExp = new RegExp(Patterns);
-    if (!(objregExp.test(str))) {
+    if (!objregExp.test(str)) {
         viewAlert("Invalid letter no. format !!!", controlId);
-        $('#' + controlId).focus();
+        $("#" + controlId).focus();
         return false;
     }
     return true;
 }
-
 
 // if (typeof escapeHtmlEntities == 'undefined') {
 //     escapeHtmlEntities = function(text) {
@@ -1503,13 +1507,13 @@ function checkLetterNo(controlId) {
 // }
 
 function chkFileSize(id, sizeInKb, sizeInMb, type) {
-    var message = '';
+    var message = "";
     if (type == 1) {
-        message = 'File size exceeds ' + sizeInKb + 'KB.';
+        message = "File size exceeds " + sizeInKb + "KB.";
     } else {
-        message = 'File size exceeds ' + sizeInMb + 'MB.';
+        message = "File size exceeds " + sizeInMb + "MB.";
     }
-    var fileSize_inKB = Math.round(($("#" + id)[0].files[0].size / 1024));
+    var fileSize_inKB = Math.round($("#" + id)[0].files[0].size / 1024);
     if (fileSize_inKB > sizeInKb) {
         viewAlert(message, id);
         //scrollToPosition(id);
@@ -1518,35 +1522,50 @@ function chkFileSize(id, sizeInKb, sizeInMb, type) {
         return true;
     }
 }
-//============ Function to check less date time  By Rasmi Ranjan swain on 06-Jan-2015 ===============	
+//============ Function to check less date time  By Rasmi Ranjan swain on 06-Jan-2015 ===============
 function lessDateTime(dateFrom, dateTo, msg) {
     var splDateFrom = dateFrom.split("-");
-    var date_from = new Date(splDateFrom[2], Number(splDateFrom[1] - 1), splDateFrom[0], splDateFrom[3], splDateFrom[4]);
+    var date_from = new Date(
+        splDateFrom[2],
+        Number(splDateFrom[1] - 1),
+        splDateFrom[0],
+        splDateFrom[3],
+        splDateFrom[4],
+    );
     var splDateTo = dateTo.split("-");
-    var date_To = new Date(splDateTo[2], Number(splDateTo[1] - 1), splDateTo[0], splDateTo[3], splDateTo[4]);
+    var date_To = new Date(
+        splDateTo[2],
+        Number(splDateTo[1] - 1),
+        splDateTo[0],
+        splDateTo[3],
+        splDateTo[4],
+    );
     if (date_from.getTime() > date_To.getTime()) {
         viewAlert(msg, dateTo);
         return false;
     }
     return true;
 }
-//============ Function to check less date time  By Rasmi Ranjan swain on 06-Jan-2015 ===============	
+//============ Function to check less date time  By Rasmi Ranjan swain on 06-Jan-2015 ===============
 function convert12to24(timeStr) {
-    var meridian = timeStr.substr(timeStr.length - 2).toLowerCase();;
-    var hours = timeStr.substr(0, timeStr.indexOf(':'));
-    var minutes = timeStr.substring(timeStr.indexOf(':') + 1, timeStr.indexOf(':') + 3);
-    if (meridian == 'pm') {
+    var meridian = timeStr.substr(timeStr.length - 2).toLowerCase();
+    var hours = timeStr.substr(0, timeStr.indexOf(":"));
+    var minutes = timeStr.substring(
+        timeStr.indexOf(":") + 1,
+        timeStr.indexOf(":") + 3,
+    );
+    if (meridian == "pm") {
         if (hours != 12) {
             hours = hours * 1 + 12;
         } else {
-            hours = '12';
+            hours = "12";
         }
     } else {
         if (hours == 12) {
-            hours = '00';
+            hours = "00";
         }
     }
-    return hours + '-' + minutes;
+    return hours + "-" + minutes;
 }
 
 function changeTimeFormat(id) {
@@ -1556,45 +1575,48 @@ function changeTimeFormat(id) {
 }
 
 function validPassword(controlId, txtLbl) {
-    var pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+    var pattern =
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
 
-    var password = $('#' + controlId).val();
-    if (password != '') {
-        if (pattern.test(password) == true)
-            return true;
+    var password = $("#" + controlId).val();
+    if (password != "") {
+        if (pattern.test(password) == true) return true;
         else {
-            viewAlert(txtLbl + " should be alphanumeric and consist of at least one upper case letter, special character and should be 8-15 characters long", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                txtLbl +
+                    " should be alphanumeric and consist of at least one upper case letter, special character and should be 8-15 characters long",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 
 /*created by Bijaylaxmi Mohanty*/
 function cPassMatch(newPwdId, cPwdId, msg) {
-    var newPwd = $('#' + newPwdId).val();
-    var cPwd = $('#' + cPwdId).val();
+    var newPwd = $("#" + newPwdId).val();
+    var cPwd = $("#" + cPwdId).val();
 
     if (newPwd != "" && cPwd != "") {
         if (newPwd == cPwd) {
             return true;
         } else {
             viewAlert(msg, cPwdId);
-            $('#' + cPwdId).focus();
+            $("#" + cPwdId).focus();
             return false;
         }
     }
 }
 
 function newPassDiff(newPwdId, oldPwdId, msg) {
-    var newPwd = $('#' + newPwdId).val();
-    var oldPwd = $('#' + oldPwdId).val();
+    var newPwd = $("#" + newPwdId).val();
+    var oldPwd = $("#" + oldPwdId).val();
 
     if (newPwd != "" && oldPwd != "") {
         if (newPwd == oldPwd) {
             viewAlert(msg, newPwdId);
-            $('#' + newPwdId).focus();
+            $("#" + newPwdId).focus();
             return false;
         } else {
             return true;
@@ -1605,14 +1627,13 @@ function newPassDiff(newPwdId, oldPwdId, msg) {
 function validateEmail(controlId, msg) {
     var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
 
-    var email = $('#' + controlId).val();
-    if (email != '') {
+    var email = $("#" + controlId).val();
+    if (email != "") {
         if (emailReg.test(email) == true) {
             return true;
-        }
-        else {
+        } else {
             viewAlert(msg, controlId);
-            $('#' + controlId).focus();
+            $("#" + controlId).focus();
             return false;
         }
     }
@@ -1622,21 +1643,23 @@ function validateEmail(controlId, msg) {
 function validIFSC(controlId, txtLbl) {
     var pattern = /^[A-Za-z]{4}\d{8}$/;
 
-    var ifsc = $('#' + controlId).val();
-    if (ifsc != '') {
-        if (pattern.test(ifsc) == true)
-            return true;
+    var ifsc = $("#" + controlId).val();
+    if (ifsc != "") {
+        if (pattern.test(ifsc) == true) return true;
         else {
-            viewAlert(txtLbl + " should contain 4 characters and 8 letters", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                txtLbl + " should contain 4 characters and 8 letters",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
         }
-    } else
-        return true;
+    } else return true;
 }
 
 function validPhone(controlId, msg) {
-    var phoneRegExp = /^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/;
+    var phoneRegExp =
+        /^((\+)?[1-9]{1,2})?([-\s\.])?((\(\d{1,4}\))|\d{1,4})(([-\s\.])?[0-9]{1,12}){1,2}$/;
     var phoneVal = $("#" + controlId).val();
     var numbers = phoneVal.split("").length;
 
@@ -1644,7 +1667,7 @@ function validPhone(controlId, msg) {
         return true;
     } else {
         viewAlert(msg, controlId);
-        $('#' + controlId).focus();
+        $("#" + controlId).focus();
         return false;
     }
 }
@@ -1665,65 +1688,58 @@ function hasDuplicates(array) {
 
 function countChar(controlId, counterId) {
     var length = $("#" + controlId).val().length;
-    var maxLength = $("#" + controlId).attr('maxlength');
-    length = (maxLength - length);
-    $("#" + counterId).find(".ct").html(length);
+    var maxLength = $("#" + controlId).attr("maxlength");
+    length = maxLength - length;
+    $("#" + counterId)
+        .find(".ct")
+        .html(length);
 }
 //============ Function to check Valid URL By Rasmi Ranjan swain on 06-Jan-2015 ===============
 function isConNumOnly(controlId, msg, evt) {
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57))
-        return false;
+    var charCode = evt.which ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) return false;
     else {
         if (charCode == 8) {
-            return true
+            return true;
         } else {
             var numPattern = new RegExp(/(\d)\1{3,}/);
-            var txtVal = $('#' + controlId).val();
-            if (txtVal != '') {
+            var txtVal = $("#" + controlId).val();
+            if (txtVal != "") {
                 if (numPattern.test(txtVal) == true) {
-                    $('#' + controlId).focus();
+                    $("#" + controlId).focus();
                     viewAlert(msg, controlId);
                     return false;
                 } else {
-
                     return true;
                 }
-            } else
-                return true;
+            } else return true;
         }
-
     }
     return true;
 }
 
 function isConChar(controlId, msg, evt) {
-
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    var charCode = evt.which ? evt.which : evt.keyCode;
 
     if (charCode == 8) {
         return true;
     } else {
         var numPattern = new RegExp(/(\d)\1{3,}/);
-        var txtVal = $('#' + controlId).val();
-        if (txtVal != '') {
+        var txtVal = $("#" + controlId).val();
+        if (txtVal != "") {
             if (numPattern.test(txtVal) == true) {
-                $('#' + controlId).focus();
+                $("#" + controlId).focus();
                 viewAlert(msg, controlId);
                 return false;
             } else {
-
                 return true;
             }
-        } else
-            return true;
+        } else return true;
     }
-
 }
 
-
 function removeSpace(str, ctrrlId, evt) {
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    var charCode = evt.which ? evt.which : evt.keyCode;
     if (charCode == 32) {
         return false;
     }
@@ -1733,11 +1749,30 @@ function removeSpace(str, ctrrlId, evt) {
 //============ Function to check Valid URL By Abhiram Samantara on 01-May-2017 ===============
 
 function convertDateFormat(inputFormat) {
-    var monthNames = ["Jan", "Febr", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    var monthNames = [
+        "Jan",
+        "Febr",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ];
 
-    function pad(s) { return (s < 10) ? '0' + s : s; }
+    function pad(s) {
+        return s < 10 ? "0" + s : s;
+    }
     var d = new Date(inputFormat);
-    return [pad(d.getDate()), pad(monthNames[d.getMonth()]), d.getFullYear()].join('-');
+    return [
+        pad(d.getDate()),
+        pad(monthNames[d.getMonth()]),
+        d.getFullYear(),
+    ].join("-");
 }
 
 // function to block the 0 at first place By: Ashok kumar Samal :: On:02-04-2018
@@ -1746,56 +1781,53 @@ function blockZero_firstSGP(e) {
     str = e.value;
     var idName = e.id;
     switch (str.charCodeAt(0)) {
-        case 48:
-            {
-                viewAlert("0 not allolwed at first place", idName);
-                e.value = "";
-                return false;
-            }
+        case 48: {
+            viewAlert("0 not allolwed at first place", idName);
+            e.value = "";
+            return false;
+        }
     }
 }
 
-
-
 //=============== Function to compare date ==============
 function compareTwoDate(firstControl, secondControl, field1Name, field2Name) {
-
-    var firstDate = $('#' + firstControl).val();
-    var secondDate = $('#' + secondControl).val();
-
+    var firstDate = $("#" + firstControl).val();
+    var secondDate = $("#" + secondControl).val();
 
     var splitFirstDt = firstDate.split("-");
-    firstDate = splitFirstDt[0] + '-' + splitFirstDt[1] + '-' + splitFirstDt[2];
-
+    firstDate = splitFirstDt[0] + "-" + splitFirstDt[1] + "-" + splitFirstDt[2];
 
     var splitSecondDt = secondDate.split("-");
-    secondDate = splitSecondDt[0] + '-' + splitSecondDt[1] + '-' + splitSecondDt[2];
-
+    secondDate =
+        splitSecondDt[0] + "-" + splitSecondDt[1] + "-" + splitSecondDt[2];
 
     firstDate = new Date(firstDate);
     secondDate = new Date(secondDate);
 
-
     if (firstDate > secondDate) {
+        viewAlert(
+            field1Name + " cannot be greater than " + field2Name,
+            firstControl,
+        );
 
-        viewAlert(field1Name + " cannot be greater than " + field2Name, firstControl);
-
-        $('#' + secondControl).focus();
+        $("#" + secondControl).focus();
 
         return false;
-    } else
-        return true;
+    } else return true;
 }
 
 //============ Function to check Custome special character  ===============
 function checkSpecialCharCustome(controlId) {
-    var splArr = ["%", "=", "<", ">", "\\", "\"", "--", "$", "^", "/*", "*/"];
+    var splArr = ["%", "=", "<", ">", "\\", '"', "--", "$", "^", "/*", "*/"];
     //var splArr = ["%", "<", ">", "\\", "\""];
-    var str = $('#' + controlId).val();
+    var str = $("#" + controlId).val();
     for (var i = 0; i < splArr.length; i++) {
         if (str.indexOf(splArr[i]) > 0) {
-            viewAlert("Special character " + splArr[i] + " is not allowed !!!", controlId);
-            $('#' + controlId).focus();
+            viewAlert(
+                "Special character " + splArr[i] + " is not allowed !!!",
+                controlId,
+            );
+            $("#" + controlId).focus();
             return false;
         }
     }
@@ -1804,22 +1836,24 @@ function checkSpecialCharCustome(controlId) {
 
 function isOnlyCharDot(evt) {
     var regex = new RegExp("^[a-zA-Z. ]+$");
-    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    var key = String.fromCharCode(
+        !event.charCode ? event.which : event.charCode,
+    );
     if (!regex.test(key)) {
         event.preventDefault();
         return false;
     }
     return true;
-
 }
 
 function isOnlyCharNumeric(evt) {
     var regex = new RegExp("^[a-zA-Z0-9 ]+$");
-    var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+    var key = String.fromCharCode(
+        !event.charCode ? event.which : event.charCode,
+    );
     if (!regex.test(key)) {
         event.preventDefault();
         return false;
     }
     return true;
-
 }

@@ -43,7 +43,8 @@ return [
  
     /* URLs */
     'CONSUMER_API_URL' => 'https://testing.odbus.co.in/api/',
-    'CONSUMER_FRONT_URL' => 'https://www.odbus.in/',
+    'CONSUMER_FRONT_URL' => 'https://odtestingssr.odbus.co.in/',
+    
  
     /* HTTP Status Codes */
     'HTTP_OK' => 200,

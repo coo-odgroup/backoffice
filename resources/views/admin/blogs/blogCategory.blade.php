@@ -140,6 +140,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th width="60">Sequence</th>
                             <th>Last Modified</th>
                             <th>Status</th>
+                            <th class="no-sort">Blog Catgory Details</th>
                             <th class="no-sort">Action</th>
                         </tr>
                     </thead>
@@ -160,6 +161,199 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
     </div>
 </form>
+
+
+<div class="modal fade"
+    id="viewCategoryModal"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title d-flex align-items-center gap-2">
+                    <i class="fa fa-eye"></i>
+                    <span>Blog Category Details</span>
+                </h5>
+                <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body p-4 bg-light">
+                <div class="container-fluid p-0">
+
+                    <!-- Row 1: Primary Info -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+                                <div class="col-lg-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Category Name</label>
+                                    <div id="v_category_name" class="h5 fw-bold text-dark mb-0">--</div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Alias (Slug)</label>
+                                    <div class="bg-light px-3 py-2 rounded border d-inline-flex align-items-center gap-2">
+                                        <i class="fa fa-link text-muted small"></i>
+                                        <code id="v_slug" class="text-primary fw-medium">--</code>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Canonical URL</label>
+                                    <a id="v_canonical_url" href="#" target="_blank" class="text-decoration-none text-truncate d-block text-primary">--</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Descriptions -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-lg-12">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-3 d-block border-bottom pb-2">Small Description</label>
+                                    <div id="v_small_desc" class="text-secondary lh-base">--</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-3 d-block border-bottom pb-2">Full Description</label>
+                                    <div id="v_description" class="text-secondary lh-base">--</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: SEO & Metadata -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 pb-0">
+                            <h6 class="text-primary fw-bold mb-3">
+                                <i class="fa fa-search me-2"></i>SEO & Metadata
+                            </h6>
+                        </div>
+
+                        <div class="card-body pt-3">
+                            <div class="row g-4">
+
+                                <!-- Meta Title -->
+                                <div class="col-md-6">
+                                    <div class="bg-light rounded-3 p-3 h-100">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">
+                                            <i class="fa fa-heading text-primary me-2"></i>
+                                            Meta Title
+                                        </div>
+
+                                        <div id="v_meta_title"
+                                            class="fw-semibold text-dark fs-6">
+                                            --
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Meta Keywords -->
+                                <div class="col-md-6">
+                                    <div class="bg-light rounded-3 p-3 h-100">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">
+                                            <i class="fa fa-tags text-success me-2"></i>
+                                            Meta Keywords
+                                        </div>
+
+                                        <div id="v_meta_keywords">
+                                            --
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Meta Description -->
+                                <div class="col-12">
+                                    <div class="bg-light rounded-3 p-3">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">
+                                            <i class="fa fa-align-left text-warning me-2"></i>
+                                            Meta Description
+                                        </div>
+
+                                        <div id="v_meta_description"
+                                            class="text-secondary lh-lg">
+                                            --
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Technical & Images -->
+                    <div class="row g-4">
+                        <!-- Schema -->
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-3 d-block border-bottom pb-2">Breadcrumb Schema</label>
+                                    <div class="bg-dark text-light p-3 rounded">
+                                        <pre id="v_breadcrumb_schema"
+                                            class="m-0 small font-monospace"
+                                            style="
+                                            min-height:100px;
+                                            max-height:400px;
+                                            overflow:auto;
+                                            white-space:pre-wrap;
+                                            word-break:break-word;
+                                        ">
+                                    --
+                                    </pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Media Previews -->
+                        <div class="col-lg-6">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body p-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-3 d-block border-bottom pb-2">Media Previews</label>
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <label class="small text-muted mb-1 d-block">Banner Image</label>
+                                            <div id="v_banner_image" class="image-preview-container bg-white border rounded d-flex align-items-center justify-content-center overflow-hidden" style="height: 120px;">
+                                                <span class="text-muted small">No Image</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="small text-muted mb-1 d-block">OG Image</label>
+                                            <div id="v_og_image" class="image-preview-container bg-white border rounded d-flex align-items-center justify-content-center overflow-hidden" style="height: 120px;">
+                                                <span class="text-muted small">No Image</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-white p-3">
+                <button type="button" class="btn btn-outline-secondary px-4 fw-bold" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 
 @endsection
 @push('scripts')
@@ -323,6 +517,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
+                data: '',
+                render: function(data, type, row) {
+
+                    return `
+                          <span class="btn btn-sm btn-primary btnViewCategory"
+                                data-id="${row.blog_cat_id}">
+                                <i class="fa fa-eye"></i> View
+                            </span>
+                        `;
+                },
+                className: "noPrint text-center"
+            },
+            {
                 data: null,
                 render: function(data, type, row) {
 
@@ -357,6 +564,119 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initSelect2('#faqCategory', 'Select Category');
         commonAjax.loadFaqCategory(0);
+    });
+
+
+    $(document).on('click', '.btnViewCategory', function() {
+
+        let id = $(this).data('id');
+
+        let modal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('viewCategoryModal')
+        );
+
+        modal.show();
+
+        $.ajax({
+
+            url: '/admin/blog-category/details',
+
+            type: 'POST',
+
+            data: {
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+
+            success: function(res) {
+
+                if (res.status) {
+
+                    let d = res.data;
+
+                    $('#v_category_name').text(d.category_name || '--');
+                    $('#v_slug').text(d.slug || '--');
+                    $('#v_small_desc').text(d.small_desc || '--');
+
+                    function decodeAndStrip(html) {
+                        let txt = document.createElement("textarea");
+                        txt.innerHTML = html; // Decode HTML entities
+
+                        let div = document.createElement("div");
+                        div.innerHTML = txt.value; // Convert decoded HTML into DOM
+
+                        return div.textContent || div.innerText || "";
+                    }
+
+                    $('#v_description').text(
+                        d.description ? decodeAndStrip(d.description) : '--'
+                    );
+
+                    $('#v_small_desc').text(
+                        d.small_desc ? decodeAndStrip(d.small_desc) : '--'
+                    );
+                    $('#v_meta_title').text(d.meta_title || '--');
+                    $('#v_meta_description').text(d.meta_description || '--');
+                    $('#v_canonical_url')
+                        .text(d.canonical_url || '--')
+                        .attr('href', d.canonical_url || '#');
+
+                    let keywordsHtml = '--';
+                    if (d.meta_keywords) {
+                        keywordsHtml = '';
+                        d.meta_keywords.split(',').forEach(function(keyword) {
+                            keywordsHtml += `
+                                <span class="badge bg-primary me-1 mb-1">
+                                    ${keyword.trim()}
+                                </span>
+                            `;
+                        });
+                    }
+
+                    $('#v_meta_keywords').html(keywordsHtml);
+
+                    if (d.canonical_url) {
+                        $('#v_canonical_url').show();
+                    } else {
+                        $('#v_canonical_url').removeAttr('href');
+                    }
+
+                    if (d.breadcrumb_schema) {
+                        try {
+                            // If it is a JSON string
+                            let formattedJson = JSON.stringify(
+                                JSON.parse(d.breadcrumb_schema),
+                                null,
+                                4
+                            );
+
+                            $('#v_breadcrumb_schema').text(formattedJson);
+                        } catch (e) {
+                            // If it's already formatted or not valid JSON
+                            $('#v_breadcrumb_schema').text(d.breadcrumb_schema);
+                        }
+                    } else {
+                        $('#v_breadcrumb_schema').text('--');
+                    }
+
+                    $('#v_banner_image').html(
+                        d.banner_image ?
+                        `<img src="/storage/uploads/blog/categories/${d.banner_image}"
+                            class="img-fluid w-100 h-100"
+                            style="object-fit:cover;">` :
+                        `<span class="text-muted small">No Image</span>`
+                    );
+
+                    $('#v_og_image').html(
+                        d.og_image ?
+                        `<img src="/storage/uploads/blog/categories/${d.og_image}"
+                            class="img-fluid w-100 h-100"
+                            style="object-fit:cover;">` :
+                        `<span class="text-muted small">No Image</span>`
+                    );
+                }
+            }
+        });
     });
 </script>
 @endpush

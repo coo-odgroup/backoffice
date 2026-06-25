@@ -160,6 +160,7 @@ class CommonController extends Controller
             'CampaignMaster' => \App\Models\Campaign\CampaignMaster::class,
             'NotificationRules' => \App\Models\Master\NotificationRules::class,
             'CronJob' => \App\Models\Master\CronJob::class,
+            'Schema' => \App\Models\Master\Schema::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {

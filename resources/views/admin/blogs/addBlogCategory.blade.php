@@ -196,12 +196,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                 </div>
                                                                 <div class="col-md-12 mb-3">
                                                                     <label for="breadcrumb_schema">Bread Crumb Schema</label>
-                                                                    <textarea class="form-control clearable form-select-sm" id="breadcrumb_schema" name="breadcrumb_schema" rows="10" placeholder="Enter Bread Crumb Schema">{{ $data['row']->breadcrumb_schema  ?? old('breadcrumb_schema ') }}</textarea>
+                                                                    <textarea class="form-control clearable form-select-sm" id="breadcrumb_schema" name="breadcrumb_schema" rows="20" placeholder="Enter Bread Crumb Schema">{{ $data['row']->breadcrumb_schema  ?? old('breadcrumb_schema ') }}</textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div class="col-md-4 mb-3">
+                                                            <div class="mb-3"><label for="small_desc">Small Description</label>
+                                                                <textarea class="form-control clearable form-select-sm" id="small_desc" name="small_desc" rows="6" placeholder="Enter Small Description">{{ $data['row']->small_desc  ?? old('small_desc ') }}</textarea>
+                                                            </div>
+
                                                             <div class="mb-3">
                                                                 <label for="og_image">Og Image</label>
                                                                 <input type="file" class="form-control clearable form-select-sm" id="img_3" name="og_image" accept="image/*">
@@ -436,9 +440,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         document.getElementById('categoryAlias').value = alias;
 
-        const siteUrl = "{{rtrim(config('app.url'), '/')}}";
+        const frontUrl = "{{rtrim(config('constants.CONSUMER_FRONT_URL'), '/')}}";
 
-        document.getElementById('canonical_url').value = siteUrl + '/admin/blog-category/' + alias;
+        document.getElementById('canonical_url').value = frontUrl + '/blog/category/' + alias;
 
         generateBreadcrumbSchema();
     });
@@ -451,10 +455,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             .replace(/-+/g, '-') // remove duplicate -
             .replace(/^-+$/g, ''); // remove hyphen from start & end
 
-        const siteUrl = "{{ rtrim(config('app.url'), '/') }}";
+        const frontUrl = "{{ rtrim(config('constants.CONSUMER_FRONT_URL'), '/') }}";
+        const alias = this.value;
 
         document.getElementById('canonical_url').value =
-            siteUrl + '/admin/blog-category/' + this.value;
+            frontUrl + '/blog/category/' + alias;
 
         generateBreadcrumbSchema();
 
@@ -524,11 +529,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         const categoryName = document.getElementById('categoryName').value.trim();
         const alias = document.getElementById('categoryAlias').value.trim();
 
-        const siteUrl = "{{ rtrim(config('app.url'), '/') }}";
+        const frontUrl = "{{ rtrim(config('constants.CONSUMER_FRONT_URL'), '/') }}";
 
         const canonicalUrl =
             document.getElementById('canonical_url').value ||
-            siteUrl + '/blog-category/' + alias;
+            frontUrl + '/blog/category/' + alias;
 
         const schema = {
             "@context": "https://schema.org/",
@@ -536,17 +541,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             "itemListElement": [{
                 "@type": "ListItem",
                 "position": 1,
-                "name": "Home",
-                "item": siteUrl
+                "name": "Home Page",
+                "item": frontUrl + "/"
             }, {
                 "@type": "ListItem",
                 "position": 2,
-                "name": "Blog Category",
-                "item": siteUrl + "/blog-category"
+                "name": "Blog Page",
+                "item": frontUrl + "/blog"
             }, {
                 "@type": "ListItem",
                 "position": 3,
-                "name": categoryName,
+                "name": "Blog Category",
                 "item": canonicalUrl
             }]
         };

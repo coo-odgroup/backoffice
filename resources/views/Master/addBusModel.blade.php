@@ -63,13 +63,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-1">
                                         <div class="col-md-6 mb-1">
-                                            <label for="brand">Bus Brand</label>
+                                            <label for="brand">Bus Brand<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm" id="brand" name="brand"></select>
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-1">
                                             <label for="model">Bus Model Name<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm clearable" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm clearable" placeholder="Enter Bus Model" id="model" name="model" value="{{ $data['row']->model_name ?? '' }}">
                                         </div>
                                     </div>
                                     <div class="row mb-1">

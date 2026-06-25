@@ -67,6 +67,7 @@ use App\Http\Controllers\Master\SeatBlockController;
 use App\Http\Controllers\Master\ExtraSeatBlockController;
 use App\Http\Controllers\Master\SeatOpenController;
 use App\Http\Controllers\Master\NotificationTemplateController;
+use App\Http\Controllers\Master\SchemaController;
 use App\Http\Controllers\Master\CronJobController;
 use App\Http\Controllers\Master\NotificationRuleController;
 /*
@@ -348,6 +349,13 @@ Route::prefix('admin')->group(function () {
     Route::get('/admin/audit-logs-data', [MasterLogController::class, 'auditLogData']);
     Route::get('/admin/audit-log/{id}', [MasterLogController::class, 'viewAuditLog']);
 
+    //Schema
+    Route::get('/schema', [SchemaController::class, 'index'])->name('schema.index');
+    Route::match(['get', 'post'], 'schema/add', [SchemaController::class, 'add'])->name('schema.add');
+    Route::post('schema/dataTableView', [SchemaController::class, 'dataTableView'])->name('schema.dataTableView');
+    Route::match(['get', 'post'], 'schema/edit/{encId}', [SchemaController::class, 'edit'])->name('schema.edit');
+    Route::post('/schema/view-details', [SchemaController::class, 'viewDetails'])->name('schema.viewDetails');
+
 
     // Jagan
     // ---------------------------------------------------------------------------------------------------------------
@@ -513,6 +521,8 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-category/add', [BlogCategoryController::class, 'add'])->name('blog-category.add');
     Route::post('blog-category/dataTableView', [BlogCategoryController::class, 'dataTableView'])->name('blog-category.dataTableView');
     Route::match(['get', 'post'], 'blog-category/edit/{encId}', [BlogCategoryController::class, 'edit'])->name('blog-category.edit');
+    Route::post('blog-category/details',[BlogCategoryController::class,'getCategoryDetails']
+);
 
     Route::get('/bus-schedule', [BusScheduleController::class, 'index'])->name('bus-schedule.index');
     Route::match(['get', 'post'], 'bus-schedule/add', [BusScheduleController::class, 'add'])->name('bus-schedule.add');

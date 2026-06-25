@@ -154,9 +154,20 @@ class BlogCategoryController extends Controller
                 $data['strReset'] = 'Cancel';
 
                 $dataResQry = BlogCategory::select(
-                    'id','category_name','slug','description','icon','alt_text',
-                    'banner_image','meta_title','meta_description','meta_keywords',
-                    'og_image','canonical_url'
+                    'id',
+                    'category_name',
+                    'slug',
+                    'small_desc',
+                    'description',
+                    'icon',
+                    'alt_text',
+                    'banner_image',
+                    'meta_title',
+                    'meta_description',
+                    'meta_keywords',
+                    'og_image',
+                    'canonical_url',
+                    'breadcrumb_schema'
                 )->where('id', $id)->first();
 
                 if (empty($dataResQry)) {
@@ -164,7 +175,6 @@ class BlogCategoryController extends Controller
                 }
 
                 $data['row'] = $dataResQry;
-
             } else {
                 $id = 0;
                 $redirectPage = "admin/blog-category";
@@ -175,7 +185,7 @@ class BlogCategoryController extends Controller
                 $validator = Validator::make(request()->all(), [
                     'categoryName'  => 'required|max:50',
                     'categoryAlias' => 'required|max:50',
-                    'banner_image'  => ['nullable','max:' . $config['max_size']]
+                    'banner_image'  => ['nullable', 'max:' . $config['max_size']]
                 ]);
 
                 if ($validator->fails()) {
@@ -189,7 +199,9 @@ class BlogCategoryController extends Controller
                 $altText = htmlEncode(Purifier::clean(request('categoryAlias')));
                 $icon = htmlEncode(Purifier::clean(request('icon')));
                 $description = htmlEncode(Purifier::clean(request('description')));
+                $small_desc  = htmlEncode(Purifier::clean(request('small_desc')));
 
+                $breadcrumb_schema = request('breadcrumb_schema');
                 $meta_title = htmlEncode(request('meta_title'));
                 $canonical_url = htmlEncode(request('canonical_url'));
                 $meta_description = htmlEncode(request('meta_description'));
@@ -243,17 +255,20 @@ class BlogCategoryController extends Controller
 
                     $oldData = BlogCategory::find($id);
 
+
                     $newData = [
                         'category_name'   => $categoryName,
                         'slug'            => $categoryAlias,
+                        'small_desc'        => $small_desc,
                         'icon'            => $icon,
                         'description'     => $description,
                         'alt_text'        => $altText,
                         'meta_title'      => $meta_title,
                         'canonical_url'   => $canonical_url,
-                        'meta_description'=> $meta_description,
+                        'meta_description' => $meta_description,
                         'meta_keywords'   => $meta_keywords,
                         'banner_image'    => $newBanner ?: $oldData->banner_image,
+                        'breadcrumb_schema' => $breadcrumb_schema,
                         'og_image'        => $newOg ?: $oldData->og_image
                     ];
 
@@ -281,20 +296,21 @@ class BlogCategoryController extends Controller
                     $oldData->fill($newData);
                     $oldData->updated_by = 1;
                     $oldData->save();
-
                 } else {
 
                     $row = [
                         'category_name'   => $categoryName,
                         'slug'            => $categoryAlias,
                         'icon'            => $icon,
+                        'small_desc'        => $small_desc,
                         'description'     => $description,
                         'alt_text'        => $altText,
                         'meta_title'      => $meta_title,
                         'canonical_url'   => $canonical_url,
-                        'meta_description'=> $meta_description,
+                        'meta_description' => $meta_description,
                         'meta_keywords'   => $meta_keywords,
                         'banner_image'    => $newBanner,
+                        'breadcrumb_schema' => $breadcrumb_schema,
                         'og_image'        => $newOg,
                         'created_by'      => 1,
                         'active_status'   => 1,
@@ -318,9 +334,7 @@ class BlogCategoryController extends Controller
                 session()->flash('message', 'Blog Category ' . ($id ? 'updated' : 'created') . ' successfully.');
 
                 return redirect($redirectPage);
-
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();
@@ -343,5 +357,30 @@ class BlogCategoryController extends Controller
     public function edit($encId)
     {
         return $this->add($encId);
+    }
+
+    public function getCategoryDetails(Request $request)
+    {
+        try {
+
+            $row = BlogCategory::find($request->id);
+
+            if (!$row) {
+                return response()->json([
+                    'status' => false
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => $row
+            ]);
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
