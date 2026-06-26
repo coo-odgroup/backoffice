@@ -158,7 +158,6 @@
                                 <th>Running Cycle</th>
                                 <th>Last Modified</th>
                                 <th>Status</th>
-                                <th class="no-sort">View Schedule</th>
                                 <th class="no-sort">Action</th>
                             </tr>
                         </thead>
@@ -382,26 +381,19 @@
                     data: '',
                     render: function(data, type, row) {
 
-                        return `
-                            <span class="btn btn-sm btn-primary btnViewSchedule"
-                                data-id="${row.bus_schedule_id}"
-                                data-id="${row.enc_bustype_id}"
-                                data-name="${row.layout_name}">
-                                <i class="fa fa-calendar"></i> View
-                            </span>
-                        `;
-                    },
-                    className: "noPrint text-center"
-                },
-                {
-                    data: '',
-                    render: function(data, type, row) {
-
                         let editUrl = $('#' + tableId).data('edit-url');
 
                         if (!editUrl) return '';
 
                         return `
+
+                           <span class="btn btn-sm btn-primary btnViewSchedule"
+                                data-id="${row.bus_schedule_id}"
+                                data-id="${row.enc_bustype_id}"
+                                data-name="${row.layout_name}">
+                                <i class="fa fa-calendar"></i> View
+                            </span>
+
                             <a class="btn btn-sm btn-info"
                                 href="${editUrl.replace('ID', row.enc_bus_schedule_id)}">
                                 <i class="fa fa-edit"></i> Edit

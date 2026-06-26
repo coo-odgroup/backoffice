@@ -128,7 +128,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Created By</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
-                            <th class="no-sort">View</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -149,18 +148,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 
-<div class="modal fade" id="viewSeatModal" tabindex="-1"  data-bs-backdrop="static"  data-bs-keyboard="false"   aria-hidden="true">
- <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Seat Layout: <span id="seatLayoutName"></span></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body" style="overflow-y:auto">
-        <div id="viewSeatContainer"></div>
-      </div>
+<div class="modal fade" id="viewSeatModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seat Layout: <span id="seatLayoutName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="overflow-y:auto">
+                <div id="viewSeatContainer"></div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @endsection
@@ -293,6 +292,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
+
+                        <span class="btn btn-sm btn-primary btnViewSeats"
+                              data-table="mst_bus_type"
+                              data-id="${row.enc_bustype_id}"
+                              data-name="${row.layout_name}">
+                              <i class="fa fa-eye"></i> View
+                        </span>
+
                         <a class="btn btn-sm btn-info"
                         href="${editUrl.replace('ID', row.enc_bustype_id)}">
                         <i class="fa fa-edit"></i> Edit
@@ -308,26 +315,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "noPrint text-center"
             },
-            {
-                data: '',
-                render: function(data, type, row) {
-
-                    return `
-                        <span class="btn btn-sm btn-success btnViewSeats"
-                              data-table="mst_bus_type"
-                              data-id="${row.enc_bustype_id}"
-                              data-name="${row.layout_name}">View
-                        </span>
-                    `;
-                },
-                className: "noPrint text-center"
-            }
         ]
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
 
-   $(document).on('click', '.btnViewSeats', function () {
+    $(document).on('click', '.btnViewSeats', function() {
 
         const id = $(this).data('id');
         const name = $(this).data('name');
@@ -352,11 +345,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 _token: $('meta[name="csrf-token"]').attr("content"),
             },
             dataType: "html",
-            success: function (response) {
+            success: function(response) {
                 // ✅ Replace loader with actual content
                 $('#viewSeatContainer').html(response);
             },
-            error: function () {
+            error: function() {
                 $('#viewSeatContainer').html(`
                     <div class="text-danger text-center p-4">
                         Failed to load seats. Please try again.
