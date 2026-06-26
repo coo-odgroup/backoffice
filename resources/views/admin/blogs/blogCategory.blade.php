@@ -136,11 +136,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Sl No</th>
                             <th>Banner</th>
                             <th>Category Name</th>
-                            <th>Description</th>
+                            <th>Alias</th>
                             <th width="60">Sequence</th>
                             <th>Last Modified</th>
                             <th>Status</th>
-                            <th class="no-sort">Blog Catgory Details</th>
                             <th class="no-sort">Action</th>
                         </tr>
                     </thead>
@@ -441,17 +440,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-                data: 'description',
-                render: function(data) {
-                    if (!data) return '--';
-
-                    // Create temporary element to strip HTML
-                    let div = document.createElement("div");
-                    div.innerHTML = data;
-                    let text = div.textContent || div.innerText || "";
-
-                    return text.length > 100 ? text.substring(0, 100) + '...' : text;
-                }
+                data: 'slug',
+                defaultContent: "--"
             },
             {
                 data: 'sort_order',
@@ -510,19 +500,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: '',
-                render: function(data, type, row) {
-
-                    return `
-                          <span class="btn btn-sm btn-primary btnViewCategory"
-                                data-id="${row.blog_cat_id}">
-                                <i class="fa fa-eye"></i> View
-                            </span>
-                        `;
-                },
-                className: "noPrint text-center"
-            },
-            {
                 data: null,
                 render: function(data, type, row) {
 
@@ -531,6 +508,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
+
+                    <span class="btn btn-sm btn-primary btnViewCategory"
+                                data-id="${row.blog_cat_id}">
+                                <i class="fa fa-eye"></i> View
+                            </span>
                         <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_blog_cat_id)}">
                         <i class="fa fa-edit"></i> Edit
@@ -677,6 +659,5 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         });
     });
-
 </script>
 @endpush

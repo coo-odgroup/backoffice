@@ -395,6 +395,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <div class="d-inline-flex gap-1">
 
                             <div class="dropdown">
+                              <a href="javascript:void(0);"
+                            class="btn btn-sm btn-primary btn-view-bus"
+                            data-table="bus"
+                            data-id="${row.enc_bus_id}">
+                                <i class="fa fa-eye"></i>
+                            </a>
                                 <button class="btn btn-sm btn-info text-white dropdown-toggle"
                                         type="button"
                                         data-bs-toggle="dropdown"
@@ -449,12 +455,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa fa-history"></i> View Log
                             </a>
 
-                            <a href="javascript:void(0);"
-                            class="btn btn-sm btn-primary btn-view-bus"
-                            data-table="bus"
-                            data-id="${row.enc_bus_id}">
-                                <i class="fa fa-eye"></i>
-                            </a>
+                          
 
                         </div>
                     `;

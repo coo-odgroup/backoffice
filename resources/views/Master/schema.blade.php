@@ -135,7 +135,6 @@
                                 <th>Schema Type</th>
                                 <th>Schema Page</th>
                                 <th>Schema Content</th>
-                                <th class="no-sort">View Details</th>
                                 <th>Last Modefied</th>
                                 <th>Status</th>
                                 <th class="no-sort">Action</th>
@@ -370,21 +369,6 @@
                     data: 'schema_content',
                     defaultContent: "--"
                 },
-
-                {
-                    data: '',
-                    render: function(data, type, row) {
-
-                        return `
-                          <button
-                            class="btn btn-sm btn-primary btnViewDetails"
-                            data-id="${row.id}">
-                                <i class="fa fa-eye"></i>
-                            </button>
-                        `;
-                    },
-                    className: "text-center"
-                },
                 {
                     data: null,
                     render: function(data, type, row) {
@@ -431,6 +415,12 @@
                         let editUrl = $('#datatable').data('edit-url');
 
                         return `
+                                                  <button
+                            class="btn btn-sm btn-primary btnViewDetails"
+                            data-id="${row.id}">
+                                <i class="fa fa-eye"></i>
+                            </button>
+
                             <a class="btn btn-sm btn-info"
                                 href="${editUrl.replace('ID', row.enc_id)}">
                                 <i class="fa fa-edit"></i>

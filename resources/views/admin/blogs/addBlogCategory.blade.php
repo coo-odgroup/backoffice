@@ -66,92 +66,100 @@
                                             <div class="col-md-8">
                                                 <div class="p-3 border rounded bg-white">
                                                     <div class="row">
+                                                        <div class="col-6">
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="categoryName">Category Name <span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control clearable form-select-sm" id="categoryName" name="categoryName"
+                                                                    value="{{ $data['row']->category_name ?? '' }}"
+                                                                    placeholder="Enter Category Name" maxlength="50">
+                                                                <small class="text-muted char-counter float-end"></small>
+                                                            </div>
 
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="categoryName">Category Name <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control clearable form-select-sm" id="categoryName" name="categoryName"
-                                                                value="{{ $data['row']->category_name ?? '' }}"
-                                                                placeholder="Enter Category Name" maxlength="50">
-                                                            <small class="text-muted char-counter float-end"></small>
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="alias">Alias <span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control clearable form-select-sm" id="categoryAlias" name="categoryAlias"
+                                                                    value="{{ $data['row']->slug ?? '' }}"
+                                                                    placeholder="Enter Alias"
+                                                                    maxlength="50">
+                                                                <small class="text-muted char-counter float-end"></small>
+                                                            </div>
+
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="icon">Icon</label>
+                                                                <input type="text" class="form-control clearable form-select-sm" id="icon" name="icon"
+                                                                    value="{{ $data['row']->icon ?? '' }}"
+                                                                    placeholder="Icon Class Name Only">
+                                                            </div>
                                                         </div>
-
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="alias">Alias <span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control clearable form-select-sm" id="categoryAlias" name="categoryAlias"
-                                                                value="{{ $data['row']->slug ?? '' }}"
-                                                                placeholder="Enter Alias"
-                                                                maxlength="50">
-                                                            <small class="text-muted char-counter float-end"></small>
+                                                        <div class="col-6">
+                                                            <div class="mb-3"><label for="small_desc">Small Description</label>
+                                                                <textarea class="form-control clearable form-select-sm" id="small_desc" name="small_desc" rows="8" placeholder="Enter Small Description">{{ $data['row']->small_desc  ?? old('small_desc ') }}</textarea>
+                                                            </div>
                                                         </div>
-
-                                                        <div class="col-md-6 mb-3">
-                                                            <label for="icon">Icon</label>
-                                                            <input type="text" class="form-control clearable form-select-sm" id="icon" name="icon"
-                                                                value="{{ $data['row']->icon ?? '' }}"
-                                                                placeholder="Icon Class Name Only">
-                                                        </div>
-
-                                                        <div class="col-12 mb-3">
-                                                            <label for="description">Content</label>
-                                                            <textarea
-                                                                class="form-control clearable form-select-sm"
-                                                                id="description"
-                                                                name="description"
-                                                                maxlength="512">{{ strip_tags(html_entity_decode($data['row']->description ?? '')) }}</textarea>
-                                                            <small class="text-muted char-counter float-end"></small>
-                                                        </div>
-
                                                     </div>
+                                                    <div class="col-12 mb-3">
+                                                        <label for="description">Content</label>
+                                                        <textarea
+                                                            class="form-control clearable form-select-sm"
+                                                            id="description"
+                                                            name="description"
+                                                            maxlength="512">{{ strip_tags(html_entity_decode($data['row']->description ?? '')) }}</textarea>
+                                                        <small class="text-muted char-counter float-end"></small>
+                                                    </div>
+
+
                                                 </div>
                                             </div>
 
                                             <!-- RIGHT COLUMN (4) -->
                                             <div class="col-md-4">
-
-                                                <div class="mb-3">
-                                                    <label for="alt_text">Alt Text</label>
-                                                    <input type="text" class="form-control clearable form-select-sm" id="alt_text" name="alt_text"
-                                                        value="{{ $data['row']->alt_text ?? '' }}"
-                                                        placeholder="Enter Image Alt Text">
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label for="banner_image">Banner Image</label>
-                                                    <input type="file" class="form-control clearable form-select-sm" id="bannerImageInput" name="banner_image" accept="image/*">
-                                                    <small class="text-muted text-md-end mt-2">
-                                                        Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
-                                                    </small>
-                                                </div>
-
-                                                <div id="previewContainer" class="{{ empty($data['row']->banner_image) ? 'd-none' : '' }}">
+                                                <div class="p-3 border rounded bg-white">
 
                                                     <div class="mb-3">
-                                                        <img id="bannerPreview"
-                                                            src="{{ !empty($data['row']->banner_image) ? asset('storage/uploads/blog/categories/'.$data['row']->banner_image) : '#' }}"
-                                                            alt="Preview"
-                                                            class="img-fluid border p-1 {{ empty($data['row']->banner_image) ? 'd-none' : '' }}">
+                                                        <label for="alt_text">Alt Text</label>
+                                                        <input type="text" class="form-control clearable form-select-sm" id="alt_text" name="alt_text"
+                                                            value="{{ $data['row']->alt_text ?? '' }}"
+                                                            placeholder="Enter Image Alt Text">
                                                     </div>
 
-                                                    <div class="mb-1">
-                                                        @if($data['strPage']=='Add')
-                                                        <button type="button"
-                                                            id="removeImageBtn"
-                                                            class="btn btn-danger btn-sm">
-                                                            Remove Image
-                                                        </button>
-                                                        @else
-                                                        <button type="button"
-                                                            class="btn btn-danger btn-sm remove-image"
-                                                            data-id="{{ $data['row']->id }}"
-                                                            data-table="odbusdev.blog_categories"
-                                                            data-column="banner_image"
-                                                            data-path="uploads/blog/categories"
-                                                            data-container="previewContainer">
-                                                            Remove Image
-                                                        </button>
-                                                        @endif
+                                                    <div class="mb-3">
+                                                        <label for="banner_image">Banner Image</label>
+                                                        <input type="file" class="form-control clearable form-select-sm" id="bannerImageInput" name="banner_image" accept="image/*">
+                                                        <small class="text-muted text-md-end mt-2">
+                                                            Allowed: JPG, JPEG, PNG | Max: 2MB | Size: 1600×500px
+                                                        </small>
                                                     </div>
 
+                                                    <div id="previewContainer" class="{{ empty($data['row']->banner_image) ? 'd-none' : '' }}">
+
+                                                        <div class="mb-3">
+                                                            <img id="bannerPreview"
+                                                                src="{{ !empty($data['row']->banner_image) ? asset('storage/uploads/blog/categories/'.$data['row']->banner_image) : '#' }}"
+                                                                alt="Preview"
+                                                                class="img-fluid border p-1 {{ empty($data['row']->banner_image) ? 'd-none' : '' }}">
+                                                        </div>
+
+                                                        <div class="mb-1">
+                                                            @if($data['strPage']=='Add')
+                                                            <button type="button"
+                                                                id="removeImageBtn"
+                                                                class="btn btn-danger btn-sm">
+                                                                Remove Image
+                                                            </button>
+                                                            @else
+                                                            <button type="button"
+                                                                class="btn btn-danger btn-sm remove-image"
+                                                                data-id="{{ $data['row']->id }}"
+                                                                data-table="odbusdev.blog_categories"
+                                                                data-column="banner_image"
+                                                                data-path="uploads/blog/categories"
+                                                                data-container="previewContainer">
+                                                                Remove Image
+                                                            </button>
+                                                            @endif
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -202,9 +210,6 @@
                                                             </div>
 
                                                             <div class="col-md-4 mb-3">
-                                                                <div class="mb-3"><label for="small_desc">Small Description</label>
-                                                                    <textarea class="form-control clearable form-select-sm" id="small_desc" name="small_desc" rows="6" placeholder="Enter Small Description">{{ $data['row']->small_desc  ?? old('small_desc ') }}</textarea>
-                                                                </div>
 
                                                                 <div class="mb-3">
                                                                     <label for="og_image">Og Image</label>
