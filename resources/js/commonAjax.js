@@ -2029,3 +2029,37 @@ export function getRolesDropdown(selector, selected = "") {
         },
     });
 }
+
+export function getSchemaContent(schemaPage, schemaType, callback) {
+    $.ajax({
+        type: "POST",
+
+        url: ajaxUrl + "get-schema-content",
+
+        data: {
+            schema_page: schemaPage,
+            schema_type: schemaType,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+
+        dataType: "json",
+
+        success: function (response) {
+            if (typeof callback === "function") {
+                callback(response);
+            }
+        },
+
+        error: function (xhr) {
+            console.error("Error loading schema:", xhr);
+
+            if (typeof callback === "function") {
+                callback({
+                    status: false,
+                    data: null,
+                    message: "Unable to load schema.",
+                });
+            }
+        },
+    });
+}

@@ -299,17 +299,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="card-body p-4">
                                     <label class="text-uppercase text-muted fw-bold small mb-3 d-block border-bottom pb-2">Breadcrumb Schema</label>
                                     <div class="bg-dark text-light p-3 rounded">
-                                        <pre id="v_breadcrumb_schema"
-                                            class="m-0 small font-monospace"
-                                            style="
-                                            min-height:100px;
-                                            max-height:400px;
-                                            overflow:auto;
-                                            white-space:pre-wrap;
-                                            word-break:break-word;
-                                        ">
-                                    --
-                                    </pre>
+                                        <pre class="rounded m-0" style="max-height:400px;overflow:auto;">
+                                            <code id="v_breadcrumb_schema" class="language-json"></code>
+                                         </pre>
                                     </div>
                                 </div>
                             </div>
@@ -353,8 +345,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </div>
 
-
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 @endsection
 @push('scripts')
 
@@ -545,7 +538,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="faq_category"
+                            data-table="blogs"
                             data-id="${row.enc_blog_cat_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
@@ -642,21 +635,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     }
 
                     if (d.breadcrumb_schema) {
+
+                        let formattedJson = d.breadcrumb_schema;
+
                         try {
-                            // If it is a JSON string
-                            let formattedJson = JSON.stringify(
+                            formattedJson = JSON.stringify(
                                 JSON.parse(d.breadcrumb_schema),
                                 null,
                                 4
                             );
+                        } catch (e) {}
 
-                            $('#v_breadcrumb_schema').text(formattedJson);
-                        } catch (e) {
-                            // If it's already formatted or not valid JSON
-                            $('#v_breadcrumb_schema').text(d.breadcrumb_schema);
-                        }
+                        const code = document.getElementById('v_breadcrumb_schema');
+
+                        code.textContent = formattedJson;
+
+                        Prism.highlightElement(code);
+
                     } else {
+
                         $('#v_breadcrumb_schema').text('--');
+
                     }
 
                     $('#v_banner_image').html(
@@ -678,5 +677,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         });
     });
+
 </script>
 @endpush

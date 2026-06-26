@@ -1334,4 +1334,75 @@ class CommonController extends Controller
             ]);
         }
     }
+
+
+    public function getSchemaContent(Request $request)
+    {
+        $request->validate([
+            'schema_page' => 'required|string',
+            'schema_type' => 'required|string',
+        ]);
+
+        // Get SCHEMA_PAGE annexture type id
+        $pageTypeId = DB::connection('mysql')
+            ->table('mst_annexture_type')
+            ->where('annexture_type', 'SCHEMA_PAGE')
+            ->value('id');
+
+        // Get SCHEMA_TYPE annexture type id
+        $typeTypeId = DB::connection('mysql')
+            ->table('mst_annexture_type')
+            ->where('annexture_type', 'SCHEMA_TYPE')
+            ->value('id');
+
+        if (!$pageTypeId || !$typeTypeId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Schema annexture type not found.'
+            ]);
+        }
+
+        // Blog Category -> 2
+        $schemaPageId = DB::connection('mysql')
+            ->table('mst_annexture')
+            ->where('annexture_type_id', $pageTypeId)
+            ->where('annexture_name', $request->schema_page)
+            ->where('active_status', 1)
+            ->value('annexture_value');
+
+        // Breadcrumb -> 1
+        $schemaTypeId = DB::connection('mysql')
+            ->table('mst_annexture')
+            ->where('annexture_type_id', $typeTypeId)
+            ->where('annexture_name', $request->schema_type)
+            ->where('active_status', 1)
+            ->value('annexture_value');
+
+        if (!$schemaPageId || !$schemaTypeId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Schema mapping not found.'
+            ]);
+        }
+
+        $schema = DB::connection('mysql')
+            ->table('mst_schema')
+            ->where('schema_page_id', $schemaPageId)
+            ->where('schema_type_id', $schemaTypeId)
+            ->where('active_status', 1)
+            ->first();
+
+        if (!$schema) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Schema content not found.'
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Schema fetched successfully.',
+            'data' => $schema
+        ]);
+    }
 }

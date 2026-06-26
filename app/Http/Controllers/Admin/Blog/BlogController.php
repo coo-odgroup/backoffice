@@ -274,6 +274,30 @@ class BlogController extends Controller
                         'og_image' => $newOg ?: $oldData->og_image,
                     ];
 
+                    $oldChanged = [];
+                    $newChanged = [];
+
+                    foreach ($newData as $key => $value) {
+
+                        $oldValue = $oldData->$key ?? null;
+
+                        if (trim((string)$oldValue) !== trim((string)$value)) {
+                            $oldChanged[$key] = $oldValue;
+                            $newChanged[$key] = $value;
+                        }
+                    }
+
+                    if (!empty($newChanged)) {
+
+                        app(CommonController::class)->auditLog(
+                            'blogs',
+                            $id,
+                            'UPDATE',
+                            $oldChanged,
+                            $newChanged
+                        );
+                    }
+
                     $oldData->fill($newData);
                     $oldData->updated_by = 1;
                     $oldData->save();
@@ -300,6 +324,14 @@ class BlogController extends Controller
                         'published_at' => null,
                         'created_at' => now()
                     ];
+
+                    app(CommonController::class)->auditLog(
+                        'blogs',
+                        null,
+                        'INSERT',
+                        [],
+                        $row
+                    );
                 }
                 //  GET BLOG ID
                 if ($id > 0) {

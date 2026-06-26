@@ -31,7 +31,7 @@
 
             <a href="{{ url('admin/schema') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/schema*') ? 'active' : '' }}">
-               <i class="fa-solid fa-bell-concierge me-2"></i>Schema
+               <i class="fa-solid fa-code-compare me-2"></i>Schema
             </a>
 
              <a href="{{ url('admin/notification-rules') }}"

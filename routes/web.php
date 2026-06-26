@@ -162,10 +162,10 @@ Route::prefix('admin')->group(function () {
     Route::post('get-users-list', [CommonController::class, 'getUsersList']);
     Route::post('get-bus-cancel-reasons', [CommonController::class, 'getBusCancelReasons']);
     Route::post('get-cron-job-dropdown', [CommonController::class, 'getCronJobDropdown']);
-    Route::post('get-cron-job-dropdown',[CommonController::class, 'getCronJobDropdown']
-);
+    Route::post('get-cron-job-dropdown',[CommonController::class, 'getCronJobDropdown']);
     Route::post('get-notification-template-dropdown',[CommonController::class, 'getNotificationTemplate']);
     Route::post('get-roles-list',[CommonController::class, 'getRolesList']);
+    Route::post('get-schema-content',[CommonController::class, 'getSchemaContent']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -181,7 +181,6 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/seat-layout', [SeatLayoutController::class, 'index'])->name('seatlayout.index');
     Route::match(['get', 'post'], 'seat-layout/add', [SeatLayoutController::class, 'add'])->name('seatlayout.add');
-    Route::match(['get', 'post'], 'seat-layout/edit/{encId}', [SeatLayoutController::class, 'edit'])->name('seatlayout.edit');
 
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-log.index');
 

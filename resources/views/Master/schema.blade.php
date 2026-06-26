@@ -132,8 +132,8 @@
                                     </div>
                                 </th>
                                 <th>Sl No</th>
-                                <th>Schema Page</th>
                                 <th>Schema Type</th>
+                                <th>Schema Page</th>
                                 <th>Schema Content</th>
                                 <th class="no-sort">View Details</th>
                                 <th>Last Modefied</th>
@@ -177,70 +177,39 @@
                 </div>
 
                 <div class="modal-body">
-
                     <div class="row g-3 mb-4">
-
                         <div class="col-md-6">
-
                             <div class="card h-100 border-primary">
-
                                 <div class="card-body">
-
                                     <small class="text-muted text-uppercase fw-bold">
                                         Schema Page
                                     </small>
-
                                     <h5
                                         class="mt-2 mb-0 fw-bold"
                                         id="viewSchemaPage">
                                     </h5>
-
                                 </div>
-
                             </div>
-
                         </div>
-
                         <div class="col-md-6">
-
                             <div class="card h-100 border-success">
-
                                 <div class="card-body">
-
                                     <small class="text-muted text-uppercase fw-bold">
                                         Schema Type
                                     </small>
-
                                     <div class="mt-2">
-
                                         <span
                                             class="badge bg-success fs-6 px-3 py-2"
                                             id="viewSchemaType">
                                         </span>
-
                                     </div>
-
                                 </div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                     <div class="card shadow-sm">
-
-                        <div
-                            class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-
-                            <div>
-
-                                <i class="fa fa-code me-2"></i>
-
-                                <strong>Schema Content</strong>
-
-                            </div>
-
+                        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                            <div><i class="fa fa-code me-2"></i><strong>Schema Content</strong></div>
                             <button
                                 class="btn btn-sm btn-light"
                                 id="btnCopySchema">
@@ -248,25 +217,18 @@
                                 <i class="fa fa-copy me-1"></i>
 
                                 Copy JSON
-
                             </button>
-
                         </div>
-
                         <div class="card-body bg-dark p-0">
 
                             <pre class="m-0 p-4">
                                 <code
-                                id="viewSchemaContent"
-                                class="language-json"></code>
+                                    id="viewSchemaContent"
+                                    class="language-json"></code>
                                 </pre>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>
@@ -517,8 +479,6 @@
 
                 success: function(res) {
 
-                    console.log(res);
-
                     if (res.status) {
 
                         $('#viewSchemaPage').text(res.data.schema_page);
@@ -537,15 +497,12 @@
                             $('#viewSchemaContent')
                                 .text(pretty);
 
-                            hljs.highlightElement(
-                                document.getElementById('viewSchemaContent')
-                            );
+                            hljs.highlightElement(document.getElementById('viewSchemaContent'));
 
                         } catch (e) {
 
                             $('#viewSchemaContent')
                                 .text(res.data.schema_content);
-
                         }
 
                     } else {
