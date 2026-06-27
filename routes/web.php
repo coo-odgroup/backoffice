@@ -23,6 +23,7 @@ use App\Http\Controllers\Master\CityApisController;
 use App\Http\Controllers\Master\FaqCategoryController;
 use App\Http\Controllers\Master\FaqController;
 use App\Http\Controllers\Admin\Blog\BlogCategoryController;
+use App\Http\Controllers\Admin\Blog\BlogAuthorController;
 use App\Http\Controllers\Admin\Blog\BlogController;
 use App\Http\Controllers\Admin\Ad\VendorController;
 use App\Http\Controllers\Admin\Ad\AdPlacementController;
@@ -355,6 +356,13 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'schema/edit/{encId}', [SchemaController::class, 'edit'])->name('schema.edit');
     Route::post('/schema/view-details', [SchemaController::class, 'viewDetails'])->name('schema.viewDetails');
 
+    //Blog Author
+    Route::get('/blog-author', [BlogAuthorController::class, 'index'])->name('blog-author.index');
+    Route::match(['get', 'post'], 'blog-author/add', [BlogAuthorController::class, 'add'])->name('blog-author.add');
+    Route::post('blog-author/dataTableView', [BlogAuthorController::class, 'dataTableView'])->name('blog-author.dataTableView');
+    Route::match(['get', 'post'], 'blog-author/edit/{encId}', [BlogAuthorController::class, 'edit'])->name('blog-author.edit');
+    Route::post('blog-author/details',[BlogAuthorController::class,'getAuthorDetails']);
+
 
     // Jagan
     // ---------------------------------------------------------------------------------------------------------------
@@ -520,8 +528,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-category/add', [BlogCategoryController::class, 'add'])->name('blog-category.add');
     Route::post('blog-category/dataTableView', [BlogCategoryController::class, 'dataTableView'])->name('blog-category.dataTableView');
     Route::match(['get', 'post'], 'blog-category/edit/{encId}', [BlogCategoryController::class, 'edit'])->name('blog-category.edit');
-    Route::post('blog-category/details',[BlogCategoryController::class,'getCategoryDetails']
-);
+    Route::post('blog-category/details',[BlogCategoryController::class,'getCategoryDetails']);
 
     Route::get('/bus-schedule', [BusScheduleController::class, 'index'])->name('bus-schedule.index');
     Route::match(['get', 'post'], 'bus-schedule/add', [BusScheduleController::class, 'add'])->name('bus-schedule.add');

@@ -40,6 +40,14 @@
                 <div class="mb-3 pb-4 border-bottom d-none" id="filterBox">
                     <div class="row align-items-end">
 
+                        <!-- Category -->
+                        <div class="col-lg-2 col-md-6">
+                            <label for="schema_page">Schema Page</label>
+                            <select class="form-select form-select-sm " id="schema_page" name="schema_page">
+                                <option value="0">Select Schema Page</option>
+                            </select>
+                        </div>
+
                         <!-- Type -->
                         <div class="col-lg-2 col-md-6">
                             <label for="schema_type">Scheme Type</label>
@@ -48,13 +56,7 @@
                             </select>
                         </div>
 
-                        <!-- Category -->
-                        <div class="col-lg-2 col-md-6">
-                            <label for="schema_page">Schema Page</label>
-                            <select class="form-select form-select-sm " id="schema_page" name="schema_page">
-                                <option value="0">Select Schema Page</option>
-                            </select>
-                        </div>
+
 
                         <!-- Status -->
                         <div class="col-lg-1 col-md-6">
@@ -132,8 +134,8 @@
                                     </div>
                                 </th>
                                 <th>Sl No</th>
-                                <th>Schema Type</th>
                                 <th>Schema Page</th>
+                                <th>Schema Type</th>
                                 <th>Schema Content</th>
                                 <th>Last Modefied</th>
                                 <th>Status</th>

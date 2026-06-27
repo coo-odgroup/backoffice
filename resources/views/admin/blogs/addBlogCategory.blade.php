@@ -584,5 +584,7 @@
             });
 
         }
+
+        
     </script>
     @endpush

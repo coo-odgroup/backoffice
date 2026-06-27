@@ -147,6 +147,7 @@ class CommonController extends Controller
             'BusService' => \App\Models\Master\BusService::class,
             'ReviewCategory' => \App\Models\Master\ReviewCategory::class,
             'BlogTags' => \App\Models\blogs\BlogTags::class,
+            'BlogAuthor' => \App\Models\blogs\BlogAuthor::class,
             'BlogTagMap' => \App\Models\blogs\BlogTagMap::class,
             'Cancellationslab' => \App\Models\Master\Cancellationslab::class,
             'TicketFareSlab' => \App\Models\Master\TicketFareSlab::class,

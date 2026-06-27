@@ -29,6 +29,7 @@
         <!-- Sub Menu -->
         <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-type','admin/annexture','admin/cancellationslab*','admin/cancellationslab-info*','admin/seat-layout*','admin/festive-days*','admin/ticket-fare-slab*','admin/ticketfareslab-info*','admin/bus-schedule*','admin/bus-cancel*','admin/seat-block*','admin/seat-open*','admin/notification-template*','admin/bus','admin/cron-job','admin/notification-rules*', 'schema*') ? 'show' : '' }}" id="busManagement">
 
+        
             <a href="{{ url('admin/schema') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/schema*') ? 'active' : '' }}">
                <i class="fa-solid fa-code-compare me-2"></i>Schema
@@ -236,14 +237,19 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#blogManagement"
-            aria-expanded="{{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*','admin/blog-tag-map*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/blog-author*','admin/blogs*','admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*','admin/blog-tag-map*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-blog me-2"></i> Blog Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
         <!-- Sub Menu -->
-        <div class="collapse {{ Request::is('admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*','admin/blog-tag-map*') ? 'show' : '' }}" id="blogManagement">
+        <div class="collapse {{ Request::is('admin/blog-author*','admin/blogs*','admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*','admin/blog-tag-map*') ? 'show' : '' }}" id="blogManagement">
 
+           <a href="{{ url('admin/blog-author') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-author*') ? 'active' : '' }}">
+                <i class="fa-solid fa-user-edit me-2"></i> Blog Author
+            </a>
+            
             <a href="{{ url('admin/blog-category') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-category*') ? 'active' : '' }}">
                 <i class="fa-solid fa-folder-open me-2"></i> Blog Category
