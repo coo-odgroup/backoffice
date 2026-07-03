@@ -1406,4 +1406,37 @@ class CommonController extends Controller
             'data' => $schema
         ]);
     }
+
+    public function loadBlogAuthorDropdown(Request $request)
+    {
+
+        try {
+            $selectedId = $request->selectedId ?? 0;
+
+            $authors = DB::table('odbusdev.blog_authors')
+                ->select('id', 'author_name')
+                ->where('active_status', 1)
+                ->orderBy('author_name', 'ASC')
+                ->get();
+
+            $html = '<option value="">Select Author</option>';
+
+            if ($authors->count() > 0) {
+                foreach ($authors as $author) {
+                    $selected = ($selectedId == $author->id) ? 'selected' : '';
+                    $html .= '<option value="' . $author->id . '" ' . $selected . '>' . $author->author_name . '</option>';
+                }
+            }
+
+            return response()->json([
+                'status' => true,
+                'data'   => $html
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status'  => false,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
 }

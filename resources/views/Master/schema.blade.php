@@ -358,13 +358,12 @@
                     },
                     className: "text-center"
                 },
-
                 {
-                    data: 'schema_type',
+                    data: 'schema_page',
                     defaultContent: "--"
                 },
                 {
-                    data: 'schema_page',
+                    data: 'schema_type',
                     defaultContent: "--"
                 },
                 {

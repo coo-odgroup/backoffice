@@ -2063,3 +2063,26 @@ export function getSchemaContent(schemaPage, schemaType, callback) {
         },
     });
 }
+
+
+export function loadBlogAuthorList(selectedId = 0) {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "load-blog-author-dropdown",
+        data: {
+            selectedId: selectedId,
+            _token: $('meta[name="csrf-token"]').attr("content")
+        },
+        dataType: "json",
+        success: function(response) {
+            if (response.status) {
+                $('#blogAuthor').html(response.data).trigger('change');
+            } else {
+                $('#blogAuthor').html('<option value="">Select Author</option>');
+            }
+        },
+        error: function() {
+            $('#blogAuthor').html('<option value="">Select Author</option>');
+        }
+    });
+}

@@ -167,6 +167,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-notification-template-dropdown',[CommonController::class, 'getNotificationTemplate']);
     Route::post('get-roles-list',[CommonController::class, 'getRolesList']);
     Route::post('get-schema-content',[CommonController::class, 'getSchemaContent']);
+    Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);

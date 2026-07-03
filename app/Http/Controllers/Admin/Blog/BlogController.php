@@ -41,7 +41,7 @@ class BlogController extends Controller
                     'b.thumb_image',
                     'b.feature_alt_text',
                     'b.featured_image',
-                    'b.author_name',
+                    'b.author_id',
                     'b.is_featured',
                     'b.published_at',
                     'b.view_count',
@@ -51,6 +51,7 @@ class BlogController extends Controller
                     'b.updated_by',
                     'b.active_status',
                     DB::raw('(SELECT category_name FROM odbusdev.blog_categories WHERE id = b.category_id LIMIT 1) as category_name'),
+                    DB::raw('(SELECT author_name FROM odbusdev.blog_authors WHERE id = b.author_id LIMIT 1) as author_name'),
                     DB::raw('(SELECT name FROM users WHERE id = b.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM users WHERE id = b.updated_by LIMIT 1) as updated_by_name')
                 );
@@ -176,7 +177,9 @@ class BlogController extends Controller
                     'title' => 'bail|required',
                     'slug' => 'bail|required',
                     'short_description' => 'bail|required',
-                    'category_id' => 'bail|required'
+                    'category_id' => 'bail|required',
+
+
                 ]);
 
                 if ($validator->fails()) {
@@ -188,7 +191,7 @@ class BlogController extends Controller
                 $title = htmlEncode(request('title'));
                 $slug = htmlEncode(request('slug'));
                 $short_description = htmlEncode(request('short_description'));
-                $content = request('content');
+                $content = request('content') ?? '';
                 $category_id = request('category_id');
                 $is_featured = request('is_featured');
 
@@ -199,6 +202,10 @@ class BlogController extends Controller
                 $canonical_url = htmlEncode(request('canonical_url'));
                 $meta_description = htmlEncode(request('meta_description'));
                 $meta_keywords = htmlEncode(request('meta_keywords'));
+                $faq_schema = request('faq_schema');
+                $service_schema = request('service_schema');
+                $breadcrumb_schema = request('breadcrumb_schema');
+                $author_id = request('author_id');
 
                 $duplicate = Blog::where('title', $title);
                 if ($id != 0) {
@@ -252,6 +259,8 @@ class BlogController extends Controller
                     $file3->storeAs($path, $newOg, 'public');
                 }
 
+                $blogId = 0;
+
                 if ($id > 0) {
 
                     $oldData = Blog::find($id);
@@ -262,6 +271,7 @@ class BlogController extends Controller
                         'short_description' => $short_description,
                         'content' => $content,
                         'category_id' => $category_id,
+                        'author_id' => $author_id,
                         'is_featured' => $is_featured,
                         'thumb_alt_text' => $thumb_alt_text,
                         'feature_alt_text' => $feature_alt_text,
@@ -272,13 +282,15 @@ class BlogController extends Controller
                         'thumb_image' => $newThumb ?: $oldData->thumb_image,
                         'featured_image' => $newFeature ?: $oldData->featured_image,
                         'og_image' => $newOg ?: $oldData->og_image,
+                        'faq_schema' => $faq_schema,
+                        'service_schema' => $service_schema,
+                        'breadcrumb_schema' => $breadcrumb_schema,
                     ];
 
                     $oldChanged = [];
                     $newChanged = [];
 
                     foreach ($newData as $key => $value) {
-
                         $oldValue = $oldData->$key ?? null;
 
                         if (trim((string)$oldValue) !== trim((string)$value)) {
@@ -287,20 +299,21 @@ class BlogController extends Controller
                         }
                     }
 
-                    if (!empty($newChanged)) {
+                    $oldData->fill($newData);
+                    $oldData->updated_by = 1;
+                    $oldData->save();
 
+                    $blogId = $oldData->id;
+
+                    if (!empty($newChanged)) {
                         app(CommonController::class)->auditLog(
                             'blogs',
-                            $id,
+                            $blogId,
                             'UPDATE',
                             $oldChanged,
                             $newChanged
                         );
                     }
-
-                    $oldData->fill($newData);
-                    $oldData->updated_by = 1;
-                    $oldData->save();
                 } else {
 
                     $row = [
@@ -309,6 +322,7 @@ class BlogController extends Controller
                         'short_description' => $short_description,
                         'content' => $content,
                         'category_id' => $category_id,
+                        'author_id' => $author_id,
                         'is_featured' => $is_featured,
                         'thumb_alt_text' => $thumb_alt_text,
                         'feature_alt_text' => $feature_alt_text,
@@ -316,30 +330,30 @@ class BlogController extends Controller
                         'canonical_url' => $canonical_url,
                         'meta_description' => $meta_description,
                         'meta_keywords' => $meta_keywords,
+                        'faq_schema' => $faq_schema,
+                        'service_schema' => $service_schema,
+                        'breadcrumb_schema' => $breadcrumb_schema,
                         'thumb_image' => $newThumb,
                         'featured_image' => $newFeature,
                         'og_image' => $newOg,
                         'created_by' => 1,
-                        'active_status' => 0, // default draft
+                        'active_status' => 0,
                         'published_at' => null,
-                        'created_at' => now()
+                        'created_at' => now(),
                     ];
+
+                    $blog = Blog::create($row);
+                    $blogId = $blog->id;
 
                     app(CommonController::class)->auditLog(
                         'blogs',
-                        null,
+                        $blogId,
                         'INSERT',
                         [],
                         $row
                     );
                 }
-                //  GET BLOG ID
-                if ($id > 0) {
-                    $blogId = $id;
-                } else {
-                    $blog = Blog::create($row);
-                    $blogId = $blog->id;
-                }
+
 
                 //  DELETE OLD ATTRIBUTES (for edit case)
                 DB::connection('mysql_dev')->table('blog_attributes')->where('blog_id', $blogId)->delete();
@@ -423,6 +437,40 @@ class BlogController extends Controller
                         }
                     }
                 }
+
+                // ================== BLOG FAQ ==================
+                $faqQuestions = request('faq_question', []);
+                $faqAnswers   = request('faq_answer', []);
+
+                // If edit, remove old FAQ rows first
+                DB::connection('mysql_dev')
+                    ->table('blog_faq')
+                    ->where('blog_id', $blogId)
+                    ->delete();
+
+                if (!empty($faqQuestions)) {
+                    foreach ($faqQuestions as $index => $question) {
+
+                        $question = trim($question ?? '');
+                        $answer   = trim($faqAnswers[$index] ?? '');
+
+                        // skip empty row
+                        if ($question === '' && $answer === '') {
+                            continue;
+                        }
+
+                        DB::connection('mysql_dev')->table('blog_faq')->insert([
+                            'blog_id'       => $blogId,
+                            'faq_question'  => $question,
+                            'faq_answer'    => $answer,
+                            'active_status' => 1,
+                            'created_by'    => 1,
+                            'created_at'    => now(),
+                            'updated_at'    => now(),
+                            'updated_by'    => 1,
+                        ]);
+                    }
+                }
                 DB::commit();
 
 
@@ -486,6 +534,17 @@ class BlogController extends Controller
 
         $blogAttributes = [];
 
+        $blogFaqs = [];
+
+        if ($id > 0) {
+            $blogFaqs = DB::connection('mysql_dev')
+                ->table('blog_faq')
+                ->where('blog_id', $id)
+                ->where('active_status', 1)
+                ->orderBy('id')
+                ->get();
+        }
+
         if ($id > 0) {
             $blogAttributes = DB::connection('mysql_dev')
                 ->table('blog_attributes')
@@ -496,7 +555,7 @@ class BlogController extends Controller
 
 
 
-        return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData',  'blogAttributes'));
+        return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData',  'blogAttributes',  'blogFaqs'));
     }
 
     public function edit($encId)

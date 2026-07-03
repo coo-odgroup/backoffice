@@ -318,7 +318,6 @@
 
                 const allowedExtensions = ['jpg', 'jpeg', 'png'];
                 const allowedMimeTypes = ['image/jpeg', 'image/png'];
-
                 const fileExtension = file.name.split('.').pop().toLowerCase();
 
                 //  Validate Extension
@@ -336,7 +335,6 @@
                 }
 
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
                     preview.src = e.target.result;
 
@@ -387,7 +385,6 @@
 
                 const allowedExtensions = ['jpg', 'jpeg', 'png'];
                 const allowedMimeTypes = ['image/jpeg', 'image/png'];
-
                 const fileExtension = file.name.split('.').pop().toLowerCase();
 
                 //  Validate Extension
@@ -408,7 +405,6 @@
 
                 reader.onload = function(e) {
                     preview.src = e.target.result;
-
                     previewContainer_1.classList.remove('d-none');
                     preview.classList.remove('d-none');
                 };
@@ -446,11 +442,9 @@
             document.getElementById('categoryAlias').value = alias;
 
             const frontUrl = "{{rtrim(config('constants.CONSUMER_FRONT_URL'), '/')}}";
-
             document.getElementById('canonical_url').value = frontUrl + '/blog/category/' + alias;
 
             let breadcrumbTimer;
-
             clearTimeout(breadcrumbTimer);
 
             breadcrumbTimer = setTimeout(function() {
@@ -469,9 +463,7 @@
             const frontUrl = "{{ rtrim(config('constants.CONSUMER_FRONT_URL'), '/') }}";
             const alias = this.value;
 
-            document.getElementById('canonical_url').value =
-                frontUrl + '/blog/category/' + alias;
-
+            document.getElementById('canonical_url').value = frontUrl + '/blog/category/' + alias;
             generateBreadcrumbSchema();
 
         });
@@ -536,15 +528,10 @@
         });
 
         function generateBreadcrumbSchema() {
-
-
-
-
             const alias = $('#categoryAlias').val().trim();
             const frontUrl = "{{ rtrim(config('constants.CONSUMER_FRONT_URL'), '/') }}";
             const canonicalUrl = frontUrl + "/blog/category/" + alias;
 
-            // keep the textbox in sync
             $('#canonical_url').val(canonicalUrl);
             commonAjax.getSchemaContent("Blog Category", "Breadcrumb", function(response) {
 
@@ -555,10 +542,7 @@
                     return;
                 }
 
-
                 let schema = response.data.schema_content;
-
-
                 schema = schema
                     .replaceAll("__BASE_URL__", frontUrl)
                     .replaceAll("__BLOG_URL__", frontUrl + "/blog")
@@ -571,20 +555,14 @@
                         .replaceAll("__BLOG_CATEGORY_URL__", canonicalUrl);
 
                     const prettyJson = JSON.stringify(JSON.parse(schema), null, 4);
-
                     $("#breadcrumb_schema").val(prettyJson);
 
                 } catch (e) {
 
                     console.error("Invalid JSON", e);
                     $("#breadcrumb_schema").val(schema);
-
                 }
-
             });
-
         }
-
-        
     </script>
     @endpush
