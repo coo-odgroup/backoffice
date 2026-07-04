@@ -495,10 +495,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
 
-                    <span class="btn btn-sm btn-primary btnViewAuthor"
-                                data-id="${row.blog_author_id}">
-                                <i class="fa fa-eye"></i> View
-                            </span>
+                        <span class="btn btn-sm btn-primary btnViewAuthor"
+                            data-id="${row.blog_author_id}">
+                            <i class="fa fa-eye"></i> View
+                        </span>
+
                         <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_blog_author_id)}">
                         <i class="fa fa-edit"></i> Edit
@@ -506,7 +507,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="blogs"
+                            data-table="blog_authors"
                             data-id="${row.enc_blog_author_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>

@@ -36,29 +36,37 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate>
     <div class="card">
         <div class="card-body">
+
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row align-items-end">
-                        <div class="col-lg-3 col-md-3 mb-2">
-                            <label for="txtSearch">Search By City Api ID</label>
-                            <input type="text" class="form-control clearable form-select-sm" id="txtSearch" name="txtSearch"
-                                placeholder="City Api ID">
+                    <div class="row align-items-end g-2">
+
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Title</label>
+                            <input type="text"
+                                class="form-control form-control-sm clearable"
+                                id="title"
+                                name="title"
+                                placeholder="Enter Blog Title">
                         </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="selCity">City</label>
-                            <select class="form-select form-select-sm selCity" id="selCity" name="selCity">
-                                <option value="">Select City</option>
+
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Author</label>
+                            <select class="form-select form-select-sm" id="blogAuthor" name="author_id">
+                                <option value="">Select Author</option>
                             </select>
                         </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="apiApp">Api App</label>
-                            <select class="form-select form-select-sm" id="apiApp" name="apiApp">
-                                <option value="">Select Api App</option>
+
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Category</label>
+                            <select class="form-select form-select-sm" id="blogCategory" name="category_id">
+                                <option value="">Select Category</option>
                             </select>
                         </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="selStatus">Status</label>
+
+                        <div class="col-lg-2 col-md-6">
+                            <label class="form-label">Status</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
                                 <option value="1">Active</option>
@@ -66,8 +74,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             </select>
                         </div>
 
-                        <!-- BUTTONS -->
-                        <div class="col-lg-3 col-md-3 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-2 d-flex justify-content-end flex-wrap action-btns gap-1 mt-2">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -75,6 +82,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa-solid fa-rotate-left me-1"></i>Reset
                             </button>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -160,8 +168,211 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </form>
 
+<div class="modal fade"
+    id="viewBlogModal"
+    tabindex="-1"
+    aria-hidden="true"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+
+            <div class="modal-header bg-primary text-white py-3">
+                <h5 class="modal-title d-flex align-items-center gap-2">
+                    <i class="fa fa-eye"></i>
+                    <span>Blog Details</span>
+                </h5>
+                <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body p-4 bg-light">
+                <div class="container-fluid p-0">
+
+                    <!-- Basic Details -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+
+                                <div class="col-md-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Title</label>
+                                    <div id="v_title" class="fw-bold fs-5">--</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Alias</label>
+                                    <div class="bg-light rounded border px-3 py-2">
+                                        <code id="v_slug">--</code>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Status</label>
+                                    <div id="v_status">--</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Category</label>
+                                    <div id="v_category">--</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Author</label>
+                                    <div id="v_author">--</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Published At</label>
+                                    <div id="v_published_at">--</div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Is Featured</label>
+                                    <div id="v_is_featured">--</div>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <label class="text-uppercase text-muted fw-bold small mb-2 d-block">Canonical URL</label>
+                                    <a href="javascript:void(0)" id="v_canonical_url" target="_blank">--</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Descriptions -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <label class="text-uppercase text-muted fw-bold small mb-3 d-block border-bottom pb-2">
+                                Short Description
+                            </label>
+                            <div id="v_short_description" class="text-secondary lh-lg mb-4">--</div>
+
+                            <label class="text-uppercase text-muted fw-bold small mb-3 d-block border-bottom pb-2">
+                                Content
+                            </label>
+                            <div id="v_content" class="text-secondary lh-lg">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Images -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 pb-0">
+                            <h6 class="text-primary fw-bold mb-3">
+                                <i class="fa fa-image me-2"></i>Images
+                            </h6>
+                        </div>
+                        <div class="card-body pt-3">
+                            <div class="row g-4">
+
+                                <div class="col-md-6">
+                                    <div class="bg-light rounded-3 p-3 h-100">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">Thumb Image</div>
+                                        <div class="mb-2"><strong>Alt:</strong> <span id="v_thumb_alt_text">--</span></div>
+                                        <img id="v_thumb_image" src="" class="img-fluid rounded border d-none">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="bg-light rounded-3 p-3 h-100">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">Featured Image</div>
+                                        <div class="mb-2"><strong>Alt:</strong> <span id="v_feature_alt_text">--</span></div>
+                                        <img id="v_featured_image" src="" class="img-fluid rounded border d-none">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEO -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 pb-0">
+                            <h6 class="text-primary fw-bold mb-3">
+                                <i class="fa fa-search me-2"></i>SEO & Metadata
+                            </h6>
+                        </div>
+
+                        <div class="card-body pt-3">
+                            <div class="row g-4">
+
+                                <div class="col-md-6">
+                                    <div class="bg-light rounded-3 p-3 h-100">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">Meta Title</div>
+                                        <div id="v_meta_title">--</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="bg-light rounded-3 p-3 h-100">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">Meta Keywords</div>
+                                        <div id="v_meta_keywords">--</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="bg-light rounded-3 p-3">
+                                        <div class="small text-uppercase text-muted fw-semibold mb-2">Meta Description</div>
+                                        <div id="v_meta_description">--</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schema -->
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white"><strong>Breadcrumb Schema</strong></div>
+                                <div class="card-body">
+                                    <pre style="max-height:350px;overflow:auto;"><code id="v_breadcrumb_schema"></code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white"><strong>FAQ Schema</strong></div>
+                                <div class="card-body">
+                                    <pre style="max-height:350px;overflow:auto;"><code id="v_faq_schema"></code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white"><strong>Service Schema</strong></div>
+                                <div class="card-body">
+                                    <pre style="max-height:350px;overflow:auto;"><code id="v_service_schema"></code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer bg-white p-3">
+                <button type="button" class="btn btn-outline-secondary px-4 fw-bold" data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 @endsection
 @push('scripts')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 
 <script type="module">
     window.bulkActionUrl = "{{ route('admin.bulkAction') }}";
@@ -171,18 +382,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
+
+        let author_id = 0;
+        let category_id = 0;
         commonAjax.initClearableInputs();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
+        commonAjax.initSelect2('#author_id', 'Select Author');
+        commonAjax.initSelect2('#category_id', 'Select Blog Category');
+        commonAjax.loadBlogAuthorList(author_id);
+        commonAjax.loadBlogCategoryList(category_id);
         getDataTableView();
-    });
-
-    $(document).ready(function() {
-
-        commonAjax.initSelect2('#apiApp', 'Select Api App');
-        commonAjax.initSelect2('.selCity', 'Select City');
-
-        commonAjax.loadApiAppsList(0);
-        commonAjax.loadCityList(0);
     });
 
     $('#btnReset').click(function() {
@@ -214,9 +423,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let txtSearch = '';
         let selStatus = '';
 
-        if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
-        }
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
@@ -224,8 +430,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus
+            title: $('#title').val(),
+            slug: $('#slug').val(),
+            author_id: $('#blogAuthor').val(),
+            category_id: $('#blogCategory').val(),
+            selstatus: $('#selStatus').val()
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -357,6 +566,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (!editUrl) return '';
 
                     return `
+                        <span class="btn btn-sm btn-primary btnViewBlog"
+                            data-id="${row.blog_id}">
+                            <i class="fa fa-eye"></i> View
+                        </span>
+
                         <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_blog_id)}">
                         <i class="fa fa-edit"></i> Edit
@@ -377,5 +591,117 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
     }
+
+    $(document).on('click', '.btnViewBlog', function() {
+
+        let id = $(this).data('id');
+
+        let modal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('viewBlogModal')
+        );
+
+        modal.show();
+
+        $.ajax({
+            url: '/admin/blogs/details',
+            type: 'POST',
+            data: {
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(res) {
+
+                if (!res.status) return;
+
+                let d = res.data;
+
+                $('#v_title').text(d.title || '--');
+                $('#v_slug').text(d.slug || '--');
+                $('#v_category').text(d.category_name || '--');
+                $('#v_author').text(d.author_name || '--');
+                $('#v_short_description').html(d.short_description || '--');
+                $('#v_content').html(d.content || '--');
+                $('#v_thumb_alt_text').text(d.thumb_alt_text || '--');
+                $('#v_feature_alt_text').text(d.feature_alt_text || '--');
+                $('#v_meta_title').text(d.meta_title || '--');
+                $('#v_meta_description').text(d.meta_description || '--');
+                $('#v_published_at').text(d.published_at || '--');
+
+                $('#v_status').html(
+                    d.active_status == 1 ?
+                    '<span class="badge bg-success">Active</span>' :
+                    '<span class="badge bg-danger">Inactive</span>'
+                );
+
+                $('#v_is_featured').html(
+                    d.is_featured == 1 ?
+                    '<span class="badge bg-success">Yes</span>' :
+                    '<span class="badge bg-secondary">No</span>'
+                );
+
+                if (d.canonical_url) {
+                    $('#v_canonical_url')
+                        .text(d.canonical_url)
+                        .attr('href', d.canonical_url);
+                } else {
+                    $('#v_canonical_url')
+                        .text('--')
+                        .removeAttr('href');
+                }
+
+                // meta keywords badges
+                let keywordsHtml = '--';
+                if (d.meta_keywords) {
+                    keywordsHtml = '';
+                    d.meta_keywords.split(',').forEach(function(keyword) {
+                        keywordsHtml += `<span class="badge bg-primary me-1 mb-1">${keyword.trim()}</span>`;
+                    });
+                }
+                $('#v_meta_keywords').html(keywordsHtml);
+
+                // thumb image
+                if (d.thumb_image) {
+                    $('#v_thumb_image')
+                        .attr('src', "{{ asset('storage/uploads/blog') }}/" + d.thumb_image)
+                        .removeClass('d-none');
+                } else {
+                    $('#v_thumb_image').attr('src', '').addClass('d-none');
+                }
+
+                // featured image
+                if (d.featured_image) {
+                    $('#v_featured_image')
+                        .attr('src', "{{ asset('storage/uploads/blog') }}/" + d.featured_image)
+                        .removeClass('d-none');
+                } else {
+                    $('#v_featured_image').attr('src', '').addClass('d-none');
+                }
+
+                // JSON formatter helper
+                function formatJson(value, elementId) {
+                    if (!value) {
+                        $(elementId).text('--');
+                        return;
+                    }
+
+                    let formattedJson = value;
+                    try {
+                        formattedJson = JSON.stringify(JSON.parse(value), null, 4);
+                    } catch (e) {}
+
+                    const code = document.querySelector(elementId);
+                    code.textContent = formattedJson;
+
+                    if (window.Prism) {
+                        Prism.highlightElement(code);
+                    }
+                }
+
+                formatJson(d.breadcrumb_schema, '#v_breadcrumb_schema');
+                formatJson(d.faq_schema, '#v_faq_schema');
+                formatJson(d.service_schema, '#v_service_schema');
+            }
+        });
+    });
 </script>
 @endpush

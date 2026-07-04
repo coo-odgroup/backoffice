@@ -190,7 +190,7 @@ Route::prefix('admin')->group(function () {
     Route::get('search-amenities', [CommonController::class, 'searchAmenities']);
     Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
 
-    Route::post('/admin/upload-editor-image', [BlogController::class, 'uploadEditorImage']);
+   
 
     //Subhasis
     //___________________________________________________________________________________________________________________________________________________
@@ -357,6 +357,15 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'schema/edit/{encId}', [SchemaController::class, 'edit'])->name('schema.edit');
     Route::post('/schema/view-details', [SchemaController::class, 'viewDetails'])->name('schema.viewDetails');
 
+   // Blogs
+    Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
+    Route::match(['get', 'post'], 'blogs/add', [BlogController::class, 'add'])->name('blogs.add');
+    Route::post('blogs/dataTableView', [BlogController::class, 'dataTableView'])->name('blogs.dataTableView');
+    Route::match(['get', 'post'], 'blogs/edit/{encId}', [BlogController::class, 'edit'])->name('blogs.edit');
+    Route::post('/admin/blogs/publish', [BlogController::class, 'publish'])->name('blogs.publish');
+    Route::post('/upload-editor-image', [BlogController::class, 'uploadEditorImage']);
+    Route::post('/blogs/details', [BlogController::class, 'getBlogDetails'])->name('blogs.details');
+
     //Blog Author
     Route::get('/blog-author', [BlogAuthorController::class, 'index'])->name('blog-author.index');
     Route::match(['get', 'post'], 'blog-author/add', [BlogAuthorController::class, 'add'])->name('blog-author.add');
@@ -416,13 +425,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
     Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
 
-    // Blogs
-    Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
-    Route::match(['get', 'post'], 'blogs/add', [BlogController::class, 'add'])->name('blogs.add');
-    Route::post('blogs/dataTableView', [BlogController::class, 'dataTableView'])->name('blogs.dataTableView');
-    Route::match(['get', 'post'], 'blogs/edit/{encId}', [BlogController::class, 'edit'])->name('blogs.edit');
-    Route::post('/admin/blogs/publish', [BlogController::class, 'publish'])->name('blogs.publish');
-
+    
     // Blog Images
     Route::get('/blog-images', [BlogImagesController::class, 'index'])->name('blog-images.index');
     Route::match(['get', 'post'], 'blog-images/add', [BlogImagesController::class, 'add'])->name('blog-images.add');

@@ -36,7 +36,9 @@ class Blog extends Model
         'service_schema',
         'breadcrumb_schema',
         'created_at',
-        'updated_at',   
+        'updated_at',
+        'open_graph',
+        'twitter',   
     ];
 
     public function images()

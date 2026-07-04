@@ -15,9 +15,7 @@ import 'datatables.net-buttons/js/buttons.print';
 import JSZip from 'jszip';
 window.JSZip = JSZip;
 
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 
 import select2 from 'select2';
 select2($);
@@ -26,6 +24,10 @@ import '@fortawesome/fontawesome-free/js/all';
 
 import Tagify from '@yaireo/tagify';
 import '@yaireo/tagify/dist/tagify.css';
+
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.querySelector('#tags');

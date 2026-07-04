@@ -148,56 +148,81 @@
 
                 <!-- CODE (ESCAPED) -->
                 <pre class="blogv-code-content">
-&lt;!doctype html&gt;
-&lt;html lang="en"&gt;
+                    &lt;!doctype html&gt;
+                    &lt;html lang="en"&gt;
 
-&lt;head&gt;
-  &lt;meta charset="utf-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+                    &lt;head&gt;
+                    &lt;meta charset="utf-8"&gt;
+                    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
 
-  &lt;title&gt;{{ $blog->meta_title ?? $blog->title }}&lt;/title&gt;
+                    &lt;title&gt;{{ $blog->meta_title ?? $blog->title }}&lt;/title&gt;
 
-  &lt;meta name="description" content="{{ $blog->meta_description }}"&gt;
-  &lt;meta name="keywords" content="{{ $blog->meta_keywords }}"&gt;
+                    &lt;meta name="description" content="{{ $blog->meta_description }}"&gt;
+                    &lt;meta name="keywords" content="{{ $blog->meta_keywords }}"&gt;
 
-  &lt;link rel="canonical" href="{{ $blog->canonical_url }}" /&gt;
+                    &lt;link rel="canonical" href="{{ $blog->canonical_url }}" /&gt;
 
-  &lt;!-- Open Graph --&gt;
-  @if(isset($blogAttributes[1]))
-    @foreach($blogAttributes[1] as $attr)
-      &lt;meta property="og:{{ strtolower($attr->attribute_id ?? '') }}"content="{{ $attr->attribute_value }}" /&gt;
-    @endforeach
-  @endif
+                    &lt;!-- Open Graph --&gt;
+                    @php
+                        $openGraphData = !empty($blog->open_graph) ? json_decode($blog->open_graph, true) : [];
+                        $twitterData   = !empty($blog->twitter) ? json_decode($blog->twitter, true) : [];
+                    @endphp
 
-  &lt;meta property="article:published_time"content="{{ $blog->published_at ? date('c', strtotime($blog->published_at)) : '' }}" /&gt;
+                    <!-- Open Graph -->
+                    @if(!empty($openGraphData))
+                        @foreach($openGraphData as $attr)
+                            @php
+                                $propertyName = strtolower(trim($attr['attribute_name'] ?? ''));
+                                $propertyValue = $attr['attribute_value'] ?? '';
 
-  &lt;meta property="og:image"content="{{ asset('storage/uploads/blog/'.$blog->featured_image) }}" /&gt;
+                                if ($propertyName === 'image' && !empty($propertyValue)) {
+                                    $propertyValue = asset('storage/uploads/blog/' . $propertyValue);
+                                }
+                                @endphp
 
-  &lt;!-- Twitter --&gt;
-  @if(isset($blogAttributes[2]))
-    @foreach($blogAttributes[2] as $attr)
-      &lt;meta name="twitter:{{ strtolower($attr->attribute_id ?? '') }}"content="{{ $attr->attribute_value }}" /&gt;
-    @endforeach
-  @endif
+                                @if($propertyName && $propertyValue)
+                        &lt;meta property="og:{{ $propertyName }}" content="{{ $propertyValue }}" /&gt;
+                                @endif
+                            @endforeach
+                        @endif
 
-  &lt;!-- Schema --&gt;
-  @if(isset($blogAttributes[3]))
-    @foreach($blogAttributes[3] as $attr)
-      &lt;script type="application/ld+json"&gt;
-      {!! $attr->attribute_value !!}
-      &lt;/script&gt;
-    @endforeach
-  @endif
+                        @if($blog->published_at)
+                        &lt;meta property="article:published_time" content="{{ date('c', strtotime($blog->published_at)) }}" /&gt;
+                        @endif
 
-&lt;/head&gt;
-</pre>
+                        <!-- Twitter -->
+                        @if(!empty($twitterData))
+                            @foreach($twitterData as $attr)
+                                @php
+                                    $twitterName = strtolower(trim($attr['attribute_name'] ?? ''));
+                                    $twitterValue = $attr['attribute_value'] ?? '';
+                                @endphp
+
+                                @if($twitterName && $twitterValue)
+                        &lt;meta name="twitter:{{ $twitterName }}" content="{{ $twitterValue }}" /&gt;
+                                @endif
+                        @endforeach
+                        @endif
+
+                    &lt;!-- Schema --&gt;
+                    @if(isset($blogAttributes[3]))
+                        @foreach($blogAttributes[3] as $attr)
+                        &lt;script type="application/ld+json"&gt;
+                        {!! $attr->attribute_value !!}
+                        &lt;/script&gt;
+                        @endforeach
+                    @endif
+
+                    &lt;/head&gt;
+                </pre>
             </div>
         </div>
 
     </div>
 </div>
 
-<!-- BACK BUTTON --><div class="mt-4" style="width:67%; margin: 0 auto;">
+<!-- BACK BUTTON -->
+<div class="mt-4" style="width:67%; margin: 0 auto;">
 
     <div class="d-flex justify-content-between align-items-center">
 
@@ -223,9 +248,7 @@
                 </button>
             </form>
         </div>
-
     </div>
-
 </div>
 
 @endsection

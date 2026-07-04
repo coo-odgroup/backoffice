@@ -18,7 +18,6 @@ class BlogController extends Controller
     {
         return view('admin.blogs.blogsList');
     }
-
     public function dataTableView()
     {
         $recordsTotal = 0;
@@ -27,12 +26,16 @@ class BlogController extends Controller
 
         try {
 
-            $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $title      = trim(request('title'));
+            $slug       = trim(request('slug'));
+            $authorId   = request('author_id');
+            $categoryId = request('category_id');
+            $selStatus  = (request('selstatus') !== null && request('selstatus') !== '') ? (int) request('selstatus') : '';
 
             $dataQuery = DB::table('odbusdev.blogs as b')
                 ->select(
                     'b.id as blog_id',
+                    'b.category_id',
                     'b.title',
                     'b.slug',
                     'b.short_description',
@@ -42,75 +45,118 @@ class BlogController extends Controller
                     'b.feature_alt_text',
                     'b.featured_image',
                     'b.author_id',
+                    'b.breadcrumb_schema',
+                    'b.faq_schema',
+                    'b.service_schema',
                     'b.is_featured',
+                    'b.active_status',
                     'b.published_at',
+                    'b.meta_title',
+                    'b.meta_description',
+                    'b.meta_keywords',
+                    'b.canonical_url',
                     'b.view_count',
                     'b.created_at',
                     'b.created_by',
                     'b.updated_at',
                     'b.updated_by',
-                    'b.active_status',
                     DB::raw('(SELECT category_name FROM odbusdev.blog_categories WHERE id = b.category_id LIMIT 1) as category_name'),
                     DB::raw('(SELECT author_name FROM odbusdev.blog_authors WHERE id = b.author_id LIMIT 1) as author_name'),
                     DB::raw('(SELECT name FROM users WHERE id = b.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM users WHERE id = b.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // Filters
-            if (!empty($txtSearch)) {
-                $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('b.title', 'like', "%{$txtSearch}%");
+            // =========================
+            // FILTERS
+            // =========================
+
+            if (!empty($title)) {
+                $dataQuery->where(function ($q) use ($title) {
+                    $q->where('b.title', 'like', "%{$title}%")
+                        ->orWhere('b.slug', 'like', "%{$title}%")
+                        ->orWhere('b.short_description', 'like', "%{$title}%")
+                        ->orWhere('b.content', 'like', "%{$title}%");
                 });
             }
 
-            if (isset($selStatus) && $selStatus != '') {
+            if (!empty($slug)) {
+                $dataQuery->where('b.slug', 'like', '%' . $slug . '%');
+            }
+
+            if (!empty($authorId)) {
+                $dataQuery->where('b.author_id', $authorId);
+            }
+
+            if (!empty($categoryId)) {
+                $dataQuery->where('b.category_id', $categoryId);
+            }
+
+            if ($selStatus !== '') {
                 $dataQuery->where('b.active_status', $selStatus);
             }
 
-            $count = $dataQuery->count('b.id');
+            $recordsTotal = $dataQuery->count();
 
-            $start = request()->input('start', 0);
+            $start  = request()->input('start', 0);
             $length = request()->input('length', 10);
 
-            $start = is_numeric($start) ? (int)$start : 0;
-            $length = is_numeric($length) ? (int)$length : 10;
+            $start  = is_numeric($start) ? (int) $start : 0;
+            $length = is_numeric($length) ? (int) $length : 10;
 
-            // Ordering
+            // =========================
+            // ORDERING
+            // =========================
             if (!empty(request('order'))) {
 
-                $columns = [2 => 'b.title', 3 => 'b.author_name', 4 => 'b.created_at', 5 => 'b.created_by', 6 => 'b.active_status'];
+                $columns = [
+                    2 => 'category_name',
+                    3 => 'b.title',
+                    4 => 'b.slug',
+                    5 => 'author_name',
+                    6 => 'b.published_at',
+                    7 => 'b.updated_at',
+                    8 => 'b.active_status',
+                ];
 
                 $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'b.title';
-                $orderType = $orderBy[0]['dir'];
+                $columnIndex = $orderBy[0]['column'] ?? 3;
+                $orderType   = $orderBy[0]['dir'] ?? 'asc';
+
+                $orderColumn = $columns[$columnIndex] ?? 'b.title';
+
+                if (in_array($orderColumn, ['category_name', 'author_name'])) {
+                    $dataQuery->orderByRaw($orderColumn . ' ' . $orderType);
+                } else {
+                    $dataQuery->orderBy($orderColumn, $orderType);
+                }
             } else {
-                $orderColumn = 'b.title';
-                $orderType = 'asc';
+                $dataQuery->orderBy('b.title', 'asc');
             }
 
-            $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
-
-            // Pagination
+            // =========================
+            // PAGINATION
+            // =========================
             if ($length == -1) {
                 $arrRes = $dataQuery->get();
             } else {
-                $arrRes = $dataQuery->limit($length)
-                    ->offset($start)
+                $arrRes = $dataQuery->offset($start)
+                    ->limit($length)
                     ->get();
             }
-            // Format Data
-            if (count($arrRes) > 0) {
 
+            // =========================
+            // FORMAT DATA
+            // =========================
+            if ($arrRes->count() > 0) {
                 foreach ($arrRes as $val) {
-                    $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
-                    $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
-                    $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_blog_id = Crypt::encryptString($val->blog_id);
+                    $val->created_date = !empty($val->created_at) ? date('d-M-Y H:i:s', strtotime($val->created_at)) : '--';
+                    $val->updated_date = !empty($val->updated_at) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : '--';
+                    $val->is_active    = ($val->active_status == 1) ? 'Active' : 'Inactive';
+                    $val->enc_blog_id  = Crypt::encryptString($val->blog_id);
                 }
             }
 
-            $recordsTotal = $count;
-            $recordsFiltered = $count;
+            $recordsFiltered = $recordsTotal;
             $data = $arrRes;
         } catch (\Throwable $t) {
 
@@ -133,11 +179,12 @@ class BlogController extends Controller
         }
 
         return response()->json([
-            'recordsTotal' => $recordsTotal,
+            'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $data,
+            'data'            => $data,
         ]);
     }
+
 
     public function add($encId = null)
     {
@@ -208,6 +255,10 @@ class BlogController extends Controller
                 $author_id = request('author_id');
 
                 $duplicate = Blog::where('title', $title);
+
+                $openGraphJson = [];
+                $twitterJson   = [];
+
                 if ($id != 0) {
                     $duplicate->where('id', '!=', $id);
                 }
@@ -259,6 +310,63 @@ class BlogController extends Controller
                     $file3->storeAs($path, $newOg, 'public');
                 }
 
+
+
+
+                $openGraphData = DB::table('mst_annexture as a')
+                    ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
+                    ->where('t.annexture_type', 'OPEN_GRAPH')
+                    ->orderBy('a.id')
+                    ->select('a.*')
+                    ->get();
+
+                if ($openGraphData->count() > 0) {
+                    foreach ($openGraphData as $rowOg) {
+                        $attributeValue = '';
+                        if (strtolower(trim($rowOg->annexture_name)) === 'image') {
+
+                            if (request()->hasFile("open_graph_image.{$rowOg->id}")) {
+
+                                $file = request()->file("open_graph_image.{$rowOg->id}");
+                                $ogFileName = 'og-' . time() . rand() . '.' . $file->getClientOriginalExtension();
+                                $file->storeAs($path, $ogFileName, 'public');
+
+                                $attributeValue = $ogFileName;
+
+                                $newOg = $ogFileName;
+                            } else {
+                                $attributeValue = request("old_open_graph_image.{$rowOg->id}", '');
+                            }
+                        } else {
+                            $attributeValue = request("open_graph.{$rowOg->id}", '');
+                        }
+
+                        $openGraphJson[] = [
+                            'attribute_id'    => $rowOg->id,
+                            'attribute_name'  => $rowOg->annexture_name,
+                            'attribute_value' => $attributeValue
+                        ];
+                    }
+                }
+
+                $twitterData = DB::table('mst_annexture as a')
+                    ->join('mst_annexture_type as t', 't.id', '=', 'a.annexture_type_id')
+                    ->where('t.annexture_type', 'TWITTER')
+                    ->orderBy('a.id')
+                    ->select('a.*')
+                    ->get();
+
+                if ($twitterData->count() > 0) {
+                    foreach ($twitterData as $rowTw) {
+                        $twitterJson[] = [
+                            'attribute_id'    => $rowTw->id,
+                            'attribute_name'  => $rowTw->annexture_name,
+                            'attribute_value' => request("twitter.{$rowTw->id}", '')
+                        ];
+                    }
+                }
+
+
                 $blogId = 0;
 
                 if ($id > 0) {
@@ -285,6 +393,8 @@ class BlogController extends Controller
                         'faq_schema' => $faq_schema,
                         'service_schema' => $service_schema,
                         'breadcrumb_schema' => $breadcrumb_schema,
+                        'open_graph' => !empty($openGraphJson) ? json_encode($openGraphJson, JSON_UNESCAPED_UNICODE) : null,
+                        'twitter' => !empty($twitterJson) ? json_encode($twitterJson, JSON_UNESCAPED_UNICODE) : null,
                     ];
 
                     $oldChanged = [];
@@ -335,6 +445,8 @@ class BlogController extends Controller
                         'breadcrumb_schema' => $breadcrumb_schema,
                         'thumb_image' => $newThumb,
                         'featured_image' => $newFeature,
+                        'open_graph' => !empty($openGraphJson) ? json_encode($openGraphJson, JSON_UNESCAPED_UNICODE) : null,
+                        'twitter' => !empty($twitterJson) ? json_encode($twitterJson, JSON_UNESCAPED_UNICODE) : null,
                         'og_image' => $newOg,
                         'created_by' => 1,
                         'active_status' => 0,
@@ -355,46 +467,7 @@ class BlogController extends Controller
                 }
 
 
-                //  DELETE OLD ATTRIBUTES (for edit case)
-                DB::connection('mysql_dev')->table('blog_attributes')->where('blog_id', $blogId)->delete();
 
-
-                // ================== OPEN GRAPH (TYPE = 1) ==================
-                if (request()->has('open_graph')) {
-                    foreach (request('open_graph') as $attrId => $value) {
-
-                        if (!empty($value)) {
-                            DB::connection('mysql_dev')->table('blog_attributes')->insert([
-                                'blog_id' => $blogId,
-                                'attribute_type' => 1,
-                                'attribute_id' => $attrId,
-                                'attribute_value' => $value,
-                                'active_status' => 1,
-                                'created_by' => 1,
-                                'created_at' => now()
-                            ]);
-                        }
-                    }
-                }
-
-
-                // ================== TWITTER (TYPE = 2) ==================
-                if (request()->has('twitter')) {
-                    foreach (request('twitter') as $attrId => $value) {
-
-                        if (!empty($value)) {
-                            DB::connection('mysql_dev')->table('blog_attributes')->insert([
-                                'blog_id' => $blogId,
-                                'attribute_type' => 2,
-                                'attribute_id' => $attrId,
-                                'attribute_value' => $value,
-                                'active_status' => 1,
-                                'created_by' => 1,
-                                'created_at' => now()
-                            ]);
-                        }
-                    }
-                }
 
                 if (request()->has('schema')) {
                     foreach (request('schema') as $attrId => $value) {
@@ -533,8 +606,9 @@ class BlogController extends Controller
             ->get();
 
         $blogAttributes = [];
-
         $blogFaqs = [];
+        $openGraphValues = [];
+        $twitterValues = [];
 
         if ($id > 0) {
             $blogFaqs = DB::connection('mysql_dev')
@@ -551,11 +625,14 @@ class BlogController extends Controller
                 ->where('blog_id', $id)
                 ->get()
                 ->groupBy('attribute_type');
+
+            $openGraphValues = !empty($data['row']->open_graph) ? json_decode($data['row']->open_graph, true) : [];
+            $twitterValues   = !empty($data['row']->twitter) ? json_decode($data['row']->twitter, true) : [];
         }
 
 
 
-        return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData',  'blogAttributes',  'blogFaqs'));
+        return view('admin.blogs.addBlogs', compact('data', 'openGraphData', 'twitterData', 'articleData', 'schemaData',  'blogAttributes',  'blogFaqs', 'openGraphValues', 'twitterValues'));
     }
 
     public function edit($encId)
@@ -565,19 +642,64 @@ class BlogController extends Controller
 
     public function uploadEditorImage(Request $request)
     {
-        if ($request->hasFile('upload')) {
+        try {
+            $request->validate([
+                'upload' => 'required|image|mimes:jpg,jpeg,png,webp,gif|max:3072'
+            ]);
+
+            if (!$request->hasFile('upload')) {
+                return response()->json([
+                    'error' => [
+                        'message' => 'No file uploaded'
+                    ]
+                ], 400);
+            }
 
             $file = $request->file('upload');
-
-            $name = time() . '.' . $file->getClientOriginalExtension();
-
+            $name = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('uploads/editor'), $name);
 
             return response()->json([
                 'url' => asset('uploads/editor/' . $name)
             ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => [
+                    'message' => $th->getMessage()
+                ]
+            ], 422);
         }
+    }
 
-        return response()->json(['error' => 'No file uploaded'], 400);
+    public function getBlogDetails(Request $request)
+    {
+        try {
+            $row = Blog::from('odbusdev.blogs as b')
+                ->leftJoin('odbusdev.blog_categories as c', 'c.id', '=', 'b.category_id')
+                ->leftJoin('odbusdev.blog_authors as a', 'a.id', '=', 'b.author_id')
+                ->select(
+                    'b.*',
+                    'c.category_name',
+                    'a.author_name'
+                )
+                ->where('b.id', $request->id)
+                ->first();
+
+            if (!$row) {
+                return response()->json([
+                    'status' => false
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'data'   => $row
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status'  => false,
+                'message' => $th->getMessage()
+            ]);
+        }
     }
 }

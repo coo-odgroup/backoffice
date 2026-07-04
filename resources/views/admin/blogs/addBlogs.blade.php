@@ -259,16 +259,16 @@
                                         <div class="accordion mt-3" id="faqSectionWrap">
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="seoHeading6">
-                                                    <button class="accordion-button" type="button"
+                                                    <button class="accordion-button collapsed" type="button"
                                                         data-bs-toggle="collapse"
                                                         data-bs-target="#seoSection6"
-                                                        aria-expanded="true"
+                                                        aria-expanded="false"
                                                         aria-controls="seoSection6">
                                                         FAQ
                                                     </button>
                                                 </h2>
                                                 <div id="seoSection6"
-                                                    class="accordion-collapse collapse show"
+                                                    class="accordion-collapse collapse"
                                                     aria-labelledby="seoHeading6"
                                                     data-bs-parent="#faqSectionWrap">
 
@@ -328,7 +328,7 @@
                                                         <div class="faq-row mb-3">
                                                             <div class="p-3 border rounded bg-white h-100" style="margin: 10px 10px 10px 10px;">
                                                                 <div class="row align-items-end mb-3">
-                                                                    <div class="col-md-10">
+                                                                    <div class="col-md-11">
                                                                         <label><span class="faq-count">{{ $index + 1 }}</span>. FAQ - Question</label>
                                                                         <input type="text"
                                                                             class="form-control clearable form-select-sm faq-question"
@@ -337,14 +337,14 @@
                                                                             value="{{ $faq->faq_question }}">
                                                                     </div>
 
-                                                                    <div class="col-md-2 d-flex justify-content-center">
+                                                                    <div class="col-md-1 d-flex justify-content-center">
                                                                         @if($index == 0)
-                                                                        <button type="button" class="btn btn-outline-primary btn-add px-3 py-2">
-                                                                            <i class="fa fa-plus fs-5"></i>
+                                                                        <button type="button" class="btn btn-outline-primary btn-add">
+                                                                            <i class="fa fa-plus"></i>
                                                                         </button>
                                                                         @else
-                                                                        <button type="button" class="btn btn-outline-danger btn-remove px-3 py-2">
-                                                                            <i class="fa fa-minus fs-5"></i>
+                                                                        <button type="button" class="btn btn-outline-danger btn-remove ">
+                                                                            <i class="fa fa-minus"></i>
                                                                         </button>
                                                                         @endif
                                                                     </div>
@@ -409,16 +409,16 @@
                                         <div class="accordion mt-3" id="metaSection">
                                             <div class="accordion-item">
                                                 <h2 class="accordion-header" id="seoHeading">
-                                                    <button class="accordion-button" type="button"
+                                                    <button class="accordion-button collapsed" type="button"
                                                         data-bs-toggle="collapse"
                                                         data-bs-target="#seoSection"
-                                                        aria-expanded="true"
+                                                        aria-expanded="false"
                                                         aria-controls="seoSection">
                                                         Seo
                                                     </button>
                                                 </h2>
                                                 <div id="seoSection"
-                                                    class="accordion-collapse collapse show"
+                                                    class="accordion-collapse collapse"
                                                     aria-labelledby="seoHeading"
                                                     data-bs-parent="#metaSection">
 
@@ -450,6 +450,49 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-12">
+                                        <div class="accordion mt-3" id="metaSection5">
+                                            <div class="accordion-item">
+
+                                                <h2 class="accordion-header" id="seoHeading5">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#seoSection5">
+                                                        Schema
+                                                    </button>
+                                                </h2>
+
+                                                <div id="seoSection5" class="accordion-collapse collapse">
+                                                    <div class="row m-3 3 3 3">
+
+                                                        <div class="col-4">
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="faq_schema">FAQ Schema</label>
+                                                                <textarea class="form-control clearable form-select-sm" id="faq_schema" name="faq_schema" rows="20" placeholder="Enter FAQ Schema">{{ $data['row']->faq_schema  ?? old('faq_schema ') }}</textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-4">
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="service_schema">Service Schema</label>
+                                                                <textarea class="form-control clearable form-select-sm" id="service_schema" name="service_schema" rows="20" placeholder="Enter Service Schema">{{ $data['row']->service_schema  ?? old('service_schema ') }}</textarea>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-4">
+                                                            <div class="col-md-12 mb-3">
+                                                                <label for="breadcrumb_schema">Bread Crumb Schema</label>
+                                                                <textarea class="form-control clearable form-select-sm" id="breadcrumb_schema" name="breadcrumb_schema" rows="20" placeholder="Enter Bread Crumb Schema">{{ $data['row']->breadcrumb_schema   ?? old('breadcrumb_schema  ') }}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
 
                                     <div class="col-12">
                                         <div class="accordion mt-3" id="metaSection2">
@@ -507,11 +550,13 @@
                                                                         $value = '';
                                                                         $image = '';
 
-                                                                        if(isset($blogAttributes[1])) {
-                                                                        foreach($blogAttributes[1] as $attr){
-                                                                        if($attr->attribute_id == $row->id){
-                                                                        $value = $attr->attribute_value;
-                                                                        $image = $attr->attribute_image ?? '';
+                                                                        if (!empty($openGraphValues)) {
+                                                                        foreach ($openGraphValues as $attr) {
+                                                                        if (($attr['attribute_id'] ?? 0) == $row->id) {
+                                                                        $value = $attr['attribute_value'] ?? '';
+                                                                        if (strtolower($row->annexture_name) === 'image') {
+                                                                        $image = $attr['attribute_value'] ?? '';
+                                                                        }
                                                                         break;
                                                                         }
                                                                         }
@@ -527,12 +572,16 @@
                                                                             name="open_graph_image[{{ $row->id }}]"
                                                                             accept="image/*">
 
+                                                                        <input type="hidden"
+                                                                            name="old_open_graph_image[{{ $row->id }}]"
+                                                                            value="{{ $image }}">
+
                                                                         <small class="text-muted">Allowed: JPG, JPEG, PNG | Max: 2MB</small>
 
                                                                         <!-- IMAGE PREVIEW -->
                                                                         @if(!empty($image))
                                                                         <div class="mt-2">
-                                                                            <img src="{{ asset('storage/blogs/'.$image) }}" width="120" class="border p-1">
+                                                                            <img src="{{ asset('storage/uploads/blog/'.$image) }}" width="120" class="border p-1">
                                                                         </div>
                                                                         @endif
 
@@ -614,10 +663,10 @@
                                                                         @php
                                                                         $value = '';
 
-                                                                        if(isset($blogAttributes[2])) {
-                                                                        foreach($blogAttributes[2] as $attr){
-                                                                        if($attr->attribute_id == $row->id){
-                                                                        $value = $attr->attribute_value;
+                                                                        if (!empty($twitterValues)) {
+                                                                        foreach ($twitterValues as $attr) {
+                                                                        if (($attr['attribute_id'] ?? 0) == $row->id) {
+                                                                        $value = $attr['attribute_value'] ?? '';
                                                                         break;
                                                                         }
                                                                         }
@@ -707,47 +756,6 @@
                                     </div>
 
 
-                                    <div class="col-12">
-                                        <div class="accordion mt-3" id="metaSection5">
-                                            <div class="accordion-item">
-
-                                                <h2 class="accordion-header" id="seoHeading5">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#seoSection5">
-                                                        Schema
-                                                    </button>
-                                                </h2>
-
-                                                <div id="seoSection5" class="accordion-collapse collapse">
-                                                    <div class="row m-3 3 3 3">
-
-                                                        <div class="col-4">
-                                                            <div class="col-md-12 mb-3">
-                                                                <label for="faq_schema">FAQ Schema</label>
-                                                                <textarea class="form-control clearable form-select-sm" id="faq_schema" name="faq_schema" rows="20" placeholder="Enter FAQ Schema">{{ $data['row']->faq_schema  ?? old('faq_schema ') }}</textarea>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-4">
-                                                            <div class="col-md-12 mb-3">
-                                                                <label for="service_schema">Service Schema</label>
-                                                                <textarea class="form-control clearable form-select-sm" id="service_schema" name="service_schema" rows="20" placeholder="Enter Service Schema">{{ $data['row']->service_schema  ?? old('service_schema ') }}</textarea>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="col-4">
-                                                            <div class="col-md-12 mb-3">
-                                                                <label for="breadcrumb_schema">Bread Crumb Schema</label>
-                                                                <textarea class="form-control clearable form-select-sm" id="breadcrumb_schema" name="breadcrumb_schema" rows="20" placeholder="Enter Bread Crumb Schema">{{ $data['row']->breadcrumb_schema   ?? old('breadcrumb_schema  ') }}</textarea>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -781,8 +789,142 @@
     @push('scripts')
 
     <script type="module">
+        function MyUploadAdapter(loader) {
+            this.loader = loader;
+        }
+
+        MyUploadAdapter.prototype.upload = function() {
+            return this.loader.file.then(file => {
+                return new Promise((resolve, reject) => {
+                    const data = new FormData();
+                    data.append('upload', file);
+                    data.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+
+                    $.ajax({
+                        url: "{{ url('/admin/upload-editor-image') }}",
+                        type: "POST",
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            console.log('Upload success response:', response);
+
+                            if (response.url) {
+                                resolve({
+                                    default: response.url
+                                });
+                            } else {
+                                reject('Image upload failed');
+                            }
+                        },
+                        error: function(xhr) {
+                            console.log('Upload status:', xhr.status);
+                            console.log('Upload response:', xhr.responseText);
+                            reject('Image upload failed');
+                        }
+                    });
+                });
+            });
+        };
+
+        MyUploadAdapter.prototype.abort = function() {};
+
+        function MyCustomUploadAdapterPlugin(editor) {
+            editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+                return new MyUploadAdapter(loader);
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            initCkEditor('#content');
+            initCkEditor('#content', {
+                extraPlugins: [MyCustomUploadAdapterPlugin],
+
+                toolbar: {
+                    items: [
+                        'undo', 'redo',
+                        '|', 'findAndReplace', 'selectAll',
+                        '|', 'heading', 'style',
+                        '|', 'bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript', 'removeFormat',
+                        '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight',
+                        '|', 'link', 'bulletedList', 'numberedList', 'todoList',
+                        '|', 'alignment', 'outdent', 'indent',
+                        '|', 'blockQuote', 'code', 'codeBlock', 'horizontalLine', 'pageBreak',
+                        '|', 'insertTable', 'imageUpload', 'insertImageViaUrl', 'mediaEmbed', 'htmlEmbed', 'specialCharacters',
+                        '|', 'sourceEditing'
+                    ],
+                    shouldNotGroupWhenFull: true
+                },
+
+                heading: {
+                    options: [{
+                            model: 'paragraph',
+                            title: 'Paragraph',
+                            class: 'ck-heading_paragraph'
+                        },
+                        {
+                            model: 'heading1',
+                            view: 'h1',
+                            title: 'Heading 1',
+                            class: 'ck-heading_heading1'
+                        },
+                        {
+                            model: 'heading2',
+                            view: 'h2',
+                            title: 'Heading 2',
+                            class: 'ck-heading_heading2'
+                        },
+                        {
+                            model: 'heading3',
+                            view: 'h3',
+                            title: 'Heading 3',
+                            class: 'ck-heading_heading3'
+                        },
+                        {
+                            model: 'heading4',
+                            view: 'h4',
+                            title: 'Heading 4',
+                            class: 'ck-heading_heading4'
+                        }
+                    ]
+                },
+
+                table: {
+                    contentToolbar: [
+                        'tableColumn',
+                        'tableRow',
+                        'mergeTableCells',
+                        'tableProperties',
+                        'tableCellProperties'
+                    ]
+                },
+
+                image: {
+                    toolbar: [
+                        'toggleImageCaption',
+                        'imageTextAlternative',
+                        '|',
+                        'imageStyle:inline',
+                        'imageStyle:block',
+                        'imageStyle:side',
+                        '|',
+                        'linkImage'
+                    ]
+                },
+
+                link: {
+                    decorators: {
+                        openInNewTab: {
+                            mode: 'manual',
+                            label: 'Open in new tab',
+                            defaultValue: true,
+                            attributes: {
+                                target: '_blank',
+                                rel: 'noopener noreferrer'
+                            }
+                        }
+                    }
+                }
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -798,12 +940,9 @@
 
                 const file = event.target.files[0];
                 if (!file) return;
-
-                // 2MB validation
                 if (file.size > 2 * 1024 * 1024) {
                     commonAjax.viewAlert("File size must be less than 2MB", 'img_1');
                     input_1.value = '';
-
                     previewContainer_1.classList.add('d-none');
                     preview_1.classList.add('d-none');
                     return;
@@ -813,7 +952,6 @@
                 const allowedMimeTypes = ['image/jpeg', 'image/png'];
                 const fileExtension = file.name.split('.').pop().toLowerCase();
 
-                //  Validate Extension
                 if (!allowedExtensions.includes(fileExtension)) {
                     commonAjax.viewAlert("Only JPG, JPEG, and PNG images are allowed.", 'img_1');
                     resetImage();
@@ -1240,7 +1378,6 @@
             const apiBaseUrl = "{{ rtrim(url('/'), '/') }}"; // admin / current base
             const title = ($('#title').val() || '').trim();
             const description = ($('#short_description').val() || '').trim();
-
             const authorName = ($('#blogAuthor option:selected').text() || '').trim();
             const authorId = $('#blogAuthor').val() || '';
             const authorUrl = authorName ? (frontUrl + '/blog/author/' + authorName.toLowerCase().trim().replace(/[^a-z0-9-\s]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')) : '';
