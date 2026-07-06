@@ -66,10 +66,6 @@ class BlogController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = b.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // =========================
-            // FILTERS
-            // =========================
-
             if (!empty($title)) {
                 $dataQuery->where(function ($q) use ($title) {
                     $q->where('b.title', 'like', "%{$title}%")

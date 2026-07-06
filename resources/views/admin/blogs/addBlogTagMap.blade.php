@@ -69,14 +69,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <div class="col-md-6 mb-3">
                                                         <label for="blog">Blog<span class="text-danger important">*</span></label>
                                                         <select class="form-select form-select-sm" id="blog" name="blog_id">
-                                                            <option disabled selected>Select Blog</option>
+                                                            <option value="">Select Blog</option>
                                                         </select>
                                                     </div>
 
                                                     <div class="col-md-6 mb-3">
                                                         <label for="blogTags">Blog Tags<span class="text-danger important">*</span></label>
-                                                        <select class="form-select form-select-sm" id="blogTags" name="tag_id">
-                                                            <option disabled selected>Select Blog Tags</option>
+                                                        <select class="form-select form-select-sm" id="blogTags" name="tag_id[]" multiple>
+                                                            <option value="">Select Blog Tags</option>
                                                         </select>
                                                     </div>
 
@@ -126,19 +126,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('blog', 'Select Blog')) {
+
+        let blogVal = $('#blog').val();
+        let tagVal = $('#blogTags').val();
+
+
+        if (!blogVal || blogVal.length === 0) {
+            commonAjax.viewAlert('Please select at least one Blog', 'blog');
             return false;
         }
 
-        if (!validator.selectDropdown('blogTags', 'Select Blog Tags')) {
+        if (!tagVal || tagVal.length === 0) {
+            commonAjax.viewAlert('Please select at least one Blog Tag', 'blogTags');
             return false;
         }
 
         commonAjax.confirmAlert('Are you sure to proceed !');
 
-        $('#btnConfirmOk').on('click', function() {
+        $('#btnConfirmOk').off('click').on('click', function() {
             e.currentTarget.submit();
         });
+
 
     });
 
@@ -148,15 +156,33 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#blog', 'Select Blog');
         commonAjax.initClearableInputs();
-        commonAjax.initSelect2('#blogTags', 'Select Blog Tags');
 
-        let blog_id = <?= $data['row']->blog_id ?? '0' ?>;
-        let tag_id = <?= $data['row']->tag_id ?? '0' ?>;
+        let blog_id = @json($data['selectedBlog'] ?? 0);
+        let tag_id = @json($data['selectedTags'] ?? []);
 
+        // init select2 first
+        $('#blog').select2({
+            placeholder: 'Select Blog',
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#blogTags').select2({
+            placeholder: 'Select Blog Tags',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // load dropdowns
         commonAjax.loadBlogList(blog_id);
         commonAjax.loadBlogTagsList(tag_id);
+
+        // force selected values after ajax dropdown bind
+        setTimeout(function() {
+            $('#blog').val(blog_id).trigger('change');
+            $('#blogTags').val(tag_id).trigger('change');
+        }, 500);
     });
 </script>
 @endpush

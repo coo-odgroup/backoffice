@@ -208,7 +208,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-                data: 'tag_name',
+                data: 'tag_names',
+                render: function(data, type, row) {
+                    if (!data) return '--';
+
+                    let tags = data.split('||');
+                    let html = '<div class="d-flex flex-column gap-1">';
+
+                    tags.forEach(function(tag) {
+                        html += `<div class="border rounded px-2 py-1 bg-light">${tag}</div>`;
+                    });
+
+                    html += '</div>';
+                    return html;
+                },
                 defaultContent: "--"
             },
             {
