@@ -71,6 +71,7 @@ use App\Http\Controllers\Master\NotificationTemplateController;
 use App\Http\Controllers\Master\SchemaController;
 use App\Http\Controllers\Master\CronJobController;
 use App\Http\Controllers\Master\NotificationRuleController;
+use App\Http\Controllers\Admin\ManageRouteSEO\ManageCityContentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -163,10 +164,10 @@ Route::prefix('admin')->group(function () {
     Route::post('get-users-list', [CommonController::class, 'getUsersList']);
     Route::post('get-bus-cancel-reasons', [CommonController::class, 'getBusCancelReasons']);
     Route::post('get-cron-job-dropdown', [CommonController::class, 'getCronJobDropdown']);
-    Route::post('get-cron-job-dropdown',[CommonController::class, 'getCronJobDropdown']);
-    Route::post('get-notification-template-dropdown',[CommonController::class, 'getNotificationTemplate']);
-    Route::post('get-roles-list',[CommonController::class, 'getRolesList']);
-    Route::post('get-schema-content',[CommonController::class, 'getSchemaContent']);
+    Route::post('get-cron-job-dropdown', [CommonController::class, 'getCronJobDropdown']);
+    Route::post('get-notification-template-dropdown', [CommonController::class, 'getNotificationTemplate']);
+    Route::post('get-roles-list', [CommonController::class, 'getRolesList']);
+    Route::post('get-schema-content', [CommonController::class, 'getSchemaContent']);
     Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
 
     // Common Bus Info
@@ -190,7 +191,7 @@ Route::prefix('admin')->group(function () {
     Route::get('search-amenities', [CommonController::class, 'searchAmenities']);
     Route::get('get-slab-details', [CommonController::class, 'getSlabDetails']);
 
-   
+
 
     //Subhasis
     //___________________________________________________________________________________________________________________________________________________
@@ -357,7 +358,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'schema/edit/{encId}', [SchemaController::class, 'edit'])->name('schema.edit');
     Route::post('/schema/view-details', [SchemaController::class, 'viewDetails'])->name('schema.viewDetails');
 
-   // Blogs
+    // Blogs
     Route::get('/blogs', [BlogController::class, 'index'])->name('blogs.index');
     Route::match(['get', 'post'], 'blogs/add', [BlogController::class, 'add'])->name('blogs.add');
     Route::post('blogs/dataTableView', [BlogController::class, 'dataTableView'])->name('blogs.dataTableView');
@@ -371,7 +372,16 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-author/add', [BlogAuthorController::class, 'add'])->name('blog-author.add');
     Route::post('blog-author/dataTableView', [BlogAuthorController::class, 'dataTableView'])->name('blog-author.dataTableView');
     Route::match(['get', 'post'], 'blog-author/edit/{encId}', [BlogAuthorController::class, 'edit'])->name('blog-author.edit');
-    Route::post('blog-author/details',[BlogAuthorController::class,'getAuthorDetails']);
+    Route::post('blog-author/details', [BlogAuthorController::class, 'getAuthorDetails']);
+
+    //Manage City Content (SEO)
+    Route::get('/manage-city-content', [ManageCityContentController::class, 'index'])->name('manage-city-content.index');
+    Route::post('manage-city-content/update-content', [ManageCityContentController::class, 'updateContent'])->name('manage-city-content.updateContent');
+    Route::post('manage-city-content/dataTableView', [ManageCityContentController::class, 'dataTableView'])->name('manage-city-content.dataTableView');
+
+
+
+
 
 
     // Jagan
@@ -425,7 +435,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
     Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
 
-    
+
     // Blog Images
     Route::get('/blog-images', [BlogImagesController::class, 'index'])->name('blog-images.index');
     Route::match(['get', 'post'], 'blog-images/add', [BlogImagesController::class, 'add'])->name('blog-images.add');
@@ -482,7 +492,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'campaign/edit/{encId}', [CampaignController::class, 'edit'])->name('campaign.edit');
 
 
-   
+
 
 
 
@@ -532,7 +542,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'blog-category/add', [BlogCategoryController::class, 'add'])->name('blog-category.add');
     Route::post('blog-category/dataTableView', [BlogCategoryController::class, 'dataTableView'])->name('blog-category.dataTableView');
     Route::match(['get', 'post'], 'blog-category/edit/{encId}', [BlogCategoryController::class, 'edit'])->name('blog-category.edit');
-    Route::post('blog-category/details',[BlogCategoryController::class,'getCategoryDetails']);
+    Route::post('blog-category/details', [BlogCategoryController::class, 'getCategoryDetails']);
 
     Route::get('/bus-schedule', [BusScheduleController::class, 'index'])->name('bus-schedule.index');
     Route::match(['get', 'post'], 'bus-schedule/add', [BusScheduleController::class, 'add'])->name('bus-schedule.add');
@@ -590,10 +600,8 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'notification-rules/add', [NotificationRuleController::class, 'add'])->name('notification-rules.add');
     Route::post('notification-rules/dataTableView', [NotificationRuleController::class, 'dataTableView'])->name('notification-rules.dataTableView');
     Route::match(['get', 'post'], 'notification-rules/edit/{encId}', [NotificationRuleController::class, 'edit'])->name('notification-rules.edit');
-    Route::post('get-cron-job-details',[NotificationRuleController::class, 'getCronJobDetails']);
+    Route::post('get-cron-job-details', [NotificationRuleController::class, 'getCronJobDetails']);
     Route::post('get-notification-details', [NotificationRuleController::class, 'getNotificationDetails']);
-    Route::post('get-cron-notification-rules',[NotificationRuleController::class,'getCronNotificationRules']);
-    Route::post('get-cron-summary',[NotificationRuleController::class,'getCronSummary']);
-
-
+    Route::post('get-cron-notification-rules', [NotificationRuleController::class, 'getCronNotificationRules']);
+    Route::post('get-cron-summary', [NotificationRuleController::class, 'getCronSummary']);
 });

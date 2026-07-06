@@ -29,20 +29,20 @@
         <!-- Sub Menu -->
         <div class="collapse {{ Request::is('admin/states*','admin/district*','admin/cities*','admin/bustype*','admin/seatingtype*','admin/amenitycategory*','admin/amenities*','admin/roles*','admin/reason*','admin/modules*','admin/boardingDropping*','admin/apiapps*','admin/apikeys*','admin/cityapis*','admin/users*','admin/brand*','admin/bus-model*','admin/axle-type*','admin/bus-service*','admin/mst-seatlayout*','admin/annexture-type','admin/annexture','admin/cancellationslab*','admin/cancellationslab-info*','admin/seat-layout*','admin/festive-days*','admin/ticket-fare-slab*','admin/ticketfareslab-info*','admin/bus-schedule*','admin/bus-cancel*','admin/seat-block*','admin/seat-open*','admin/notification-template*','admin/bus','admin/cron-job','admin/notification-rules*', 'schema*') ? 'show' : '' }}" id="busManagement">
 
-        
+
             <a href="{{ url('admin/schema') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/schema*') ? 'active' : '' }}">
-               <i class="fa-solid fa-code-compare me-2"></i>Schema
+                <i class="fa-solid fa-code-compare me-2"></i>Schema
             </a>
 
-             <a href="{{ url('admin/notification-rules') }}"
+            <a href="{{ url('admin/notification-rules') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/notification-rules*') ? 'active' : '' }}">
-               <i class="fa-solid fa-bell-concierge me-2"></i>Notification Rules
+                <i class="fa-solid fa-bell-concierge me-2"></i>Notification Rules
             </a>
 
-             <a href="{{ url('admin/cron-job') }}"
+            <a href="{{ url('admin/cron-job') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/cron-job*') ? 'active' : '' }}">
-               <i class="fa-solid fa-clock-rotate-left me-2"></i>Cron Job
+                <i class="fa-solid fa-clock-rotate-left me-2"></i>Cron Job
             </a>
 
             <a href="{{ url('admin/bus') }}"
@@ -233,6 +233,7 @@
 
         </div>
 
+
         <!-- Parent Menu -->
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
@@ -245,11 +246,11 @@
         <!-- Sub Menu -->
         <div class="collapse {{ Request::is('admin/blog-author*','admin/blogs*','admin/blog-category*','admin/blogs*','admin/blog-images*','admin/blog-routes*','admin/blog-tags*','admin/blog-tag-map*') ? 'show' : '' }}" id="blogManagement">
 
-           <a href="{{ url('admin/blog-author') }}"
+            <a href="{{ url('admin/blog-author') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-author*') ? 'active' : '' }}">
                 <i class="fa-solid fa-user-edit me-2"></i> Blog Author
             </a>
-            
+
             <a href="{{ url('admin/blog-category') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/blog-category*') ? 'active' : '' }}">
                 <i class="fa-solid fa-folder-open me-2"></i> Blog Category
@@ -321,8 +322,21 @@
         </div>
 
 
+        <!-- Parent Menu -->
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            data-bs-toggle="collapse"
+            href="#routeManagementSEO"
+            aria-expanded="{{ Request::is('admin/manage-city-content*') ? 'true' : 'false' }}">
+            <span><i class="fa-solid fa-route me-2"></i> Manage Route SEO</span>
+            <i class="fa-solid fa-chevron-down small"></i>
+        </a>
 
-
+        <div class="collapse {{ Request::is('admin/manage-city-content*','admin/blogs*') ? 'show' : '' }}" id="routeManagementSEO">
+            <a href="{{ url('admin/manage-city-content') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/manage-city-content*') ? 'active' : '' }}">
+                <i class="fa-solid fa-city me-2"></i> City Content Management
+            </a>
+        </div>
 
 
     </div>
