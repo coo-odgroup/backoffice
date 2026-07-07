@@ -326,15 +326,20 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#routeManagementSEO"
-            aria-expanded="{{ Request::is('admin/manage-city-content*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/manage-city-content*','admin/manage-route-distance*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-route me-2"></i> Manage Route SEO</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
-        <div class="collapse {{ Request::is('admin/manage-city-content*','admin/blogs*') ? 'show' : '' }}" id="routeManagementSEO">
+        <div class="collapse {{ Request::is('admin/manage-city-content*','admin/manage-route-distance*') ? 'show' : '' }}" id="routeManagementSEO">
             <a href="{{ url('admin/manage-city-content') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/manage-city-content*') ? 'active' : '' }}">
                 <i class="fa-solid fa-city me-2"></i> City Content Management
+            </a>
+
+            <a href="{{ url('admin/manage-route-distance') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/manage-route-distance*') ? 'active' : '' }}">
+                <i class="fa-solid fa-route me-2"></i> Route Distance Management
             </a>
         </div>
     </div>

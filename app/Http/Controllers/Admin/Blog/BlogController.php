@@ -130,9 +130,6 @@ class BlogController extends Controller
                 $dataQuery->orderBy('b.title', 'asc');
             }
 
-            // =========================
-            // PAGINATION
-            // =========================
             if ($length == -1) {
                 $arrRes = $dataQuery->get();
             } else {
@@ -141,9 +138,6 @@ class BlogController extends Controller
                     ->get();
             }
 
-            // =========================
-            // FORMAT DATA
-            // =========================
             if ($arrRes->count() > 0) {
                 foreach ($arrRes as $val) {
                     $val->created_date = !empty($val->created_at) ? date('d-M-Y H:i:s', strtotime($val->created_at)) : '--';
@@ -238,10 +232,8 @@ class BlogController extends Controller
                 $content = request('content') ?? '';
                 $category_id = request('category_id');
                 $is_featured = request('is_featured');
-
                 $thumb_alt_text = htmlEncode(request('thumb_alt_text'));
                 $feature_alt_text = htmlEncode(request('feature_alt_text'));
-
                 $meta_title = htmlEncode(request('meta_title'));
                 $canonical_url = htmlEncode(request('canonical_url'));
                 $meta_description = htmlEncode(request('meta_description'));
@@ -250,9 +242,7 @@ class BlogController extends Controller
                 $service_schema = request('service_schema');
                 $breadcrumb_schema = request('breadcrumb_schema');
                 $author_id = request('author_id');
-
                 $duplicate = Blog::where('title', $title);
-
                 $openGraphJson = [];
                 $twitterJson   = [];
 

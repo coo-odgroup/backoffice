@@ -173,8 +173,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             allowClear: true,
             width: '100%'
         });
-
-        // load dropdowns
+        
         commonAjax.loadBlogList(blog_id);
         commonAjax.loadBlogTagsList(tag_id);
 
