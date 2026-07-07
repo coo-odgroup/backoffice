@@ -18,6 +18,7 @@ class BlogController extends Controller
     {
         return view('admin.blogs.blogsList');
     }
+
     public function dataTableView()
     {
         $recordsTotal = 0;
@@ -30,7 +31,7 @@ class BlogController extends Controller
             $slug       = trim(request('slug'));
             $authorId   = request('author_id');
             $categoryId = request('category_id');
-            $selStatus  = (request('selstatus') !== null && request('selstatus') !== '') ? (int) request('selstatus') : '';
+            $selStatus = request()->has('selstatus') && request('selstatus') !== '' ? (int) request('selstatus'): null;
 
             $dataQuery = DB::table('odbusdev.blogs as b')
                 ->select(
@@ -87,7 +88,7 @@ class BlogController extends Controller
                 $dataQuery->where('b.category_id', $categoryId);
             }
 
-            if ($selStatus !== '') {
+            if ($selStatus !== null) {
                 $dataQuery->where('b.active_status', $selStatus);
             }
 

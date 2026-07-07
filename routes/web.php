@@ -72,6 +72,7 @@ use App\Http\Controllers\Master\SchemaController;
 use App\Http\Controllers\Master\CronJobController;
 use App\Http\Controllers\Master\NotificationRuleController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageCityContentController;
+use App\Http\Controllers\Admin\ManageRouteSEO\ManageDistaceController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -169,6 +170,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-roles-list', [CommonController::class, 'getRolesList']);
     Route::post('get-schema-content', [CommonController::class, 'getSchemaContent']);
     Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
+    Route::get('manage-route-distance/route-dropdown', [CommonController::class, 'RouteDropdown'])->name('manage-route-distance.routeDropdown');
 
     // Common Bus Info
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
@@ -194,7 +196,7 @@ Route::prefix('admin')->group(function () {
 
 
     //Subhasis
-    //___________________________________________________________________________________________________________________________________________________
+    //_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=_=
 
     //cities
     Route::get('/cities', [CitiesController::class, 'cities'])->name('cities.index');
@@ -379,13 +381,15 @@ Route::prefix('admin')->group(function () {
     Route::post('manage-city-content/update-content', [ManageCityContentController::class, 'updateContent'])->name('manage-city-content.updateContent');
     Route::post('manage-city-content/dataTableView', [ManageCityContentController::class, 'dataTableView'])->name('manage-city-content.dataTableView');
 
-
-
-
-
+    //Manage Route Distance 
+    Route::get('/manage-route-distance', [ManageDistaceController::class, 'index'])->name('manage-route-distance.index');
+    Route::post('manage-route-distance/update-distance', [ManageDistaceController::class, 'updateDistance'])->name('manage-route-distance.updateDistance');
+    Route::post('manage-route-distance/dataTableView', [ManageDistaceController::class, 'dataTableView'])->name('manage-route-distance.dataTableView');
+    Route::post('/manage-route-distance/export-csv', [ManageDistaceController::class, 'exportCsv'])->name('manage-route-distance.exportCsv');
+    Route::post('/manage-route-distance/import-csv', [ManageDistaceController::class, 'importCsv'])->name('manage-route-distance.importCsv');
 
     // Jagan
-    // ---------------------------------------------------------------------------------------------------------------
+    // ======================================================================================================================================================================================================
     // State
     Route::get('/states', [StateController::class, 'states'])->name('states.index');
     Route::match(['get', 'post'], 'states/add', [StateController::class, 'add'])->name('states.add');

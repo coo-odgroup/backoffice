@@ -30,6 +30,7 @@ class BlogCategoryController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
+            $blogCategory = (request('blogCategory') !== null && request('blogCategory') !== '') ? request('blogCategory') : '';
 
             $dataQuery = DB::table('odbusdev.blog_categories as bc')
                 ->select(
@@ -53,8 +54,12 @@ class BlogCategoryController extends Controller
             // Filters
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('bc.category_name', 'like', "%{$txtSearch}%");
+                    $q->where('bc.category_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('bc.slug', 'like', "%{$txtSearch}%");
                 });
+            }
+            if (!empty($blogCategory)) {
+                $dataQuery->where('bc.id', $blogCategory);
             }
 
             if (isset($selStatus) && $selStatus != '') {

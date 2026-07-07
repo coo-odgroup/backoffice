@@ -42,17 +42,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end g-2">
 
                         <!-- Search -->
-                        <div class="col-lg-4 col-md-6">
-                            <label class="form-label">Search By FAQ</label>
-                            <input type="text" class="form-control clearable form-control-sm"
-                                id="txtSearch" name="txtSearch"
-                                placeholder="FAQ">
-                        </div>
 
+                        <div class="col-lg-3 col-md-6">
+                            <label class="form-label">Search Text</label>
+                            <input type="text" class="form-control form-control-sm" id="txtSearch" name="txtSearch" placeholder="Enter search text">
+                        </div>
                         <!-- Category -->
                         <div class="col-lg-2 col-md-6">
                             <label class="form-label">Category</label>
-                            <select class="form-select form-select-sm" id="faqCategory" name="faqCategory">
+                            <select class="form-select form-select-sm" id="blogCategory" name="blogCategory">
                                 <option value="">Select Category</option>
                             </select>
                         </div>
@@ -391,25 +389,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let faqCategory = '';
+        let blogCategory = '';
 
         if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
+            txtSearch = $('#txtSearch').val().trim();
         }
+
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
 
-        if ($('#faqCategory').val() != '') {
-            faqCategory = $('#faqCategory').val();
+        if ($('#blogCategory').val() != '') {
+            blogCategory = $('#blogCategory').val();
         }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtSearch: txtSearch,
             selStatus: selStatus,
-            faqCategory: faqCategory
+            txtSearch: txtSearch,
+            blogCategory: blogCategory
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{
@@ -537,8 +536,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#faqCategory', 'Select Category');
-        commonAjax.loadFaqCategory(0);
+        commonAjax.initSelect2('#blogCategory', 'Select Category');
+        commonAjax.loadBlogCategoryList(0);
     });
 
 

@@ -97,7 +97,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="-1">All</option>
                     </select>
                     <div>
-                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob" onclick="actionRec('D');">
+                        <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob d-none" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
                         </button>
@@ -389,6 +389,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         commonAjax.initSelect2('#author_id', 'Select Author');
         commonAjax.initSelect2('#category_id', 'Select Blog Category');
+        commonAjax.initSelect2('#selStatus', 'Select Status');
         commonAjax.loadBlogAuthorList(author_id);
         commonAjax.loadBlogCategoryList(category_id);
         getDataTableView();
@@ -398,6 +399,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
+           $('#selStatus').val('').trigger('change');
         getDataTableView(true);
     });
 
@@ -409,7 +411,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             // Clear saved state
             window.dataTableInstance.state.clear();
 
-            // Reset length dropdown UI
+            // Reset length dropdown UI  
             $('#pageSizeDatatable').val(10);
 
             // Reset page length internally

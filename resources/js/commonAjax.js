@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { Modal } from "bootstrap";
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 let ajaxUrl = "http://127.0.0.1:8000/admin/";
 
@@ -590,8 +590,6 @@ export function formatDate(dateString) {
 }
 
 export function loadCityList(selected_city_id = 0) {
-    // console.log(selected_city_id);
-
     $(".selCity").html('<option value="">Loading...</option>');
 
     $.ajax({
@@ -607,13 +605,18 @@ export function loadCityList(selected_city_id = 0) {
 
             if (response.status && response.data.length > 0) {
                 response.data.forEach(function (city) {
-                    let selected =
-                        city.id == selected_city_id ? "selected" : "";
+                    let selected = city.id == selected_city_id ? "selected" : "";
                     options += `<option value="${city.id}" ${selected}>${city.city_name}</option>`;
                 });
             }
 
             $(".selCity").html(options);
+
+            // IMPORTANT: re-init select2 after options are loaded
+            if ($('#selCity').hasClass('select2-hidden-accessible')) {
+                $('#selCity').select2('destroy');
+            }
+            initSelect2('#selCity', 'Select City');
         },
         error: function () {
             $(".selCity").html('<option value="">-- Select City --</option>');
@@ -2064,25 +2067,56 @@ export function getSchemaContent(schemaPage, schemaType, callback) {
     });
 }
 
-
 export function loadBlogAuthorList(selectedId = 0) {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "load-blog-author-dropdown",
         data: {
             selectedId: selectedId,
-            _token: $('meta[name="csrf-token"]').attr("content")
+            _token: $('meta[name="csrf-token"]').attr("content"),
         },
         dataType: "json",
-        success: function(response) {
+        success: function (response) {
             if (response.status) {
-                $('#blogAuthor').html(response.data).trigger('change');
+                $("#blogAuthor").html(response.data).trigger("change");
             } else {
-                $('#blogAuthor').html('<option value="">Select Author</option>');
+                $("#blogAuthor").html(
+                    '<option value="">Select Author</option>',
+                );
             }
         },
-        error: function() {
-            $('#blogAuthor').html('<option value="">Select Author</option>');
-        }
+        error: function () {
+            $("#blogAuthor").html('<option value="">Select Author</option>');
+        },
+    });
+}
+export function loadRouteList(selected_route_id = 0) {
+    $(".selRoute").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "manage-route-distance/route-dropdown",
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">-- Select Route --</option>';
+
+            if (response.status && response.data.length > 0) {
+                response.data.forEach(function (route) {
+                    let selected =
+                        route.id == selected_route_id ? "selected" : "";
+                    options += `<option value="${route.id}" ${selected}>${route.source} → ${route.destination}</option>`;
+                });
+            }
+
+            $(".selRoute").html(options);
+
+            if ($("#route_id").hasClass("select2-hidden-accessible")) {
+                $("#route_id").select2("destroy");
+            }
+            initSelect2("#route_id", "Select Route");
+        },
+        error: function () {
+            $(".selRoute").html('<option value="">-- Select Route --</option>');
+        },
     });
 }

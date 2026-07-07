@@ -1439,4 +1439,39 @@ class CommonController extends Controller
             ]);
         }
     }
+
+      public function RouteDropdown()
+    {
+        try {
+            $arrRoutes = DB::table('odbusmaster.mst_routes_details')
+                ->select(
+                    'id',
+                    'source_id',
+                    'destination_id',
+                    'source',
+                    'destination'
+                )
+                ->whereNotNull('source_id')
+                ->whereNotNull('destination_id')
+                ->orderBy('source', 'asc')
+                ->orderBy('destination', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $arrRoutes
+            ]);
+        } catch (\Throwable $t) {
+            Log::error("ManageDistaceController@RouteDropdown Error", [
+                'message' => $t->getMessage(),
+                'trace'   => $t->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'status' => false,
+                'data'   => [],
+                'message' => 'Unable to fetch route list.'
+            ]);
+        }
+    }
 }

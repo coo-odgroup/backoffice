@@ -2763,44 +2763,7 @@ label.amenity-chip:has(input:checked) {
     top: -17px;
 }
 
- #datatable {
-        table-layout: fixed;
-        width: 100%;
-    }
 
-    #datatable th,
-    #datatable td {
-        vertical-align: top;
-    }
-
-    .content-edit-box {
-        width: 100%;
-    }
-
-    .content-view {
-        min-height: 58px;
-        max-height: 90px;
-        overflow-y: auto;
-        white-space: normal;
-        word-break: break-word;
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 4px;
-    }
-
-    .content-view:hover {
-        background: #f8f9fa;
-    }
-
-    .edit-content-textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    #datatable thead th {
-        text-align: center !important;
-        vertical-align: middle !important;
-    }
 
 
 

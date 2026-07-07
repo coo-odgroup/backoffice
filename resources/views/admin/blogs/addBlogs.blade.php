@@ -68,8 +68,6 @@
                                                     <div class="row">
                                                         <div class="row">
                                                             <div class="col-6">
-
-
                                                                 <div class="col-md-12 mb-3">
                                                                     <label for="title">Title <span class="text-danger">*</span></label>
                                                                     <input type="text" class="form-control clearable form-select-sm" id="title" name="title"
@@ -97,16 +95,28 @@
                                                                 <div class="col-12 mb-3">
                                                                     <label for="short_description">Short Description</label>
                                                                     <textarea
-                                                                        class="form-control clearable form-select-sm" rows="8"
+                                                                        class="form-control clearable form-select-sm" rows="4"
                                                                         id="short_description"
                                                                         name="short_description"
                                                                         maxlength="512">{{ strip_tags(html_entity_decode($data['row']->short_description ?? '')) }}</textarea>
                                                                     <small class="text-muted char-counter float-end"></small>
                                                                 </div>
+
+                                                                <div class="col-12 mb-3">
+                                                                    <label for="published_at">Publish Date</label>
+                                                                    @php
+                                                                    $published = isset($data['row']->published_at) && !empty($data['row']->published_at)
+                                                                    ? date('Y-m-d', strtotime($data['row']->published_at))
+                                                                    : '';
+                                                                    @endphp
+                                                                    <input type="date"
+                                                                        class="form-control clearable form-select-sm"
+                                                                        id="published_at"
+                                                                        name="published_at"
+                                                                        value="{{ old('published_at', $published) }}">
+                                                                </div>
                                                             </div>
                                                         </div>
-
-
 
                                                         <div class="col-12 mb-3">
                                                             <label for="content">Content</label>
@@ -692,69 +702,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="col-12">
-                                        <div class="accordion mt-3" id="metaSection4">
-                                            <div class="accordion-item">
-
-                                                <h2 class="accordion-header" id="seoHeading4">
-                                                    <button class="accordion-button collapsed" type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#seoSection4">
-                                                        Article
-                                                    </button>
-                                                </h2>
-
-                                                <div id="seoSection4" class="accordion-collapse collapse">
-                                                    <div class="accordion-body">
-
-                                                        <div class="col-md-8">
-
-                                                            @if(!empty($articleData) && count($articleData) > 0)
-
-                                                            <!-- HEADER -->
-                                                            <div class="row mb-2 border-bottom pb-1">
-                                                                <div class="col-md-3 fw-bold">Attribute</div>
-                                                                <div class="col-md-9 fw-bold">Value</div>
-                                                            </div>
-
-                                                            <!-- LOOP -->
-                                                            @foreach($articleData as $row)
-
-                                                            <div class="row mb-2 align-items-center">
-                                                                <div class="col-md-3">
-                                                                    {{ $row->annexture_name }}
-                                                                </div>
-
-                                                                <div class="col-md-9">
-                                                                    @php
-                                                                    $published = isset($data['row']->published_at)
-                                                                    ? date('Y-m-d\TH:i', strtotime($data['row']->published_at))
-                                                                    : '';
-                                                                    @endphp
-
-                                                                    <input type="datetime-local"
-                                                                        class="form-control clearable form-select-sm"
-                                                                        name="article[{{ $row->id }}]"
-                                                                        value="{{ $published }}">
-                                                                </div>
-                                                            </div>
-
-                                                            @endforeach
-
-                                                            @else
-                                                            <div class="text-danger">No Article Data Found</div>
-                                                            @endif
-
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
 
                                 </div>
                             </div>
@@ -1383,7 +1330,7 @@
             const authorUrl = authorName ? (frontUrl + '/blog/author/' + authorName.toLowerCase().trim().replace(/[^a-z0-9-\s]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')) : '';
 
             // Published date from article datetime-local input
-            const publishedInput = $('input[name^="article["]').first().val() || '';
+            const publishedInput = $('#published_at').val() || '';
             const publishedDate = publishedInput ? new Date(publishedInput).toISOString() : '';
 
             // Thumb image URL
