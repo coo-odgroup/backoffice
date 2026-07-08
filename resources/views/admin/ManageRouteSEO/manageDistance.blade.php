@@ -35,7 +35,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         <div class="card-body">
 
             <!-- FILTER -->
-            <div class="mb-3 border-bottom " id="filterBox">
+            <div class="mb-3  " id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end g-2">
 
@@ -83,7 +83,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- Table start -->
             <div id="tableActions">
                 <div class="d-flex justify-content-between mb-2">
-                    <select id="pageSizeDatatable" class="form-select form-select-sm page-size">
+                    <select id="pageSizeDatatable" class="form-select form-select-sm page-size d-none">
                         <option value="10" selected="selected">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
@@ -340,32 +340,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             success: function(response) {
                 if (response.status) {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Updated',
-                            text: response.message,
-                            timer: 1200,
-                            showConfirmButton: false
-                        });
-                    }
-                    getDataTableView(false);
+                    commonAjax.viewAlert('Distance updated successfully.');
+
+                    setTimeout(function() {
+                        getDataTableView(false);
+                    }, 600);
                 } else {
                     input.val(oldValue);
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire('Error', response.message, 'error');
-                    } else {
-                        commonAjax.viewAlert(response.message);
-                    }
+                    commonAjax.viewAlert(response.message || 'Update failed.');
                 }
             },
             error: function() {
                 input.val(oldValue);
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire('Error', 'Failed to update distance.', 'error');
-                } else {
-                    commonAjax.viewAlert('Failed to update distance.');
-                }
+                commonAjax.viewAlert('Failed to update distance.');
             },
             complete: function() {
                 input.prop('disabled', false);

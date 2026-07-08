@@ -275,8 +275,7 @@ class ManageDistaceController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'enc_id'   => 'required',
-                'distance' => 'required',
-                'type'     => 'required|in:distance_1,distance_2'
+                'distance' => 'required'
             ], [
                 'distance.required' => 'Distance is required.'
             ]);
@@ -299,19 +298,39 @@ class ManageDistaceController extends Controller
                 ]);
             }
 
+            $distance  = trim($request->distance);
+            $updatedBy = session('admin_user_id') ?? auth()->id() ?? 1;
+
+            DB::beginTransaction();
+
+            // update selected route
             DB::table('odbusmaster.mst_routes_details')
-                ->where('id', $id)
+                ->where('id', $row->id)
                 ->update([
-                    'distance'   => trim($request->distance),
+                    'distance'   => $distance,
                     'updated_at' => now(),
-                    'updated_by' => session('admin_user_id') ?? auth()->id() ?? 1
+                    'updated_by' => $updatedBy
                 ]);
+
+            // update reverse route also if exists
+            DB::table('odbusmaster.mst_routes_details')
+                ->where('source_id', $row->destination_id)
+                ->where('destination_id', $row->source_id)
+                ->update([
+                    'distance'   => $distance,
+                    'updated_at' => now(),
+                    'updated_by' => $updatedBy
+                ]);
+
+            DB::commit();
 
             return response()->json([
                 'status'  => true,
                 'message' => 'Distance updated successfully.'
             ]);
         } catch (\Throwable $t) {
+            DB::rollBack();
+
             Log::error("ManageDistaceController@updateDistance Error", [
                 'message' => $t->getMessage(),
                 'trace'   => $t->getTraceAsString()
@@ -329,6 +348,20 @@ class ManageDistaceController extends Controller
         try {
             $routeId    = $request->route_id;
             $locationId = $request->selCity;
+            $routeIdsForImport = [];
+
+            if (!empty($routeId)) {
+                $routeIdsForImport[] = (int) $routeId;
+
+                $mappedRouteIds = DB::table('odbusmaster.mst_route_map')
+                    ->where('parent_route_id', $routeId)
+                    ->pluck('route_id')
+                    ->toArray();
+
+                if (!empty($mappedRouteIds)) {
+                    $routeIdsForImport = array_values(array_unique(array_merge($routeIdsForImport, $mappedRouteIds)));
+                }
+            }
 
             $rows = $this->getRouteDistanceListing($routeId, $locationId);
 
@@ -392,10 +425,26 @@ class ManageDistaceController extends Controller
                 'csv_file.mimes'    => 'Only CSV file is allowed.'
             ]);
 
-            $file = $request->file('csv_file');
+            $file       = $request->file('csv_file');
             $routeId    = $request->route_id;
             $locationId = $request->selCity;
+            
+            $routeIdsForImport = [];
 
+            if (!empty($routeId)) {
+                $routeIdsForImport[] = (int) $routeId;
+
+                $mappedRouteIds = DB::table('odbusmaster.mst_route_map')
+                    ->where('parent_route_id', $routeId)
+                    ->pluck('route_id')
+                    ->toArray();
+
+                if (!empty($mappedRouteIds)) {
+                    $routeIdsForImport = array_values(array_unique(array_merge($routeIdsForImport, $mappedRouteIds)));
+                }
+            }
+
+            // location-only import means no route selected but city selected
             $isLocationOnlyImport = empty($routeId) && !empty($locationId);
 
             if (($handle = fopen($file->getRealPath(), 'r')) === false) {
@@ -414,6 +463,7 @@ class ManageDistaceController extends Controller
             while (($row = fgetcsv($handle, 1000, ',')) !== false) {
                 $rowNumber++;
 
+                // skip header
                 if ($rowNumber == 1) {
                     continue;
                 }
@@ -427,9 +477,14 @@ class ManageDistaceController extends Controller
                     continue;
                 }
 
-                // ---------------- route 1 ----------------
+                /*
+            |--------------------------------------------------------------------------
+            | ROUTE 1
+            |--------------------------------------------------------------------------
+            */
                 if ($location1 !== '' && $distance1 !== '') {
                     $parts1 = array_map('trim', explode(' to ', $location1));
+
                     if (count($parts1) === 2) {
                         [$source1, $destination1] = $parts1;
 
@@ -437,7 +492,9 @@ class ManageDistaceController extends Controller
                             ->where('source', $source1)
                             ->where('destination', $destination1);
 
-
+                        if (!empty($routeIdsForImport)) {
+                            $query1->whereIn('id', $routeIdsForImport);
+                        }
 
                         if (!empty($locationId)) {
                             $query1->where(function ($q) use ($locationId) {
@@ -448,10 +505,27 @@ class ManageDistaceController extends Controller
 
                         $route1 = $query1->first();
 
+                        Log::info('CSV import route1 lookup', [
+                            'rowNumber'    => $rowNumber,
+                            'location1'    => $location1,
+                            'source1'      => $source1,
+                            'destination1' => $destination1,
+                            'distance1'    => $distance1,
+                            'locationId'   => $locationId,
+                            'route_found'  => !empty($route1),
+                            'route_id'     => $route1->id ?? null
+                        ]);
 
                         if ($route1) {
+                            // update route1 + its reverse route
                             $affected1 = DB::table('odbusmaster.mst_routes_details')
-                                ->where('id', $route1->id)
+                                ->where(function ($q) use ($route1) {
+                                    $q->where('id', $route1->id)
+                                        ->orWhere(function ($qq) use ($route1) {
+                                            $qq->where('source_id', $route1->destination_id)
+                                                ->where('destination_id', $route1->source_id);
+                                        });
+                                })
                                 ->update([
                                     'distance'   => $distance1,
                                     'updated_at' => now(),
@@ -472,15 +546,31 @@ class ManageDistaceController extends Controller
                     }
                 }
 
-                // ---------------- route 2 ----------------
-                if (!$isLocationOnlyImport && $location2 !== '' && $location2 !== '--' && $distance2 !== '') {
+                /*
+            |--------------------------------------------------------------------------
+            | ROUTE 2
+            |--------------------------------------------------------------------------
+            | In location-only import, skip route2 block because same pair may
+            | already be represented by route1 in exported row logic.
+            |--------------------------------------------------------------------------
+            */
+                if (
+                    !$isLocationOnlyImport &&
+                    $location2 !== '' &&
+                    $location2 !== '--' &&
+                    $distance2 !== ''
+                ) {
                     $parts2 = array_map('trim', explode(' to ', $location2));
+
                     if (count($parts2) === 2) {
                         [$source2, $destination2] = $parts2;
-
                         $query2 = DB::table('odbusmaster.mst_routes_details')
                             ->where('source', $source2)
                             ->where('destination', $destination2);
+
+                        if (!empty($routeIdsForImport)) {
+                            $query2->whereIn('id', $routeIdsForImport);
+                        }
 
                         if (!empty($locationId)) {
                             $query2->where(function ($q) use ($locationId) {
@@ -491,9 +581,27 @@ class ManageDistaceController extends Controller
 
                         $route2 = $query2->first();
 
+                        Log::info('CSV import route2 lookup', [
+                            'rowNumber'    => $rowNumber,
+                            'location2'    => $location2,
+                            'source2'      => $source2,
+                            'destination2' => $destination2,
+                            'distance2'    => $distance2,
+                            'locationId'   => $locationId,
+                            'route_found'  => !empty($route2),
+                            'route_id'     => $route2->id ?? null
+                        ]);
+
                         if ($route2) {
+                            // update route2 + its reverse route
                             $affected2 = DB::table('odbusmaster.mst_routes_details')
-                                ->where('id', $route2->id)
+                                ->where(function ($q) use ($route2) {
+                                    $q->where('id', $route2->id)
+                                        ->orWhere(function ($qq) use ($route2) {
+                                            $qq->where('source_id', $route2->destination_id)
+                                                ->where('destination_id', $route2->source_id);
+                                        });
+                                })
                                 ->update([
                                     'distance'   => $distance2,
                                     'updated_at' => now(),
@@ -520,7 +628,7 @@ class ManageDistaceController extends Controller
 
             return response()->json([
                 'status'  => true,
-                'message' => "CSV uploaded successfully. {$updatedCount} rows updated."
+                'message' => "Distance  updated successfully."
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();

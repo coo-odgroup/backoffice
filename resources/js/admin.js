@@ -27,7 +27,7 @@ import '@yaireo/tagify/dist/tagify.css';
 
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.querySelector('#tags');
