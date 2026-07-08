@@ -81,6 +81,8 @@ class ManageDistaceController extends Controller
                     $mainRow->created_by_name = $mainRoute->created_by_name;
                     $mainRow->updated_by_name = $mainRoute->updated_by_name;
                     $rows->push($mainRow);
+                    $mainPairKey = min($mainRoute->source_id, $mainRoute->destination_id) . '_' . max($mainRoute->source_id, $mainRoute->destination_id);
+                    $processedPairs = [$mainPairKey => true];
 
                     // sub routes
                     $subRoutes = DB::table('odbusmaster.mst_route_map as rm')
@@ -116,8 +118,14 @@ class ManageDistaceController extends Controller
                     $subRoutes = $subRoutes->sortByDesc(function ($row) {
                         return $this->extractDistanceValue($row->distance);
                     })->values();
-
                     foreach ($subRoutes as $sub) {
+                        $subPairKey = min($sub->source_id, $sub->destination_id) . '_' . max($sub->source_id, $sub->destination_id);
+
+                        // skip if this pair is already added (main route or earlier subroute reverse)
+                        if (isset($processedPairs[$subPairKey])) {
+                            continue;
+                        }
+
                         $subReverse = DB::table('odbusmaster.mst_routes_details as rd')
                             ->select('rd.id', 'rd.source_id', 'rd.destination_id', 'rd.source', 'rd.destination', 'rd.distance')
                             ->where('rd.source_id', $sub->destination_id)
@@ -141,6 +149,7 @@ class ManageDistaceController extends Controller
                         $row->updated_by_name = $sub->updated_by_name;
 
                         $rows->push($row);
+                        $processedPairs[$subPairKey] = true;
                     }
                 }
             } elseif (!empty($locationId)) {
@@ -171,7 +180,14 @@ class ManageDistaceController extends Controller
                     ->orderBy('rd.id', 'asc')
                     ->get();
 
+                $processedPairs = [];
+
                 foreach ($mainRoutes as $route) {
+                    $pairKey = min($route->source_id, $route->destination_id) . '_' . max($route->source_id, $route->destination_id);
+
+                    if (isset($processedPairs[$pairKey])) {
+                        continue;
+                    }
 
                     $reverse = DB::table('odbusmaster.mst_routes_details as rd')
                         ->select('rd.id', 'rd.source_id', 'rd.destination_id', 'rd.source', 'rd.destination', 'rd.distance')
@@ -188,15 +204,18 @@ class ManageDistaceController extends Controller
                     $row->distance_1   = !empty($route->distance) ? $route->distance : '';
                     $row->route_name_2 = $reverse ? ($reverse->source . ' to ' . $reverse->destination) : '--';
                     $row->distance_2   = $reverse && !empty($reverse->distance) ? $reverse->distance : '--';
-                    $row->active_status = $route->active_status;
-                    $row->created_at = $route->created_at;
-                    $row->created_by = $route->created_by;
-                    $row->updated_at = $route->updated_at;
-                    $row->updated_by = $route->updated_by;
+
+                    $row->active_status   = $route->active_status;
+                    $row->created_at      = $route->created_at;
+                    $row->created_by      = $route->created_by;
+                    $row->updated_at      = $route->updated_at;
+                    $row->updated_by      = $route->updated_by;
                     $row->created_by_name = $route->created_by_name;
                     $row->updated_by_name = $route->updated_by_name;
 
                     $rows->push($row);
+
+                    $processedPairs[$pairKey] = true;
                 }
             } else {
                 return response()->json([
@@ -429,7 +448,7 @@ class ManageDistaceController extends Controller
 
                         $route1 = $query1->first();
 
-                 
+
                         if ($route1) {
                             $affected1 = DB::table('odbusmaster.mst_routes_details')
                                 ->where('id', $route1->id)
@@ -660,10 +679,11 @@ class ManageDistaceController extends Controller
             $processedPairs = [];
 
             foreach ($mainRoutes as $route) {
+                // same pair key for A->B and B->A
                 $pairKey = min($route->source_id, $route->destination_id) . '_' . max($route->source_id, $route->destination_id);
 
-                // Skip if this pair already added
-                if (in_array($pairKey, $processedPairs)) {
+                // if already shown, skip this reverse duplicate
+                if (isset($processedPairs[$pairKey])) {
                     continue;
                 }
 
@@ -675,20 +695,26 @@ class ManageDistaceController extends Controller
 
                 $row = new \stdClass();
                 $row->id = $route->id;
-
                 $row->route_id_1 = Crypt::encryptString($route->id);
                 $row->route_id_2 = !empty($reverse->id) ? Crypt::encryptString($reverse->id) : null;
-
-                $row->raw_id_1 = $route->id;
-                $row->raw_id_2 = $reverse->id ?? null;
 
                 $row->route_name_1 = $route->source . ' to ' . $route->destination;
                 $row->distance_1   = !empty($route->distance) ? $route->distance : '';
                 $row->route_name_2 = $reverse ? ($reverse->source . ' to ' . $reverse->destination) : '--';
                 $row->distance_2   = $reverse && !empty($reverse->distance) ? $reverse->distance : '--';
 
+                $row->active_status    = $route->active_status;
+                $row->created_at       = $route->created_at;
+                $row->created_by       = $route->created_by;
+                $row->updated_at       = $route->updated_at;
+                $row->updated_by       = $route->updated_by;
+                $row->created_by_name  = $route->created_by_name;
+                $row->updated_by_name  = $route->updated_by_name;
+
                 $rows->push($row);
-                $processedPairs[] = $pairKey;
+
+                // mark this A<->B pair as already added
+                $processedPairs[$pairKey] = true;
             }
         }
 

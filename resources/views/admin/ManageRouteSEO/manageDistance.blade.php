@@ -139,7 +139,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <tbody></tbody>
                 </table>
             </div>
-            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+            <div class="footer-background border-success text-center" id="norecord" style="display:none">Select a route or location to view distances.</div>
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
@@ -147,7 +147,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
-                <div id="customPagination"></div>
             </div>
         </div>
     </div>
