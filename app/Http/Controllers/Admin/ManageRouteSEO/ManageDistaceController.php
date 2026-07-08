@@ -374,6 +374,10 @@ class ManageDistaceController extends Controller
             ]);
 
             $file = $request->file('csv_file');
+            $routeId    = $request->route_id;
+            $locationId = $request->selCity;
+
+            $isLocationOnlyImport = empty($routeId) && !empty($locationId);
 
             if (($handle = fopen($file->getRealPath(), 'r')) === false) {
                 return response()->json([
@@ -391,7 +395,6 @@ class ManageDistaceController extends Controller
             while (($row = fgetcsv($handle, 1000, ',')) !== false) {
                 $rowNumber++;
 
-                // Skip header
                 if ($rowNumber == 1) {
                     continue;
                 }
@@ -401,75 +404,95 @@ class ManageDistaceController extends Controller
                 $location2 = isset($row[3]) ? trim($row[3]) : '';
                 $distance2 = isset($row[4]) ? trim($row[4]) : '';
 
-                // Skip fully blank row
-                if ($location1 === '' && $distance1 === '' && $location2 === '' && $distance2 === '') {
+                if ($location1 === '' && $location2 === '') {
                     continue;
                 }
 
-                // Update route 1 => "Location 1"
-                if ($location1 !== '') {
-                    if ($distance1 === '') {
-                        throw new \Exception("Row {$rowNumber}: Distance 1 cannot be blank.");
-                    }
-
+                // ---------------- route 1 ----------------
+                if ($location1 !== '' && $distance1 !== '') {
                     $parts1 = array_map('trim', explode(' to ', $location1));
-                    if (count($parts1) !== 2) {
-                        throw new \Exception("Row {$rowNumber}: Invalid Location 1 format.");
+                    if (count($parts1) === 2) {
+                        [$source1, $destination1] = $parts1;
+
+                        $query1 = DB::table('odbusmaster.mst_routes_details')
+                            ->where('source', $source1)
+                            ->where('destination', $destination1);
+
+
+
+                        if (!empty($locationId)) {
+                            $query1->where(function ($q) use ($locationId) {
+                                $q->where('source_id', $locationId)
+                                    ->orWhere('destination_id', $locationId);
+                            });
+                        }
+
+                        $route1 = $query1->first();
+
+                 
+                        if ($route1) {
+                            $affected1 = DB::table('odbusmaster.mst_routes_details')
+                                ->where('id', $route1->id)
+                                ->update([
+                                    'distance'   => $distance1,
+                                    'updated_at' => now(),
+                                    'updated_by' => $updatedBy
+                                ]);
+
+                            Log::info('CSV import route1 update', [
+                                'rowNumber' => $rowNumber,
+                                'route_id'  => $route1->id,
+                                'distance'  => $distance1,
+                                'affected'  => $affected1
+                            ]);
+
+                            if ($affected1 > 0) {
+                                $updatedCount++;
+                            }
+                        }
                     }
-
-                    [$source1, $destination1] = $parts1;
-
-                    $route1 = DB::table('odbusmaster.mst_routes_details')
-                        ->where('source', $source1)
-                        ->where('destination', $destination1)
-                        ->first();
-
-                    if (!$route1) {
-                        throw new \Exception("Row {$rowNumber}: Route not found for '{$location1}'.");
-                    }
-
-                    DB::table('odbusmaster.mst_routes_details')
-                        ->where('id', $route1->id)
-                        ->update([
-                            'distance'   => $distance1,
-                            'updated_at' => now(),
-                            'updated_by' => $updatedBy
-                        ]);
-
-                    $updatedCount++;
                 }
 
-                // Update route 2 => "Location 2"
-                if ($location2 !== '' && $location2 !== '--') {
-                    if ($distance2 === '') {
-                        throw new \Exception("Row {$rowNumber}: Distance 2 cannot be blank.");
-                    }
-
+                // ---------------- route 2 ----------------
+                if (!$isLocationOnlyImport && $location2 !== '' && $location2 !== '--' && $distance2 !== '') {
                     $parts2 = array_map('trim', explode(' to ', $location2));
-                    if (count($parts2) !== 2) {
-                        throw new \Exception("Row {$rowNumber}: Invalid Location 2 format.");
+                    if (count($parts2) === 2) {
+                        [$source2, $destination2] = $parts2;
+
+                        $query2 = DB::table('odbusmaster.mst_routes_details')
+                            ->where('source', $source2)
+                            ->where('destination', $destination2);
+
+                        if (!empty($locationId)) {
+                            $query2->where(function ($q) use ($locationId) {
+                                $q->where('source_id', $locationId)
+                                    ->orWhere('destination_id', $locationId);
+                            });
+                        }
+
+                        $route2 = $query2->first();
+
+                        if ($route2) {
+                            $affected2 = DB::table('odbusmaster.mst_routes_details')
+                                ->where('id', $route2->id)
+                                ->update([
+                                    'distance'   => $distance2,
+                                    'updated_at' => now(),
+                                    'updated_by' => $updatedBy
+                                ]);
+
+                            Log::info('CSV import route2 update', [
+                                'rowNumber' => $rowNumber,
+                                'route_id'  => $route2->id,
+                                'distance'  => $distance2,
+                                'affected'  => $affected2
+                            ]);
+
+                            if ($affected2 > 0) {
+                                $updatedCount++;
+                            }
+                        }
                     }
-
-                    [$source2, $destination2] = $parts2;
-
-                    $route2 = DB::table('odbusmaster.mst_routes_details')
-                        ->where('source', $source2)
-                        ->where('destination', $destination2)
-                        ->first();
-
-                    if (!$route2) {
-                        throw new \Exception("Row {$rowNumber}: Route not found for '{$location2}'.");
-                    }
-
-                    DB::table('odbusmaster.mst_routes_details')
-                        ->where('id', $route2->id)
-                        ->update([
-                            'distance'   => $distance2,
-                            'updated_at' => now(),
-                            'updated_by' => $updatedBy
-                        ]);
-
-                    $updatedCount++;
                 }
             }
 
@@ -615,9 +638,9 @@ class ManageDistaceController extends Controller
                     'rd.id',
                     'rd.source_id',
                     'rd.destination_id',
+                    'rd.source',
                     'rd.destination',
                     'rd.distance',
-                    'rd.source',
                     'rd.active_status',
                     'rd.created_at',
                     'rd.created_by',
@@ -634,7 +657,16 @@ class ManageDistaceController extends Controller
                 ->orderBy('rd.id', 'asc')
                 ->get();
 
+            $processedPairs = [];
+
             foreach ($mainRoutes as $route) {
+                $pairKey = min($route->source_id, $route->destination_id) . '_' . max($route->source_id, $route->destination_id);
+
+                // Skip if this pair already added
+                if (in_array($pairKey, $processedPairs)) {
+                    continue;
+                }
+
                 $reverse = DB::table('odbusmaster.mst_routes_details as rd')
                     ->select('rd.id', 'rd.source_id', 'rd.destination_id', 'rd.source', 'rd.destination', 'rd.distance')
                     ->where('rd.source_id', $route->destination_id)
@@ -644,18 +676,19 @@ class ManageDistaceController extends Controller
                 $row = new \stdClass();
                 $row->id = $route->id;
 
-                // for inline edit
                 $row->route_id_1 = Crypt::encryptString($route->id);
                 $row->route_id_2 = !empty($reverse->id) ? Crypt::encryptString($reverse->id) : null;
 
-                // for CSV export/import
                 $row->raw_id_1 = $route->id;
                 $row->raw_id_2 = $reverse->id ?? null;
+
                 $row->route_name_1 = $route->source . ' to ' . $route->destination;
                 $row->distance_1   = !empty($route->distance) ? $route->distance : '';
                 $row->route_name_2 = $reverse ? ($reverse->source . ' to ' . $reverse->destination) : '--';
                 $row->distance_2   = $reverse && !empty($reverse->distance) ? $reverse->distance : '--';
+
                 $rows->push($row);
+                $processedPairs[] = $pairKey;
             }
         }
 

@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <div class="col-lg-4 col-md-12 d-flex justify-content-end align-items-center mt-2">
-                            <div id="csvUtilitiesTop" class="d-flex gap-2">
+                            <div id="csvUtilitiesTop" class=" gap-2" style="display:none;">
                                 <button type="button" id="btnExportExcel" class="btn btn-success btn-sm btn-mob">
                                     <i class="fa-solid fa-file-excel me-1"></i> Export Excel
                                 </button>
@@ -163,6 +163,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         initSelect2('#route_id', 'Select Route');
         initSelect2('#selCity', 'Select Location');
 
+        $('#route_id, #selCity').on('select2:select select2:clear', function() {
+            toggleCsvUtilities();
+        });
+
+        toggleCsvUtilities();
         getDataTableView();
     });
 
@@ -170,6 +175,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
+        toggleCsvUtilities();
         getDataTableView(true);
     });
 
@@ -367,6 +373,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         });
     });
+
+    $(document).on('change', '#route_id, #selCity', function() {
+        toggleCsvUtilities();
+    });
+
+    $('#route_id, #selCity').on('select2:select select2:clear', function() {
+        toggleCsvUtilities();
+    });
     // click content to edit
     $(document).on('click', '.content-view', function() {
         $('.content-edit').addClass('d-none');
@@ -437,6 +451,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let formData = new FormData();
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
         formData.append('csv_file', file);
+        formData.append('route_id', $('#route_id').val() || '');
+        formData.append('selCity', $('#selCity').val() || '');
 
         $.ajax({
             url: "{{ route('manage-route-distance.importCsv') }}",
@@ -459,22 +475,36 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     // reload current filtered table after DB update
                     getDataTableView(false);
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message
-                    });
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message
+                        });
+                    } else {
+                        commonAjax.viewAlert(response.message || 'CSV uploaded successfully.');
+                    }
                 } else {
-                    Swal.fire('Error', response.message || 'CSV import failed', 'error');
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire('Error', response.message || 'CSV import failed', 'error');
+                    } else {
+                        commonAjax.viewAlert(response.message || 'CSV import failed');
+                    }
                 }
             },
+
 
             error: function(xhr) {
                 let msg = 'CSV import failed';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     msg = xhr.responseJSON.message;
                 }
-                Swal.fire('Error', msg, 'error');
+
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire('Error', msg, 'error');
+                } else {
+                    commonAjax.viewAlert(msg);
+                }
             },
 
             complete: function() {
@@ -485,5 +515,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             }
         });
     });
+
+    function toggleCsvUtilities() {
+        let routeId = ($('#route_id').val() || '').toString().trim();
+        let selCity = ($('#selCity').val() || '').toString().trim();
+
+        let hasRoute = routeId !== '' && routeId !== '0' && routeId !== 'null' && routeId !== 'undefined';
+        let hasCity = selCity !== '' && selCity !== '0' && selCity !== 'null' && selCity !== 'undefined';
+
+        if (hasRoute || hasCity) {
+            $('#csvUtilitiesTop').css('display', 'flex');
+        } else {
+            $('#csvUtilitiesTop').css('display', 'none');
+        }
+    }
 </script>
 @endpush
