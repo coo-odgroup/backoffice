@@ -2104,7 +2104,7 @@ export function loadRouteList(selected_route_id = 0) {
                 response.data.forEach(function (route) {
                     let selected =
                         route.id == selected_route_id ? "selected" : "";
-                    options += `<option value="${route.id}" ${selected}>${route.source} → ${route.destination}</option>`;
+                    options += `<option value="${route.id}" ${selected}>${route.source} - ${route.destination}</option>`;
                 });
             }
 

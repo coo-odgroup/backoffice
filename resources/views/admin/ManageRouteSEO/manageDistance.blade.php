@@ -386,13 +386,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
 
-    $('#btnExportExcel').on('click', function() {
-        let route_id = $('#route_id').val();
-        let selCity = $('#selCity').val();
+    $(document).on('click', '#btnExportExcel', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let route_id = $('#route_id').val() || '';
+        let selCity = $('#selCity').val() || '';
 
         let form = $('<form>', {
             method: 'POST',
-            action: "{{ route('manage-route-distance.exportCsv') }}"
+            action: "{{ route('manage-route-distance.exportCsv') }}",
+            style: 'display:none;'
         });
 
         form.append($('<input>', {
@@ -414,8 +418,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         }));
 
         $('body').append(form);
-        form.submit();
-        form.remove();
+        form.trigger('submit');
+
+        setTimeout(function() {
+            form.remove();
+        }, 500);
     });
 
 
@@ -437,29 +444,44 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             data: formData,
             processData: false,
             contentType: false,
+
+            beforeSend: function() {
+                if (typeof viewLoader === 'function') {
+                    viewLoader(true);
+                }
+                $('#btnUploadExcel').prop('disabled', true);
+            },
+
             success: function(response) {
                 if (response.status) {
+                    $('#excelFileInput').val('');
+
+                    // reload current filtered table after DB update
+                    getDataTableView(false);
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Success',
                         text: response.message
                     });
-
-                    $('#excelFileInput').val('');
-
-                    // reload table with current selected Route / Location filters
-                    getDataTableView(false);
-
                 } else {
                     Swal.fire('Error', response.message || 'CSV import failed', 'error');
                 }
             },
+
             error: function(xhr) {
                 let msg = 'CSV import failed';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     msg = xhr.responseJSON.message;
                 }
                 Swal.fire('Error', msg, 'error');
+            },
+
+            complete: function() {
+                if (typeof viewLoader === 'function') {
+                    viewLoader(false);
+                }
+                $('#btnUploadExcel').prop('disabled', false);
             }
         });
     });

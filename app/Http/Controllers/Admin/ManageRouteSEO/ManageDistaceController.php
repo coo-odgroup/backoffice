@@ -327,7 +327,7 @@ class ManageDistaceController extends Controller
             $callback = function () use ($rows) {
                 $file = fopen('php://output', 'w');
 
-                // Optional BOM for Excel UTF-8 support
+                // BOM for Excel UTF-8 support
                 fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
                 fputcsv($file, [
@@ -335,9 +335,7 @@ class ManageDistaceController extends Controller
                     'Location 1',
                     'Distance 1',
                     'Location 2',
-                    'Distance 2',
-                    'Route ID 1',
-                    'Route ID 2'
+                    'Distance 2'
                 ]);
 
                 $sl = 1;
@@ -348,8 +346,6 @@ class ManageDistaceController extends Controller
                         $row->distance_1 ?? '',
                         $row->route_name_2 ?? '',
                         $row->distance_2 ?? '',
-                        $row->raw_id_1 ?? '',
-                        $row->raw_id_2 ?? '',
                     ]);
                 }
 
@@ -400,96 +396,78 @@ class ManageDistaceController extends Controller
                     continue;
                 }
 
+                $location1 = isset($row[1]) ? trim($row[1]) : '';
                 $distance1 = isset($row[2]) ? trim($row[2]) : '';
+                $location2 = isset($row[3]) ? trim($row[3]) : '';
                 $distance2 = isset($row[4]) ? trim($row[4]) : '';
-                $routeId1  = isset($row[5]) ? trim($row[5]) : '';
-                $routeId2  = isset($row[6]) ? trim($row[6]) : '';
 
-                // Skip blank row
-                if ($distance1 === '' && $distance2 === '' && $routeId1 === '' && $routeId2 === '') {
+                // Skip fully blank row
+                if ($location1 === '' && $distance1 === '' && $location2 === '' && $distance2 === '') {
                     continue;
                 }
 
-                Log::info('CSV import row', [
-                    'rowNumber' => $rowNumber,
-                    'distance1' => $distance1,
-                    'distance2' => $distance2,
-                    'routeId1'  => $routeId1,
-                    'routeId2'  => $routeId2,
-                ]);
-
-                // Update route 1
-                if ($routeId1 !== '') {
-                    $id1 = (int) $routeId1;
-
-                    if ($id1 <= 0) {
-                        throw new \Exception("Row {$rowNumber}: Invalid Route ID 1.");
-                    }
-
+                // Update route 1 => "Location 1"
+                if ($location1 !== '') {
                     if ($distance1 === '') {
                         throw new \Exception("Row {$rowNumber}: Distance 1 cannot be blank.");
                     }
 
+                    $parts1 = array_map('trim', explode(' to ', $location1));
+                    if (count($parts1) !== 2) {
+                        throw new \Exception("Row {$rowNumber}: Invalid Location 1 format.");
+                    }
+
+                    [$source1, $destination1] = $parts1;
+
                     $route1 = DB::table('odbusmaster.mst_routes_details')
-                        ->where('id', $id1)
+                        ->where('source', $source1)
+                        ->where('destination', $destination1)
                         ->first();
 
                     if (!$route1) {
-                        throw new \Exception("Row {$rowNumber}: Route ID 1 ({$id1}) not found.");
+                        throw new \Exception("Row {$rowNumber}: Route not found for '{$location1}'.");
                     }
 
-                    $affected1 = DB::table('odbusmaster.mst_routes_details')
-                        ->where('id', $id1)
+                    DB::table('odbusmaster.mst_routes_details')
+                        ->where('id', $route1->id)
                         ->update([
                             'distance'   => $distance1,
                             'updated_at' => now(),
                             'updated_by' => $updatedBy
                         ]);
 
-                    Log::info('CSV import route1 update', [
-                        'rowNumber' => $rowNumber,
-                        'route_id'  => $id1,
-                        'distance'  => $distance1,
-                        'affected'  => $affected1
-                    ]);
-
                     $updatedCount++;
                 }
 
-                // Update route 2
-                if ($routeId2 !== '') {
-                    $id2 = (int) $routeId2;
-
-                    if ($id2 <= 0) {
-                        throw new \Exception("Row {$rowNumber}: Invalid Route ID 2.");
-                    }
-
+                // Update route 2 => "Location 2"
+                if ($location2 !== '' && $location2 !== '--') {
                     if ($distance2 === '') {
                         throw new \Exception("Row {$rowNumber}: Distance 2 cannot be blank.");
                     }
 
+                    $parts2 = array_map('trim', explode(' to ', $location2));
+                    if (count($parts2) !== 2) {
+                        throw new \Exception("Row {$rowNumber}: Invalid Location 2 format.");
+                    }
+
+                    [$source2, $destination2] = $parts2;
+
                     $route2 = DB::table('odbusmaster.mst_routes_details')
-                        ->where('id', $id2)
+                        ->where('source', $source2)
+                        ->where('destination', $destination2)
                         ->first();
 
                     if (!$route2) {
-                        throw new \Exception("Row {$rowNumber}: Route ID 2 ({$id2}) not found.");
+                        throw new \Exception("Row {$rowNumber}: Route not found for '{$location2}'.");
                     }
 
-                    $affected2 = DB::table('odbusmaster.mst_routes_details')
-                        ->where('id', $id2)
+                    DB::table('odbusmaster.mst_routes_details')
+                        ->where('id', $route2->id)
                         ->update([
                             'distance'   => $distance2,
                             'updated_at' => now(),
                             'updated_by' => $updatedBy
                         ]);
-
-                    Log::info('CSV import route2 update', [
-                        'rowNumber' => $rowNumber,
-                        'route_id'  => $id2,
-                        'distance'  => $distance2,
-                        'affected'  => $affected2
-                    ]);
 
                     $updatedCount++;
                 }
@@ -500,7 +478,7 @@ class ManageDistaceController extends Controller
 
             return response()->json([
                 'status'  => true,
-                'message' => "CSV uploaded successfully. {$updatedCount} rows processed."
+                'message' => "CSV uploaded successfully. {$updatedCount} rows updated."
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -639,6 +617,7 @@ class ManageDistaceController extends Controller
                     'rd.destination_id',
                     'rd.destination',
                     'rd.distance',
+                    'rd.source',
                     'rd.active_status',
                     'rd.created_at',
                     'rd.created_by',
