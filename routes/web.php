@@ -73,6 +73,7 @@ use App\Http\Controllers\Master\CronJobController;
 use App\Http\Controllers\Master\NotificationRuleController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageCityContentController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageDistaceController;
+use App\Http\Controllers\Admin\ManageRouteSEO\ManageBoardingDroppingController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -387,6 +388,12 @@ Route::prefix('admin')->group(function () {
     Route::post('manage-route-distance/dataTableView', [ManageDistaceController::class, 'dataTableView'])->name('manage-route-distance.dataTableView');
     Route::post('/manage-route-distance/export-csv', [ManageDistaceController::class, 'exportCsv'])->name('manage-route-distance.exportCsv');
     Route::post('/manage-route-distance/import-csv', [ManageDistaceController::class, 'importCsv'])->name('manage-route-distance.importCsv');
+
+    //Manage Boarding Dropping
+    Route::get('/manage-boarding-dropping', [ManageBoardingDroppingController::class, 'index'])->name('manage-boarding-dropping.index');
+    Route::post('manage-boarding-dropping/dataTableView', [ManageBoardingDroppingController::class, 'dataTableView'])->name('manage-boarding-dropping.dataTableView');
+    Route::post('/manage-boarding-dropping/add', [ManageBoardingDroppingController::class, 'add'])->name('manage-boarding-dropping.add');
+
 
     // Jagan
     // ======================================================================================================================================================================================================

@@ -19,7 +19,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 <!-- Booking Report Card -->
 <!-- HEADER -->
-<div class="d-flex justify-content-between align-items-center mb-2">
+<div class="d-flex justify-content-between align-items-center mb-2 d-none">
     <h5 id="page_title">@yield('page_title')</h5>
     <div>
         <button type="button" id="btnToggleFilter" class="btn btn-primary btn-sm">
@@ -55,7 +55,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
 
                         <div class="col-lg-2 d-flex justify-content-end flex-wrap action-btns gap-1 mt-2">
-                            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
+                            <button class="btn btn-primary btn-sm" type="button" onclick="searchRouteDistance()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
                             <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
@@ -81,7 +81,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
             </div>
             <!-- Table start -->
-            <div id="tableActions">
+            <div id="tableActions" class="d-none">
                 <div class="d-flex justify-content-between mb-2">
                     <select id="pageSizeDatatable" class="form-select form-select-sm page-size d-none">
                         <option value="10" selected="selected">10</option>
@@ -90,7 +90,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <option value="100">100</option>
                         <option value="-1">All</option>
                     </select>
-                    <div class="d-none">
+                    <div class="d-none" id="actionButtons">
                         <button type="button" id="btnDelete" class="btn btn-warning btn-sm btn-mob" onclick="actionRec('D');">
                             <i class="fa-solid fa-trash me-1"></i>
                             Delete
@@ -108,7 +108,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
-                <div id="utilitiesTop">
+                <div id="utilitiesTop" class="d-none">
                     <button type="button" id="btnExcel" class="btn btn-success btn-sm btn-mob">
                         <i class="fa-solid fa-file-excel me-1"></i>
                     </button>
@@ -119,25 +119,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <i class="fa-solid fa-print me-1"></i>
                     </button>
                 </div>
-                <div id="customPaginationTop"></div>
+
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
-                    data-url="{{ route('manage-route-distance.dataTableView') }}">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th>Sl No</th>
-                            <th>Location</th>
-                            <th>Distance</th>
-                            <th>Location</th>
-                            <th>Distance</th>
-                            <th>Last Modified</th>
-                            <th class="no-sort">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+
+            <div id="tableSection" class="d-none">
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle table-sm table_mob" id="datatable"
+                        data-url="{{ route('manage-route-distance.dataTableView') }}">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Sl No</th>
+                                <th>Location</th>
+                                <th>Distance</th>
+                                <th>Location</th>
+                                <th>Distance</th>
+                                <th>Last Modified</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
             <div class="footer-background border-success text-center" id="norecord" style="display:none">Select a route or location to view distances.</div>
             {{csrf_field()}}
@@ -145,9 +147,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <input name="hdn_qs" id="hdn_qs" type="hidden">
             <input type="hidden" id="hdn_model" value="ManageCityContent">
 
-            <div class="d-flex justify-content-between align-items-center mt-2">
+            <!-- <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
-            </div>
+            </div> -->
         </div>
     </div>
     </div>
@@ -162,21 +164,36 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         initSelect2('#route_id', 'Select Route');
         initSelect2('#selCity', 'Select Location');
 
-        $('#route_id, #selCity').on('select2:select select2:clear', function() {
-            toggleCsvUtilities();
-        });
+        toggleCsvUtilities(false);
 
-        toggleCsvUtilities();
-        getDataTableView();
     });
 
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
         $('.form-select').val('').trigger('change');
-        toggleCsvUtilities();
-        getDataTableView(true);
+        toggleCsvUtilities(false);
+$('#norecord').show().text('Select a route or location to view distances.');
     });
+
+    window.searchRouteDistance = function() {
+        let routeId = ($('#route_id').val() || '').toString().trim();
+        let selCity = ($('#selCity').val() || '').toString().trim();
+
+        let hasRoute = routeId !== '' && routeId !== '0' && routeId !== 'null' && routeId !== 'undefined';
+        let hasCity = selCity !== '' && selCity !== '0' && selCity !== 'null' && selCity !== 'undefined';
+
+        if (!hasRoute && !hasCity) {
+            toggleCsvUtilities(false);
+            $('#norecord').show().text('Please select a route or location before searching.');
+            return;
+        }
+
+        toggleCsvUtilities(true);
+        getDataTableView(true);
+    };
+
+
 
     window.getDataTableView = function(reset = true) {
 
@@ -289,21 +306,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             `;
                 }
             },
-            {
-                data: '',
-                width: '10%',
-                render: function(data, type, row) {
-                    return `
-                <a href="javascript:void(0);"
-                   class="btn btn-sm btn-success btn-view-log"
-                   data-table="mst_routes_details"
-                   data-id="${row.enc_id}">
-                    <i class="fa fa-history"></i> View Log
-                </a>
-            `;
-                },
-                className: "noPrint text-center"
-            }
         ];
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
@@ -360,13 +362,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         });
     });
 
-    $(document).on('change', '#route_id, #selCity', function() {
-        toggleCsvUtilities();
-    });
-
-    $('#route_id, #selCity').on('select2:select select2:clear', function() {
-        toggleCsvUtilities();
-    });
     // click content to edit
     $(document).on('click', '.content-view', function() {
         $('.content-edit').addClass('d-none');
@@ -502,17 +497,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         });
     });
 
-    function toggleCsvUtilities() {
-        let routeId = ($('#route_id').val() || '').toString().trim();
-        let selCity = ($('#selCity').val() || '').toString().trim();
 
-        let hasRoute = routeId !== '' && routeId !== '0' && routeId !== 'null' && routeId !== 'undefined';
-        let hasCity = selCity !== '' && selCity !== '0' && selCity !== 'null' && selCity !== 'undefined';
-
-        if (hasRoute || hasCity) {
+    function toggleCsvUtilities(show = false) {
+        if (show) {
             $('#csvUtilitiesTop').css('display', 'flex');
         } else {
             $('#csvUtilitiesTop').css('display', 'none');
+        }
+
+        $('#utilitiesTop').toggleClass('d-none', !show);
+        $('#actionButtons').toggleClass('d-none', !show);
+        $('#tableSection').toggleClass('d-none', !show);
+
+        if (!show) {
+            $('#norecord').show();
+        } else {
+            $('#norecord').hide();
         }
     }
 </script>
