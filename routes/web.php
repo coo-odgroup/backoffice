@@ -74,6 +74,7 @@ use App\Http\Controllers\Master\NotificationRuleController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageCityContentController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageDistaceController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageBoardingDroppingController;
+use App\Http\Controllers\Admin\ManageRouteSEO\ManagePopularRoutesController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -393,6 +394,12 @@ Route::prefix('admin')->group(function () {
     Route::get('/manage-boarding-dropping', [ManageBoardingDroppingController::class, 'index'])->name('manage-boarding-dropping.index');
     Route::post('manage-boarding-dropping/dataTableView', [ManageBoardingDroppingController::class, 'dataTableView'])->name('manage-boarding-dropping.dataTableView');
     Route::post('/manage-boarding-dropping/add', [ManageBoardingDroppingController::class, 'add'])->name('manage-boarding-dropping.add');
+
+    //Manage Popular Routes
+    Route::get('/manage-popular-routes', [ManagePopularRoutesController::class, 'index'])->name('manage-popular-routes.index');
+    Route::post('manage-popular-routes/dataTableView', [ManagePopularRoutesController::class, 'dataTableView'])->name('manage-popular-routes.dataTableView');
+    Route::post('/manage-popular-routes/add', [ManagePopularRoutesController::class, 'add'])->name('manage-popular-routes.add');
+    Route::post('/manage-popular-routes/update-sequence', [ManagePopularRoutesController::class, 'updateSequence'])->name('manage-popular-routes.update-sequence');
 
 
     // Jagan
