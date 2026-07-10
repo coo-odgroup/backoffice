@@ -2763,7 +2763,9 @@ label.amenity-chip:has(input:checked) {
     top: -17px;
 }
 
-
+.border_none_route{
+    border: none;
+}
 
 
 
