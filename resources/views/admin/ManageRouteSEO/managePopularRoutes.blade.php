@@ -220,17 +220,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let isPopular = parseInt(row.popular) === 1;
                     let isTop = parseInt(row.top) === 1;
 
+                    // for excel/pdf/print/export
+                    if (type === 'export' || type === 'print' || type === 'filter' || type === 'sort') {
+                        return isPopular ? 'Yes' : 'No';
+                    }
+
+                    // for table display
                     return `
-                       <input type="checkbox"
-                   class="form-check-input popular-route-checkbox"
-                   style="width:12px;height:12px;border:1px solid #000;cursor:pointer;"
-                   data-route-id="${row.route_id}"
-                   ${isPopular ? 'checked' : ''}
-                   ${isTop ? 'disabled' : ''}>
-                    `;
+                    <input type="checkbox"
+                        class="form-check-input popular-route-checkbox"
+                        style="width:12px;height:12px;border:1px solid #000;cursor:pointer;"
+                        data-route-id="${row.route_id}"
+                        ${isPopular ? 'checked' : ''}
+                        ${isTop ? 'disabled' : ''}>
+                `;
                 }
-            },
-            {
+            }, {
                 data: 'top',
                 orderable: false,
                 searchable: false,
@@ -239,13 +244,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let isPopular = parseInt(row.popular) === 1;
                     let isTop = parseInt(row.top) === 1;
 
+                    // for excel/pdf/print/export
+                    if (type === 'export' || type === 'print' || type === 'filter' || type === 'sort') {
+                        return isTop ? 'Yes' : 'No';
+                    }
+
+                    // for table display
                     return `
-                         <input type="checkbox"
-                   class="form-check-input top-route-checkbox"
-                   style="width:12px;height:12px;border:1px solid #000;cursor:pointer;"
-                   data-route-id="${row.route_id}"
-                   ${isTop ? 'checked' : ''}
-                   ${isPopular ? 'disabled' : ''}>
+                        <input type="checkbox"
+                            class="form-check-input top-route-checkbox"
+                            style="width:12px;height:12px;border:1px solid #000;cursor:pointer;"
+                            data-route-id="${row.route_id}"
+                            ${isTop ? 'checked' : ''}
+                            ${isPopular ? 'disabled' : ''}>
                     `;
                 }
             },
@@ -256,15 +267,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center",
                 render: function(data, type, row) {
                     let seq = row.sequence ?? 0;
+
+                    // for excel/pdf/print/export
+                    if (type === 'export' || type === 'print' || type === 'filter' || type === 'sort') {
+                        return seq;
+                    }
+
+                    // for table display
                     return `
-                        <input type="number"
-                            min="0"
-                            class="form-control form-control-sm route-sequence-input"
-                            style="width:90px;margin:auto;"
-                            data-route-id="${row.route_id}"
-                            data-old-value="${seq}"
-                            value="${seq}">
-                    `;
+                    <input type="number"
+                        min="0"
+                        class="form-control form-control-sm route-sequence-input"
+                        style="width:90px;margin:auto;"
+                        data-route-id="${row.route_id}"
+                        data-old-value="${seq}"
+                        value="${seq}">
+                `;
                 }
             },
         ];

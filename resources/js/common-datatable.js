@@ -1,38 +1,40 @@
-import $ from 'jquery';
+import $ from "jquery";
 
 $.ajaxSetup({
     headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
+        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+    },
 });
 
 window.dataTableInstance = null;
 
-export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orderBy = [], searchParams = {}, displayColumns = []) {
-
-    if ($.fn.DataTable.isDataTable('#' + tableId)) {
-
-
-
-        let table = $('#' + tableId).DataTable();
+export function loadDataTable(
+    tableId = "datatable",
+    dataTableColumns = [],
+    orderBy = [],
+    searchParams = {},
+    displayColumns = [],
+) {
+    if ($.fn.DataTable.isDataTable("#" + tableId)) {
+        let table = $("#" + tableId).DataTable();
 
         table.state.clear();
         table.page.len(10);
-        table.page(0).draw('page');
+        table.page(0).draw("page");
 
         table.ajax.reload(null, true); // true = reset paging
         return;
     }
 
-    let selectedLength = parseInt($('#pageSizeDatatable').val());
+    let selectedLength = parseInt($("#pageSizeDatatable").val());
     if (isNaN(selectedLength)) {
         selectedLength = 10;
     }
-   
+
     let page_title = $("#page_title").html().trim();
-    window.dataTableInstance  = $('#' + tableId).DataTable({
+    window.dataTableInstance = $("#" + tableId).DataTable({
         // dom: '<"top row noPrint" <"col-md-2"fl><"col-md-4"B><"col-md-6"p>>rt<"bottom row noPrint" <"col-md-6"i><"col-md-6"p><"clear">>',
-        dom: 'Brt',
+        dom: "Brt",
         paging: true,
         pageLength: selectedLength,
         pagingType: "full_numbers",
@@ -47,169 +49,188 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
         autoWidth: false,
         lengthMenu: [
             [10, 25, 50, 100, -1],
-            [10, 25, 50, 100, "All"]
+            [10, 25, 50, 100, "All"],
         ],
         // destroy: true,
         responsive: true,
         ajax: {
-            url: $('#' + tableId).data('url'),
+            url: $("#" + tableId).data("url"),
             type: "POST",
             data: function (searchParams) {
-
                 // Get all form fields dynamically
-                let formData = $('#backoffice-form').serializeArray();
+                let formData = $("#backoffice-form").serializeArray();
 
                 $.each(formData, function (index, field) {
                     searchParams[field.name] = field.value;
                 });
 
                 // CSRF if needed
-                searchParams._token = $('meta[name="csrf-token"]').attr('content');
-                
-            }, 
-            dataType: 'json',
+                searchParams._token = $('meta[name="csrf-token"]').attr(
+                    "content",
+                );
+            },
+            dataType: "json",
             beforeSend: function () {
-              $('#pageLoader').removeClass('d-none').addClass('d-flex');
+                $("#pageLoader").removeClass("d-none").addClass("d-flex");
             },
             complete: function () {
-               $('#pageLoader').removeClass('d-flex').addClass('d-none');
-            }           
-        },       
-        
-        buttons: [
-        { extend: 'excel', 
-            className: 'd-none',
-            exportOptions: {
-                columns: ':not(.noPrint)',
-                format: {
-                    body: function (data, row, column, node) {
-                        let input = $('input', node);
-                        if (input.length) {
-                            return input.val();
-                        }
-                        return $(node).text().trim();
-                    }
-                }
-            } 
-         },
-        { extend: 'pdfHtml5', 
-            className: 'd-none',
-            exportOptions: {
-                columns: ':not(.noPrint)',
-                format: {
-                    body: function (data, row, column, node) {
-                        let input = $('input', node);
-                        if (input.length) {
-                            return input.val();
-                        }
-                         if ($(node).find('table').length) {
-
-                                let html = '<table class="table table-sm inner-table-hdr" style="font-size:12px;">';
-
-                                // 🔥 Get header dynamically (if exists)
-                                let headers = [];
-                                $(node).find('thead th').each(function () {
-                                    headers.push($(this).text().trim());
-                                });
-
-                                if (headers.length) {
-                                    html += '<thead><tr>';
-                                    headers.forEach(h => {
-                                        html += `<th>${h}</th>`;
-                                    });
-                                    html += '</tr></thead>';
-                                }
-
-                                html += '<tbody>';
-
-                                // 🔥 Loop rows dynamically
-                                $(node).find('tbody tr').each(function () {
-
-                                    html += '<tr>';
-
-                                    $(this).find('td').each(function () {
-                                        html += `<td>${$(this).text().trim()}</td>`;
-                                    });
-
-                                    html += '</tr>';
-                                });
-
-                                html += '</tbody></table>';
-
-                                return html;
-                        }
-                        return $(node).text().trim();
-                    }
-                }
-            } 
+                $("#pageLoader").removeClass("d-flex").addClass("d-none");
+            },
         },
-        { extend: 'print', 
-            className: 'd-none', 
-            exportOptions: {
-                columns: ':not(.noPrint)',
-                format: {
-                    body: function (data, row, column, node) {
-                        let input = $('input', node);
-                        // if (input.length) {
-                        //     return input.val();
-                        // }
-                        // return $(node).text().trim();
 
-                       if ($(node).find('table').length) {
+        buttons: [
+            {
+                extend: "excel",
+                className: "d-none",
+                exportOptions: {
+                    columns: ":not(.noPrint)",
+                    format: {
+                        body: function (data, row, column, node) {
+                            let checkbox = $('input[type="checkbox"]', node);
+                            if (checkbox.length) {
+                                return checkbox.is(":checked") ? "Yes" : "No";
+                            }
 
-                                let html = '<table class="table table-sm inner-table-hdr" style="font-size:12px;">';
+                            let input = $('input:not([type="checkbox"])', node);
+                            if (input.length) {
+                                return input.val();
+                            }
 
-                                // 🔥 Get header dynamically (if exists)
+                            return $(node).text().trim();
+                        },
+                    },
+                },
+            },
+            {
+                extend: "pdfHtml5",
+                className: "d-none",
+                exportOptions: {
+                    columns: ":not(.noPrint)",
+                    format: {
+                        body: function (data, row, column, node) {
+                            let checkbox = $('input[type="checkbox"]', node);
+                            if (checkbox.length) {
+                                return checkbox.is(":checked") ? "Yes" : "No";
+                            }
+
+                            let input = $('input:not([type="checkbox"])', node);
+                            if (input.length) {
+                                return input.val();
+                            }
+
+                            if ($(node).find("table").length) {
+                                let html =
+                                    '<table class="table table-sm inner-table-hdr" style="font-size:12px;">';
+
                                 let headers = [];
-                                $(node).find('thead th').each(function () {
-                                    headers.push($(this).text().trim());
-                                });
+                                $(node)
+                                    .find("thead th")
+                                    .each(function () {
+                                        headers.push($(this).text().trim());
+                                    });
 
                                 if (headers.length) {
-                                    html += '<thead><tr>';
-                                    headers.forEach(h => {
+                                    html += "<thead><tr>";
+                                    headers.forEach((h) => {
                                         html += `<th>${h}</th>`;
                                     });
-                                    html += '</tr></thead>';
+                                    html += "</tr></thead>";
                                 }
 
-                                html += '<tbody>';
+                                html += "<tbody>";
 
-                                // 🔥 Loop rows dynamically
-                                $(node).find('tbody tr').each(function () {
-
-                                    html += '<tr>';
-
-                                    $(this).find('td').each(function () {
-                                        html += `<td>${$(this).text().trim()}</td>`;
+                                $(node)
+                                    .find("tbody tr")
+                                    .each(function () {
+                                        html += "<tr>";
+                                        $(this)
+                                            .find("td")
+                                            .each(function () {
+                                                html += `<td>${$(this).text().trim()}</td>`;
+                                            });
+                                        html += "</tr>";
                                     });
 
-                                    html += '</tr>';
-                                });
-
-                                html += '</tbody></table>';
+                                html += "</tbody></table>";
 
                                 return html;
-                        }
+                            }
 
-                        return $(node).text().trim();
-                    }
+                            return $(node).text().trim();
+                        },
+                    },
                 },
-                 customize: function (win) {
+            },
+            {
+                extend: "print",
+                className: "d-none",
+                exportOptions: {
+                    columns: ":not(.noPrint)",
+                    format: {
+                        body: function (data, row, column, node) {
+                            let checkbox = $('input[type="checkbox"]', node);
+                            if (checkbox.length) {
+                                return checkbox.is(":checked") ? "Yes" : "No";
+                            }
 
-                   $(win.document.body)
-                        .find('table tbody tr')
-                        .not(':first')
-                        .find('.inner-table-hdr thead')
-                        .hide();
-                }
+                            let input = $('input:not([type="checkbox"])', node);
+                            if (input.length) {
+                                return input.val();
+                            }
 
-            } 
-        }
-    ],
+                            if ($(node).find("table").length) {
+                                let html =
+                                    '<table class="table table-sm inner-table-hdr" style="font-size:12px;">';
+
+                                let headers = [];
+                                $(node)
+                                    .find("thead th")
+                                    .each(function () {
+                                        headers.push($(this).text().trim());
+                                    });
+
+                                if (headers.length) {
+                                    html += "<thead><tr>";
+                                    headers.forEach((h) => {
+                                        html += `<th>${h}</th>`;
+                                    });
+                                    html += "</tr></thead>";
+                                }
+
+                                html += "<tbody>";
+
+                                $(node)
+                                    .find("tbody tr")
+                                    .each(function () {
+                                        html += "<tr>";
+                                        $(this)
+                                            .find("td")
+                                            .each(function () {
+                                                html += `<td>${$(this).text().trim()}</td>`;
+                                            });
+                                        html += "</tr>";
+                                    });
+
+                                html += "</tbody></table>";
+
+                                return html;
+                            }
+
+                            return $(node).text().trim();
+                        },
+                    },
+                    customize: function (win) {
+                        $(win.document.body)
+                            .find("table tbody tr")
+                            .not(":first")
+                            .find(".inner-table-hdr thead")
+                            .hide();
+                    },
+                },
+            },
+        ],
         columns: dataTableColumns,
-        drawCallback: function(settings) { 
-            
+        drawCallback: function (settings) {
             commonAjax.initTooltips();
 
             let api = this.api();
@@ -217,49 +238,47 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
 
             let total = pageInfo.recordsDisplay;
 
-             // ===== If NO RECORDS =====
+            // ===== If NO RECORDS =====
             if (total === 0) {
-
                 // Hide top controls
-                $('#tableActions').hide();  
-                $('#datatable').hide();
+                $("#tableActions").hide();
+                $("#datatable").hide();
 
                 // Hide pagination (top & bottom)
-                $('#customPagination').hide();
-                $('#customPaginationTop').hide();
+                $("#customPagination").hide();
+                $("#customPaginationTop").hide();
 
                 // Hide info text
-                $('#customTableInfo').hide();
-                $('#customTableInfoTop').hide();
-                $('#utilitiesTop').hide();
-
+                $("#customTableInfo").hide();
+                $("#customTableInfoTop").hide();
+                $("#utilitiesTop").hide();
 
                 // Optional: show custom no record message
-                $('#norecord').show();
+                $("#norecord").show();
 
                 return; // stop further execution
             }
 
-             // ===== If RECORDS EXIST =====
+            // ===== If RECORDS EXIST =====
 
             // Show controls
-            $('#tableActions').show();
-            $('#datatable').show();
-            $('#customPagination').show();
-            $('#customPaginationTop').show();
-            $('#customTableInfo').show();
-            $('#customTableInfoTop').show();
-            $('#utilitiesTop').show();
-            $('#norecord').hide();
+            $("#tableActions").show();
+            $("#datatable").show();
+            $("#customPagination").show();
+            $("#customPaginationTop").show();
+            $("#customTableInfo").show();
+            $("#customTableInfoTop").show();
+            $("#utilitiesTop").show();
+            $("#norecord").hide();
 
             let start = pageInfo.start + 1;
             let end = pageInfo.end;
 
             // ===== Info Text =====
-           let infoText = `Showing ${start} to ${end} of ${total} entries`;
+            let infoText = `Showing ${start} to ${end} of ${total} entries`;
 
-           $('#customTableInfo').html(infoText);
-           $('#customTableInfoTop').html(infoText);
+            $("#customTableInfo").html(infoText);
+            $("#customTableInfoTop").html(infoText);
 
             // ===== Pagination Build =====
             let totalPages = pageInfo.pages;
@@ -270,13 +289,13 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
 
             // Prev
             paginationHtml += `
-                <li class="page-item ${pageInfo.page === 0 ? 'disabled' : ''}">
+                <li class="page-item ${pageInfo.page === 0 ? "disabled" : ""}">
                     <a class="page-link" href="#" data-page="${pageInfo.page - 1}">Prev</a>
                 </li>`;
 
             function pageItem(page) {
                 return `
-                    <li class="page-item ${page === currentPage ? 'active' : ''}">
+                    <li class="page-item ${page === currentPage ? "active" : ""}">
                         <a class="page-link" href="#" data-page="${page - 1}">${page}</a>
                     </li>`;
             }
@@ -286,7 +305,6 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
                     paginationHtml += pageItem(i);
                 }
             } else {
-
                 paginationHtml += pageItem(1);
 
                 if (currentPage > 3) {
@@ -309,65 +327,68 @@ export function loadDataTable(tableId = 'datatable', dataTableColumns = [], orde
 
             // Next
             paginationHtml += `
-                <li class="page-item ${pageInfo.page === totalPages - 1 ? 'disabled' : ''}">
+                <li class="page-item ${pageInfo.page === totalPages - 1 ? "disabled" : ""}">
                     <a class="page-link" href="#" data-page="${pageInfo.page + 1}">Next</a>
                 </li>`;
 
-            paginationHtml += '</ul>';
+            paginationHtml += "</ul>";
 
-            $('#customPagination').html(paginationHtml);
-            $('#customPaginationTop').html(paginationHtml);        
+            $("#customPagination").html(paginationHtml);
+            $("#customPaginationTop").html(paginationHtml);
 
             // ===== IMPORTANT: Attach Click Event AFTER rendering =====
-            $('#customPagination, #customPaginationTop').find('.page-link').off('click').on('click', function (e) {
+            $("#customPagination, #customPaginationTop")
+                .find(".page-link")
+                .off("click")
+                .on("click", function (e) {
+                    e.preventDefault();
 
-                e.preventDefault();
+                    let page = $(this).data("page");
 
-                let page = $(this).data('page');
+                    if (page >= 0 && page < totalPages) {
+                        api.page(page).draw("page");
+                    }
+                });
 
-                if (page >= 0 && page < totalPages) {
-                    api.page(page).draw('page');
-                }
-            });
-
-            $('#defaultRcord').css('display', 'none');
+            $("#defaultRcord").css("display", "none");
             if (settings.aiDisplay.length <= 0) {
-                $('#norecord').css('display', 'block');
-                $('#' + tableId + '_wrapper').css('display', 'none');
-                $('#tfooter').css('display', 'none');
+                $("#norecord").css("display", "block");
+                $("#" + tableId + "_wrapper").css("display", "none");
+                $("#tfooter").css("display", "none");
             } else {
-                $('#' + tableId + '_wrapper').css('display', 'block');
-                $('#norecord').css('display', 'none');
-                $('#tfooter').css('display', 'block');
+                $("#" + tableId + "_wrapper").css("display", "block");
+                $("#norecord").css("display", "none");
+                $("#tfooter").css("display", "block");
             }
-
-        }
+        },
     });
 
-    $('#btnExcel').click(function () {
-         window.dataTableInstance.button('.buttons-excel').trigger();
+    $("#btnExcel").click(function () {
+        window.dataTableInstance.button(".buttons-excel").trigger();
     });
 
-    $('#btnPdf').click(function () {
-        window.dataTableInstance.button('.buttons-pdf').trigger();
+    $("#btnPdf").click(function () {
+        window.dataTableInstance.button(".buttons-pdf").trigger();
     });
 
-    $('#btnPrint').click(function () {
-        window.dataTableInstance.button('.buttons-print').trigger();
+    $("#btnPrint").click(function () {
+        window.dataTableInstance.button(".buttons-print").trigger();
     });
 
-    $('#pageSizeDatatable').off('change').on('change', function () {
-        let newLength = parseInt($(this).val());
-        window.dataTableInstance.page.len(newLength).draw();
-    });
+    $("#pageSizeDatatable")
+        .off("change")
+        .on("change", function () {
+            let newLength = parseInt($(this).val());
+            window.dataTableInstance.page.len(newLength).draw();
+        });
 
-    $(document).on('click', '#customPagination .page-link', function (e) {
+    $(document).on("click", "#customPagination .page-link", function (e) {
         e.preventDefault();
-        let page = $(this).data('page');
+        let page = $(this).data("page");
         if (page !== undefined) {
-            window.dataTableInstance.page(page).draw('page');
+            window.dataTableInstance.page(page).draw("page");
         }
     });
 
-    //  return table;  
+    //  return table;
 }
