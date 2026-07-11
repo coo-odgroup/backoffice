@@ -47,7 +47,7 @@ class ManageTemplateController extends Controller
                     'rd.max_fare',
                     'rd.bus_count',
                     'rd.operators_count',
-                    
+
                     'rd.breadcrumb_schema',
                     'rd.faq_schema'
                 )
@@ -62,14 +62,6 @@ class ManageTemplateController extends Controller
                 ]);
             }
 
-            /*
-        |--------------------------------------------------------------------------
-        | Operators List HTML
-        |--------------------------------------------------------------------------
-        | mst_routes_operators.route_id -> operator_id
-        | operator_id -> users.id -> users.name
-        | if name missing, use Demo Operator
-        */
             $operatorNames = DB::table('odbusmaster.mst_routes_operators as ro')
                 ->leftJoin('users as u', 'u.id', '=', 'ro.operator_id')
                 ->where('ro.route_id', $route->id)
@@ -91,11 +83,6 @@ class ManageTemplateController extends Controller
                 ->map(fn($name) => '<li>' . e($name ?: 'Demo Operator') . '</li>')
                 ->implode('');
 
-            /*
-        |--------------------------------------------------------------------------
-        | Bus Types HTML
-        |--------------------------------------------------------------------------
-        */
             $busTypes = DB::table('odbusmaster.mst_routes_bus_types')
                 ->where('route_id', $route->id)
                 ->where('active_status', 1)
@@ -109,11 +96,6 @@ class ManageTemplateController extends Controller
                 ->map(fn($item) => '<li>' . e($item) . '</li>')
                 ->implode('');
 
-            /*
-        |--------------------------------------------------------------------------
-        | Boarding Points HTML (type = 1)
-        |--------------------------------------------------------------------------
-        */
             $boardingPoints = DB::table('odbusmaster.mst_route_brd_drp as rbd')
                 ->join('odbusmaster.mst_boarding_droping as bd', 'bd.id', '=', 'rbd.brd_drp_id')
                 ->where('rbd.route_id', $route->id)
@@ -129,11 +111,6 @@ class ManageTemplateController extends Controller
                 ->map(fn($item) => '<li>' . e($item) . '</li>')
                 ->implode('');
 
-            /*
-        |--------------------------------------------------------------------------
-        | Dropping Points HTML (type = 2)
-        |--------------------------------------------------------------------------
-        */
             $droppingPoints = DB::table('odbusmaster.mst_route_brd_drp as rbd')
                 ->join('odbusmaster.mst_boarding_droping as bd', 'bd.id', '=', 'rbd.brd_drp_id')
                 ->where('rbd.route_id', $route->id)
@@ -149,11 +126,7 @@ class ManageTemplateController extends Controller
                 ->map(fn($item) => '<li>' . e($item) . '</li>')
                 ->implode('');
 
-            /*
-        |--------------------------------------------------------------------------
-        | Source / Destination City Content
-        |--------------------------------------------------------------------------
-        */
+
             $sourceContent = DB::table('odbusmaster.mst_city_content')
                 ->where('city_id', $route->source_id)
                 ->where('active_status', 1)
@@ -164,11 +137,6 @@ class ManageTemplateController extends Controller
                 ->where('active_status', 1)
                 ->value('content') ?? '';
 
-            /*
-        |--------------------------------------------------------------------------
-        | Duration split if you still need from_hrs / to_hrs for FAQ placeholders
-        |--------------------------------------------------------------------------
-        */
             $duration = (float) ($route->duration_in_hours ?? 0);
             $fromHrs  = $duration > 0 ? floor($duration) : '';
             $toHrs    = $duration > 0 ? ceil($duration) : '';
@@ -238,15 +206,14 @@ class ManageTemplateController extends Controller
         $data['strReset']  = 'Reset';
 
         try {
+
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'route_id'           => 'required|integer',
-                    'content'            => 'nullable',
-                    'meta_title'         => 'nullable|string',
-                    'meta_description'   => 'nullable|string',
-                    'breadcrumb_schema'  => 'nullable',
-                    'faq_schema'         => 'nullable',
+                    'route_id'         => 'required|integer',
+                    'content'          => 'nullable',
+                    'meta_title'       => 'nullable|string',
+                    'meta_description' => 'nullable|string',
                 ], [
                     'route_id.required' => 'Route is required.'
                 ]);
@@ -263,38 +230,56 @@ class ManageTemplateController extends Controller
                 DB::beginTransaction();
 
                 $route = DB::table('odbusmaster.mst_routes_details')
-                    ->select('id')
                     ->where('id', $routeId)
                     ->first();
 
                 if (!$route) {
                     DB::rollBack();
+
                     return response()->json([
                         'status'  => false,
                         'message' => 'Selected route not found.'
                     ]);
                 }
 
-                DB::table('odbusmaster.mst_routes_details')
-                    ->where('id', $routeId)
-                    ->update([
-                        'content'            => request('content'),
-                        'meta_title'         => request('meta_title'),
-                        'meta_description'   => request('meta_description'),
-                        'breadcrumb_schema'  => request('breadcrumb_schema'),
-                        'faq_schema'         => request('faq_schema'),
-                        'updated_at'         => now(),
-                        'updated_by'         => 1
-                    ]);
+                $seo = DB::table('mst_seo_content')
+                    ->where('route_id', $routeId)
+                    ->first();
+
+                if ($seo) {
+
+                    DB::table('mst_seo_content')
+                        ->where('route_id', $routeId)
+                        ->update([
+                            'content'          => request('content'),
+                            'meta_title'       => request('meta_title'),
+                            'meta_description' => request('meta_description'),
+                            'updated_at'       => now(),
+                            'updated_by'       => 1
+                        ]);
+                } else {
+
+                    DB::table('mst_seo_content')
+                        ->insert([
+                            'route_id'         => $routeId,
+                            'content'          => request('content'),
+                            'meta_title'       => request('meta_title'),
+                            'meta_description' => request('meta_description'),
+                            'is_publised'      => 0,
+                            'created_at'       => now(),
+                            'created_by'       => 1
+                        ]);
+                }
 
                 DB::commit();
 
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Template details updated successfully.'
+                    'message' => 'SEO content saved successfully.'
                 ]);
             }
         } catch (\Throwable $t) {
+
             DB::rollBack();
 
             Log::error("Error", [

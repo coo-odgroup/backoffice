@@ -76,6 +76,7 @@ use App\Http\Controllers\Admin\ManageRouteSEO\ManageDistaceController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageBoardingDroppingController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManagePopularRoutesController;
 use App\Http\Controllers\Admin\ManageRouteSEO\ManageTemplateController;
+use App\Http\Controllers\Admin\ManageRouteSEO\TemplateListController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -409,6 +410,10 @@ Route::prefix('admin')->group(function () {
     Route::post('manage-template/dataTableView', [ManageTemplateController::class, 'dataTableView'])->name('manage-template.dataTableView');
     Route::post('/manage-template/add', [ManageTemplateController::class, 'add'])->name('manage-template.add');
 
+    //Manage Popular Routes
+    Route::get('/template-list', [TemplateListController::class, 'index'])->name('template-list.index');
+    Route::post('template-list/dataTableView', [TemplateListController::class, 'dataTableView'])->name('template-list.dataTableView');
+    Route::post('manage-template/view',[TemplateListController::class,'view'])->name('manage-template.view');
 
 
     // Jagan

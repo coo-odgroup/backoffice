@@ -64,7 +64,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <div class="card-header route-card-header d-flex align-items-center justify-content-between">
                                 <div>
                                     <h5 class="mb-0 fw-bold">Route Content</h5>
-                                    <small class="text-muted">Auto-generated route SEO content</small>
                                 </div>
                                 <span class="route-badge">HTML Content</span>
                             </div>
@@ -752,75 +751,36 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             });
         }
 
-        // =========================
-        // BREADCRUMB SCHEMA
-        // =========================
-        if (data.breadcrumb_schema && data.breadcrumb_schema.trim() !== '') {
-            $("#breadcrumb_schema").val(formatSchemaForTextarea(data.breadcrumb_schema));
-        } else {
-            commonAjax.getSchemaContent("Routes", "Breadcrumb", function(response) {
-                if (!response.status || !response.data || !response.data.schema_content) {
-                    console.log(response.message || 'Breadcrumb schema not found');
-                    return;
-                }
-
-                let schema = response.data.schema_content;
-                schema = schema
-                    .replaceAll("__BASE_URL__", frontUrl)
-                    .replaceAll("__SOURCE__", source)
-                    .replaceAll("__DESTINATION__", destination)
-                    .replaceAll("__SOURCE_SLUG__", sourceSlug)
-                    .replaceAll("__DESTINATION_SLUG__", destinationSlug);
-
-                $("#breadcrumb_schema").val(formatSchemaForTextarea(schema));
-            });
-        }
+        $('#breadcrumb_schema').val(
+            formatSchemaForTextarea(data.breadcrumb_schema || '')
+        );
 
         // =========================
         // FAQ SCHEMA
         // =========================
-        if (data.faq_schema && data.faq_schema.trim() !== '') {
-            $("#faq_schema").val(formatSchemaForTextarea(data.faq_schema));
-        } else {
-            commonAjax.getSchemaContent("Routes", "FAQ", function(response) {
-                if (!response.status || !response.data || !response.data.schema_content) {
-                    console.log(response.message || 'FAQ schema not found');
-                    return;
+
+        $('#faq_schema').val(
+            formatSchemaForTextarea(data.faq_schema || '')
+        ); 
+    }
+
+        function formatSchemaForTextarea(schemaValue) {
+            try {
+                let parsed = schemaValue;
+
+                if (typeof parsed === 'string') {
+                    parsed = JSON.parse(parsed);
                 }
 
-                let schema = response.data.schema_content;
-                schema = schema
-                    .replaceAll("__SOURCE__", source)
-                    .replaceAll("__DESTINATION__", destination)
-                    .replaceAll("__DISTANCE__", distance)
-                    .replaceAll("__FROM_HRS__", duration)
-                    .replaceAll("__TO_HRS__", duration)
-                    .replaceAll("__BUS_TYPES__", busTypes)
-                    .replaceAll("__MIN_FARE__", minFare)
-                    .replaceAll("__MAX_FARE__", maxFare);
+                if (typeof parsed === 'string') {
+                    parsed = JSON.parse(parsed);
+                }
 
-                $("#faq_schema").val(formatSchemaForTextarea(schema));
-            });
-        }
-    }
-
-    function formatSchemaForTextarea(schemaValue) {
-        try {
-            let parsed = schemaValue;
-
-            if (typeof parsed === 'string') {
-                parsed = JSON.parse(parsed);
+                return JSON.stringify(parsed, null, 4);
+            } catch (e) {
+                console.error('Schema formatting error:', e);
+                return schemaValue || '';
             }
-
-            if (typeof parsed === 'string') {
-                parsed = JSON.parse(parsed);
-            }
-
-            return JSON.stringify(parsed, null, 4);
-        } catch (e) {
-            console.error('Schema formatting error:', e);
-            return schemaValue || '';
         }
-    }
 </script>
 @endpush

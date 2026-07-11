@@ -64,7 +64,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <div class="card-header bg-primary text-white fw-bold" id="boardingCityTitle">
                                 Boarding Points
                             </div>
-                            <div class="card-body" id="boardingPointsContainer"style="max-height: 420px; overflow-y: auto; overflow-x: hidden;"></div>
+                            <div class="card-body" id="boardingPointsContainer" style="max-height: 420px; overflow-y: auto; overflow-x: hidden;"></div>
                         </div>
                     </div>
 
@@ -309,7 +309,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 route_id: routeId,
                 hdn_boarding_ids: $('#hdn_boarding_ids').val(),
-                hdn_dropping_ids: $('#hdn_dropping_ids').val()
+                hdn_dropping_ids: $('#hdn_dropping_ids').val(),
+
+                breadcrumb_schema: $('#breadcrumb_schema').val(),
+                faq_schema: $('#faq_schema').val()
             },
             beforeSend: function() {
                 if (typeof viewLoader === 'function') {

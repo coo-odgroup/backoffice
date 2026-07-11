@@ -210,7 +210,9 @@ class ManageBoardingDroppingController extends Controller
             if (request()->isMethod('post')) {
 
                 $validator = Validator::make(request()->all(), [
-                    'route_id' => 'required|integer'
+                    'route_id'           => 'required|integer',
+                    'breadcrumb_schema'  => 'nullable|string',
+                    'faq_schema'         => 'nullable|string',
                 ], [
                     'route_id.required' => 'Route is required.'
                 ]);
@@ -224,12 +226,15 @@ class ManageBoardingDroppingController extends Controller
 
                 DB::beginTransaction();
 
-                $route = DB::table('odbusmaster.mst_routes_details')
-                    ->select('id')
+                DB::table('odbusmaster.mst_routes_details')
                     ->where('id', $routeId)
-                    ->first();
-
-                if (!$route) {
+                    ->update([
+                        'breadcrumb_schema' => request('breadcrumb_schema'),
+                        'faq_schema'        => request('faq_schema'),
+                        'updated_at'        => now(),
+                        'updated_by'        => 1
+                    ]);
+                if (!$routeId) {
                     return response()->json([
                         'status'  => false,
                         'message' => 'Selected route not found.'

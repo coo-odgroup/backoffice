@@ -326,12 +326,12 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#routeManagementSEO"
-            aria-expanded="{{ Request::is('admin/manage-city-content*','admin/manage-route-distance*','admin/manage-boarding-dropping*') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/manage-city-content*','admin/manage-route-distance*','admin/manage-boarding-dropping*','admin/manage-template*','admin/template-list*') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-route me-2"></i> Manage Route SEO</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
-        <div class="collapse {{ Request::is('admin/manage-city-content*','admin/manage-route-distance*','admin/manage-boarding-dropping*','admin/manage-popular-routes') ? 'show' : '' }}" id="routeManagementSEO">
+        <div class="collapse {{ Request::is('admin/manage-city-content*','admin/manage-route-distance*','admin/manage-boarding-dropping*','admin/manage-popular-routes','admin/manage-template*','admin/template-list*') ? 'show' : '' }}" id="routeManagementSEO">
             <a href="{{ url('admin/manage-city-content') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/manage-city-content*') ? 'active' : '' }}">
                 <i class="fa-solid fa-city me-2"></i> City Content Management
@@ -346,9 +346,19 @@
                 <i class="fa-solid fa-map-location-dot me-2"></i> Manage Boarding Dropping
             </a>
 
-             <a href="{{ url('admin/manage-popular-routes') }}"
+            <a href="{{ url('admin/manage-popular-routes') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/manage-popular-routes*') ? 'active' : '' }}">
-                <i class="fa-solid fa-map-location-dot me-2"></i> Manage Popular Routes
+                <i class="fa-solid fa-route me-2"></i> Manage Popular Routes
+            </a>
+
+            <a href="{{ url('admin/manage-template') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/manage-template*') ? 'active' : '' }}">
+                <i class="fa-solid fa-file-lines me-2"></i> Manage Template
+            </a>
+
+             <a href="{{ url('admin/template-list') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/template-list*') ? 'active' : '' }}">
+                <i class="fa-solid fa-file-lines me-2"></i> Template List
             </a>
         </div>
     </div>
