@@ -3113,6 +3113,184 @@ label.amenity-chip:has(input:checked) {
 
     }
 
+    /*
+    Template List Modal view Css for content  and bread crumn schema and faq schema
+    */
+    #viewTemplateModal .modal-content {
+        border: 0;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #f5f7fb;
+    }
+
+    #viewTemplateModal .modal-header {
+        background: linear-gradient(90deg, #0f2b6d, #2f80ed);
+        padding: 16px 24px;
+        border-bottom: none;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    #viewTemplateModal .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    #viewTemplateModal .modal-body {
+        padding: 25px;
+    }
+
+    /* Cards */
+
+    #viewTemplateModal .card {
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+    }
+
+    #viewTemplateModal .card-header {
+        background: #ffffff;
+        border-bottom: 1px solid #e9ecef;
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f2b6d;
+        padding: 14px 18px;
+    }
+
+    #viewTemplateModal .card-body {
+        padding: 18px;
+    }
+
+    /* Route Content */
+
+    #v_content {
+        min-height: 600px;
+        max-height: 75vh;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 20px;
+        line-height: 1.8;
+        color: #000;
+    }
+
+    #v_content h1,
+    #v_content h2,
+    #v_content h3,
+    #v_content h4 {
+        color: #0f2b6d;
+        margin-bottom: 12px;
+        font-weight: 700;
+    }
+
+    #v_content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    #v_content table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #v_content table th,
+    #v_content table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    /* Meta Data */
+
+    #v_meta_title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f2b6d;
+        word-break: break-word;
+    }
+
+    #v_meta_description {
+        color: #555;
+        line-height: 1.8;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f2b6d;
+        word-break: break-word;
+    }
+
+    /* Schema Blocks */
+
+    #viewTemplateModal pre {
+        margin: 0;
+        background: #1e293b;
+        color: #e2e8f0;
+        border-radius: 10px;
+        padding: 16px;
+        max-height: 350px;
+        overflow: auto;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    #viewTemplateModal code {
+        color: inherit;
+        font-family: Consolas, Monaco, monospace;
+    }
+
+    /* Scrollbar */
+
+    #viewTemplateModal ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    #viewTemplateModal ::-webkit-scrollbar-thumb {
+        background: #b5b5b5;
+        border-radius: 20px;
+    }
+
+    #viewTemplateModal ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Responsive */
+
+    @media(max-width:992px) {
+
+        #viewTemplateModal .modal-body {
+            padding: 15px;
+        }
+
+        #v_content {
+            min-height: 350px;
+        }
+
+    }
+
+    .json-viewer {
+        height: 550px;
+        overflow: auto;
+        border-radius: 10px;
+        background: #1e293b;
+        border: 1px solid #334155;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .json-viewer::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .json-viewer::-webkit-scrollbar-thumb {
+        background: #64748b;
+        border-radius: 20px;
+    }
 
 
 

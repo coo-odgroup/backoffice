@@ -410,7 +410,7 @@ Route::prefix('admin')->group(function () {
     Route::post('manage-template/dataTableView', [ManageTemplateController::class, 'dataTableView'])->name('manage-template.dataTableView');
     Route::post('/manage-template/add', [ManageTemplateController::class, 'add'])->name('manage-template.add');
 
-    //Manage Popular Routes
+    // Template List
     Route::get('/template-list', [TemplateListController::class, 'index'])->name('template-list.index');
     Route::post('template-list/dataTableView', [TemplateListController::class, 'dataTableView'])->name('template-list.dataTableView');
     Route::post('manage-template/view',[TemplateListController::class,'view'])->name('manage-template.view');
