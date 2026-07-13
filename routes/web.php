@@ -30,6 +30,8 @@ use App\Http\Controllers\Admin\Ad\AdPlacementController;
 use App\Http\Controllers\Admin\Ad\AdCampaignController;
 use App\Http\Controllers\Admin\Ad\PricingPlanController;
 use App\Http\Controllers\Master\BrandController;
+use App\Http\Controllers\Master\OrganizationTypeController;
+use App\Http\Controllers\Master\OrganizationController;
 use App\Http\Controllers\Master\BusModelController;
 use App\Http\Controllers\Admin\Ad\AdsController;
 use App\Http\Controllers\Admin\Blog\BlogImagesController;
@@ -175,8 +177,11 @@ Route::prefix('admin')->group(function () {
     Route::post('get-schema-content', [CommonController::class, 'getSchemaContent']);
     Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
     Route::get('manage-route-distance/route-dropdown', [CommonController::class, 'RouteDropdown'])->name('manage-route-distance.routeDropdown');
+    Route::get('organization/organization-type-dropdown',[CommonController::class, 'organizationTypeDropdown'])->name('organization.organizationTypeDropdown');
 
-    // Common Bus Info
+
+
+
     Route::post('get-busmodels-list', [CommonController::class, 'getBusModelsList']);
     Route::post('get-axletype-list', [CommonController::class, 'getAxleTypeList']);
     Route::post('get-busservices-list', [CommonController::class, 'getBusServicesList']);
@@ -415,6 +420,17 @@ Route::prefix('admin')->group(function () {
     Route::post('template-list/dataTableView', [TemplateListController::class, 'dataTableView'])->name('template-list.dataTableView');
     Route::post('manage-template/view',[TemplateListController::class,'view'])->name('manage-template.view');
 
+    //Organization Type
+    Route::get('/organization-type', [OrganizationTypeController::class, 'organizationType'])->name('organization-type.index');
+    Route::match(['get', 'post'], 'organization-type/add', [OrganizationTypeController::class, 'add'])->name('organization-type.add');
+    Route::post('organization-type/dataTableView', [OrganizationTypeController::class, 'dataTableView'])->name('organization-type.dataTableView');
+    Route::match(['get', 'post'], 'organization-type/edit/{encId}', [OrganizationTypeController::class, 'edit'])->name('organization-type.edit');
+
+    //Organization
+    Route::get('/organization', [OrganizationController::class, 'organization'])->name('organization.index');
+    Route::match(['get', 'post'], 'organization/add', [OrganizationController::class, 'add'])->name('organization.add');
+    Route::post('organization/dataTableView', [OrganizationController::class, 'dataTableView'])->name('organization.dataTableView');
+    Route::match(['get', 'post'], 'organization/edit/{encId}', [OrganizationController::class, 'edit'])->name('organization.edit');
 
     // Jagan
     // ======================================================================================================================================================================================================

@@ -3041,12 +3041,7 @@ label.amenity-chip:has(input:checked) {
         font-weight: 700;
         color: #42526b;
     }
-
-    #filterBox .form-select {
-        border-radius: 12px;
-        min-height: 44px;
-    }
-
+    
     /*---------------------------------------
     Update Button
     ---------------------------------------*/

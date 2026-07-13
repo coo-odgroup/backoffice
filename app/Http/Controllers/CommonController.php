@@ -23,92 +23,6 @@ use Illuminate\Support\Facades\Storage;
 
 class CommonController extends Controller
 {
-
-    public function auditLog($table, $recordId, $action, $oldData = [], $newData = [], $deviceType = null)
-    {
-        try {
-
-            //  ENUM validation
-            $allowedActions = ['INSERT', 'UPDATE', 'SOFT_DELETE', 'STATUS_CHANGE'];
-
-            if (!in_array($action, $allowedActions)) {
-                throw new \Exception("Invalid audit action: " . $action);
-            }
-
-            $userId = auth()->id() ?? 1;
-
-            //  IP + User Agent
-            $userIp = $_SERVER['HTTP_X_FORWARDED_FOR']
-                ?? $_SERVER['REMOTE_ADDR']
-                ?? 'Unknown';
-
-            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
-
-            //  Auto detect device
-            if (!$deviceType) {
-                $deviceType = 'Desktop';
-                if (preg_match('/mobile/i', $userAgent)) {
-                    $deviceType = 'Mobile';
-                } elseif (preg_match('/tablet|ipad/i', $userAgent)) {
-                    $deviceType = 'Tablet';
-                }
-            }
-
-            //  Ensure array
-            $oldData = is_object($oldData) ? (array)$oldData : $oldData;
-            $newData = is_object($newData) ? (array)$newData : $newData;
-
-            DB::connection('mysql_log')->table('audit_logs_master')->insert([
-                'table_name'  => $table,
-                'record_id'   => $recordId,
-                'action'      => $action,
-                'old_data'    => !empty($oldData) ? json_encode($oldData) : null,
-                'new_data'    => !empty($newData) ? json_encode($newData) : null,
-                'created_by'  => $userId,
-                'created_at'  => now(),
-                'user_ip'     => $userIp,
-                'user_agent'  => $userAgent,
-                'device_type' => $deviceType,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Audit Log Failed', [
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-
-
-
-
-    public function getStateList(Request $request)
-    {
-        $states = States::where('active_status', 1)
-            ->orderBy('state_name')
-            ->get(['id', 'state_name']);
-
-
-        return response()->json([
-            'status' => true,
-            'data'   => $states
-        ]);
-    }
-
-    public function getDistrictList(Request $request)
-    {
-
-        $stateId = $request->state_id;
-
-        $districts = Districts::where('state_id', $stateId)
-            ->where('active_status', 1)
-            ->orderBy('district_name')
-            ->get(['id', 'district_name']);
-
-        return response()->json([
-            'status' => true,
-            'data'   => $districts
-        ]);
-    }
-
     public function bulkAction(Request $request)
     {
         $ids = explode(',', $request->ids);
@@ -162,6 +76,8 @@ class CommonController extends Controller
             'NotificationRules' => \App\Models\Master\NotificationRules::class,
             'CronJob' => \App\Models\Master\CronJob::class,
             'Schema' => \App\Models\Master\Schema::class,
+            'OrganizationType' => \App\Models\Master\OrganizationType::class,
+            'Organization' => \App\Models\Master\Organization::class,
         ];
 
         if (!isset($allowedModels[$modelName])) {
@@ -261,6 +177,87 @@ class CommonController extends Controller
         }
     }
 
+    public function auditLog($table, $recordId, $action, $oldData = [], $newData = [], $deviceType = null)
+    {
+        try {
+
+            //  ENUM validation
+            $allowedActions = ['INSERT', 'UPDATE', 'SOFT_DELETE', 'STATUS_CHANGE'];
+
+            if (!in_array($action, $allowedActions)) {
+                throw new \Exception("Invalid audit action: " . $action);
+            }
+
+            $userId = auth()->id() ?? 1;
+
+            //  IP + User Agent
+            $userIp = $_SERVER['HTTP_X_FORWARDED_FOR']
+                ?? $_SERVER['REMOTE_ADDR']
+                ?? 'Unknown';
+
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+
+            //  Auto detect device
+            if (!$deviceType) {
+                $deviceType = 'Desktop';
+                if (preg_match('/mobile/i', $userAgent)) {
+                    $deviceType = 'Mobile';
+                } elseif (preg_match('/tablet|ipad/i', $userAgent)) {
+                    $deviceType = 'Tablet';
+                }
+            }
+
+            //  Ensure array
+            $oldData = is_object($oldData) ? (array)$oldData : $oldData;
+            $newData = is_object($newData) ? (array)$newData : $newData;
+
+            DB::connection('mysql_log')->table('audit_logs_master')->insert([
+                'table_name'  => $table,
+                'record_id'   => $recordId,
+                'action'      => $action,
+                'old_data'    => !empty($oldData) ? json_encode($oldData) : null,
+                'new_data'    => !empty($newData) ? json_encode($newData) : null,
+                'created_by'  => $userId,
+                'created_at'  => now(),
+                'user_ip'     => $userIp,
+                'user_agent'  => $userAgent,
+                'device_type' => $deviceType,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Audit Log Failed', [
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getStateList(Request $request)
+    {
+        $states = States::where('active_status', 1)
+            ->orderBy('state_name')
+            ->get(['id', 'state_name']);
+
+
+        return response()->json([
+            'status' => true,
+            'data'   => $states
+        ]);
+    }
+
+    public function getDistrictList(Request $request)
+    {
+
+        $stateId = $request->state_id;
+
+        $districts = Districts::where('state_id', $stateId)
+            ->where('active_status', 1)
+            ->orderBy('district_name')
+            ->get(['id', 'district_name']);
+
+        return response()->json([
+            'status' => true,
+            'data'   => $districts
+        ]);
+    }
 
     public function getCityList(Request $request)
     {
@@ -383,7 +380,6 @@ class CommonController extends Controller
         ]);
     }
 
-
     public function getParentModuleList(Request $request)
     {
         $modules = Modules::where('parent_id', 0)
@@ -396,7 +392,6 @@ class CommonController extends Controller
             'data'   => $modules
         ]);
     }
-
 
     public function getFaqCategoryList()
     {
@@ -612,7 +607,6 @@ class CommonController extends Controller
         }
     }
 
-
     public function getBrandList()
     {
         try {
@@ -663,7 +657,6 @@ class CommonController extends Controller
             ], 500);
         }
     }
-
 
     public function getCancellationslabList()
     {
@@ -1096,7 +1089,6 @@ class CommonController extends Controller
         return response()->json(['error' => 'Upload failed'], 400);
     }
 
-
     public function getTicketFareSlabList()
     {
         try {
@@ -1119,7 +1111,6 @@ class CommonController extends Controller
             ]);
         }
     }
-
 
     public function getSlabList()
     {
@@ -1272,7 +1263,6 @@ class CommonController extends Controller
         }
     }
 
-
     public function getNotificationTemplate(Request $request)
     {
         try {
@@ -1335,7 +1325,6 @@ class CommonController extends Controller
             ]);
         }
     }
-
 
     public function getSchemaContent(Request $request)
     {
@@ -1440,7 +1429,7 @@ class CommonController extends Controller
         }
     }
 
-      public function RouteDropdown()
+    public function RouteDropdown()
     {
         try {
             $arrRoutes = DB::table('odbusmaster.mst_routes_details')
@@ -1471,6 +1460,34 @@ class CommonController extends Controller
                 'status' => false,
                 'data'   => [],
                 'message' => 'Unable to fetch route list.'
+            ]);
+        }
+    }
+
+    public function organizationTypeDropdown()
+    {
+        try {
+
+            $data = DB::table('odbusmaster.mst_organization_types')
+                ->select(
+                    'id',
+                    'type_name'
+                )
+                ->where('active_status', 1)
+                ->orderBy('type_name')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $data
+            ]);
+        } catch (\Throwable $e) {
+
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'data'   => []
             ]);
         }
     }

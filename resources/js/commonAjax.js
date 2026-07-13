@@ -1508,6 +1508,7 @@ function getLoadAnnextureList(annexture_type = "", type = "") {
         },
     });
 }
+
 export function loadAnnextureList_bk(
     key,
     selected = "",
@@ -2090,6 +2091,8 @@ export function loadBlogAuthorList(selectedId = 0) {
         },
     });
 }
+
+
 export function loadRouteList(selected_route_id = 0) {
     $(".selRoute").html('<option value="">Loading...</option>');
 
@@ -2118,5 +2121,45 @@ export function loadRouteList(selected_route_id = 0) {
         error: function () {
             $(".selRoute").html('<option value="">-- Select Route --</option>');
         },
+    });
+}
+
+
+export function loadOrganizationTypeList(selected_org_id = 0) {
+    $(".selOrg").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "organization/organization-type-dropdown",
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="">-- Select Organization Type --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (org) {
+
+                    let selected =
+                        org.id == selected_org_id ? "selected" : "";
+
+                    options += `
+                        <option value="${org.id}" ${selected}>
+                            ${org.type_name}
+                        </option>`;
+                });
+            }
+
+            $(".selOrg").html(options);
+
+            if ($("#org").hasClass("select2-hidden-accessible")) {
+                $("#org").select2("destroy");
+            }
+
+            initSelect2("#org", "Select Organization Type");
+        },
+        error: function () {
+            $(".selOrg").html('<option value="">-- Select Organization Type --</option>');
+        }
     });
 }

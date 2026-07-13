@@ -356,9 +356,29 @@
                 <i class="fa-solid fa-file-lines me-2"></i> Manage Template
             </a>
 
-             <a href="{{ url('admin/template-list') }}"
+            <a href="{{ url('admin/template-list') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/template-list*') ? 'active' : '' }}">
                 <i class="fa-solid fa-file-lines me-2"></i> Template List
+            </a>
+        </div>
+
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            data-bs-toggle="collapse"
+            href="#orgManagement"
+            aria-expanded="{{ Request::is('admin/organization-type*','admin/organization') ? 'true' : 'false' }}">
+            <span><i class="fa-solid fa-route me-2"></i> Organization Management</span>
+            <i class="fa-solid fa-chevron-down small"></i>
+        </a>
+
+        <div class="collapse {{ Request::is('admin/organization-type*','admin/organization') ? 'show' : '' }}" id="orgManagement">
+            <a href="{{ url('admin/organization-type',) }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization-type') ? 'active' : '' }}">
+                <i class="fa-solid fa-city me-2"></i> Organization Type
+            </a>
+
+            <a href="{{ url('admin/organization') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization') ? 'active' : '' }}">
+                <i class="fa-solid fa-city me-2"></i> Organization
             </a>
         </div>
     </div>
