@@ -365,12 +365,12 @@
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             data-bs-toggle="collapse"
             href="#orgManagement"
-            aria-expanded="{{ Request::is('admin/organization-type*','admin/organization') ? 'true' : 'false' }}">
+            aria-expanded="{{ Request::is('admin/organization-type*','admin/organization','admin/organization-address','admin/organization-contacts','admin/organization-bank-account','admin/organization-tax-details') ? 'true' : 'false' }}">
             <span><i class="fa-solid fa-route me-2"></i> Organization Management</span>
             <i class="fa-solid fa-chevron-down small"></i>
         </a>
 
-        <div class="collapse {{ Request::is('admin/organization-type*','admin/organization') ? 'show' : '' }}" id="orgManagement">
+        <div class="collapse {{ Request::is('admin/organization-type*','admin/organization','admin/organization-address','admin/organization-contacts','admin/organization-bank-account','admin/organization-tax-details') ? 'show' : '' }}" id="orgManagement">
             <a href="{{ url('admin/organization-type',) }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization-type') ? 'active' : '' }}">
                 <i class="fa-solid fa-city me-2"></i> Organization Type
@@ -379,6 +379,26 @@
             <a href="{{ url('admin/organization') }}"
                 class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization') ? 'active' : '' }}">
                 <i class="fa-solid fa-city me-2"></i> Organization
+            </a>
+
+             <a href="{{ url('admin/organization-address') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization-address') ? 'active' : '' }}">
+                <i class="fa-solid fa-city me-2"></i> Organization Address
+            </a>
+
+             <a href="{{ url('admin/organization-contacts') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization-contacts') ? 'active' : '' }}">
+                <i class="fa-solid fa-city me-2"></i> Organization Contacts
+            </a>
+
+             <a href="{{ url('admin/organization-bank-account') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization-bank-account') ? 'active' : '' }}">
+                <i class="fa-solid fa-city me-2"></i> Organization Bank Account
+            </a>
+
+             <a href="{{ url('admin/organization-tax-details') }}"
+                class="list-group-item list-group-item-action ps-4 {{ Request::is('admin/organization-tax-details') ? 'active' : '' }}">
+                <i class="fa-solid fa-city me-2"></i> Organization Tax Details
             </a>
         </div>
     </div>

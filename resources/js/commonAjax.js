@@ -26,7 +26,7 @@ export function initSelect2(selector, placeholder = "Select Option") {
     }
 }
 
-export function loadStateList(state_id = 0) {
+export function loadStateList(state_id = 0, stateSelector = "#selState") {
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-state-list",
@@ -37,43 +37,55 @@ export function loadStateList(state_id = 0) {
         dataType: "json",
         success: function (response) {
             let options = '<option value="">Select State</option>';
+
             if (response.status && response.data.length > 0) {
                 $.each(response.data, function (index, state) {
                     let selected =
                         state_id > 0 && state.id == state_id ? "selected" : "";
-                    options += `<option value="${state.id}" ${selected}>
-                                        ${state.state_name}
-                                    </option>`;
+
+                    options += `
+                        <option value="${state.id}" ${selected}>
+                            ${state.state_name}
+                        </option>
+                    `;
                 });
             }
 
-            $("#selState").html(options);
+            $(stateSelector).html(options).trigger("change");
         },
-        error: function (xhr) {
+        error: function () {
             console.log("Error loading states");
         },
     });
 }
 
-export function getDistrictList(state_id, selected_dist_id = 0) {
-    $("#selDistrict").html('<option value="">Loading...</option>');
+export function getDistrictList(
+    state_id,
+    selected_dist_id = 0,
+    districtSelector = "#selDistrict",
+) {
+    $(districtSelector).html('<option value="">Loading...</option>');
 
     if (!state_id) {
-        $("#selDistrict").html(
+        $(districtSelector).html(
             '<option value="">-- Select District --</option>',
         );
+
         return;
     }
 
     $.ajax({
         type: "POST",
         url: ajaxUrl + "get-district-list",
+
         data: {
             state_id: state_id,
             selected_dist_id: selected_dist_id,
             _token: $('meta[name="csrf-token"]').attr("content"),
         },
+
         dataType: "json",
+
         success: function (response) {
             let options = '<option value="">-- Select District --</option>';
 
@@ -83,18 +95,18 @@ export function getDistrictList(state_id, selected_dist_id = 0) {
                         district.id == selected_dist_id ? "selected" : "";
 
                     options += `
-                            <option value="${district.id}" ${selected}>
-                                ${district.district_name}
-                            </option>
-                        `;
+                        <option value="${district.id}" ${selected}>
+                            ${district.district_name}
+                        </option>
+                    `;
                 });
             }
 
-            $("#selDistrict").html(options);
+            $(districtSelector).html(options).trigger("change");
         },
-        error: function (xhr) {
-            console.log("Error loading districts");
-            $("#selDistrict").html(
+
+        error: function () {
+            $(districtSelector).html(
                 '<option value="">-- Select District --</option>',
             );
         },
@@ -589,8 +601,8 @@ export function formatDate(dateString) {
     });
 }
 
-export function loadCityList(selected_city_id = 0) {
-    $(".selCity").html('<option value="">Loading...</option>');
+export function loadCityList(selected_city_id = 0, citySelector = "#selCity") {
+    $(citySelector).html('<option value="">Loading...</option>');
 
     $.ajax({
         type: "POST",
@@ -605,21 +617,28 @@ export function loadCityList(selected_city_id = 0) {
 
             if (response.status && response.data.length > 0) {
                 response.data.forEach(function (city) {
-                    let selected = city.id == selected_city_id ? "selected" : "";
-                    options += `<option value="${city.id}" ${selected}>${city.city_name}</option>`;
+                    let selected =
+                        city.id == selected_city_id ? "selected" : "";
+
+                    options += `
+                <option value="${city.id}" ${selected}>
+                    ${city.city_name}
+                </option>
+            `;
                 });
             }
 
-            $(".selCity").html(options);
+            $(citySelector).html(options);
 
-            // IMPORTANT: re-init select2 after options are loaded
-            if ($('#selCity').hasClass('select2-hidden-accessible')) {
-                $('#selCity').select2('destroy');
+            if (selected_city_id > 0) {
+                $(citySelector).val(selected_city_id);
             }
-            initSelect2('#selCity', 'Select City');
+
+            $(citySelector).trigger("change");
         },
+
         error: function () {
-            $(".selCity").html('<option value="">-- Select City --</option>');
+            $(citySelector).html('<option value="">-- Select City --</option>');
         },
     });
 }
@@ -2092,7 +2111,6 @@ export function loadBlogAuthorList(selectedId = 0) {
     });
 }
 
-
 export function loadRouteList(selected_route_id = 0) {
     $(".selRoute").html('<option value="">Loading...</option>');
 
@@ -2124,7 +2142,6 @@ export function loadRouteList(selected_route_id = 0) {
     });
 }
 
-
 export function loadOrganizationTypeList(selected_org_id = 0) {
     $(".selOrg").html('<option value="">Loading...</option>');
 
@@ -2133,15 +2150,12 @@ export function loadOrganizationTypeList(selected_org_id = 0) {
         url: ajaxUrl + "organization/organization-type-dropdown",
         dataType: "json",
         success: function (response) {
-
-            let options = '<option value="">-- Select Organization Type --</option>';
+            let options =
+                '<option value="">-- Select Organization Type --</option>';
 
             if (response.status && response.data.length > 0) {
-
                 response.data.forEach(function (org) {
-
-                    let selected =
-                        org.id == selected_org_id ? "selected" : "";
+                    let selected = org.id == selected_org_id ? "selected" : "";
 
                     options += `
                         <option value="${org.id}" ${selected}>
@@ -2159,7 +2173,9 @@ export function loadOrganizationTypeList(selected_org_id = 0) {
             initSelect2("#org", "Select Organization Type");
         },
         error: function () {
-            $(".selOrg").html('<option value="">-- Select Organization Type --</option>');
-        }
+            $(".selOrg").html(
+                '<option value="">-- Select Organization Type --</option>',
+            );
+        },
     });
 }

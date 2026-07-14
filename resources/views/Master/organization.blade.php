@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Organization Type')
+@section('page_title', 'Organization')
 @section('content')
 
 <?php
@@ -120,9 +120,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div id="customPaginationTop"></div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
+                <table class="table table-hover table-bordered align-middle table-sm table-responsive"
+                    id="datatable"
                     data-url="{{ route('organization.dataTableView') }}"
-                    data-edit-url="{{ route('organization.edit', 'ID') }}">
+                    data-edit-url="{{ route('organization.edit','ID') }}"
+                    data-address-url="{{ route('organization-address.edit','ID') }}"
+                    data-bank-url="{{ route('organization-bank-account.edit','ID') }}"
+                    data-contact-url="{{ route('organization-contacts.edit','ID') }}"
+                    data-tax-url="{{ route('organization-tax-details.edit','ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -158,7 +163,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
     </div>
 </form>
+<style>
+    .dropdown-menu {
+        min-width: 250px;
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    }
 
+    .dropdown-item {
+        padding: .6rem 1rem;
+        font-size: 14px;
+    }
+
+    .dropdown-item i {
+        width: 22px;
+        color: #0d6efd;
+    }
+
+    .dropdown-item:hover {
+        background: #f5f8fc;
+    }
+</style>
 @endsection
 @push('scripts')
 
@@ -312,27 +338,84 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
             {
                 data: '',
+                orderable: false,
+                searchable: false,
                 render: function(data, type, row) {
 
                     let editUrl = $('#' + tableId).data('edit-url');
-
-                    if (!editUrl) return '';
+                    let addressUrl = $('#' + tableId).data('address-url');
+                    let bankUrl = $('#' + tableId).data('bank-url');
+                    let contactUrl = $('#' + tableId).data('contact-url');
+                    let taxUrl = $('#' + tableId).data('tax-url');
 
                     return `
+                    <div class="d-flex justify-content-center align-items-center gap-1">
+
+                        <!-- Edit Button -->
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_id)}">
-                        <i class="fa fa-edit"></i> Edit
+                            href="${editUrl.replace('ID', row.enc_id)}">
+                            <i class="fa fa-edit"></i> Edit
                         </a>
 
+                        <!-- View Log Button -->
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="mst_organization"
                             data-id="${row.enc_id}">
-                                <i class="fa fa-history"></i> View Log
+                            <i class="fa fa-history"></i>
                         </a>
-                    `;
+
+                        <!-- Three Dot Menu -->
+                        <div class="dropdown">
+
+                            <button class="btn btn-sm btn-secondary"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
+
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="${addressUrl.replace('ID', row.enc_id)}">
+                                        <i class="fa fa-map-marker-alt me-2"></i>
+                                        Add / Edit Address
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="${bankUrl.replace('ID', row.enc_id)}">
+                                        <i class="fa fa-university me-2"></i>
+                                        Add / Edit Bank Account
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="${contactUrl.replace('ID', row.enc_id)}">
+                                        <i class="fa fa-phone me-2"></i>
+                                        Add / Edit Contacts
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="${taxUrl.replace('ID', row.enc_id)}">
+                                        <i class="fa fa-file-invoice-dollar me-2"></i>
+                                        Add / Edit Tax Details
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+                    </div>`;
                 },
-                className: "noPrint text-center"
+                className: "text-center noPrint"
             }
         ]
 

@@ -32,6 +32,10 @@ use App\Http\Controllers\Admin\Ad\PricingPlanController;
 use App\Http\Controllers\Master\BrandController;
 use App\Http\Controllers\Master\OrganizationTypeController;
 use App\Http\Controllers\Master\OrganizationController;
+use App\Http\Controllers\Master\OrganizationContactsController;
+use App\Http\Controllers\Master\OrganizationTaxDetailsController;
+use App\Http\Controllers\Master\OrganizationAddressController;
+use App\Http\Controllers\Master\OrganizationBankAccountController;
 use App\Http\Controllers\Master\BusModelController;
 use App\Http\Controllers\Admin\Ad\AdsController;
 use App\Http\Controllers\Admin\Blog\BlogImagesController;
@@ -177,7 +181,7 @@ Route::prefix('admin')->group(function () {
     Route::post('get-schema-content', [CommonController::class, 'getSchemaContent']);
     Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
     Route::get('manage-route-distance/route-dropdown', [CommonController::class, 'RouteDropdown'])->name('manage-route-distance.routeDropdown');
-    Route::get('organization/organization-type-dropdown',[CommonController::class, 'organizationTypeDropdown'])->name('organization.organizationTypeDropdown');
+    Route::get('organization/organization-type-dropdown', [CommonController::class, 'organizationTypeDropdown'])->name('organization.organizationTypeDropdown');
 
 
 
@@ -402,14 +406,14 @@ Route::prefix('admin')->group(function () {
     Route::post('manage-boarding-dropping/dataTableView', [ManageBoardingDroppingController::class, 'dataTableView'])->name('manage-boarding-dropping.dataTableView');
     Route::post('/manage-boarding-dropping/add', [ManageBoardingDroppingController::class, 'add'])->name('manage-boarding-dropping.add');
 
-    
+
     //Manage Popular Routes
     Route::get('/manage-popular-routes', [ManagePopularRoutesController::class, 'index'])->name('manage-popular-routes.index');
     Route::post('manage-popular-routes/dataTableView', [ManagePopularRoutesController::class, 'dataTableView'])->name('manage-popular-routes.dataTableView');
     Route::post('/manage-popular-routes/add', [ManagePopularRoutesController::class, 'add'])->name('manage-popular-routes.add');
     Route::post('/manage-popular-routes/update-sequence', [ManagePopularRoutesController::class, 'updateSequence'])->name('manage-popular-routes.update-sequence');
 
-    
+
     //Manage Template
     Route::get('/manage-template', [ManageTemplateController::class, 'index'])->name('manage-template.index');
     Route::post('manage-template/dataTableView', [ManageTemplateController::class, 'dataTableView'])->name('manage-template.dataTableView');
@@ -418,7 +422,7 @@ Route::prefix('admin')->group(function () {
     // Template List
     Route::get('/template-list', [TemplateListController::class, 'index'])->name('template-list.index');
     Route::post('template-list/dataTableView', [TemplateListController::class, 'dataTableView'])->name('template-list.dataTableView');
-    Route::post('manage-template/view',[TemplateListController::class,'view'])->name('manage-template.view');
+    Route::post('manage-template/view', [TemplateListController::class, 'view'])->name('manage-template.view');
 
     //Organization Type
     Route::get('/organization-type', [OrganizationTypeController::class, 'organizationType'])->name('organization-type.index');
@@ -431,6 +435,35 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'organization/add', [OrganizationController::class, 'add'])->name('organization.add');
     Route::post('organization/dataTableView', [OrganizationController::class, 'dataTableView'])->name('organization.dataTableView');
     Route::match(['get', 'post'], 'organization/edit/{encId}', [OrganizationController::class, 'edit'])->name('organization.edit');
+
+    //Organization Address
+    Route::get('/organization-address', [OrganizationAddressController::class, 'organizationAddress'])->name('organization-address.index');
+
+    Route::match(['get', 'post'], 'organization-address', [OrganizationAddressController::class, 'add'])->name('organization-address.index');
+    Route::match(['get', 'post'], 'organization-address/edit/{encId}', [OrganizationAddressController::class, 'edit'])->name('organization-address.edit');
+
+    //Organization Bank Account
+    Route::match(['get', 'post'], 'organization-bank-account/add', [OrganizationTypeController::class, 'add'])->name('organization-bank-account.add');
+    Route::get('/organization-bank-account', [OrganizationBankAccountController::class, 'organizationBankAccount'])->name('organization-bank-account.index');
+    Route::match(['get', 'post'], 'organization-bank-account/edit/{encId}', [OrganizationBankAccountController::class, 'edit'])->name('organization-bank-account.edit');
+
+    //Organization Contact 
+    Route::match(['get', 'post'], 'organization-contacts/add', [OrganizationTypeController::class, 'add'])->name('organization-contacts.add');
+    Route::get('/organization-contacts', [OrganizationContactsController::class, 'organizationContacts'])->name('organization-contacts.index');
+    Route::match(['get', 'post'], 'organization-contacts/edit/{encId}', [OrganizationContactsController::class, 'edit'])->name('organization-contacts.edit');
+
+    //Organization Tax Details
+    Route::match(['get', 'post'], 'organization-tax-details/add', [OrganizationTypeController::class, 'add'])->name('organization-tax-details.add');
+    Route::get('/organization-tax-details', [OrganizationTaxDetailsController::class, 'organizationTaxDetails'])->name('organization-tax-details.index');
+    Route::match(['get', 'post'], 'organization-tax-details/edit/{encId}', [OrganizationTaxDetailsController::class, 'edit'])->name('organization-tax-details.edit');
+
+
+
+
+
+
+
+
 
     // Jagan
     // ======================================================================================================================================================================================================
