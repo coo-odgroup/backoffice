@@ -438,22 +438,21 @@ Route::prefix('admin')->group(function () {
 
     //Organization Address
     Route::get('/organization-address', [OrganizationAddressController::class, 'organizationAddress'])->name('organization-address.index');
-
     Route::match(['get', 'post'], 'organization-address', [OrganizationAddressController::class, 'add'])->name('organization-address.index');
     Route::match(['get', 'post'], 'organization-address/edit/{encId}', [OrganizationAddressController::class, 'edit'])->name('organization-address.edit');
 
     //Organization Bank Account
-    Route::match(['get', 'post'], 'organization-bank-account/add', [OrganizationTypeController::class, 'add'])->name('organization-bank-account.add');
+    Route::match(['get', 'post'], 'organization-bank-account/add', [OrganizationBankAccountController::class, 'add'])->name('organization-bank-account.add');
     Route::get('/organization-bank-account', [OrganizationBankAccountController::class, 'organizationBankAccount'])->name('organization-bank-account.index');
     Route::match(['get', 'post'], 'organization-bank-account/edit/{encId}', [OrganizationBankAccountController::class, 'edit'])->name('organization-bank-account.edit');
 
     //Organization Contact 
-    Route::match(['get', 'post'], 'organization-contacts/add', [OrganizationTypeController::class, 'add'])->name('organization-contacts.add');
+    Route::match(['get', 'post'], 'organization-contacts/add', [OrganizationContactsController::class, 'add'])->name('organization-contacts.add');
     Route::get('/organization-contacts', [OrganizationContactsController::class, 'organizationContacts'])->name('organization-contacts.index');
     Route::match(['get', 'post'], 'organization-contacts/edit/{encId}', [OrganizationContactsController::class, 'edit'])->name('organization-contacts.edit');
 
     //Organization Tax Details
-    Route::match(['get', 'post'], 'organization-tax-details/add', [OrganizationTypeController::class, 'add'])->name('organization-tax-details.add');
+    Route::match(['get', 'post'], 'organization-tax-details/add', [OrganizationTaxDetailsController::class, 'add'])->name('organization-tax-details.add');
     Route::get('/organization-tax-details', [OrganizationTaxDetailsController::class, 'organizationTaxDetails'])->name('organization-tax-details.index');
     Route::match(['get', 'post'], 'organization-tax-details/edit/{encId}', [OrganizationTaxDetailsController::class, 'edit'])->name('organization-tax-details.edit');
 

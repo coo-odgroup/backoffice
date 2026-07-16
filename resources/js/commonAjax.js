@@ -215,32 +215,32 @@ export function viewAlert(msg, ctrlId = "", redLoc = "") {
     };
 }
 
-export function executeBulkAction(ids, action) {
-    let model = $("#hdn_model").val();
+    export function executeBulkAction(ids, action) {
+        let model = $("#hdn_model").val();
 
-    $.ajax({
-        type: "POST",
-        url: window.bulkActionUrl,
-        data: {
-            ids: ids.join(","), // convert to string
-            action: action,
-            model: model,
-            _token: $('meta[name="csrf-token"]').attr("content"),
-        },
-        success: function (response) {
-            viewAlert(response.message);
+        $.ajax({
+            type: "POST",
+            url: window.bulkActionUrl,
+            data: {
+                ids: ids.join(","), // convert to string
+                action: action,
+                model: model,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                viewAlert(response.message);
 
-            if (window.dataTableInstance) {
-                setTimeout(function () {
-                    window.dataTableInstance.ajax.reload(null, false);
-                }, 300);
-            }
-        },
-        error: function (xhr) {
-            viewAlert("Something went wrong! Please try again later.");
-        },
-    });
-}
+                if (window.dataTableInstance) {
+                    setTimeout(function () {
+                        window.dataTableInstance.ajax.reload(null, false);
+                    }, 300);
+                }
+            },
+            error: function (xhr) {
+                viewAlert("Something went wrong! Please try again later.");
+            },
+        });
+    }
 
 export function checkFun(ctrId) {
     if ($("#" + ctrId).is(":checked")) {

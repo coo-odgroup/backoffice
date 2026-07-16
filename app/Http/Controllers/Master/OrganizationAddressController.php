@@ -48,7 +48,7 @@ class OrganizationAddressController extends Controller
                         'organization_type',
                         'parent_id',
                         'logo',
-                        'website_url'
+                        'website_url',
                     )
                     ->where('id', $id)
                     ->first();
@@ -59,7 +59,12 @@ class OrganizationAddressController extends Controller
 
                 $data['row'] = $dataResQry;
 
-                
+                $data['addresses'] = DB::table('mst_organization_address')
+                    ->where('organization_id', $id)
+                    ->where('active_status', 1)
+                    ->orderBy('is_default', 'desc')
+                    ->orderBy('id')
+                    ->get();
             } else {
 
                 $redirectPage = "admin/organization-address";
@@ -79,6 +84,7 @@ class OrganizationAddressController extends Controller
                     'pincode.*'      => 'nullable|max:10',
                     'latitude.*'     => 'nullable|max:30',
                     'longitude.*'    => 'nullable|max:30',
+                    'landmark.*'    => 'nullable|max:30',
 
                 ], [
 
@@ -115,6 +121,7 @@ class OrganizationAddressController extends Controller
                     $pincodes     = request('pincode');
                     $latitudes    = request('latitude');
                     $longitudes   = request('longitude');
+                    $landmark   = request('landmark');
 
                     foreach ($addressTypes as $key => $value) {
 
@@ -129,6 +136,7 @@ class OrganizationAddressController extends Controller
                             'state_id'     => $stateIds[$key] ?? null,
                             'country_id'   => $countryIds[$key] ?? 1,
                             'pincode'      => htmlEncode($pincodes[$key] ?? ''),
+                            'landmark'      => htmlEncode($landmark[$key] ?? ''),
                             'latitude'     => $latitudes[$key] ?? null,
                             'longitude'    => $longitudes[$key] ?? null,
                             'is_default'   => ($key == 0) ? 1 : 0,
@@ -139,7 +147,7 @@ class OrganizationAddressController extends Controller
                             'updated_at'   => now()
 
                         ];
-                        
+
                         $insertId = DB::table('mst_organization_address')
                             ->insertGetId($row);
 
