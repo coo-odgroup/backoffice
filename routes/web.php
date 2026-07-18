@@ -34,6 +34,7 @@ use App\Http\Controllers\Master\OrganizationTypeController;
 use App\Http\Controllers\Master\OrganizationController;
 use App\Http\Controllers\Master\OrganizationContactsController;
 use App\Http\Controllers\Master\OrganizationTaxDetailsController;
+use App\Http\Controllers\Master\OrganizationDocumentController;
 use App\Http\Controllers\Master\OrganizationAddressController;
 use App\Http\Controllers\Master\OrganizationBankAccountController;
 use App\Http\Controllers\Master\BusModelController;
@@ -66,6 +67,7 @@ use App\Http\Controllers\Master\AxleTypeController;
 use App\Http\Controllers\Master\MstSeatLayoutController;
 use App\Http\Controllers\Master\BusServiceController;
 use App\Http\Controllers\Master\AnnextureTypeController;
+use App\Http\Controllers\Master\DocumentTypeController;
 use App\Http\Controllers\Master\AnnextureController;
 use App\Http\Controllers\Admin\Bus\BusWizardController;
 use App\Http\Controllers\Master\BusScheduleController;
@@ -328,6 +330,7 @@ Route::prefix('admin')->group(function () {
     Route::post('annexture-type/dataTableView', [AnnextureTypeController::class, 'dataTableView'])->name('annextureType.dataTableView');
     Route::match(['get', 'post'], 'annexture-type/edit/{encId}', [AnnextureTypeController::class, 'edit'])->name('annextureType.edit');
 
+
     //Annexture
     Route::get('/annexture', [AnnextureController::class, 'annexture'])->name('annexture.index');
     Route::match(['get', 'post'], 'annexture/add', [AnnextureController::class, 'add'])->name('annexture.add');
@@ -456,6 +459,16 @@ Route::prefix('admin')->group(function () {
     Route::get('/organization-tax-details', [OrganizationTaxDetailsController::class, 'organizationTaxDetails'])->name('organization-tax-details.index');
     Route::match(['get', 'post'], 'organization-tax-details/edit/{encId}', [OrganizationTaxDetailsController::class, 'edit'])->name('organization-tax-details.edit');
 
+     //Organization Document Details
+    Route::match(['get', 'post'], 'organization-document/add', [OrganizationDocumentController::class, 'add'])->name('organization-document.add');
+    Route::get('/organization-document', [OrganizationDocumentController::class, 'document'])->name('organization-document.index');
+    Route::match(['get', 'post'], 'organization-document/edit/{encId}', [OrganizationDocumentController::class, 'edit'])->name('organization-document.edit');
+
+    //Document Type
+    Route::get('/document-type', [DocumentTypeController::class, 'documentType'])->name('documentType.index');
+    Route::match(['get', 'post'], 'document-type/add', [DocumentTypeController::class, 'add'])->name('documentType.add');
+    Route::post('document-type/dataTableView', [DocumentTypeController::class, 'dataTableView'])->name('documentType.dataTableView');
+    Route::match(['get', 'post'], 'document-type/edit/{encId}', [DocumentTypeController::class, 'edit'])->name('documentType.edit');
 
 
 

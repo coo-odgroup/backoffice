@@ -213,68 +213,6 @@
             </div>
         </form>
 
-        <!-- <style>
-            .address-card .card-header {
-                transition: .3s ease;
-            }
-
-            .primary-switch {
-                position: relative;
-                display: inline-block;
-                width: 54px;
-                height: 28px;
-                margin: 0;
-            }
-
-            .primary-switch input {
-                display: none;
-            }
-
-            .primary-switch .slider {
-                position: absolute;
-                inset: 0;
-                background: #D9D7D7;
-                border-radius: 30px;
-                cursor: pointer;
-                transition: .3s;
-            }
-
-            .primary-switch .slider:before {
-                content: "";
-                position: absolute;
-                width: 22px;
-                height: 22px;
-                left: 3px;
-                top: 3px;
-                background: #fff;
-                border-radius: 50%;
-                transition: .3s;
-                box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
-            }
-
-            .primary-switch input:checked+.slider {
-                background: #0d6efd;
-            }
-
-            .primary-switch input:checked+.slider:before {
-                transform: translateX(26px);
-            }
-
-            .primary-header {
-                background: #D9D7D7 !important;
-                color: #000 !important;
-                transition: .3s;
-            }
-
-            .primary-header .account-title {
-                color: #000 !important;
-            }
-
-            .bg-primary {
-                transition: .3s;
-            }
-        </style> -->
-
         @endsection
         @push('scripts')
 

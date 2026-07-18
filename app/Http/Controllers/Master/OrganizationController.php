@@ -205,14 +205,13 @@ class OrganizationController extends Controller
                     'orgName'      => 'required|max:150',
                     'orgCode'      => 'required|max:50',
                     'parent_id'    => 'nullable|integer',
-                    'logo'         => 'nullable|mimes:svg|max:2048',
+                    'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
-                ], [
+                ],   [
 
                     'org.required'         => 'Organization Type is required.',
                     'orgName.required'     => 'Organization Name is required.',
                     'orgCode.required'     => 'Organization Code is required.',
-                    'logo.mimes'           => 'Only SVG file is allowed.'
 
                 ]);
 

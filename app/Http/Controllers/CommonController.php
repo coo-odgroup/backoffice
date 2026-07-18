@@ -67,6 +67,7 @@ class CommonController extends Controller
             'TicketFareSlab' => \App\Models\Master\TicketFareSlab::class,
             'TicketFareSlabInfo' => \App\Models\Master\TicketFareSlabInfo::class,
             'AnnextureType' => \App\Models\Master\AnnextureType::class,
+            'DocumentType' => \App\Models\Master\DocumentType::class,
             'CancellationslabInfo' => \App\Models\Master\CancellationslabInfo::class,
             'Annexture' => \App\Models\Master\Annexture::class,
             'BusSchedule' => \App\Models\Bus\BusSchedule::class,

@@ -127,7 +127,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     data-address-url="{{ route('organization-address.edit','ID') }}"
                     data-bank-url="{{ route('organization-bank-account.edit','ID') }}"
                     data-contact-url="{{ route('organization-contacts.edit','ID') }}"
-                    data-tax-url="{{ route('organization-tax-details.edit','ID') }}">
+                    data-tax-url="{{ route('organization-tax-details.edit','ID') }}"
+                    data-document-url="{{ route('organization-document.edit','ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -347,6 +348,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let bankUrl = $('#' + tableId).data('bank-url');
                     let contactUrl = $('#' + tableId).data('contact-url');
                     let taxUrl = $('#' + tableId).data('tax-url');
+                    let documentUrl = $('#' + tableId).data('document-url');
 
                     return `
                     <div class="d-flex justify-content-center align-items-center gap-1">
@@ -406,6 +408,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         href="${taxUrl.replace('ID', row.enc_id)}">
                                         <i class="fa fa-file-invoice-dollar me-2"></i>
                                         Add / Edit Tax Details
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="${documentUrl.replace('ID', row.enc_id)}">
+                                        <i class="fa fa-file-invoice-dollar me-2"></i>
+                                        Add / Edit Documents
                                     </a>
                                 </li>
 

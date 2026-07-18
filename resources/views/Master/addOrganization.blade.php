@@ -62,7 +62,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="col-md-6">
                                         <div class="row mb-2">
                                             <!-- Left Side -->
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="mb-3">
                                                     <label for="org">
                                                         Organization Type
@@ -71,7 +71,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                     <select class="form-select form-select-sm selOrg" id="org" name="org">
                                                     </select>
                                                 </div>
-                                                <div class="mb-3">
+                                                <div class="mb-3 d-none">
                                                     <label for="uniqueId">
                                                         UniqueId
                                                         <span class="text-danger important">*</span>
@@ -84,10 +84,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                         value="{{ old('uniqueId', $data['uniqueId'] ?? ($data['row']->unique_id ?? '')) }}"
                                                         readonly>
                                                 </div>
-                                            </div>
 
-                                            <!-- Right Side -->
-                                            <div class="col-md-6">
+
+                                                <!-- Right Side -->
+
                                                 <div class="mb-3">
                                                     <label for="orgName">
                                                         Organization Name
@@ -116,51 +116,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6 d-flex align-items-center">
+                                    <div class="col-md-6 ">
                                         <div class="w-100">
                                             <div class="row text-center">
                                                 <div class="w-100">
                                                     <div class="row">
 
-                                                        <!-- Parent ID -->
-                                                        <div class="col-md-4">
-                                                            <div class="mb-3">
-                                                                <label for="parent_id">
-                                                                    Parent ID
-                                                                </label>
-                                                                <input type="number"
-                                                                    class="form-control form-control-sm"
-                                                                    placeholder="Enter Parent ID"
-                                                                    id="parent_id"
-                                                                    name="parent_id"
-                                                                    placeholder="Enter Parent ID"
-                                                                    value="{{ old('parent_id', $data['row']->parent_id ?? '') }}">
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Logo -->
-                                                        <div class="col-md-4">
-                                                            <div class="mb-3">
-                                                                <label for="logo">
-                                                                    Logo (SVG)
-                                                                </label>
-
-                                                                <input type="file"
-                                                                    class="form-control form-control-sm"
-                                                                    id="logo"
-                                                                    name="logo"
-                                                                    accept=".svg,image/svg+xml">
-
-                                                                @if(!empty($data['row']->logo))
-                                                                <small class="text-success">
-                                                                    Current: {{ $data['row']->logo }}
-                                                                </small>
-                                                                @endif
-                                                            </div>
-                                                        </div>
 
                                                         <!-- Website URL -->
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-6">
                                                             <div class="mb-3">
                                                                 <label for="website_url">
                                                                     Website URL
@@ -173,6 +137,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                     value="{{ old('website_url', $data['row']->website_url ?? '') }}">
                                                             </div>
                                                         </div>
+                                                        <!-- Logo -->
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+
+                                                                <label for="logo">
+                                                                    Logo
+                                                                    <small class="text-muted">(SVG, JPG, JPEG, PNG, WEBP)</small>
+                                                                </label>
+
+                                                                <input type="file"
+                                                                    class="form-control form-control-sm"
+                                                                    id="logo"
+                                                                    name="logo"
+                                                                    accept=".svg,.jpg,.jpeg,.png,.webp,image/svg+xml,image/jpeg,image/png,image/webp">
+
+                                                                <!-- Image Preview -->
+                                                                <div class="mt-3">
+                                                                    <img id="logoPreview"
+                                                                        src="@if(!empty($data['row']->logo)){{ asset('storage/organization/'.$data['row']->logo) }}@else{{ asset('images/no-image.png') }}@endif"
+                                                                        alt="Logo Preview"
+                                                                        class="img-thumbnail"
+                                                                        style="max-height:120px; max-width:180px;">
+                                                                </div>
+
+                                                                @if(!empty($data['row']->logo))
+                                                                <small class="text-success d-block mt-2">
+                                                                    Current: {{ $data['row']->logo }}
+                                                                </small>
+                                                                @endif
+
+                                                            </div>
+                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -267,5 +264,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $(selector).html(options).trigger('change');
     }
+
+    $('#logo').on('change', function(e) {
+
+        const file = e.target.files[0];
+        if (!file) return;  
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            $('#logoPreview').attr('src', event.target.result);
+        };
+
+        reader.readAsDataURL(file);
+
+    });
 </script>
 @endpush
