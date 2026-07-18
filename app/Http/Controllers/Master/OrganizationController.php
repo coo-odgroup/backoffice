@@ -64,7 +64,7 @@ class OrganizationController extends Controller
             if ($selStatus !== '' && $selStatus !== null) {
                 $query->where('o.active_status', $selStatus);
             }
-            
+
             if (!empty($selOrgType)) {
                 $query->where('o.organization_type', $selOrgType);
             }
@@ -395,5 +395,136 @@ class OrganizationController extends Controller
     public function edit($encId)
     {
         return $this->add($encId);
+    }
+
+    public function viewOrganization($encId)
+    {
+        try {
+
+            $id = Crypt::decryptString($encId);
+
+            $organization = DB::table('mst_organization as o')
+                ->leftJoin(
+                    'mst_organization as p',
+                    'p.id',
+                    '=',
+                    'o.parent_id'
+                )
+                ->leftJoin(
+                    'mst_organization_types as ot',
+                    'ot.id',
+                    '=',
+                    'o.organization_type'
+                )
+                ->select(
+                    'o.*',
+                    'ot.type_name as organization_type_name',
+                    'p.organization_name as parent_name'
+                )
+                ->where('o.id', $id)
+                ->first();
+
+            $contactTypeId = DB::table('mst_annexture_type')
+                ->where('annexture_type', 'CONTACT_TYPE')
+                ->value('id');
+
+            $contacts = DB::table('mst_organization_contacts as c')
+                ->leftJoin('mst_annexture as a', function ($join) use ($contactTypeId) {
+                    $join->on('a.annexture_value', '=', 'c.contact_type')
+                        ->where('a.annexture_type_id', '=', $contactTypeId);
+                })
+                ->select(
+                    'c.*',
+                    'a.annexture_name as contact_type_name'
+                )
+                ->where('c.organization_id', $id)
+                ->where('c.active_status', 1)
+                ->orderByDesc('c.is_primary')
+                ->orderBy('c.id')
+                ->get();
+
+            $addressTypeId = DB::table('mst_annexture_type')
+                ->where('annexture_type', 'ADDRESS_TYPE')
+                ->value('id');
+
+            $addresses = DB::table('mst_organization_address as a')
+
+                ->leftJoin('mst_annexture as at', function ($join) use ($addressTypeId) {
+
+                    $join->on('at.annexture_value', '=', 'a.address_type')
+                        ->where('at.annexture_type_id', '=', $addressTypeId);
+                })
+
+                ->leftJoin('mst_cities as c', 'c.id', '=', 'a.city_id')
+                ->leftJoin('mst_districts as d', 'd.id', '=', 'a.district_id')
+                ->leftJoin('mst_states as s', 's.id', '=', 'a.state_id')
+
+                ->select(
+                    'a.*',
+                    'at.annexture_name as address_type_name',
+                    'c.city_name',
+                    'd.district_name',
+                    's.state_name',
+                    DB::raw("'India' as country_name")
+                )
+
+                ->where('a.organization_id', $id)
+                ->where('a.active_status', 1)
+                ->orderByDesc('a.is_default')
+                ->orderBy('a.id')
+                ->get();
+
+
+            $banks = DB::table('mst_organization_bank_accounts')
+                ->where('organization_id', $id)
+                ->where('active_status', 1)
+                ->orderByDesc('is_primary')
+                ->orderBy('id')
+                ->get();
+
+
+            $tax = DB::table('mst_organization_tax_details')
+                ->where('organization_id', $id)
+                ->where('active_status', 1)
+                ->first();
+
+            $documents = DB::table('mst_organization_documents as d')
+
+                ->leftJoin(
+                    'mst_document_types as dt',
+                    'dt.id',
+                    '=',
+                    'd.document_type'
+                )
+
+                ->select(
+                    'd.*',
+                    'dt.document_name'
+                )
+
+                ->where('d.organization_id', $id)
+                ->where('d.active_status', 1)
+                ->orderBy('d.id')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'organization' => $organization,
+                'contacts' => $contacts,
+                'addresses' => $addresses,
+                'banks' => $banks,
+                'tax' => $tax,
+                'documents' => $documents
+
+            ]);
+        } catch (\Throwable $e) {
+
+            Log::error($e);
+            return response()->json([
+                'status' => false,
+                'message' => 'Unable to load organization.'
+
+            ], 500);
+        }
     }
 }

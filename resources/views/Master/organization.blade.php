@@ -128,7 +128,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     data-bank-url="{{ route('organization-bank-account.edit','ID') }}"
                     data-contact-url="{{ route('organization-contacts.edit','ID') }}"
                     data-tax-url="{{ route('organization-tax-details.edit','ID') }}"
-                    data-document-url="{{ route('organization-document.edit','ID') }}">
+                    data-document-url="{{ route('organization-document.edit','ID') }}"
+                    data-view-url="{{ route('organization.view','ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -164,6 +165,110 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
     </div>
 </form>
+<!-- ===========================================================
+    Organization View Modal
+============================================================ -->
+<div class="modal fade"
+    id="organizationViewModal"
+    tabindex="-1"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Header -->
+            <div class="modal-header  text-white" style="background:#0f4c81;color:#fff;">
+                <h5 class="modal-title">
+                    <i class="fa fa-building me-2"></i>
+                    Organization Details
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body bg-light">
+                <!-- Loader -->
+                <div id="viewLoader"
+                    class="text-center py-5">
+                    <div class="spinner-border text-primary"></div>
+                    <h6 class="mt-3">
+                        Loading Organization...
+                    </h6>
+                </div>
+                <!-- Actual Content -->
+                <div id="viewContent" style="display:none;">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header  text-white" style="background:#0f4c81;color:#fff;">
+                            <strong> Organization Information</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3" id="organizationInfo">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header  text-white" style="background:#198754;color:#fff;">
+                            <strong> Contacts </strong>
+                        </div>
+                        <div class="card-body">
+                            <div id="contactCards" class="row g-3">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header text-white" style="background:#0ea5e9;color:#fff;">
+                            <strong>
+                                Addresses
+                            </strong>
+                        </div>
+                        <div class="card-body">
+                            <div id="addressCards" class="row g-3">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header " style="background:#f59e0b;color:#fff;">
+                            <strong> Bank Accounts </strong>
+                        </div>
+                        <div class="card-body">
+                            <div id="bankCards" class="row g-3">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header text-white" style="background:#374151;color:#fff;">
+                            <strong> Tax Details </strong>
+                        </div>
+                        <div class="card-body">
+                            <div id="taxDetails">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow-sm">
+                        <div class="card-header text-white" style="background:#6b7280;color:#fff;">
+                            <strong> Documents</strong>
+                        </div>
+                        <div class="card-body">
+                            <div id="documentCards" class="row g-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <style>
     .dropdown-menu {
         min-width: 250px;
@@ -185,6 +290,137 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     .dropdown-item:hover {
         background: #f5f8fc;
     }
+
+    .modern-card{
+    background:#fff;
+    border-radius:18px;
+    padding:20px;
+    border:1px solid #edf2f7;
+    box-shadow:0 10px 30px rgba(15,23,42,.06);
+    transition:.3s;
+    height:100%;
+}
+
+.modern-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 18px 40px rgba(15,23,42,.12);
+}
+
+.modern-header{
+    display:flex;
+    align-items:center;
+    padding-bottom:18px;
+    margin-bottom:18px;
+    border-bottom:1px solid #eef2f7;
+}
+
+.modern-header h5{
+    margin:0;
+    font-size:17px;
+    font-weight:700;
+    color:#1e293b;
+}
+
+.modern-header small{
+    color:#64748b;
+    font-size:13px;
+}
+
+.modern-body{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.avatar-circle{
+    width:54px;
+    height:54px;
+    border-radius:16px;
+    background:#2563eb;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+}
+
+.info-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    border-bottom:1px dashed #edf2f7;
+    padding-bottom:12px;
+}
+
+.info-item:last-child{
+    border-bottom:none;
+}
+
+.info-item span{
+    color:#64748b;
+    font-size:13px;
+    font-weight:500;
+}
+
+.info-item strong{
+    color:#0f172a;
+    font-size:14px;
+    font-weight:700;
+    text-align:right;
+}
+
+.mini-box{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:14px;
+    padding:14px;
+    height:100%;
+}
+
+.mini-box label{
+    display:block;
+    margin-bottom:6px;
+    font-size:11px;
+    text-transform:uppercase;
+    color:#64748b;
+    font-weight:600;
+    letter-spacing:.6px;
+}
+
+.mini-box div{
+    font-size:14px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.org-profile-img{
+    width:90px;
+    height:90px;
+    border-radius:20px;
+    object-fit:cover;
+    border:4px solid #fff;
+    box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+
+.org-profile-placeholder{
+    width:90px;
+    height:90px;
+    border-radius:20px;
+    background:linear-gradient(135deg,#2563eb,#3b82f6);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:34px;
+    box-shadow:0 8px 24px rgba(37,99,235,.35);
+}
+
+.org-title{
+    font-size:28px;
+    font-weight:700;
+    color:#0f172a;
+}
 </style>
 @endsection
 @push('scripts')
@@ -349,9 +585,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let contactUrl = $('#' + tableId).data('contact-url');
                     let taxUrl = $('#' + tableId).data('tax-url');
                     let documentUrl = $('#' + tableId).data('document-url');
+                    let viewUrl = $('#' + tableId).data('view-url');
 
                     return `
                     <div class="d-flex justify-content-center align-items-center gap-1">
+
+                            <span class="btn btn-sm btn-primary btnViewCategory"
+                                data-id="${row.enc_id}">
+                                <i class="fa fa-eye"></i> View
+                            </span>
 
                         <!-- Edit Button -->
                         <a class="btn btn-sm btn-info"
@@ -376,7 +618,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 aria-expanded="false">
                                 <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
-
                             <ul class="dropdown-menu dropdown-menu-end shadow">
 
                                 <li>
@@ -386,7 +627,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         Add / Edit Address
                                     </a>
                                 </li>
-
                                 <li>
                                     <a class="dropdown-item"
                                         href="${bankUrl.replace('ID', row.enc_id)}">
@@ -394,7 +634,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         Add / Edit Bank Account
                                     </a>
                                 </li>
-
                                 <li>
                                     <a class="dropdown-item"
                                         href="${contactUrl.replace('ID', row.enc_id)}">
@@ -402,7 +641,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         Add / Edit Contacts
                                     </a>
                                 </li>
-
                                 <li>
                                     <a class="dropdown-item"
                                         href="${taxUrl.replace('ID', row.enc_id)}">
@@ -417,11 +655,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         Add / Edit Documents
                                     </a>
                                 </li>
-
                             </ul>
-
                         </div>
-
                     </div>`;
                 },
                 className: "text-center noPrint"
@@ -429,6 +664,692 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         ]
 
         loadDataTable(tableId, dataTableColumns, orderBy, searchParams, displayColumns);
+    }
+
+    $(document).on('click', '.btnViewCategory', function(e) {
+
+        e.preventDefault();
+        let encId = $(this).data('id');
+        let url = $('#datatable')
+            .data('view-url')
+            .replace('ID', encId);
+
+        console.log(url);
+
+        $('#viewLoader').show();
+        $('#viewContent').hide();
+        const modal = new bootstrap.Modal(document.getElementById('organizationViewModal'));
+        modal.show();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) {
+                console.log(res);
+
+                if (!res.status) {
+                    Swal.fire('Error', 'Unable to load organization.', 'error');
+                    return;
+                }
+                renderOrganization(res);
+            },
+
+            error: function(xhr) {
+                console.log(xhr);
+                console.log(xhr.responseText);
+
+                Swal.fire('Error', 'Something went wrong.', 'error');
+            },
+            complete: function() {
+                $('#viewLoader').hide();
+                $('#viewContent').show();
+            }
+        });
+
+    });
+
+    function clearViewSections() {
+        $('#organizationInfo').html('');
+        $('#contactCards').html('');
+        $('#addressCards').html('');
+        $('#bankCards').html('');
+        $('#taxDetails').html('');
+        $('#documentCards').html('');
+    }
+
+    function renderOrganization(res) {
+
+        clearViewSections();
+        renderOrganizationInfo(res.organization);
+        renderContacts(res.contacts);
+        renderAddresses(res.addresses);
+        renderBanks(res.banks);
+        renderTax(res.tax);
+        renderDocuments(res.documents);
+
+    }
+    $('#organizationViewModal').on('hidden.bs.modal', function() {
+        clearViewSections();
+        $('#viewLoader').show();
+        $('#viewContent').hide();
+    });
+
+    function renderOrganizationInfo(org) {
+
+        if (!org) {
+            $('#organizationInfo').html(`
+            <div class="col-12">
+                <div class="alert alert-warning rounded-4">
+                    <i class="fa fa-circle-info me-2"></i>Organization information not found.
+                </div>
+            </div>
+        `);
+            return;
+        }
+
+        let logo = org.logo ?
+            `<img src="/uploads/organization/${org.logo}" class="org-profile-img">` :
+            `<div class="org-profile-placeholder"><i class="fa fa-building"></i></div>`;
+        $('#organizationInfo').html(`
+        <div class="col-12">
+            <div class="modern-card">
+                <div class="d-flex align-items-center flex-wrap gap-4">
+                    ${logo}
+                    <div class="flex-grow-1">
+                        <h3 class="org-title mb-1">
+                            ${org.organization_name ?? '--'}
+                        </h3>
+                        <div class="text-muted mb-3">
+                            ${org.organization_type_name ?? '--'}
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+
+                            <span class="badge bg-primary rounded-pill px-3 py-2">
+                                ${org.organization_code ?? '--'}
+                            </span>
+                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                ${org.unique_id ?? '--'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>Parent Organization</label>
+                            <div>${org.parent_name ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>Website</label>
+                            <div>
+                                ${
+                                    org.website_url
+                                    ? `<a href="${org.website_url}" target="_blank">${org.website_url}</a>`
+                                    : '--'
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>Email</label>
+                            <div>${org.email ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>Phone</label>
+                            <div>${org.mobile ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>Status</label>
+                            <div>
+                                ${
+                                    org.active_status==1
+                                    ? '<span class="badge bg-success rounded-pill">Active</span>'
+                                    : '<span class="badge bg-danger rounded-pill">Inactive</span>'
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>Created On</label>
+                            <div>${org.created_at ?? '--'}</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `);
+
+    }
+
+    function renderContacts(contacts) {
+
+        if (!contacts || !contacts.length) {
+
+            $('#contactCards').html(`
+            <div class="col-12">
+                <div class="alert alert-warning rounded-4 shadow-sm">
+                    <i class="fa fa-circle-info me-2"></i>
+                    No Contact Details Available
+                </div>
+            </div>
+        `);
+
+            return;
+        }
+
+        let html = '';
+
+        $.each(contacts, function(i, row) {
+
+            html += `
+
+        <div class="col-lg-6">
+
+            <div class="modern-card contact-card">
+
+                <div class="modern-header">
+
+                    <div>
+
+                        <div class="avatar-circle">
+
+                            <i class="fa fa-user"></i>
+
+                        </div>
+
+                    </div>
+
+                    <div class="flex-grow-1 ms-3">
+
+                        <h5>
+
+                            ${row.fullname ?? '--'}
+
+                        </h5>
+
+                        <small>
+
+                            ${row.contact_type_name ?? '--'}
+
+                        </small>
+
+                    </div>
+
+                    ${
+                        row.is_primary == 1
+                        ?
+                        `<span class="badge bg-success px-3 py-2 rounded-pill">
+                            Primary
+                        </span>`
+                        :
+                        ''
+                    }
+
+                </div>
+
+                <div class="modern-body">
+
+                    <div class="info-item">
+
+                        <span>
+
+                            <i class="fa fa-briefcase"></i>
+
+                            Designation
+
+                        </span>
+
+                        <strong>
+
+                            ${row.designation ?? '--'}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <span>
+
+                            <i class="fa fa-phone"></i>
+
+                            Mobile
+
+                        </span>
+
+                        <strong>
+
+                            ${row.mobile ?? '--'}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <span>
+
+                            <i class="fa fa-mobile-screen"></i>
+
+                            Alternate
+
+                        </span>
+
+                        <strong>
+
+                            ${row.alternate_mobile ?? '--'}
+
+                        </strong>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <span>
+
+                            <i class="fa fa-envelope"></i>
+
+                            Email
+
+                        </span>
+
+                        <strong class="text-primary">
+
+                            ${row.email ?? '--'}
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+        });
+
+        $('#contactCards').html(html);
+
+    }
+
+    function renderAddresses(addresses) {
+
+        if (!addresses || !addresses.length) {
+            $('#addressCards').html(`
+            <div class="col-12">
+                <div class="alert alert-warning rounded-4 shadow-sm">
+                    <i class="fa fa-circle-info me-2"></i>No Address Available
+                </div>
+            </div>
+        `);
+            return;
+        }
+
+        let html = '';
+
+        $.each(addresses, function(i, row) {
+
+            html += `
+        <div class="col-lg-6">
+            <div class="modern-card address-card">
+
+                <div class="modern-header">
+                    <div class="avatar-circle bg-info">
+                        <i class="fa fa-location-dot"></i>
+                    </div>
+
+                    <div class="flex-grow-1 ms-3">
+                        <h5>${row.address_type_name ?? '--'}</h5>
+                        <small>${row.city_name ?? '--'}, ${row.state_name ?? '--'}</small>
+                    </div>
+
+                    ${row.is_default==1?'<span class="badge bg-primary rounded-pill px-3">Default</span>':''}
+                </div>
+
+                <div class="modern-body">
+
+                    <div class="info-item">
+                        <span><i class="fa fa-map"></i> Address</span>
+                        <strong>${row.address1 ?? '--'} ${row.address2 ?? ''}</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span><i class="fa fa-location-crosshairs"></i> Landmark</span>
+                        <strong>${row.landmark ?? '--'}</strong>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>City</label>
+                                <div>${row.city_name ?? '--'}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>District</label>
+                                <div>${row.district_name ?? '--'}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>State</label>
+                                <div>${row.state_name ?? '--'}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>Country</label>
+                                <div>${row.country_name ?? 'India'}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="mini-box">
+                                <label>Pincode</label>
+                                <div>${row.pincode ?? '--'}</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>`;
+        });
+
+        $('#addressCards').html(html);
+
+    }
+
+    function renderBanks(banks) {
+
+        if (!banks || !banks.length) {
+            $('#bankCards').html(`
+            <div class="col-12">
+                <div class="alert alert-warning rounded-4 shadow-sm">
+                    <i class="fa fa-circle-info me-2"></i>No Bank Accounts Available
+                </div>
+            </div>
+        `);
+            return;
+        }
+
+        let html = '';
+
+        $.each(banks, function(i, row) {
+
+            html += `
+        <div class="col-lg-6">
+            <div class="modern-card bank-card">
+
+                <div class="modern-header">
+
+                    <div class="avatar-circle bg-warning text-dark">
+                        <i class="fa fa-building-columns"></i>
+                    </div>
+
+                    <div class="flex-grow-1 ms-3">
+                        <h5>${row.bank_name ?? '--'}</h5>
+                        <small>${row.branch_name ?? 'Main Branch'}</small>
+                    </div>
+
+                    ${row.is_primary==1?'<span class="badge bg-success rounded-pill px-3">Primary</span>':''}
+
+                </div>
+
+                <div class="modern-body">
+
+                    <div class="info-item">
+                        <span><i class="fa fa-user"></i>&nbsp&nbsp; Account Holder</span>
+                        <strong>${row.account_holder ?? '--'}</strong>
+                    </div>
+
+                    <div class="info-item">
+                        <span><i class="fa fa-credit-card"></i>&nbsp&nbsp; Account Number</span>
+                        <strong>${row.account_number ?? '--'}</strong>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>IFSC</label>
+                                <div>${row.ifsc ?? '--'}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>UPI ID</label>
+                                <div>${row.upi_id ?? '--'}</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>`;
+        });
+
+        $('#bankCards').html(html);
+
+    }
+
+    function renderTax(tax) {
+
+        if (!tax) {
+            $('#taxDetails').html(`
+            <div class="alert alert-warning rounded-4 shadow-sm">
+                <i class="fa fa-circle-info me-2"></i>No Tax Details Available
+            </div>
+        `);
+            return;
+        }
+
+        $('#taxDetails').html(`
+
+        <div class="modern-card">
+
+            <div class="modern-header">
+
+                <div class="avatar-circle bg-dark">
+                    <i class="fa fa-file-invoice"></i>
+                </div>
+
+                <div class="ms-3">
+                    <h5>Tax Information</h5>
+                    <small>Government Registration Details</small>
+                </div>
+
+            </div>
+
+            <div class="modern-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>GST Number</label>
+                            <div>${tax.gst_number ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>PAN Number</label>
+                            <div>${tax.pan_number ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>TAN Number</label>
+                            <div>${tax.tan_number ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>CIN Number</label>
+                            <div>${tax.cin_number ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>MSME Number</label>
+                            <div>${tax.msme_number ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="mini-box">
+                            <label>Trade Licence</label>
+                            <div>${tax.trade_license_number ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mini-box">
+                            <label>GST Registered Name</label>
+                            <div>${tax.gst_registered_name ?? '--'}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mini-box">
+                            <label>GST Registered Address</label>
+                            <div>${tax.gst_registered_address ?? '--'}</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        `);
+
+    }
+
+    function renderDocuments(documents) {
+
+        if (!documents || !documents.length) {
+            $('#documentCards').html(`
+            <div class="col-12">
+                <div class="alert alert-warning rounded-4 shadow-sm">
+                    <i class="fa fa-circle-info me-2"></i>No Documents Available
+                </div>
+            </div>
+        `);
+            return;
+        }
+
+        let html = '';
+
+        $.each(documents, function(i, row) {
+
+            let fileBtn = '';
+
+            if (row.file_path) {
+                fileBtn = `
+                <a href="/${row.file_path}" target="_blank" class="btn btn-primary btn-sm rounded-pill px-3">
+                    <i class="fa fa-eye me-1"></i>View File
+                </a>
+            `;
+            } else {
+                fileBtn = `<span class="text-muted">No File Uploaded</span>`;
+            }
+
+            html += `
+        <div class="col-lg-6">
+
+            <div class="modern-card document-card">
+
+                <div class="modern-header">
+
+                    <div class="avatar-circle bg-secondary">
+                        <i class="fa fa-file-lines"></i>
+                    </div>
+
+                    <div class="flex-grow-1 ms-3">
+                        <h5>${row.document_name ?? '--'}</h5>
+                        <small>Document Information</small>
+                    </div>
+
+                </div>
+
+                <div class="modern-body">
+
+                    <div class="info-item">
+                        <span><i class="fa fa-hashtag"></i>Document Number</span>
+                        <strong>${row.document_number ?? '--'}</strong>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>Issue Date</label>
+                                <div>${row.issue_date ?? '--'}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="mini-box">
+                                <label>Expiry Date</label>
+                                <div>${row.expiry_date ?? '--'}</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        ${fileBtn}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>`;
+        });
+
+        $('#documentCards').html(html);
+
     }
 </script>
 @endpush

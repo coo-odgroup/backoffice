@@ -438,6 +438,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'organization/add', [OrganizationController::class, 'add'])->name('organization.add');
     Route::post('organization/dataTableView', [OrganizationController::class, 'dataTableView'])->name('organization.dataTableView');
     Route::match(['get', 'post'], 'organization/edit/{encId}', [OrganizationController::class, 'edit'])->name('organization.edit');
+    Route::get('organization/view/{encId}',[OrganizationController::class, 'viewOrganization'])->name('organization.view');
 
     //Organization Address
     Route::get('/organization-address', [OrganizationAddressController::class, 'organizationAddress'])->name('organization-address.index');
