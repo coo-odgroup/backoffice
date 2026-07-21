@@ -42,17 +42,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
 
                         <!-- Search -->
-                        <div class="col-lg-4 col-md-6">
-                            <label for="txtSearch">Search By Brand</label>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="txtSearch">Search By Branch</label>
                             <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
                                 placeholder="Brand">
                         </div>
 
                         <!-- Country -->
                         <div class="col-lg-2 col-md-6">
-                            <label for="countrySearch">Country</label>
-                            <select class="form-select form-select-sm" id="country" name="country">
-                                <option value="">Select Country</option>
+                            <label for="orgSearch">Search By Organization</label>
+                            <select class="form-select form-select-sm selOrg" id="orgSearch " name="orgSearch">
+                                <option value="">Select Organization Type</option>
                             </select>
                         </div>
 
@@ -132,8 +132,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Brand</th>
-                            <th>Country</th>
+                            <th>Branch Name</th>
+                            <th>Branch Code</th>
+                            <th>Organization Name</th>
+                            <th>Display Order</th>
+                            <th>Description</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -169,8 +172,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        commonAjax.initSelect2('#country', 'Select Country');
-        commonAjax.loadCountryList();
+        commonAjax.initSelect2('#orgSearch', 'Select Organization');
+        commonAjax.loadOrganizationTypeList(0, '#orgSearch');
         commonAjax.initClearableInputs();
         getDataTableView();
     });
@@ -202,34 +205,28 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         }
 
         $('#pageSizeDatatable').val(10);
-        let txtSearch = '';
-        let selStatus = '';
-        let countrySearch = '';
+        let txtSearch = $('#txtSearch').val();
+        let selStatus = $('#selStatus').val();
+        let orgSearch = $('#orgSearch').val();
 
-        if ($('#txtSearch').val() != '') {
-            txtSearch = $('#txtSearch').val();
+        if ($('#orgSearch').val() != '') {
+            orgSearch = $('#orgSearch').val();
         }
 
-        if ($('#selStatus').val() != '') {
-            selStatus = $('#selStatus').val();
-        }
-        if ($('#countrySearch').val() != '') {
-            countrySearch = $('#countrySearch').val();
-        }
-
-        let tableId = 'datatable';
-        let orderBy = [2, 'asc'];
         let searchParams = {
             txtSearch: txtSearch,
             selStatus: selStatus,
-            countrySearch: countrySearch
+            orgSearch: orgSearch
         };
+
+        let tableId = 'datatable';
+        let orderBy = [2, 'asc'];
         let displayColumns = [1, 2, 3, 4, 5, 6, 7];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
-                        '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.branch_id +
+                        '" name="chkStd' + row.branch_id + '" value="' + row.branch_id +
                         '" ></div>';
                 },
                 className: "noPrint text-center"
@@ -242,17 +239,29 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'brand_name',
+                data: 'branch_type_name',
                 defaultContent: "--"
             },
             {
-                data: 'country',
+                data: 'branch_type_code',
                 render: function(data) {
                     if (!data || data === null) {
                         return "--";
                     }
                     return data;
                 }
+            },
+            {
+                data: 'organization_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'display_order',
+                defaultContent: "--"
+            },
+            {
+                data: 'description',
+                defaultContent: "--"
             },
             {
                 data: null,
@@ -305,14 +314,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_brand_id)}">
+                        href="${editUrl.replace('ID', row.enc_branch_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_bus_brand"
-                            data-id="${row.enc_brand_id}">
+                            data-table="mst_branch_types"
+                            data-id="${row.enc_branch_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
                     `;

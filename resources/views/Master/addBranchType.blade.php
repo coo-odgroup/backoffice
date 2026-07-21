@@ -64,38 +64,47 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                     <div class="row mb-2">
                                         <div class="col">
                                             <div class="col-md-10 mb-2">
-                                                <label for="country">Branch Type<span class="text-danger important">*</span></label>
-                                                <select class="form-select form-select-sm selCountry" id="country" name="country">
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-10 mb-2">
-                                                <label for="country">Branch Type Code<span class="text-danger important">*</span></label>
-                                                <select class="form-select form-select-sm selCountry" id="country" name="country">
+                                                <label for="org">Organization Type<span class="text-danger important">*</span></label>
+                                                <select class="form-select form-select-sm selOrg" id="org" name="org">
                                                 </select>
                                             </div>
 
                                             <div class="col-md-10  mb-2">
-                                                <label for="brand">Bus Brand Name<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm clearable" id="brand" name="brand" value="{{ $data['row']->brand_name ?? '' }}">
+                                                <label for="branchName">Branch Type Name</label>
+
+                                                <input type="text"
+                                                    class="form-control form-control-sm clearable "
+                                                    id="branchName"
+                                                    name="branchName"
+                                                    value="{{ old('branchName',$data['row']->branch_type_name ?? '') }}">
+                                            </div>
+
+                                            <div class="col-md-10  mb-2">
+                                                <label for="branchCode">Branch Type Code<span class="text-danger important">*</span></label>
+                                                <input type="text" class="form-control form-control-sm clearable" id="branchCode" name="branchCode" value="{{ $data['row']->branch_type_code ?? '' }}">
                                             </div>
                                             <div class="col-md-10  mb-2">
-                                                <label for="brand">Bus Brand Name<span class="text-danger important">*</span></label>
-                                                <input type="text" class="form-control form-control-sm clearable" id="brand" name="brand" value="{{ $data['row']->brand_name ?? '' }}">
+                                                <label for="displyOrder">Display Order<span class="text-danger important">*</span></label>
+                                                <input type="number"
+                                                    min="1"
+                                                    class="form-control form-control-sm clearable"
+                                                    id="displyOrder"
+                                                    name="displyOrder"
+                                                    value="{{ old('displyOrder',$data['row']->display_order ?? '') }}">
                                             </div>
                                         </div>
                                         <div class="col">
 
                                             <div class="col-md-12">
-                                                <label for="brand">
-                                                    Bus Brand Name<span class="text-danger important">*</span>
+                                                <label for="desc">
+                                                    Description<span class="text-danger important">*</span>
                                                 </label>
                                                 <textarea
                                                     class="form-control form-control-sm clearable"
-                                                    id="brand"
-                                                    name="brand"
+                                                    id="desc"
+                                                    name="desc"
                                                     rows=" 10 "
-                                                    placeholder="Enter Bus Brand Name">{{ old('brand', $data['row']->brand_name ?? '') }}</textarea>
+                                                    placeholder="Enter small Description">{{ old('description', $data['row']->description ?? '') }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -142,13 +151,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('country', 'Select Class Type'))
-            return false;
-        if (!validator.blankCheck('brand', 'Bus Brand Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('brand', 100, 'Bus Brand Name'))
-            return false;
-
+       
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -163,15 +166,37 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#country', 'Select Country');
+        commonAjax.initSelect2('#org', 'Select Organization Type');
 
-        let selectedCountry = "{{ $data['row']->country ?? '' }}";
-
-        commonAjax.loadCountryList(selectedCountry);
-
+        let selectedOrg = "{{ old('org', $data['row']->organization_type_id ?? '') }}";
+        commonAjax.loadOrganizationTypeList(selectedOrg);
         commonAjax.initClearableInputs();
         commonAjax.initClearableInputs();
 
+    });
+
+    $('#branchName').on('keyup blur', function() {
+
+        let code = $(this).val()
+            .toUpperCase()
+            .trim()
+            .replace(/\s+/g, '_')
+            .replace(/[^A-Z0-9_]/g, '');
+
+        $('#branchCode').val(code);
+
+    });
+    $('#branchCode').on('keyup', function() {
+        $(this).val(
+            $(this).val()
+            .toUpperCase()
+            .replace(/\s+/g, '_')
+            .replace(/[^A-Z0-9_]/g, '')
+        );
+    });
+
+    $('#displyOrder').on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
     });
 </script>
 @endpush
