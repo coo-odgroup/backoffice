@@ -15,6 +15,7 @@ use App\Http\Controllers\Master\AmenityCategoryController;
 use App\Http\Controllers\Master\ApiAppsController;
 use App\Http\Controllers\Master\ApikeysController;
 use App\Http\Controllers\Master\RolesController;
+use App\Http\Controllers\Master\RolesHierarchyController;
 use App\Http\Controllers\Master\ReasonController;
 use App\Http\Controllers\Master\FestiveDaysController;
 use App\Http\Controllers\Master\ModulesController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\Admin\Ad\AdPlacementController;
 use App\Http\Controllers\Admin\Ad\AdCampaignController;
 use App\Http\Controllers\Admin\Ad\PricingPlanController;
 use App\Http\Controllers\Master\BrandController;
+use App\Http\Controllers\Master\BranchTypeController;
 use App\Http\Controllers\Master\OrganizationTypeController;
 use App\Http\Controllers\Master\OrganizationController;
 use App\Http\Controllers\Master\OrganizationContactsController;
@@ -438,7 +440,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'organization/add', [OrganizationController::class, 'add'])->name('organization.add');
     Route::post('organization/dataTableView', [OrganizationController::class, 'dataTableView'])->name('organization.dataTableView');
     Route::match(['get', 'post'], 'organization/edit/{encId}', [OrganizationController::class, 'edit'])->name('organization.edit');
-    Route::get('organization/view/{encId}',[OrganizationController::class, 'viewOrganization'])->name('organization.view');
+    Route::get('organization/view/{encId}', [OrganizationController::class, 'viewOrganization'])->name('organization.view');
 
     //Organization Address
     Route::get('/organization-address', [OrganizationAddressController::class, 'organizationAddress'])->name('organization-address.index');
@@ -460,7 +462,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/organization-tax-details', [OrganizationTaxDetailsController::class, 'organizationTaxDetails'])->name('organization-tax-details.index');
     Route::match(['get', 'post'], 'organization-tax-details/edit/{encId}', [OrganizationTaxDetailsController::class, 'edit'])->name('organization-tax-details.edit');
 
-     //Organization Document Details
+    //Organization Document Details
     Route::match(['get', 'post'], 'organization-document/add', [OrganizationDocumentController::class, 'add'])->name('organization-document.add');
     Route::get('/organization-document', [OrganizationDocumentController::class, 'document'])->name('organization-document.index');
     Route::match(['get', 'post'], 'organization-document/edit/{encId}', [OrganizationDocumentController::class, 'edit'])->name('organization-document.edit');
@@ -471,10 +473,18 @@ Route::prefix('admin')->group(function () {
     Route::post('document-type/dataTableView', [DocumentTypeController::class, 'dataTableView'])->name('documentType.dataTableView');
     Route::match(['get', 'post'], 'document-type/edit/{encId}', [DocumentTypeController::class, 'edit'])->name('documentType.edit');
 
+    // Roles Hierarchy
+    Route::get('/roles-hierarchy', [RolesHierarchyController::class, 'rolesHierarchy'])->name('roles-hierarchy.index');
+    Route::match(['get', 'post'], 'roles-hierarchy/add', [RolesHierarchyController::class, 'add'])->name('roles-hierarchy.add');
+    Route::post('roles-hierarchy/dataTableView', [RolesHierarchyController::class, 'dataTableView'])->name('roles-hierarchy.dataTableView');
+    Route::match(['get', 'post'], 'roles-hierarchy/edit/{encId}', [RolesHierarchyController::class, 'edit'])->name('roles-hierarchy.edit');
+    Route::get('roles/get-role-by-organization/{organizationTypeId}',[RolesHierarchyController::class, 'getRoleByOrganization'])->name('roles.getRoleByOrganization');
 
-
-
-
+    //Branch Type
+    Route::get('/branch-type', [BranchTypeController::class, 'branchType'])->name('branch-type.index');
+    Route::match(['get', 'post'], 'branch-type/add', [BranchTypeController::class, 'add'])->name('branch-type.add');
+    Route::post('branch-type/dataTableView', [BranchTypeController::class, 'dataTableView'])->name('branch-type.dataTableView');
+    Route::match(['get', 'post'], 'branch-type/edit/{encId}', [BranchTypeController::class, 'edit'])->name('branch-type.edit');
 
 
 

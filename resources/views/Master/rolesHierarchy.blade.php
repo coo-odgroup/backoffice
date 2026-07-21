@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Roles ')
+@section('page_title', 'Roles Hierarchy ')
 @section('content')
 
 <?php
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('roles.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('roles-hierarchy.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -131,8 +131,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('roles.dataTableView') }}"
-                    data-edit-url="{{ route('roles.edit', 'ID') }}">
+                    data-url="{{ route('roles-hierarchy.dataTableView') }}"
+                    data-edit-url="{{ route('roles-hierarchy.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -141,10 +141,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>System Role</th>
-                            <th>Organizatin Type</th>
+                            <th>Role Name</th>
+                            <th>Parent Name</th>
+                            <th>Organization Name</th>
+                            <th>Hierarchy Level</th>
+                            <th>Create Users</th>
+                            <th>Managrlower Levels</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -156,7 +158,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 {{csrf_field()}}
                 <input name="hdn_ids" id="hdn_ids" type="hidden">
                 <input name="hdn_qs" id="hdn_qs" type="hidden">
-                <input type="hidden" id="hdn_model" value="Roles">
+                <input type="hidden" id="hdn_model" value="RolesHierarchy">
 
                 <div class="d-flex justify-content-between align-items-center mt-2">
                     <div id="customTableInfo"></div>
@@ -215,7 +217,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let selSystemRole = '';
         let org = '';
 
         if ($('#txtSearch').val() != '') {
@@ -223,9 +224,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         }
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
-        }
-        if ($('#selSystemRole').val() != '') {
-            selSystemRole = $('#selSystemRole').val();
         }
         if ($('#org').val() != '') {
             org = $('#org').val();
@@ -236,10 +234,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let searchParams = {
             txtSearch: txtSearch,
             selStatus: selStatus,
-            selSystemRole: selSystemRole,
             org: org
         };
-        let displayColumns = [1, 2, 3, 4, 5, 6];
+        let displayColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
@@ -257,28 +254,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'role_code',
-                defaultContent: "--"
-            },
-            {
                 data: 'role_name',
                 defaultContent: "--"
             },
             {
-                data: 'is_system_role',
-                render: function(data, type, row) {
-                    if (data === 1 || data === '1') {
-                        return 'True';
-                    }
-                    if (data === 2 || data === '2') {
-                        return 'False';
-                    }
-                    return '--';
-                },
-                className: "text-center"
+                data: 'parent_name',
+                defaultContent: "--"
             },
             {
-                data: 'org',
+                data: 'org_name',
+                defaultContent: "--"
+            },
+            {
+                data: 'hierarchy_level',
+                defaultContent: "--"
+            },
+            {
+                data: 'create_user',
+                defaultContent: "--"
+            },
+            {
+                data: 'manage_level',
                 defaultContent: "--"
             },
             {
@@ -337,7 +333,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_roles"
+                            data-table="mst_role_hierarchy"
                             data-id="${row.enc_role_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>

@@ -40,8 +40,9 @@ class RolesController extends Controller
 
                 $row = Roles::select(
                     'id',
-                    'name',
-                    'code',
+                    'organization_type_id',
+                    'role_name',
+                    'role_code',
                     'description',
                     'is_system_role'
                 )->where('id', $id)->first();
@@ -51,7 +52,6 @@ class RolesController extends Controller
                 }
 
                 $data['row'] = $row;
-
             } else {
                 $id = 0;
                 $redirectPage = "admin/roles";
@@ -62,6 +62,7 @@ class RolesController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
+                    'org'         => 'bail|required|integer',
                     'roleType'    => 'bail|required|max:100',
                     'roleCode'    => [
                         'bail',
@@ -75,7 +76,8 @@ class RolesController extends Controller
                     'roleType.required' => 'Role Type cannot be left blank.',
                     'roleCode.required' => 'Role Code cannot be left blank.',
                     'roleCode.regex'    => 'Role Code must be CAPITAL letters separated by underscore (_).',
-                    'Type.required'     => 'Please select System Role type.'
+                    'Type.required'     => 'Please select System Role type.',
+                    'org.required' => 'Please select Organization Type.',
                 ]);
 
                 if ($validator->fails()) {
@@ -87,9 +89,10 @@ class RolesController extends Controller
                 $roleType    = htmlEncode(trim(Purifier::clean(request('roleType'))));
                 $roleCode    = htmlEncode(strtoupper(trim(Purifier::clean(request('roleCode')))));
                 $description = htmlEncode(trim(Purifier::clean(request('description'))));
+                $organizationType = (int) request('org');
                 $roleFlag    = (int) Purifier::clean(request('Type'));
 
-                $duplicate = Roles::where('code', $roleCode);
+                $duplicate = Roles::where('role_code', $roleCode);
 
                 if ($id > 0) {
                     $duplicate->where('id', '!=', $id);
@@ -108,8 +111,9 @@ class RolesController extends Controller
                     $oldData = Roles::find($id);
 
                     $newData = [
-                        'name'           => $roleType,
-                        'code'           => $roleCode,
+                        'organization_type_id' => $organizationType,
+                        'role_name'           => $roleType,
+                        'role_code'           => $roleCode,
                         'description'    => $description,
                         'is_system_role' => $roleFlag,
                         'active_status'  => 1
@@ -137,19 +141,20 @@ class RolesController extends Controller
                         );
                     }
 
-                    $oldData->name            = $roleType;
-                    $oldData->code            = $roleCode;
+                    $oldData->organization_type_id = $organizationType;
+                    $oldData->role_name            = $roleType;
+                    $oldData->role_code            = $roleCode;
                     $oldData->description     = $description;
                     $oldData->is_system_role  = $roleFlag;
                     $oldData->active_status   = 1;
                     $oldData->updated_by      = 1;
                     $oldData->save();
-
                 } else {
 
                     $row = [
-                        'name'           => $roleType,
-                        'code'           => $roleCode,
+                        'organization_type_id' => $organizationType,
+                        'role_name'           => $roleType,
+                        'role_code'           => $roleCode,
                         'description'    => $description,
                         'is_system_role' => $roleFlag,
                         'active_status'  => 1,
@@ -180,7 +185,6 @@ class RolesController extends Controller
 
                 return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();
@@ -213,15 +217,19 @@ class RolesController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '')? (int) request('selStatus'): '';
-            $selSystemRole = (request('selSystemRole') !== null && request('selSystemRole') !== '')? (int) request('selSystemRole'): '';
+            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int) request('selStatus') : '';
+            $selSystemRole = (request('selSystemRole') !== null && request('selSystemRole') !== '') ? (int) request('selSystemRole') : '';
+            $selOrg = (request('org') !== null && request('org') !== '') ? (int) request('org') : '';
 
             $dataQuery = DB::table('mst_roles as r')
+                ->leftJoin('mst_organization_types as ot', 'ot.id', '=', 'r.organization_type_id')
                 ->select(
+                    'r.organization_type_id',
+                    'ot.type_name as org',
                     'r.id as role_id',
-                    'r.name',
+                    'r.role_name',
                     'r.description',
-                    'r.code',
+                    'r.role_code',
                     'r.is_system_role',
                     'r.active_status',
                     'r.created_at',
@@ -232,12 +240,13 @@ class RolesController extends Controller
                     DB::raw('(SELECT name FROM users WHERE id = r.updated_by LIMIT 1) as updated_by_name')
                 );
 
-                
+
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('r.name', 'like', "%{$txtSearch}%")
-                    ->orWhere('r.code', 'like', "%{$txtSearch}%")
-                    ->orWhere('r.description', 'like', "%{$txtSearch}%");
+                    $q->where('r.role_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('r.role_code', 'like', "%{$txtSearch}%")
+                        ->orWhere('r.description', 'like', "%{$txtSearch}%")
+                        ->orWhere('ot.type_name', 'like', "%{$txtSearch}%");
                 });
             }
 
@@ -248,28 +257,33 @@ class RolesController extends Controller
             if ($selSystemRole !== '' && $selSystemRole !== null) {
                 $dataQuery->where('r.is_system_role', (int) $selSystemRole);
             }
-            
-            $recordsTotal = $dataQuery->count('r.id');
+
+            if ($selOrg !== '' && $selOrg !== null) {
+                $dataQuery->where('r.organization_type_id', $selOrg);
+            }
+
+            $recordsTotal = (clone $dataQuery)->count('r.id');
             $recordsFiltered = $recordsTotal;
 
             $start  = (int) request()->input('start', 0);
             $length = (int) request()->input('length', 10);
 
-            
+
             if (!empty(request('order'))) {
 
-            
+
                 $columns = [
-                    2 => 'r.name',
-                    3 => 'r.code',
-                    4 => 'r.created_at',
-                    5 => 'r.active_status'
+                    2 => 'r.role_code',
+                    3 => 'r.role_name',
+                    4 => 'r.is_system_role',
+                    5 => 'ot.type_name',
+                    6 => 'r.updated_at',
+                    7 => 'r.active_status'
                 ];
 
                 $order      = request('order');
-                $orderCol   = $columns[$order[0]['column']] ?? 'r.name';
+                $orderCol   = $columns[$order[0]['column']] ?? 'r.role_name';
                 $orderDir   = $order[0]['dir'] ?? 'asc';
-
             } else {
                 $orderCol = 'r.id';
                 $orderDir = 'desc';
@@ -277,7 +291,7 @@ class RolesController extends Controller
 
             $dataQuery->orderBy($orderCol, $orderDir);
 
-            
+
             if ($length === -1) {
                 $arrRes = $dataQuery->get();
             } else {
@@ -287,7 +301,7 @@ class RolesController extends Controller
                     ->get();
             }
 
-            
+
             foreach ($arrRes as $row) {
                 $row->created_date = date('d-M-Y H:i:s', strtotime($row->created_at));
                 $row->updated_date = $row->updated_at
@@ -299,7 +313,6 @@ class RolesController extends Controller
             }
 
             $data = $arrRes;
-
         } catch (\Throwable $t) {
 
             Log::error("Exception in RolesController@dataTableView", [

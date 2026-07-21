@@ -168,108 +168,389 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <!-- ===========================================================
     Organization View Modal
 ============================================================ -->
-<div class="modal fade"
-    id="organizationViewModal"
-    tabindex="-1"
-    aria-hidden="true">
+<div class="modal fade" id="organizationViewModal" tabindex="-1" aria-hidden="true">
 
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg">
-            <!-- Header -->
-            <div class="modal-header  text-white" style="background:#0f4c81;color:#fff;">
-                <h5 class="modal-title">
-                    <i class="fa fa-building me-2"></i>
-                    Organization Details
-                </h5>
+
+        <div class="modal-content modern-modal">
+
+            <div class="modal-header modern-modal-header">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="modal-icon">
+                        <i class="fa fa-building"></i>
+                    </div>
+
+                    <div class="ms-3">
+                        <h4 class="mb-0 fw-bold text-white">
+                            Organization Details
+                        </h4>
+
+                        <small class="text-white-50">
+                            Complete Organization Profile
+                        </small>
+                    </div>
+
+                </div>
+
                 <button
                     type="button"
                     class="btn-close btn-close-white"
                     data-bs-dismiss="modal">
                 </button>
+
             </div>
 
-            <!-- Body -->
-            <div class="modal-body bg-light">
-                <!-- Loader -->
-                <div id="viewLoader"
-                    class="text-center py-5">
+            <div class="modal-body modern-modal-body">
+
+                <div id="viewLoader" class="text-center py-5">
+
                     <div class="spinner-border text-primary"></div>
+
                     <h6 class="mt-3">
                         Loading Organization...
                     </h6>
+
                 </div>
-                <!-- Actual Content -->
-                <div id="viewContent" style="display:none;">
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header  text-white" style="background:#0f4c81;color:#fff;">
-                            <strong> Organization Information</strong>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3" id="organizationInfo">
-                            </div>
-                        </div>
+
+                <div id="viewContent" style="display:none">
+
+                    <div id="organizationHero"></div>
+
+                    <div class="section-title">
+                        <i class="fa fa-users"></i>
+                        <span>Contacts</span>
                     </div>
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header  text-white" style="background:#198754;color:#fff;">
-                            <strong> Contacts </strong>
-                        </div>
-                        <div class="card-body">
-                            <div id="contactCards" class="row g-3">
-                            </div>
-                        </div>
+                    <div id="contactCards" class="row g-3 mb-4"></div>
+
+                    <div class="section-title">
+                        <i class="fa fa-location-dot"></i>
+                        <span>Addresses</span>
                     </div>
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header text-white" style="background:#0ea5e9;color:#fff;">
-                            <strong>
-                                Addresses
-                            </strong>
-                        </div>
-                        <div class="card-body">
-                            <div id="addressCards" class="row g-3">
-                            </div>
-                        </div>
+                    <div id="addressCards" class="row g-3 mb-4"></div>
+
+                    <div class="section-title">
+                        <i class="fa fa-building-columns"></i>
+                        <span>Bank Accounts</span>
                     </div>
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header " style="background:#f59e0b;color:#fff;">
-                            <strong> Bank Accounts </strong>
-                        </div>
-                        <div class="card-body">
-                            <div id="bankCards" class="row g-3">
-                            </div>
-                        </div>
+                    <div id="bankCards" class="row g-3 mb-4"></div>
+
+                    <div class="section-title">
+                        <i class="fa fa-file-invoice"></i>
+                        <span>Tax Details</span>
                     </div>
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header text-white" style="background:#374151;color:#fff;">
-                            <strong> Tax Details </strong>
-                        </div>
-                        <div class="card-body">
-                            <div id="taxDetails">
-                            </div>
-                        </div>
+                    <div id="taxDetails" class="mb-4"></div>
+
+                    <div class="section-title">
+                        <i class="fa fa-file-lines"></i>
+                        <span>Documents</span>
                     </div>
-                    <div class="card shadow-sm">
-                        <div class="card-header text-white" style="background:#6b7280;color:#fff;">
-                            <strong> Documents</strong>
-                        </div>
-                        <div class="card-body">
-                            <div id="documentCards" class="row g-3">
-                            </div>
-                        </div>
-                    </div>
+                    <div id="documentCards" class="row g-3"></div>
+
                 </div>
+
             </div>
-            <!-- Footer -->
+
             <div class="modal-footer">
-                <button
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
                     Close
                 </button>
             </div>
+
         </div>
+
     </div>
+
+</div>
+</div>
 </div>
 <style>
+    :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --border: #e5e7eb;
+        --text: #111827;
+        --muted: #6b7280;
+        --primary: #2563eb;
+    }
+
+    .modern-modal {
+        background: #fff;
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .modern-modal-header {
+        background: #fff;
+        color: #111827;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 18px 22px;
+    }
+
+    .modern-modal-header h4 {
+        color: #111827 !important;
+        font-size: 22px;
+    }
+
+    .modern-modal-header small {
+        color: #6b7280 !important;
+    }
+
+    .modal-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #374151;
+        font-size: 18px;
+    }
+
+    .modern-modal-body {
+        background: #f9fafb;
+        padding: 20px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 22px 0 12px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .section-title i {
+        width: 30px;
+        text-align: center;
+        color: #6b7280;
+        background: none;
+    }
+
+    .hero-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+
+    .hero-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .hero-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .hero-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .hero-info {
+        flex: 1;
+    }
+
+    .line1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
+    .org-name {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .line2 {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .line3 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .line3 a {
+        color: #2563eb;
+        text-decoration: none;
+    }
+
+    .line3 span {
+        color: #374151;
+    }
+
+    .badge-primary,
+    .badge-success,
+    .badge-default {
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 20px;
+        padding: 4px 10px;
+    }
+
+    .badge-primary {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .badge-success {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .badge-default {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 16px;
+        height: 100%;
+    }
+
+    .card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 14px;
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .card-subtitle {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    .info-row {
+        display: flex;
+        gap: 16px;
+        padding: 7px 0;
+        border-top: 1px dashed #f1f5f9;
+    }
+
+    .info-row:first-child {
+        border-top: none;
+    }
+
+    .info-label {
+        width: 120px;
+        flex-shrink: 0;
+        color: #6b7280;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .info-value {
+        flex: 1;
+        color: #111827;
+        font-size: 14px;
+        word-break: break-word;
+    }
+
+    .address-block {
+        margin-bottom: 12px;
+        color: #374151;
+        line-height: 1.6;
+    }
+
+    .tax-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .tax-item {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 12px;
+        background: #fff;
+    }
+
+    .tax-item label {
+        display: block;
+        color: #6b7280;
+        font-size: 11px;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .tax-item div {
+        color: #111827;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .doc-btn {
+        margin-top: 14px;
+    }
+
+    .doc-btn .btn {
+        border-radius: 6px;
+    }
+
+    .alert {
+        border-radius: 10px;
+    }
+
+    @media(max-width:768px) {
+
+        .hero-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .line1 {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .info-row {
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .info-label {
+            width: 100%;
+        }
+
+        .tax-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
 </style>
 @endsection
 @push('scripts')
@@ -570,7 +851,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     function renderOrganization(res) {
 
         clearViewSections();
-        renderOrganizationInfo(res.organization);
+        renderHero(res.organization);
         renderContacts(res.contacts);
         renderAddresses(res.addresses);
         renderBanks(res.banks);
@@ -584,110 +865,82 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#viewContent').hide();
     });
 
-    function renderOrganizationInfo(org) {
+    function renderHero(org) {
 
         if (!org) {
-            $('#organizationInfo').html(`
-            <div class="col-12">
-                <div class="alert alert-warning rounded-4">
-                    <i class="fa fa-circle-info me-2"></i>Organization information not found.
-                </div>
-            </div>
-        `);
+            $('#organizationHero').html('');
             return;
         }
 
         let logo = org.logo ?
-            `<img src="/uploads/organization/${org.logo}" class="org-profile-img">` :
-            `<div class="org-profile-placeholder"><i class="fa fa-building"></i></div>`;
-        $('#organizationInfo').html(`
-        <div class="col-12">
-            <div class="modern-card">
-                <div class="d-flex align-items-center flex-wrap gap-4">
-                    ${logo}
-                    <div class="flex-grow-1">
-                        <h3 class="org-title mb-1">
-                            ${org.organization_name ?? '--'}
-                        </h3>
-                        <div class="text-muted mb-3">
-                            ${org.organization_type_name ?? '--'}
-                        </div>
-                        <div class="d-flex flex-wrap gap-2">
+            `<img src="/uploads/organization/${org.logo}" alt="">` :
+            `<i class="fa fa-building fa-lg text-secondary"></i>`;
 
-                            <span class="badge bg-primary rounded-pill px-3 py-2">
-                                ${org.organization_code ?? '--'}
-                            </span>
-                            <span class="badge bg-success rounded-pill px-3 py-2">
-                                ${org.unique_id ?? '--'}
-                            </span>
-                        </div>
+        let statusBadge = org.active_status == 1 ?
+            `<span class="badge bg-success rounded-pill">Active</span>` :
+            `<span class="badge bg-danger rounded-pill">Inactive</span>`;
+
+        let website = org.website_url ?
+            `<a href="${org.website_url}" target="_blank">
+                <i class="fa fa-globe me-1"></i>${org.website_url}
+           </a>` :
+            '';
+
+        let email = org.email ?
+            `<span>
+                <i class="fa fa-envelope me-1"></i>${org.email}
+           </span>` :
+            '';
+
+        let mobile = org.mobile ?
+            `<span>
+                <i class="fa fa-phone me-1"></i>${org.mobile}
+           </span>` :
+            '';
+        $('#organizationHero').html(`
+            <div class="hero-card">
+                <div class="hero-row">
+                    <div class="hero-logo">
+                        ${logo}
                     </div>
-                </div>
-                <hr class="my-4">
-
-                <div class="row g-3">
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>Parent Organization</label>
-                            <div>${org.parent_name ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>Website</label>
+                    <div class="hero-info">
+                        <div class="line1">
                             <div>
-                                ${
-                                    org.website_url
-                                    ? `<a href="${org.website_url}" target="_blank">${org.website_url}</a>`
-                                    : '--'
-                                }
+                                <div class="org-name">
+                                    ${org.organization_name ?? '--'}
+                                </div>
+                                <div class="line2">
+                                    ${org.organization_type_name ?? '--'}
+                                    &nbsp;&nbsp;•&nbsp;&nbsp;
+                                    ${org.organization_code ?? '--'}
+                                    &nbsp;&nbsp;•&nbsp;&nbsp;
+                                    UID : ${org.unique_id ?? '--'}
+
+                                </div>
+
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>Email</label>
-                            <div>${org.email ?? '--'}</div>
-                        </div>
-                    </div>
+                            ${statusBadge}
 
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>Phone</label>
-                            <div>${org.mobile ?? '--'}</div>
                         </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>Status</label>
-                            <div>
-                                ${
-                                    org.active_status==1
-                                    ? '<span class="badge bg-success rounded-pill">Active</span>'
-                                    : '<span class="badge bg-danger rounded-pill">Inactive</span>'
-                                }
-                            </div>
-                        </div>
-                    </div>
+                        <div class="line3">
 
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>Created On</label>
-                            <div>${org.created_at ?? '--'}</div>
+                            ${website}
+
+                            ${email}
+
+                            ${mobile}
+
                         </div>
+
                     </div>
 
                 </div>
 
             </div>
 
-        </div>
-
-    `);
+            `);
 
     }
 
@@ -697,8 +950,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             $('#contactCards').html(`
             <div class="col-12">
-                <div class="alert alert-warning rounded-4 shadow-sm">
-                    <i class="fa fa-circle-info me-2"></i>
+                <div class="alert alert-light border">
                     No Contact Details Available
                 </div>
             </div>
@@ -715,119 +967,111 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         <div class="col-lg-6">
 
-            <div class="modern-card contact-card">
+            <div class="info-card">
 
-                <div class="modern-header">
+                <div class="card-head">
 
                     <div>
 
-                        <div class="avatar-circle">
+                        <div class="card-title">
 
-                            <i class="fa fa-user"></i>
+                            ${row.fullname ?? '--'}
+
+                        </div>
+
+                        <div class="card-subtitle">
+
+                            ${row.contact_type_name ?? '--'}
 
                         </div>
 
                     </div>
 
-                    <div class="flex-grow-1 ms-3">
-
-                        <h5>
-
-                            ${row.fullname ?? '--'}
-
-                        </h5>
-
-                        <small>
-
-                            ${row.contact_type_name ?? '--'}
-
-                        </small>
-
-                    </div>
-
                     ${
-                        row.is_primary == 1
-                        ?
-                        `<span class="badge bg-success px-3 py-2 rounded-pill">
-                            Primary
-                        </span>`
-                        :
-                        ''
+                        row.is_primary==1
+                        ?'<span class="badge bg-success rounded-pill">Primary</span>'
+                        :''
                     }
 
                 </div>
 
-                <div class="modern-body">
+                <div class="info-row">
 
-                    <div class="info-item">
+                    <div class="info-label">
 
-                        <span>
-
-                            <i class="fa fa-briefcase"></i>
-
-                            Designation
-
-                        </span>
-
-                        <strong>
-
-                            ${row.designation ?? '--'}
-
-                        </strong>
+                        Designation
 
                     </div>
 
-                    <div class="info-item">
+                    <div class="info-value">
 
-                        <span>
-
-                            <i class="fa fa-phone"></i>
-
-                            Mobile
-
-                        </span>
-
-                        <strong>
-
-                            ${row.mobile ?? '--'}
-
-                        </strong>
+                        ${row.designation ?? '--'}
 
                     </div>
 
-                    <div class="info-item">
+                </div>
 
-                        <span>
+                <div class="info-row">
 
-                            <i class="fa fa-mobile-screen"></i>
+                    <div class="info-label">
 
-                            Alternate
-
-                        </span>
-
-                        <strong>
-
-                            ${row.alternate_mobile ?? '--'}
-
-                        </strong>
+                        Mobile
 
                     </div>
 
-                    <div class="info-item">
+                    <div class="info-value">
 
-                        <span>
+                        ${
+                            row.mobile
+                            ?`<a href="tel:${row.mobile}">
+                                ${row.mobile}
+                              </a>`
+                            :'--'
+                        }
 
-                            <i class="fa fa-envelope"></i>
+                    </div>
 
-                            Email
+                </div>
 
-                        </span>
+                <div class="info-row">
 
-                        <strong class="text-primary">
+                    <div class="info-label">
 
-                            ${row.email ?? '--'}
+                        Alternate
 
-                        </strong>
+                    </div>
+
+                    <div class="info-value">
+
+                        ${
+                            row.alternate_mobile
+                            ?`<a href="tel:${row.alternate_mobile}">
+                                ${row.alternate_mobile}
+                              </a>`
+                            :'--'
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="info-row">
+
+                    <div class="info-label">
+
+                        Email
+
+                    </div>
+
+                    <div class="info-value">
+
+                        ${
+                            row.email
+                            ?`<a href="mailto:${row.email}">
+                                ${row.email}
+                              </a>`
+                            :'--'
+                        }
 
                     </div>
 
@@ -848,108 +1092,94 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     function renderAddresses(addresses) {
 
         if (!addresses || !addresses.length) {
+
             $('#addressCards').html(`
             <div class="col-12">
-                <div class="alert alert-warning rounded-4 shadow-sm">
-                    <i class="fa fa-circle-info me-2"></i>No Address Available
+                <div class="alert alert-light border">
+                    No Address Available
                 </div>
             </div>
         `);
+
             return;
         }
 
         let html = '';
-
         $.each(addresses, function(i, row) {
-
             html += `
         <div class="col-lg-6">
-            <div class="modern-card address-card">
-
-                <div class="modern-header">
-                    <div class="avatar-circle bg-info">
-                        <i class="fa fa-location-dot"></i>
+            <div class="info-card">
+                <div class="card-head">
+                    <div>
+                        <div class="card-title">
+                            ${row.address_type_name ?? 'Address'}
+                        </div>
+                        <div class="card-subtitle">
+                            ${row.city_name ?? '--'}, ${row.state_name ?? '--'}
+                        </div>
                     </div>
-
-                    <div class="flex-grow-1 ms-3">
-                        <h5>${row.address_type_name ?? '--'}</h5>
-                        <small>${row.city_name ?? '--'}, ${row.state_name ?? '--'}</small>
-                    </div>
-
-                    ${row.is_default==1?'<span class="badge bg-primary rounded-pill px-3">Default</span>':''}
+                    ${ row.is_default==1 ?'<span class="badge bg-primary rounded-pill">Default</span>':'' }
                 </div>
-
-                <div class="modern-body">
-
-                    <div class="info-item">
-                        <span><i class="fa fa-map"></i> Address</span>
-                        <strong>${row.address1 ?? '--'} ${row.address2 ?? ''}</strong>
+               <div class="address-block">
+                    <div class="info-row">
+                        <div class="info-label"> Address Line 1 </div>
+                        <div class="info-value"> ${row.address1 ?? '--'} </div>
                     </div>
 
-                    <div class="info-item">
-                        <span><i class="fa fa-location-crosshairs"></i> Landmark</span>
-                        <strong>${row.landmark ?? '--'}</strong>
+                    <div class="info-row">
+                        <div class="info-label"> Address Line 2 </div>
+                        <div class="info-value"> ${row.address2 ?? '--'} </div>
                     </div>
 
-                    <div class="row g-3 mt-1">
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>City</label>
-                                <div>${row.city_name ?? '--'}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>District</label>
-                                <div>${row.district_name ?? '--'}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>State</label>
-                                <div>${row.state_name ?? '--'}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>Country</label>
-                                <div>${row.country_name ?? 'India'}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="mini-box">
-                                <label>Pincode</label>
-                                <div>${row.pincode ?? '--'}</div>
-                            </div>
-                        </div>
-
+                    <div class="info-row">
+                        <div class="info-label"> Landmark </div>
+                        <div class="info-value"> ${row.landmark ?? '--'} </div>
                     </div>
 
                 </div>
-
+                <div class="info-row">
+                    <div class="info-label"> City </div>
+                    <div class="info-value"> ${row.city_name ?? '--'} </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"> District </div>
+                    <div class="info-value"> ${row.district_name ?? '--'} </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"> State </div>
+                    <div class="info-value"> ${row.state_name ?? '--'} </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"> Country </div>
+                    <div class="info-value"> ${row.country_name ?? 'India'} </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                        Pincode
+                    </div>
+                    <div class="info-value">
+                        ${row.pincode ?? '--'}
+                    </div>
+                </div>
             </div>
-        </div>`;
+        </div>
+        `;
         });
-
         $('#addressCards').html(html);
-
     }
 
     function renderBanks(banks) {
 
         if (!banks || !banks.length) {
+
             $('#bankCards').html(`
             <div class="col-12">
-                <div class="alert alert-warning rounded-4 shadow-sm">
-                    <i class="fa fa-circle-info me-2"></i>No Bank Accounts Available
+                <div class="alert alert-light border">
+                    No Bank Accounts Available
                 </div>
             </div>
         `);
+
             return;
         }
 
@@ -957,61 +1187,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $.each(banks, function(i, row) {
 
+          let accountNumber = row.account_number ?? '--';
+
             html += `
+
         <div class="col-lg-6">
-            <div class="modern-card bank-card">
-
-                <div class="modern-header">
-
-                    <div class="avatar-circle bg-warning text-dark">
-                        <i class="fa fa-building-columns"></i>
+            <div class="info-card">
+                <div class="card-head">
+                    <div>
+                        <div class="card-title"> ${row.bank_name ?? '--'}</div>
+                        <div class="card-subtitle"> ${row.branch_name ?? '--'} </div>
                     </div>
-
-                    <div class="flex-grow-1 ms-3">
-                        <h5>${row.bank_name ?? '--'}</h5>
-                        <small>${row.branch_name ?? 'Main Branch'}</small>
-                    </div>
-
-                    ${row.is_primary==1?'<span class="badge bg-success rounded-pill px-3">Primary</span>':''}
-
+                    ${ row.is_primary==1 ?'<span class="badge bg-success rounded-pill">Primary</span>' :'' }
                 </div>
-
-                <div class="modern-body">
-
-                    <div class="info-item">
-                        <span><i class="fa fa-user"></i>&nbsp&nbsp; Account Holder Name</span>
-                        <strong>${row.account_holder ?? '--'}</strong>
-                    </div>
-
-                    <div class="info-item">
-                        <span><i class="fa fa-credit-card"></i>&nbsp&nbsp; Account Number</span>
-                        <strong>${row.account_number ?? '--'}</strong>
-                    </div>
-
-                    <div class="row g-3 mt-1">
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>IFSC</label>
-                                <div>${row.ifsc ?? '--'}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>UPI ID</label>
-                                <div>${row.upi_id ?? '--'}</div>
-                            </div>
-                        </div>
-
-                    </div>
-
+                <div class="info-row">
+                    <div class="info-label"> Account Holder </div>
+                    <div class="info-value"> ${row.account_holder ?? '--'} </div>
                 </div>
-
+                <div class="info-row">
+                    <div class="info-label"> Account No. </div>
+                    <div class="info-value"> ${accountNumber} </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"> IFSC </div>
+                    <div class="info-value"> ${row.ifsc ?? '--'} </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label"> UPI ID </div>
+                    <div class="info-value"> ${row.upi_id ?? '--'} </div>
+                </div>
             </div>
-        </div>`;
+        </div>
+        `;
         });
-
         $('#bankCards').html(html);
 
     }
@@ -1019,111 +1227,75 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     function renderTax(tax) {
 
         if (!tax) {
+
             $('#taxDetails').html(`
-            <div class="alert alert-warning rounded-4 shadow-sm">
-                <i class="fa fa-circle-info me-2"></i>No Tax Details Available
+            <div class="alert alert-light border">
+                No Tax Details Available
             </div>
         `);
+
             return;
         }
 
         $('#taxDetails').html(`
 
-        <div class="modern-card">
-
-            <div class="modern-header">
-
-                <div class="avatar-circle bg-dark">
-                    <i class="fa fa-file-invoice"></i>
+        <div class="info-card">
+            <div class="card-head">
+                <div>
+                    <div class="card-title"> Tax Details </div>
+                    <div class="card-subtitle"> Government Registration Information </div>
                 </div>
-
-                <div class="ms-3">
-                    <h5>Tax Information</h5>
-                    <small>Government Registration Details</small>
-                </div>
-
             </div>
-
-            <div class="modern-body">
-
-                <div class="row g-3">
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>GST Number</label>
-                            <div>${tax.gst_number ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>PAN Number</label>
-                            <div>${tax.pan_number ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>TAN Number</label>
-                            <div>${tax.tan_number ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>CIN Number</label>
-                            <div>${tax.cin_number ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>MSME Number</label>
-                            <div>${tax.msme_number ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="mini-box">
-                            <label>Trade Licence</label>
-                            <div>${tax.trade_license_number ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="mini-box">
-                            <label>GST Registered Name</label>
-                            <div>${tax.gst_registered_name ?? '--'}</div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="mini-box">
-                            <label>GST Registered Address</label>
-                            <div>${tax.gst_registered_address ?? '--'}</div>
-                        </div>
-                    </div>
-
+            <div class="tax-grid">
+                <div class="tax-item">
+                    <label>GST Number</label>
+                    <div>${tax.gst_number ?? '--'}</div>
                 </div>
-
+                <div class="tax-item">
+                    <label>PAN Number</label>
+                    <div>${tax.pan_number ?? '--'}</div>
+                </div>
+                <div class="tax-item">
+                    <label>TAN Number</label>
+                    <div>${tax.tan_number ?? '--'}</div>
+                </div>
+                <div class="tax-item">
+                    <label>CIN Number</label>
+                    <div>${tax.cin_number ?? '--'}</div>
+                </div>
+                <div class="tax-item">
+                    <label>MSME Number</label>
+                    <div>${tax.msme_number ?? '--'}</div>
+                </div>
+                <div class="tax-item">
+                    <label>Trade Licence</label>
+                    <div>${tax.trade_license_number ?? '--'}</div>
+                </div>
+                <div class="tax-item" style="grid-column:span 3;">
+                    <label>GST Registered Name</label>
+                    <div> ${tax.gst_registered_name ?? '--'} </div>
+                </div>
+                <div class="tax-item" style="grid-column:span 3;">
+                    <label>GST Registered Address</label>
+                    <div> ${tax.gst_registered_address ?? '--'} </div>
+                </div>
             </div>
-
         </div>
-
         `);
-
     }
 
     function renderDocuments(documents) {
 
         if (!documents || !documents.length) {
+
             $('#documentCards').html(`
             <div class="col-12">
-                <div class="alert alert-warning rounded-4 shadow-sm">
-                    <i class="fa fa-circle-info me-2"></i>No Documents Available
+                <div class="alert alert-light border">
+                    No Documents Available
                 </div>
             </div>
         `);
+
             return;
         }
 
@@ -1132,71 +1304,63 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $.each(documents, function(i, row) {
 
             let fileBtn = '';
-
             if (row.file_path) {
                 fileBtn = `
-                <a href="/${row.file_path}" target="_blank" class="btn btn-primary btn-sm rounded-pill px-3">
-                    <i class="fa fa-eye me-1"></i>View File
+                <a href="/${row.file_path}"
+                    target="_blank"
+                    class="btn btn-outline-primary btn-sm">
+                    <i class="fa fa-eye me-1"></i>
+                    View File
                 </a>
             `;
             } else {
-                fileBtn = `<span class="text-muted">No File Uploaded</span>`;
+                fileBtn = `
+                <span class="text-muted small">
+                    No File Uploaded
+                </span>
+            `;
             }
-
             html += `
         <div class="col-lg-6">
-
-            <div class="modern-card document-card">
-
-                <div class="modern-header">
-
-                    <div class="avatar-circle bg-secondary">
-                        <i class="fa fa-file-lines"></i>
-                    </div>
-
-                    <div class="flex-grow-1 ms-3">
-                        <h5>${row.document_name ?? '--'}</h5>
-                        <small>Document Information</small>
-                    </div>
-
-                </div>
-
-                <div class="modern-body">
-
-                    <div class="info-item">
-                        <span><i class="fa fa-hashtag"></i>Document Number</span>
-                        <strong>${row.document_number ?? '--'}</strong>
-                    </div>
-
-                    <div class="row g-3 mt-1">
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>Issue Date</label>
-                                <div>${row.issue_date ?? '--'}</div>
-                            </div>
+            <div class="info-card">
+                <div class="card-head">
+                    <div>
+                        <div class="card-title">
+                            ${row.document_name ?? '--'}
                         </div>
-
-                        <div class="col-6">
-                            <div class="mini-box">
-                                <label>Expiry Date</label>
-                                <div>${row.expiry_date ?? '--'}</div>
-                            </div>
+                        <div class="card-subtitle">
+                            Document Information
                         </div>
-
                     </div>
-
-                    <div class="d-flex justify-content-end mt-4">
-                        ${fileBtn}
-                    </div>
-
+                    ${fileBtn}
                 </div>
-
+                <div class="info-row">
+                    <div class="info-label">
+                        Document No.
+                    </div>
+                    <div class="info-value">
+                        ${row.document_number ?? '--'}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                        Issue Date
+                    </div>
+                    <div class="info-value">
+                        ${row.issue_date ?? '--'}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">
+                     Expiry Date
+                    </div>
+                    <div class="info-value">
+                        ${row.expiry_date ?? '--'}
+                    </div>
+                </div>
             </div>
-
         </div>`;
         });
-
         $('#documentCards').html(html);
 
     }

@@ -4,15 +4,15 @@ namespace App\Models\Master;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Roles extends Model
+class BranchType extends Model
 {
-    protected $table = 'mst_roles';
+    protected $table = 'mst_branch_types';
     protected $fillable = [
         'organization_type_id',
-        'role_code',
-        'role_name',
+        'branch_type_name',
+        'branch_type_code',
         'description',
-        'is_system_role',
+        'display_order',
         'active_status'
     ];
 }

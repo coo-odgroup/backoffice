@@ -3,7 +3,7 @@
 @section('content')
 
 <?php
-$page_name = 'All '.trim($__env->yieldContent('page_title'));
+$page_name = 'All ' . trim($__env->yieldContent('page_title'));
 $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => 'N', 'back' => 'N', 'delete' => 'y', 'active' => 'y', 'inactive' => 'y'];
 ?>
 
@@ -62,20 +62,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
                                     <div class="row mb-3">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
+                                            <label for="org">Organization Type<span class="text-danger important">*</span></label>
+                                            <select class="form-select form-select-sm selOrg" id="org" name="org">
+                                                <option value="">Select Organization Type</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
                                             <label for="roleType">Role Type<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm clearable" id="roleType" placeholder="Role Type" name="roleType" maxlength="100" value="{{ $data['row']->name ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm clearable" id="roleType" placeholder="Role Type" name="roleType" maxlength="100" value="{{ old('roleType', $data['row']->role_name ?? '') }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="roleCode">Role Code<span class="text-danger important">*</span></label>
-                                            <input type="text" class="form-control form-control-sm clearable" id="roleCode" placeholder="Role Code" name="roleCode" maxlength="100" value="{{ $data['row']->code ?? '' }}">
+                                            <input type="text" class="form-control form-control-sm clearable" id="roleCode" placeholder="Role Code" name="roleCode" maxlength="100" value="{{ old('roleCode', $data['row']->role_code ?? '') }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <label for="systemRolesType">Is System Role<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm" id="systemRolesType" name="Type">
-                                                 <option value="">Select System Role</option>
+                                                <option value="">Select System Role</option>
                                                 <option value="1"
                                                     {{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 'selected' : '' }}>
                                                     True
@@ -138,6 +144,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
+        if (!validator.selectDropdown('org', 'Organization Type'))
+            return false;
         if (!validator.selectDropdown('systemRolesType', ' System Role Type'))
             return false;
         if (!validator.blankCheck('roleCode', 'Role Code cannot be left blank'))
@@ -163,6 +171,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
         commonAjax.initCharCounter(['roleType', 'roleCode', 'description']);
         commonAjax.initClearableInputs();
+        commonAjax.initSelect2('#org', 'Select Organization Type');
+        commonAjax.loadOrganizationTypeList("{{ old('orgType', $data['row']->organization_type_id ?? '') }}");
 
         $('#roleCode').on('keyup', function() {
 

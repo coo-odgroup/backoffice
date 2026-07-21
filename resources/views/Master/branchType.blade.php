@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Roles ')
+@section('page_title', 'Branch Type')
 @section('content')
 
 <?php
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('roles.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('branch-type.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -37,36 +37,27 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     <div class="card">
         <div class="card-body">
             <!-- FILTER -->
-            <div class="mb-3 border-bottom d-none" id="filterBox">
+            <div class="mb-1 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
 
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="org">Organization Type<span class="text-danger important">*</span></label>
-                            <select class="form-select form-select-sm selOrg" id="org" name="org">
-                                <option value="">Select Organization Type</option>
-                            </select>
-                        </div>
-
                         <!-- Search -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="txtSearch">Search By RoleType</label>
+                        <div class="col-lg-4 col-md-6">
+                            <label for="txtSearch">Search By Brand</label>
                             <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Role Type">
+                                placeholder="Brand">
                         </div>
 
-                        <!-- System Role -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="selSystemRole">System Role</label>
-                            <select class="form-select form-select-sm" id="selSystemRole" name="selSystemRole">
-                                <option value="">Select Role</option>
-                                <option value="1">True</option>
-                                <option value="2">False</option>
+                        <!-- Country -->
+                        <div class="col-lg-2 col-md-6">
+                            <label for="countrySearch">Country</label>
+                            <select class="form-select form-select-sm" id="country" name="country">
+                                <option value="">Select Country</option>
                             </select>
                         </div>
 
                         <!-- Status -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
+                        <div class="col-lg-2 col-md-6">
                             <label for="selStatus">Status</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
@@ -76,7 +67,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Buttons -->
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
+                        <div class="col-lg-4 d-flex justify-content-end flex-wrap action-btns gap-1 mt-1">
                             <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
                                 <i class="fa-solid fa-search me-1"></i>Search
                             </button>
@@ -131,8 +122,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('roles.dataTableView') }}"
-                    data-edit-url="{{ route('roles.edit', 'ID') }}">
+                    data-url="{{ route('branch-type.dataTableView') }}"
+                    data-edit-url="{{ route('branch-type.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
                             <th class="noPrint no-sort">
@@ -141,10 +132,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>System Role</th>
-                            <th>Organizatin Type</th>
+                            <th>Brand</th>
+                            <th>Country</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -152,16 +141,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     </thead>
                     <tbody></tbody>
                 </table>
-                <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
-                {{csrf_field()}}
-                <input name="hdn_ids" id="hdn_ids" type="hidden">
-                <input name="hdn_qs" id="hdn_qs" type="hidden">
-                <input type="hidden" id="hdn_model" value="Roles">
+            </div>
+            <div class="footer-background border-success text-center" id="norecord" style="display:none">No record found.</div>
+            {{csrf_field()}}
+            <input name="hdn_ids" id="hdn_ids" type="hidden">
+            <input name="hdn_qs" id="hdn_qs" type="hidden">
+            <input type="hidden" id="hdn_model" value="BranchType">
 
-                <div class="d-flex justify-content-between align-items-center mt-2">
-                    <div id="customTableInfo"></div>
-                    <div id="customPagination"></div>
-                </div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <div id="customTableInfo"></div>
+                <div id="customPagination"></div>
             </div>
         </div>
     </div>
@@ -179,10 +168,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
-        commonAjax.initClearableInputs();
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        commonAjax.initSelect2('#org', 'Select Organization Type');
-        commonAjax.loadOrganizationTypeList("{{ old('orgType', $data['row']->organization_type_id ?? '') }}");
+        commonAjax.initSelect2('#country', 'Select Country');
+        commonAjax.loadCountryList();
+        commonAjax.initClearableInputs();
         getDataTableView();
     });
 
@@ -215,20 +204,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let selSystemRole = '';
-        let org = '';
+        let countrySearch = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
         }
+
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
-        if ($('#selSystemRole').val() != '') {
-            selSystemRole = $('#selSystemRole').val();
-        }
-        if ($('#org').val() != '') {
-            org = $('#org').val();
+        if ($('#countrySearch').val() != '') {
+            countrySearch = $('#countrySearch').val();
         }
 
         let tableId = 'datatable';
@@ -236,15 +222,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let searchParams = {
             txtSearch: txtSearch,
             selStatus: selStatus,
-            selSystemRole: selSystemRole,
-            org: org
+            countrySearch: countrySearch
         };
-        let displayColumns = [1, 2, 3, 4, 5, 6];
+        let displayColumns = [1, 2, 3, 4, 5, 6, 7];
         let dataTableColumns = [{
                 data: '',
                 render: function(data, type, row) {
-                    return '<div class="checkbox"><input class="chkItem" type="checkbox" id="check' + row.role_id +
-                        '" name="chkStd' + row.role_id + '" value="' + row.role_id +
+                    return '<div class="checkbox"><input class="inverted chkItem" type="checkbox" id="check' + row.brand_id +
+                        '" name="chkStd' + row.brand_id + '" value="' + row.brand_id +
                         '" ></div>';
                 },
                 className: "noPrint text-center"
@@ -257,29 +242,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'role_code',
+                data: 'brand_name',
                 defaultContent: "--"
             },
             {
-                data: 'role_name',
-                defaultContent: "--"
-            },
-            {
-                data: 'is_system_role',
-                render: function(data, type, row) {
-                    if (data === 1 || data === '1') {
-                        return 'True';
+                data: 'country',
+                render: function(data) {
+                    if (!data || data === null) {
+                        return "--";
                     }
-                    if (data === 2 || data === '2') {
-                        return 'False';
-                    }
-                    return '--';
-                },
-                className: "text-center"
-            },
-            {
-                data: 'org',
-                defaultContent: "--"
+                    return data;
+                }
             },
             {
                 data: null,
@@ -291,11 +264,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     let updatedBy = row.updated_by_name ? row.updated_by_name : '--';
                     let updatedAt = (row.updated_date) ? row.updated_date : '--';
 
+                    // Show updated date if exists, else created date
                     let displayDate = (updatedAt != '--') ? updatedAt : createdAt;
 
                     return `
                         <span
-                            class="text-decoration-underline fw-semibold"
+                            class="fw-semibold text-decoration-underline cursor-pointer"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             data-bs-html="true"
@@ -331,14 +305,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <a class="btn btn-sm btn-info"
-                        href="${editUrl.replace('ID', row.enc_role_id)}">
+                        href="${editUrl.replace('ID', row.enc_brand_id)}">
                         <i class="fa fa-edit"></i> Edit
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_roles"
-                            data-id="${row.enc_role_id}">
+                            data-table="mst_bus_brand"
+                            data-id="${row.enc_brand_id}">
                                 <i class="fa fa-history"></i> View Log
                         </a>
                     `;
