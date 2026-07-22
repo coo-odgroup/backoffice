@@ -215,32 +215,32 @@ export function viewAlert(msg, ctrlId = "", redLoc = "") {
     };
 }
 
-    export function executeBulkAction(ids, action) {
-        let model = $("#hdn_model").val();
+export function executeBulkAction(ids, action) {
+    let model = $("#hdn_model").val();
 
-        $.ajax({
-            type: "POST",
-            url: window.bulkActionUrl,
-            data: {
-                ids: ids.join(","), // convert to string
-                action: action,
-                model: model,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function (response) {
-                viewAlert(response.message);
+    $.ajax({
+        type: "POST",
+        url: window.bulkActionUrl,
+        data: {
+            ids: ids.join(","), // convert to string
+            action: action,
+            model: model,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        success: function (response) {
+            viewAlert(response.message);
 
-                if (window.dataTableInstance) {
-                    setTimeout(function () {
-                        window.dataTableInstance.ajax.reload(null, false);
-                    }, 300);
-                }
-            },
-            error: function (xhr) {
-                viewAlert("Something went wrong! Please try again later.");
-            },
-        });
-    }
+            if (window.dataTableInstance) {
+                setTimeout(function () {
+                    window.dataTableInstance.ajax.reload(null, false);
+                }, 300);
+            }
+        },
+        error: function (xhr) {
+            viewAlert("Something went wrong! Please try again later.");
+        },
+    });
+}
 
 export function checkFun(ctrId) {
     if ($("#" + ctrId).is(":checked")) {
@@ -2177,5 +2177,88 @@ export function loadOrganizationTypeList(selected_org_id = 0) {
                 '<option value="">-- Select Organization Type --</option>',
             );
         },
+    });
+}
+
+export function loadBranchTypeList(selected_branch_id = 0) {
+    $(".selBranchType").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "branch-type/branch-type-dropdown",
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">-- Select Branch Type --</option>';
+
+            if (response.status && response.data.length > 0) {
+                response.data.forEach(function (branch) {
+                    let selected =
+                        branch.id == selected_branch_id ? "selected" : "";
+
+                    options += `
+                        <option value="${branch.id}" ${selected}
+                            data-code="${branch.branch_type_code}">
+                            ${branch.branch_type_name}
+                        </option>`;
+                });
+            }
+
+            $(".selBranchType").html(options);
+
+            if ($("#branchType").hasClass("select2-hidden-accessible")) {
+                $("#branchType").select2("destroy");
+            }
+
+            initSelect2("#branchType", "Select Branch Type");
+        },
+        error: function () {
+            $(".selBranchType").html(
+                '<option value="">-- Select Branch Type --</option>',
+            );
+        },
+    });
+}
+
+export function loadParentBranchList(selected_parent_branch_id = 0) {
+
+    $(".selParentBranch").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "branch/parent-branch-dropdown",
+        dataType: "json",
+        success: function(response) {
+
+            let options = '<option value="">-- Select Parent Branch --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function(branch) {
+
+                    let selected =
+                        branch.id == selected_parent_branch_id ? "selected" : "";
+
+                    options += `
+                        <option value="${branch.id}" ${selected}>
+                            ${branch.branch_name}
+                        </option>
+                    `;
+                });
+            }
+
+            $(".selParentBranch").html(options);
+
+            if ($("#parentBranch").hasClass("select2-hidden-accessible")) {
+                $("#parentBranch").select2("destroy");
+            }
+
+            initSelect2("#parentBranch", "Select Parent Branch");
+        },
+        error: function() {
+
+            $(".selParentBranch").html(
+                '<option value="">-- Select Parent Branch --</option>'
+            );
+        }
     });
 }
