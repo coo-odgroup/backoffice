@@ -158,7 +158,6 @@
                                 <th>Execution Type</th>
                                 <th>Last Modified</th>
                                 <th>Status</th>
-                                <th class="no-sort">View Cron Details</th>
                                 <th class="no-sort">Action</th>
                             </tr>
                         </thead>
@@ -472,35 +471,26 @@
                     data: '',
                     render: function(data, type, row) {
 
-                        return `
-                          <span class="btn btn-sm btn-primary btnViewSchedule"
-                                data-id="${row.id}"
-                                data-name="${row.cron_name}">
-                                <i class="fa fa-eye"></i> View
-                            </span>
-                        `;
-                    },
-                    className: "noPrint text-center"
-                },
-                {
-                    data: '',
-                    render: function(data, type, row) {
-
                         let editUrl = $('#' + tableId).data('edit-url');
 
                         if (!editUrl) return '';
 
                         return `
+                        <span class="btn btn-sm btn-primary btnViewSchedule"
+                                data-id="${row.id}"
+                                data-name="${row.cron_name}">
+                                <i class="fa fa-eye"></i>
+                            </span>
                             <a class="btn btn-sm btn-info"
                                 href="${editUrl.replace('ID', row.enc_id)}">
-                                <i class="fa fa-edit"></i> Edit
+                                <i class="fa fa-edit"></i>
                             </a>
 
                             <a href="javascript:void(0);"
                                 class="btn btn-sm btn-success btn-view-log"
                                 data-table="mst_cron_jobs"
                                 data-id="${row.enc_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                             </a>
                         `;
                     },

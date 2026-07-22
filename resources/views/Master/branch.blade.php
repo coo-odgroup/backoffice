@@ -352,20 +352,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return `
                      <span class="btn btn-sm btn-primary btnViewBranch"
                 data-id="${row.enc_branch_id}">
-                <i class="fa fa-eye"></i> View
-            </span>
+                <i class="fa fa-eye"></i>
+                        </span>
 
-            <a class="btn btn-sm btn-info"
-                href="${editUrl.replace('ID', row.enc_branch_id)}">
-                <i class="fa fa-edit"></i> Edit
-            </a>
+                        <a class="btn btn-sm btn-info"
+                            href="${editUrl.replace('ID', row.enc_branch_id)}">
+                            <i class="fa fa-edit"></i>
+                        </a>
 
-            <a href="javascript:void(0);"
-                class="btn btn-sm btn-success btn-view-log"
-                data-table="mst_branches"
-                data-id="${row.enc_branch_id}">
-                <i class="fa fa-history"></i> View Log
-            </a>`;
+                        <a href="javascript:void(0);"
+                            class="btn btn-sm btn-success btn-view-log"
+                            data-table="mst_branches"
+                            data-id="${row.enc_branch_id}">
+                            <i class="fa fa-history"></i>
+                        </a>`;
                 },
                 className: "noPrint text-center"
             }

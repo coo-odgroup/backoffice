@@ -297,19 +297,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                               data-table="mst_bus_type"
                               data-id="${row.enc_bustype_id}"
                               data-name="${row.layout_name}">
-                              <i class="fa fa-eye"></i> View
+                              <i class="fa fa-eye"></i>
                         </span>
 
                         <a class="btn btn-sm btn-info"
                         href="${editUrl.replace('ID', row.enc_bustype_id)}">
-                        <i class="fa fa-edit"></i> Edit
+                        <i class="fa fa-edit"></i>
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="mst_bus_type"
                             data-id="${row.enc_bustype_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                         </a>
                     `;
                 },

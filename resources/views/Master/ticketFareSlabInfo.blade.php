@@ -391,8 +391,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-
-            // Action
             {
                 data: '',
                 className: "text-center noPrint",
@@ -403,12 +401,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return `
             <a class="btn btn-sm btn-info"
                href="${editUrl.replace('ID', row.enc_id)}">
-                Edit
+                 <i class="fa fa-edit"></i>
+                
             </a>
             <a class="btn btn-sm btn-success btn-view-log"
                data-table="mst_ticket_fare_slab_info"
                data-id="${row.enc_id}">
-                Log
+               <i class="fa fa-history"></i>
             </a>
         `;
                 }

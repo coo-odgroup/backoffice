@@ -331,13 +331,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
                         <div class="d-inline-flex gap-1">
+                                                    <a href="javascript:void(0);"
+                            class="btn btn-sm btn-primary btn-view"
+                            data-id="${row.enc_users_id}">
+                                <i class="fa fa-eye"></i>
+                            </a>
 
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-info text-white dropdown-toggle"
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false">
-                                    <i class="fa fa-edit"></i> Edit
+                                    <i class="fa fa-edit"></i>
                                 </button>
 
                                 <ul class="dropdown-menu">
@@ -375,11 +380,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <i class="fa fa-history"></i>
                             </a>
 
-                            <a href="javascript:void(0);"
-                            class="btn btn-sm btn-warning btn-view"
-                            data-id="${row.enc_users_id}">
-                                <i class="fa fa-eye"></i>
-                            </a>
+
 
                         </div>
                     `;

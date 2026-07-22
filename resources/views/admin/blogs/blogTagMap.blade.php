@@ -268,14 +268,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return `
                         <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_tag_map_id)}">
-                        <i class="fa fa-edit"></i> Edit
+                        <i class="fa fa-edit"></i>
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="blog_tag_map"
                             data-id="${row.enc_tag_map_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                         </a>
 
                     `;

@@ -722,13 +722,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                             <span class="btn btn-sm btn-primary btnViewCategory"
                                 data-id="${row.enc_id}">
-                                <i class="fa fa-eye"></i> View
+                                <i class="fa fa-eye"></i>
                             </span>
 
                         <!-- Edit Button -->
                         <a class="btn btn-sm btn-info"
                             href="${editUrl.replace('ID', row.enc_id)}">
-                            <i class="fa fa-edit"></i> Edit
+                            <i class="fa fa-edit"></i> 
                         </a>
 
                         <!-- View Log Button -->

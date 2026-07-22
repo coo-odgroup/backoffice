@@ -391,19 +391,19 @@
                                 data-id="${row.bus_schedule_id}"
                                 data-id="${row.enc_bustype_id}"
                                 data-name="${row.layout_name}">
-                                <i class="fa fa-calendar"></i> View
+                                <i class="fa fa-calendar"></i>
                             </span>
 
                             <a class="btn btn-sm btn-info"
                                 href="${editUrl.replace('ID', row.enc_bus_schedule_id)}">
-                                <i class="fa fa-edit"></i> Edit
+                                <i class="fa fa-edit"></i>
                             </a>
 
                             <a href="javascript:void(0);"
                                 class="btn btn-sm btn-success btn-view-log"
                                 data-table="bus_schedule"
                                 data-id="${row.enc_bus_schedule_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                             </a>
                         `;
                     },

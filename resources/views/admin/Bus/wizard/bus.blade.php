@@ -405,7 +405,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false">
-                                    <i class="fa fa-edit"></i> Edit
+                                    <i class="fa fa-edit"></i> 
                                 </button>
 
                                 <ul class="dropdown-menu">
@@ -452,7 +452,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="bus"
                             data-id="${row.enc_bus_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                             </a>
 
                           

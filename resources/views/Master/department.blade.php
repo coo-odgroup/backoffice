@@ -127,7 +127,6 @@
                                 <th>Sl No</th>
                                 <th>Department Name</th>
                                 <th>Department Code</th>
-                                <th>Description</th>
                                 <th>Last Modified</th>
                                 <th>Status</th>
                                 <th class="no-sort">Action</th>
@@ -244,10 +243,6 @@
                     defaultContent: '--'
                 },
                 {
-                    data: 'description',
-                    defaultContent: '--'
-                },
-                {
                     data: null,
                     render: function(data, type, row) {
 
@@ -305,14 +300,14 @@
                         return `
                         <a class="btn btn-info btn-sm"
                             href="${editUrl.replace('ID', row.enc_department_id)}">
-                            <i class="fa fa-edit"></i> Edit
+                            <i class="fa fa-edit"></i>
                         </a>
 
                         <a href="javascript:void(0)"
                             class="btn btn-success btn-sm btn-view-log"
                             data-table="mst_departments"
                             data-id="${row.enc_department_id}">
-                            <i class="fa fa-history"></i> View Log
+                            <i class="fa fa-history"></i>
                         </a>
                     `;
 

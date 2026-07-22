@@ -283,14 +283,14 @@
                         return `
                             <a class="btn btn-sm btn-info"
                             href="${editUrl.replace('ID', row.enc_axleTypeId)}">
-                            <i class="fa fa-edit"></i> Edit
+                            <i class="fa fa-edit"></i>
                             </a>
 
                             <a href="javascript:void(0);"
                                 class="btn btn-sm btn-success btn-view-log"
                                 data-table="mst_axle_type"
                                 data-id="${row.enc_axleTypeId}">
-                                    <i class="fa fa-history"></i> View Log
+                                    <i class="fa fa-history"></i>
                             </a>
                         `;
                     },

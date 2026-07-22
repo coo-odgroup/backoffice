@@ -297,7 +297,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     class="btn btn-sm btn-success btn-view-log"
                     data-table="mst_city_content"
                     data-id="${row.enc_id}">
-                        <i class="fa fa-history"></i> View Log
+                        <i class="fa fa-history"></i>
                     </a>
                 `;
                 },

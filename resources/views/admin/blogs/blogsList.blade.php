@@ -570,19 +570,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return `
                         <span class="btn btn-sm btn-primary btnViewBlog"
                             data-id="${row.blog_id}">
-                            <i class="fa fa-eye"></i> View
+                            <i class="fa fa-eye"></i>
                         </span>
 
                         <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_blog_id)}">
-                        <i class="fa fa-edit"></i> Edit
+                        <i class="fa fa-edit"></i>
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="blog"
                             data-id="${row.enc_blog_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                         </a>
 
                     `;

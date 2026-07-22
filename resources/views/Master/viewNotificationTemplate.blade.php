@@ -400,7 +400,7 @@
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="mst_notification_templates"
                             data-id="${row.enc_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                         </a>
                         `;
                     },

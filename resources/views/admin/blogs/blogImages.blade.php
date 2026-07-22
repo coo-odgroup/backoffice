@@ -228,7 +228,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     return `
                         <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_blog_id)}">
-                        <i class="fa fa-edit"></i> Edit
+                        <i class="fa fa-edit"></i>
                         </a>
                     `;
                 },

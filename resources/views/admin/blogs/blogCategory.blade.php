@@ -510,18 +510,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     <span class="btn btn-sm btn-primary btnViewCategory"
                                 data-id="${row.blog_cat_id}">
-                                <i class="fa fa-eye"></i> View
+                                <i class="fa fa-eye"></i>
                             </span>
                         <a class="btn btn-sm btn-info text-white"
                         href="${editUrl.replace('ID', row.enc_blog_cat_id)}">
-                        <i class="fa fa-edit"></i> Edit
+                        <i class="fa fa-edit"></i>
                         </a>
 
                         <a href="javascript:void(0);"
                             class="btn btn-sm btn-success btn-view-log"
                             data-table="blogs"
                             data-id="${row.enc_blog_cat_id}">
-                                <i class="fa fa-history"></i> View Log
+                                <i class="fa fa-history"></i>
                         </a>
 
                     `;
