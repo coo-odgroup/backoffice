@@ -29,6 +29,7 @@ class BranchController extends Controller
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
             $orgSearch = (request('orgSearch') !== null && request('orgSearch') !== '') ? (int)request('orgSearch') : '';
+            $branchSearch = (request('branchSearch') !== null && request('branchSearch') !== '') ? (int)request('branchSearch') : '';
 
             $dataQuery = DB::table('mst_branches as b')
                 ->leftJoin('mst_organization_types as ot', 'ot.id', '=', 'b.organization_id')
@@ -65,6 +66,9 @@ class BranchController extends Controller
 
             if ($orgSearch != '') {
                 $dataQuery->where('b.organization_id', $orgSearch);
+            }
+            if ($branchSearch != '') {
+                $dataQuery->where('b.branch_type_id', $branchSearch);
             }
 
             if ($selStatus != '') {
@@ -122,14 +126,10 @@ class BranchController extends Controller
                 $row->updated_date = $row->updated_at
                     ? date('d-M-Y H:i:s', strtotime($row->updated_at))
                     : null;
-
                 $row->is_active = $row->active_status ? 'Active' : 'Inactive';
-
                 $row->head_office = $row->is_head_office ? 'Yes' : 'No';
-
                 $row->enc_branch_id = Crypt::encryptString($row->branch_id);
             }
-
             $recordsTotal    = $count;
             $recordsFiltered = $count;
             $data            = $arrRes;

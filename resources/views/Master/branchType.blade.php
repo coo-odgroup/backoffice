@@ -173,7 +173,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
         commonAjax.initSelect2('#orgSearch', 'Select Organization');
-        commonAjax.loadOrganizationTypeList(0, '#orgSearch');
+        commonAjax.loadOrganizationTypeList();
         commonAjax.initClearableInputs();
         getDataTableView();
     });

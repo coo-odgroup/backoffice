@@ -42,16 +42,24 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     <div class="row align-items-end">
 
                         <!-- Search -->
-                        <div class="col-lg-4 col-md-6">
-                            <label for="txtSearch">Search By Brand</label>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="txtSearch">Search By Branch</label>
                             <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Brand">
+                                placeholder="Branch">
                         </div>
 
-                        <!-- Country -->
+                          <!-- Branch Type -->
+                         <div class="col-lg-2 col-md-6">
+                            <label for="branchSearch">Branch type</label>
+                            <select class="form-select form-select-sm selBranchType" id="branchType" name="branchType">
+                                <option value="">Select Organization</option>
+                            </select>
+                        </div>
+
+                        <!-- Organization Type -->
                         <div class="col-lg-2 col-md-6">
-                            <label for="countrySearch">Organization</label>
-                            <select class="form-select form-select-sm" id="orgSearch" name="orgSearch">
+                            <label for="orgSearch">Organization</label>
+                            <select class="form-select form-select-sm selOrg" id="orgSearch" name="orgSearch">
                                 <option value="">Select Organization</option>
                             </select>
                         </div>
@@ -192,8 +200,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
         commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        commonAjax.initSelect2('#country', 'Select Country');
-        commonAjax.loadCountryList();
+        commonAjax.initSelect2('#orgSearch', 'Select Organization Type');
+        commonAjax.initSelect2('#branchType', 'Select Branch Type');
+        commonAjax.loadOrganizationTypeList();
+        commonAjax.loadBranchTypeList();
         commonAjax.initClearableInputs();
         getDataTableView();
     });
@@ -228,6 +238,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         let txtSearch = '';
         let selStatus = '';
         let orgSearch = '';
+        let branchSearch = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -239,13 +250,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#orgSearch').val() != '') {
             orgSearch = $('#orgSearch').val();
         }
+         if ($('#branchType').val() != '') {
+            branchSearch = $('#branchType').val();
+        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
             txtSearch: txtSearch,
             selStatus: selStatus,
-            orgSearch: orgSearch
+            orgSearch: orgSearch,
+            branchSearch: branchSearch
         };
         let displayColumns = [1, 2, 3, 4, 5, 6, 7];
         let dataTableColumns = [
@@ -353,19 +368,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                      <span class="btn btn-sm btn-primary btnViewBranch"
                 data-id="${row.enc_branch_id}">
                 <i class="fa fa-eye"></i>
-                        </span>
+                    </span>
 
-                        <a class="btn btn-sm btn-info"
-                            href="${editUrl.replace('ID', row.enc_branch_id)}">
-                            <i class="fa fa-edit"></i>
-                        </a>
+                    <a class="btn btn-sm btn-info"
+                        href="${editUrl.replace('ID', row.enc_branch_id)}">
+                        <i class="fa fa-edit"></i>
+                    </a>
 
-                        <a href="javascript:void(0);"
-                            class="btn btn-sm btn-success btn-view-log"
-                            data-table="mst_branches"
-                            data-id="${row.enc_branch_id}">
-                            <i class="fa fa-history"></i>
-                        </a>`;
+                    <a href="javascript:void(0);"
+                        class="btn btn-sm btn-success btn-view-log"
+                        data-table="mst_branches"
+                        data-id="${row.enc_branch_id}">
+                        <i class="fa fa-history"></i>
+                    </a>`;
                 },
                 className: "noPrint text-center"
             }
@@ -389,9 +404,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         const viewUrl = "{{ route('branch.view', 'ID') }}";
 
         let url = viewUrl.replace('ID', id);
-
-        console.log(url);
-
         $.get(url, function(res) {
 
             console.log(res);
