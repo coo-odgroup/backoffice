@@ -2220,23 +2220,22 @@ export function loadBranchTypeList(selected_branch_id = 0) {
 }
 
 export function loadParentBranchList(selected_parent_branch_id = 0) {
-
     $(".selParentBranch").html('<option value="">Loading...</option>');
 
     $.ajax({
         type: "GET",
         url: ajaxUrl + "branch/parent-branch-dropdown",
         dataType: "json",
-        success: function(response) {
-
-            let options = '<option value="">-- Select Parent Branch --</option>';
+        success: function (response) {
+            let options =
+                '<option value="">-- Select Parent Branch --</option>';
 
             if (response.status && response.data.length > 0) {
-
-                response.data.forEach(function(branch) {
-
+                response.data.forEach(function (branch) {
                     let selected =
-                        branch.id == selected_parent_branch_id ? "selected" : "";
+                        branch.id == selected_parent_branch_id
+                            ? "selected"
+                            : "";
 
                     options += `
                         <option value="${branch.id}" ${selected}>
@@ -2254,11 +2253,93 @@ export function loadParentBranchList(selected_parent_branch_id = 0) {
 
             initSelect2("#parentBranch", "Select Parent Branch");
         },
-        error: function() {
-
+        error: function () {
             $(".selParentBranch").html(
-                '<option value="">-- Select Parent Branch --</option>'
+                '<option value="">-- Select Parent Branch --</option>',
             );
-        }
+        },
+    });
+}
+
+export function loadDepartmentList(selected_department_id = 0) {
+    $(".selDepartment").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "department/department-dropdown",
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">-- Select Department --</option>';
+
+            if (response.status && response.data.length > 0) {
+                response.data.forEach(function (department) {
+                    let selected =
+                        department.id == selected_department_id
+                            ? "selected"
+                            : "";
+
+                    options += `
+                        <option value="${department.id}" ${selected}
+                            data-code="${department.department_code}">
+                            ${department.department_name}
+                        </option>`;
+                });
+            }
+
+            $(".selDepartment").html(options);
+
+            if ($("#department").hasClass("select2-hidden-accessible")) {
+                $("#department").select2("destroy");
+            }
+
+            initSelect2("#department", "Select Department");
+        },
+        error: function () {
+            $(".selDepartment").html(
+                '<option value="">-- Select Department --</option>',
+            );
+        },
+    });
+}
+
+export function loadBranchList(organization_id = 0, selected_branch_id = 0) {
+    $(".selBranch").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "branch/branch-dropdown",
+        data: {
+            organization_id: organization_id,
+        },
+        dataType: "json",
+        success: function (response) {
+            let options = '<option value="">-- Select Branch --</option>';
+
+            if (response.status && response.data.length > 0) {
+                response.data.forEach(function (branch) {
+                    let selected =
+                        branch.id == selected_branch_id ? "selected" : "";
+
+                    options += `
+                        <option value="${branch.id}" ${selected}
+                            data-code="${branch.branch_code}">
+                            ${branch.branch_name}
+                        </option>`;
+                });
+            }
+
+            $(".selBranch").html(options);
+
+            if ($("#branch").hasClass("select2-hidden-accessible")) {
+                $("#branch").select2("destroy");
+            }
+
+            initSelect2("#branch", "Select Branch");
+        },
+        error: function () {
+            $(".selBranch").html(
+                '<option value="">-- Select Branch --</option>',
+            );
+        },
     });
 }

@@ -77,6 +77,7 @@ use App\Http\Controllers\Admin\Bus\BusWizardController;
 use App\Http\Controllers\Master\BusScheduleController;
 use App\Http\Controllers\Master\BusCancelController;
 use App\Http\Controllers\Master\SeatBlockController;
+use App\Http\Controllers\Master\OrganizationDepartmentController;
 use App\Http\Controllers\Master\ExtraSeatBlockController;
 use App\Http\Controllers\Master\SeatOpenController;
 use App\Http\Controllers\Master\NotificationTemplateController;
@@ -188,9 +189,10 @@ Route::prefix('admin')->group(function () {
     Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
     Route::get('manage-route-distance/route-dropdown', [CommonController::class, 'RouteDropdown'])->name('manage-route-distance.routeDropdown');
     Route::get('organization/organization-type-dropdown', [CommonController::class, 'organizationTypeDropdown'])->name('organization.organizationTypeDropdown');
-    Route::get('branch-type/branch-type-dropdown',[CommonController::class, 'branchTypeDropdown'])->name('branch-type.dropdown');
-    Route::get('branch/parent-branch-dropdown',[CommonController::class, 'parentBranchDropdown'])->name('branch.parentBranchDropdown');
-
+    Route::get('branch-type/branch-type-dropdown', [CommonController::class, 'branchTypeDropdown'])->name('branch-type.dropdown');
+    Route::get('branch/branch-dropdown', [CommonController::class, 'branchDropdown']);
+    Route::get('branch/parent-branch-dropdown', [CommonController::class, 'parentBranchDropdown'])->name('branch.parentBranchDropdown');
+    Route::get('department/department-dropdown', [CommonController::class, 'departmentDropdown']);
 
 
 
@@ -483,7 +485,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'roles-hierarchy/add', [RolesHierarchyController::class, 'add'])->name('roles-hierarchy.add');
     Route::post('roles-hierarchy/dataTableView', [RolesHierarchyController::class, 'dataTableView'])->name('roles-hierarchy.dataTableView');
     Route::match(['get', 'post'], 'roles-hierarchy/edit/{encId}', [RolesHierarchyController::class, 'edit'])->name('roles-hierarchy.edit');
-    Route::get('roles/get-role-by-organization/{organizationTypeId}',[RolesHierarchyController::class, 'getRoleByOrganization'])->name('roles.getRoleByOrganization');
+    Route::get('roles/get-role-by-organization/{organizationTypeId}', [RolesHierarchyController::class, 'getRoleByOrganization'])->name('roles.getRoleByOrganization');
 
     //Branch Type
     Route::get('/branch-type', [BranchTypeController::class, 'branchType'])->name('branch-type.index');
@@ -496,14 +498,36 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'branch/add', [BranchController::class, 'add'])->name('branch.add');
     Route::post('branch/dataTableView', [BranchController::class, 'dataTableView'])->name('branch.dataTableView');
     Route::match(['get', 'post'], 'branch/edit/{encId}', [BranchController::class, 'edit'])->name('branch.edit');
-    Route::get('branch/view/{id}',[BranchController::class,'view'])->name('branch.view');
+    Route::get('branch/view/{id}', [BranchController::class, 'view'])->name('branch.view');
 
 
-     //Department
+    //Department
     Route::get('/department', [DepartmentController::class, 'department'])->name('department.index');
     Route::match(['get', 'post'], 'department/add', [DepartmentController::class, 'add'])->name('department.add');
     Route::post('department/dataTableView', [DepartmentController::class, 'dataTableView'])->name('department.dataTableView');
     Route::match(['get', 'post'], 'department/edit/{encId}', [DepartmentController::class, 'edit'])->name('department.edit');
+
+    //Org Document
+    Route::get('/org-department', [OrganizationDepartmentController::class, 'organizationDepartment'])->name('org-department.index');
+    Route::match(['get', 'post'], 'org-department/add', [OrganizationDepartmentController::class, 'add'])->name('org-department.add');
+    Route::post('org-department/dataTableView', [OrganizationDepartmentController::class, 'dataTableView'])->name('org-department.dataTableView');
+    Route::match(['get', 'post'], 'org-department/edit/{encId}', [OrganizationDepartmentController::class, 'edit'])->name('org-department.edit');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -557,7 +581,6 @@ Route::prefix('admin')->group(function () {
     Route::post('users/dataTableView', [UsersController::class, 'dataTableView'])->name('users.dataTableView');
     Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
     Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
-
 
     // Blog Images
     Route::get('/blog-images', [BlogImagesController::class, 'index'])->name('blog-images.index');

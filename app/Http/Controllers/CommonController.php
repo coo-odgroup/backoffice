@@ -42,6 +42,7 @@ class CommonController extends Controller
             'Modules' => \App\Models\Master\Modules::class,
             'FaqCategory' => \App\Models\Master\FaqCategory::class,
             'Faq' => \App\Models\Master\Faq::class,
+            'OrganizationDepartment' => \App\Models\Master\OrganizationDepartment::class,
             'SeatType' => \App\Models\Master\SeatType::class,
             'ApiApps' => \App\Models\Master\ApiApps::class,
             'ApiKeys' => \App\Models\Master\ApiKeys::class,
@@ -1540,50 +1541,119 @@ class CommonController extends Controller
         }
     }
 
-    public function parentBranchDropdown(Request $request)
-{
-    try {
+    public function branchDropdown(Request $request)
+    {
+        try {
 
-        $query = DB::table('mst_branches as b')
-            ->leftJoin('mst_branch_types as bt', 'bt.id', '=', 'b.branch_type_id')
-            ->select(
-                'b.id',
-                'b.branch_name',
-                'bt.branch_type_name'
-            )
-            ->where('b.active_status', 1)
-            ->where('b.is_head_office', 1);
+            $query = DB::table('mst_branches')
+                ->select(
+                    'id',
+                    'branch_name',
+                    'branch_code'
+                )
+                ->where('active_status', 1);
 
-        // Optional Organization filter
-        if ($request->filled('organization_id')) {
-            $query->where('b.organization_id', $request->organization_id);
+            if ($request->filled('organization_id')) {
+                $query->where('organization_id', $request->organization_id);
+            }
+
+            $branches = $query
+                ->orderBy('branch_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $branches
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error('Branch Dropdown Error', [
+                'error' => $t->getMessage()
+            ]);
+
+            return response()->json([
+                'status'  => false,
+                'message' => config('constants.SERVER_ERROR_MESSAGE'),
+                'data'    => []
+            ]);
         }
-
-        // Optional Branch Type filter
-        if ($request->filled('branch_type_id')) {
-            $query->where('b.branch_type_id', $request->branch_type_id);
-        }
-
-        $branches = $query
-            ->orderBy('b.branch_name')
-            ->get();
-
-        return response()->json([
-            'status' => true,
-            'data'   => $branches
-        ]);
-
-    } catch (\Throwable $t) {
-
-        Log::error('Parent Branch Dropdown Error', [
-            'error' => $t->getMessage()
-        ]);
-
-        return response()->json([
-            'status'  => false,
-            'message' => config('constants.SERVER_ERROR_MESSAGE'),
-            'data'    => []
-        ]);
     }
-}
+
+    public function parentBranchDropdown(Request $request)
+    {
+        try {
+
+            $query = DB::table('mst_branches as b')
+                ->leftJoin('mst_branch_types as bt', 'bt.id', '=', 'b.branch_type_id')
+                ->select(
+                    'b.id',
+                    'b.branch_name',
+                    'bt.branch_type_name'
+                )
+                ->where('b.active_status', 1)
+                ->where('b.is_head_office', 1);
+
+            // Optional Organization filter
+            if ($request->filled('organization_id')) {
+                $query->where('b.organization_id', $request->organization_id);
+            }
+
+            // Optional Branch Type filter
+            if ($request->filled('branch_type_id')) {
+                $query->where('b.branch_type_id', $request->branch_type_id);
+            }
+
+            $branches = $query
+                ->orderBy('b.branch_name')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $branches
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error('Parent Branch Dropdown Error', [
+                'error' => $t->getMessage()
+            ]);
+
+            return response()->json([
+                'status'  => false,
+                'message' => config('constants.SERVER_ERROR_MESSAGE'),
+                'data'    => []
+            ]);
+        }
+    }
+
+    public function departmentDropdown(Request $request)
+    {
+        try {
+
+            $departments = DB::table('mst_departments')
+                ->select(
+                    'id',
+                    'department_name',
+                    'department_code'
+                )
+                ->where('active_status', 1)
+                ->orderBy('department_name', 'asc')
+                ->get();
+
+            return response()->json([
+                'status' => true,
+                'data'   => $departments
+            ]);
+        } catch (\Throwable $t) {
+
+            Log::error('Department Dropdown Error', [
+                'error' => $t->getMessage()
+            ]);
+
+            return response()->json([
+                'status'  => false,
+                'message' => config('constants.SERVER_ERROR_MESSAGE'),
+                'data'    => []
+            ]);
+        }
+    }
 }
