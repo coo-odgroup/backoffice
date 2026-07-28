@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Department extends Model
 {
-    protected $table = 'mst_departments';
+    protected $table = 'mst_department';
     protected $fillable = [
-        'department_name',
-        'department_code',
-        'description',
+        'organization_id',
+        'department_id',
+        'parent_department_id',
+        'branch_id',
+        'department_head_user_id',
         'active_status'
     ];
 }

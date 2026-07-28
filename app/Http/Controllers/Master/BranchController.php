@@ -32,7 +32,7 @@ class BranchController extends Controller
             $branchSearch = (request('branchSearch') !== null && request('branchSearch') !== '') ? (int)request('branchSearch') : '';
 
             $dataQuery = DB::table('mst_branches as b')
-                ->leftJoin('mst_organization_types as ot', 'ot.id', '=', 'b.organization_id')
+                ->leftJoin('mst_organization as o', 'o.id', '=', 'b.organization_id')
                 ->leftJoin('mst_branch_types as bt', 'bt.id', '=', 'b.branch_type_id')
                 ->leftJoin('mst_branches as pb', 'pb.id', '=', 'b.parent_branch_id')
                 ->leftJoin('users as u1', 'u1.id', '=', 'b.created_by')
@@ -45,7 +45,7 @@ class BranchController extends Controller
                     'b.active_status',
                     'b.created_at',
                     'b.updated_at',
-                    'ot.type_name as organization_name',
+                    'o.organization_name',
                     'bt.branch_type_name',
                     'pb.branch_name as parent_branch_name',
                     'u1.name as created_by_name',
@@ -58,7 +58,7 @@ class BranchController extends Controller
 
                     $q->where('b.branch_name', 'like', "%{$txtSearch}%")
                         ->orWhere('b.branch_code', 'like', "%{$txtSearch}%")
-                        ->orWhere('ot.type_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('o.organization_name', 'like', "%{$txtSearch}%")
                         ->orWhere('bt.branch_type_name', 'like', "%{$txtSearch}%")
                         ->orWhere('pb.branch_name', 'like', "%{$txtSearch}%");
                 });
@@ -89,7 +89,7 @@ class BranchController extends Controller
                     2 => 'b.branch_name',
                     3 => 'b.branch_code',
                     4 => 'b.is_head_office',
-                    5 => 'ot.type_name',
+                    5 => 'o.organization_name',
                     6 => 'bt.branch_type_name',
                     7 => 'pb.branch_name',
                     8 => 'b.updated_at',
@@ -199,6 +199,7 @@ class BranchController extends Controller
                 $validator = Validator::make(request()->all(), [
 
                     'orgType'       => 'required',
+                    'org'           => 'required',
                     'branchType'    => 'required',
                     'parentBranch'  => 'nullable',
                     'branchName'    => 'required|max:150',
@@ -230,7 +231,8 @@ class BranchController extends Controller
                     'state.required'        => 'State is required.',
                     'country.required'      => 'Country is required.',
                     'pinCode.required'      => 'Pin Code is required.',
-                    'pinCode.digits'        => 'Pin Code must be 6 digits.'
+                    'pinCode.digits'        => 'Pin Code must be 6 digits.',
+                    'org.required'          => 'Organization is required.',
                 ]);
 
                 if ($validator->fails()) {
@@ -239,7 +241,8 @@ class BranchController extends Controller
 
                 DB::beginTransaction();
 
-                $organizationId = request('orgType');
+                $organizationTypeId = request('orgType');
+                $organizationId     = request('org');
                 $branchTypeId   = request('branchType');
                 $parentBranchId = request('parentBranch');
 
@@ -288,7 +291,8 @@ class BranchController extends Controller
                         ->first();
 
                     $newData = [
-                        'organization_id'  => $organizationId,
+                        'organization_type_id' => $organizationTypeId,
+                        'organization_id'      => $organizationId,
                         'branch_type_id'   => $branchTypeId,
                         'parent_branch_id' => $parentBranchId,
                         'branch_name'      => $branchName,
@@ -336,7 +340,8 @@ class BranchController extends Controller
                         ->where('id', $id)
                         ->update([
 
-                            'organization_id'  => $organizationId,
+                            'organization_type_id' => $organizationTypeId,
+                            'organization_id'      => $organizationId,
                             'branch_type_id'   => $branchTypeId,
                             'parent_branch_id' => $parentBranchId,
                             'branch_name'      => $branchName,
@@ -362,7 +367,8 @@ class BranchController extends Controller
 
                     $row = [
 
-                        'organization_id'  => $organizationId,
+                        'organization_type_id' => $organizationTypeId,
+                        'organization_id'      => $organizationId,
                         'branch_type_id'   => $branchTypeId,
                         'parent_branch_id' => $parentBranchId,
                         'branch_name'      => $branchName,
@@ -439,7 +445,8 @@ class BranchController extends Controller
             $id = Crypt::decryptString($encId);
 
             $row = DB::table('mst_branches as b')
-                ->leftJoin('mst_organization_types as ot', 'ot.id', '=', 'b.organization_id')
+                ->leftJoin('mst_organization_types as ot', 'ot.id', '=', 'b.organization_type_id')
+                ->leftJoin('mst_organization as o', 'o.id', '=', 'b.organization_id')
                 ->leftJoin('mst_branch_types as bt', 'bt.id', '=', 'b.branch_type_id')
                 ->leftJoin('mst_branches as pb', 'pb.id', '=', 'b.parent_branch_id')
                 ->leftJoin('mst_states as s', 's.id', '=', 'b.state_id')
@@ -447,6 +454,7 @@ class BranchController extends Controller
                 ->select(
                     'b.*',
                     'ot.type_name',
+                    'o.organization_name',
                     'bt.branch_type_name',
                     'pb.branch_name as parent_branch',
                     's.state_name',

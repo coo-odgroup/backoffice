@@ -2180,6 +2180,98 @@ export function loadOrganizationTypeList(selected_org_id = 0) {
     });
 }
 
+export function loadOrganizationList(orgTypeId = 0, selectedOrgId = 0) {
+
+    $("#org").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "organization/organization-dropdown",
+        data: {
+            organization_type: orgTypeId
+        },
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="">-- Select Organization --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (org) {
+
+                    let selected = (org.id == selectedOrgId) ? "selected" : "";
+
+                    options += `
+                        <option value="${org.id}" ${selected}>
+                            ${org.organization_name}
+                        </option>`;
+                });
+            }
+
+            $("#org").html(options);
+
+            if ($("#org").hasClass("select2-hidden-accessible")) {
+                $("#org").select2("destroy");
+            }
+
+            initSelect2("#org", "Select Organization");
+        },
+        error: function () {
+
+            $("#org").html(
+                '<option value="">-- Select Organization --</option>'
+            );
+        }
+    });
+
+}
+
+export function loadOrganizationListForUserRoles(orgTypeId = 0, selectedOrgId = 0) {
+
+    $("#organization").html('<option value="">Loading...</option>');
+
+    $.ajax({
+        type: "GET",
+        url: ajaxUrl + "organization/organization-dropdown",
+        data: {
+            organization_type: orgTypeId
+        },
+        dataType: "json",
+        success: function (response) {
+
+            let options = '<option value="">-- Select Organization --</option>';
+
+            if (response.status && response.data.length > 0) {
+
+                response.data.forEach(function (org) {
+
+                    let selected = (org.id == selectedOrgId) ? "selected" : "";
+
+                    options += `
+                        <option value="${org.id}" ${selected}>
+                            ${org.organization_name}
+                        </option>`;
+                });
+            }
+
+            $("#organization").html(options);
+
+            if ($("#organization").hasClass("select2-hidden-accessible")) {
+                $("#organization").select2("destroy");
+            }
+
+            initSelect2("#organization", "Select Organization");
+        },
+        error: function () {
+
+            $("#organization").html(
+                '<option value="">-- Select Organization --</option>'
+            );
+        }
+    });
+
+}
+
 export function loadBranchTypeList(selected_branch_id = 0) {
     $(".selBranchType").html('<option value="">Loading...</option>');
 
@@ -2302,6 +2394,8 @@ export function loadDepartmentList(selected_department_id = 0) {
     });
 }
 
+
+//Loads Branch list By Organization
 export function loadBranchList(organization_id = 0, selected_branch_id = 0) {
     $(".selBranch").html('<option value="">Loading...</option>');
 
@@ -2343,3 +2437,5 @@ export function loadBranchList(organization_id = 0, selected_branch_id = 0) {
         },
     });
 }
+
+

@@ -42,7 +42,7 @@ class CommonController extends Controller
             'Modules' => \App\Models\Master\Modules::class,
             'FaqCategory' => \App\Models\Master\FaqCategory::class,
             'Faq' => \App\Models\Master\Faq::class,
-            'OrganizationDepartment' => \App\Models\Master\OrganizationDepartment::class,
+            'DepartmentType' => \App\Models\Master\DepartmentType::class,
             'SeatType' => \App\Models\Master\SeatType::class,
             'ApiApps' => \App\Models\Master\ApiApps::class,
             'ApiKeys' => \App\Models\Master\ApiKeys::class,
@@ -1498,6 +1498,27 @@ class CommonController extends Controller
         }
     }
 
+    public function organizationDropdown(Request $request)
+    {
+        $organizationType = $request->organization_type;
+
+        $organizations = DB::table('mst_organization')
+            ->where('organization_type', $organizationType)
+            ->where('active_status', 1)
+            ->select(
+                'id',
+                'organization_name',
+                'organization_code'
+            )
+            ->orderBy('organization_name')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data' => $organizations
+        ]);
+    }
+
     public function branchTypeDropdown(Request $request)
     {
         try {
@@ -1543,40 +1564,25 @@ class CommonController extends Controller
 
     public function branchDropdown(Request $request)
     {
-        try {
+        $organizationTypeId = $request->organization_type_id;
+        $organizationId     = $request->organization_id;
 
-            $query = DB::table('mst_branches')
-                ->select(
-                    'id',
-                    'branch_name',
-                    'branch_code'
-                )
-                ->where('active_status', 1);
+        $branches = DB::table('mst_branches')
+            ->where('active_status', 1)
+            ->when($organizationTypeId, function ($q) use ($organizationTypeId) {
+                $q->where('organization_type_id', $organizationTypeId);
+            })
+            ->when($organizationId, function ($q) use ($organizationId) {
+                $q->where('organization_id', $organizationId);
+            })
+            ->orderBy('branch_name')
+            ->select('id', 'branch_name', 'branch_code')
+            ->get();
 
-            if ($request->filled('organization_id')) {
-                $query->where('organization_id', $request->organization_id);
-            }
-
-            $branches = $query
-                ->orderBy('branch_name', 'asc')
-                ->get();
-
-            return response()->json([
-                'status' => true,
-                'data'   => $branches
-            ]);
-        } catch (\Throwable $t) {
-
-            Log::error('Branch Dropdown Error', [
-                'error' => $t->getMessage()
-            ]);
-
-            return response()->json([
-                'status'  => false,
-                'message' => config('constants.SERVER_ERROR_MESSAGE'),
-                'data'    => []
-            ]);
-        }
+        return response()->json([
+            'status' => true,
+            'data'   => $branches
+        ]);
     }
 
     public function parentBranchDropdown(Request $request)
@@ -1629,7 +1635,7 @@ class CommonController extends Controller
     {
         try {
 
-            $departments = DB::table('mst_departments')
+            $departments = DB::table('mst_department_type')
                 ->select(
                     'id',
                     'department_name',

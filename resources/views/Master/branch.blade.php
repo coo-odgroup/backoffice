@@ -48,8 +48,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 placeholder="Branch">
                         </div>
 
-                          <!-- Branch Type -->
-                         <div class="col-lg-2 col-md-6">
+                        <!-- Branch Type -->
+                        <div class="col-lg-2 col-md-6">
                             <label for="branchSearch">Branch type</label>
                             <select class="form-select form-select-sm selBranchType" id="branchType" name="branchType">
                                 <option value="">Select Organization</option>
@@ -250,7 +250,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#orgSearch').val() != '') {
             orgSearch = $('#orgSearch').val();
         }
-         if ($('#branchType').val() != '') {
+        if ($('#branchType').val() != '') {
             branchSearch = $('#branchType').val();
         }
 
@@ -419,9 +419,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Organization Type</th>
                             <td>${row.type_name ?? ''}</td>
                         </tr>
+
+                        <tr>
+                            <th>Organization</th>
+                            <td>${row.organization_name ?? ''}</td>
+                        </tr>
                         <tr>
                             <th>Branch Type</th>
-                            <td>${row.branch_type_name ?? ''}</td>  
+                            <td>${row.branch_type_name ?? ''}</td>
                         </tr>
                         <tr>
                             <th>Parent Branch</th>

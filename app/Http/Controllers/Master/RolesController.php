@@ -41,6 +41,7 @@ class RolesController extends Controller
                 $row = Roles::select(
                     'id',
                     'organization_type_id',
+                    'organization_id',
                     'role_name',
                     'role_code',
                     'description',
@@ -62,6 +63,7 @@ class RolesController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
+                    'orgType'     => 'bail|required|integer',
                     'org'         => 'bail|required|integer',
                     'roleType'    => 'bail|required|max:100',
                     'roleCode'    => [
@@ -78,6 +80,7 @@ class RolesController extends Controller
                     'roleCode.regex'    => 'Role Code must be CAPITAL letters separated by underscore (_).',
                     'Type.required'     => 'Please select System Role type.',
                     'org.required' => 'Please select Organization Type.',
+                    'orgType.required' => 'Please select Organization Type.',
                 ]);
 
                 if ($validator->fails()) {
@@ -89,7 +92,8 @@ class RolesController extends Controller
                 $roleType    = htmlEncode(trim(Purifier::clean(request('roleType'))));
                 $roleCode    = htmlEncode(strtoupper(trim(Purifier::clean(request('roleCode')))));
                 $description = htmlEncode(trim(Purifier::clean(request('description'))));
-                $organizationType = (int) request('org');
+                $organizationType = (int) request('orgType');
+                $organizationId   = (int) request('org');
                 $roleFlag    = (int) Purifier::clean(request('Type'));
 
                 $duplicate = Roles::where('role_code', $roleCode);
@@ -112,6 +116,7 @@ class RolesController extends Controller
 
                     $newData = [
                         'organization_type_id' => $organizationType,
+                        'organization_id'      => $organizationId,
                         'role_name'           => $roleType,
                         'role_code'           => $roleCode,
                         'description'    => $description,
@@ -142,6 +147,7 @@ class RolesController extends Controller
                     }
 
                     $oldData->organization_type_id = $organizationType;
+                    $oldData->organization_id      = $organizationId;
                     $oldData->role_name            = $roleType;
                     $oldData->role_code            = $roleCode;
                     $oldData->description     = $description;
@@ -153,6 +159,7 @@ class RolesController extends Controller
 
                     $row = [
                         'organization_type_id' => $organizationType,
+                        'organization_id'      => $organizationId,
                         'role_name'           => $roleType,
                         'role_code'           => $roleCode,
                         'description'    => $description,

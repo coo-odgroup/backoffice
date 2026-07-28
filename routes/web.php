@@ -39,7 +39,7 @@ use App\Http\Controllers\Master\OrganizationContactsController;
 use App\Http\Controllers\Master\OrganizationTaxDetailsController;
 use App\Http\Controllers\Master\OrganizationDocumentController;
 use App\Http\Controllers\Master\OrganizationAddressController;
-use App\Http\Controllers\Master\DepartmentController;
+use App\Http\Controllers\Master\DepartmentTypeController;
 use App\Http\Controllers\Master\OrganizationBankAccountController;
 use App\Http\Controllers\Master\BusModelController;
 use App\Http\Controllers\Admin\Ad\AdsController;
@@ -64,6 +64,7 @@ use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Master\CancellationslabController;
 use App\Http\Controllers\Master\CancellationslabInfoController;
+use App\Http\Controllers\Master\UserRolesController;
 use App\Http\Controllers\Master\TicketFareSlabController;
 use App\Http\Controllers\Master\TicketFareSlabInfoController;
 use App\Http\Controllers\MasterLogController;
@@ -77,7 +78,7 @@ use App\Http\Controllers\Admin\Bus\BusWizardController;
 use App\Http\Controllers\Master\BusScheduleController;
 use App\Http\Controllers\Master\BusCancelController;
 use App\Http\Controllers\Master\SeatBlockController;
-use App\Http\Controllers\Master\OrganizationDepartmentController;
+use App\Http\Controllers\Master\DepartmentController;
 use App\Http\Controllers\Master\ExtraSeatBlockController;
 use App\Http\Controllers\Master\SeatOpenController;
 use App\Http\Controllers\Master\NotificationTemplateController;
@@ -189,6 +190,7 @@ Route::prefix('admin')->group(function () {
     Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
     Route::get('manage-route-distance/route-dropdown', [CommonController::class, 'RouteDropdown'])->name('manage-route-distance.routeDropdown');
     Route::get('organization/organization-type-dropdown', [CommonController::class, 'organizationTypeDropdown'])->name('organization.organizationTypeDropdown');
+    Route::get('organization/organization-dropdown',[CommonController::class, 'organizationDropdown']);
     Route::get('branch-type/branch-type-dropdown', [CommonController::class, 'branchTypeDropdown'])->name('branch-type.dropdown');
     Route::get('branch/branch-dropdown', [CommonController::class, 'branchDropdown']);
     Route::get('branch/parent-branch-dropdown', [CommonController::class, 'parentBranchDropdown'])->name('branch.parentBranchDropdown');
@@ -338,7 +340,6 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'annexture-type/add', [AnnextureTypeController::class, 'add'])->name('annextureType.add');
     Route::post('annexture-type/dataTableView', [AnnextureTypeController::class, 'dataTableView'])->name('annextureType.dataTableView');
     Route::match(['get', 'post'], 'annexture-type/edit/{encId}', [AnnextureTypeController::class, 'edit'])->name('annextureType.edit');
-
 
     //Annexture
     Route::get('/annexture', [AnnextureController::class, 'annexture'])->name('annexture.index');
@@ -501,19 +502,24 @@ Route::prefix('admin')->group(function () {
     Route::get('branch/view/{id}', [BranchController::class, 'view'])->name('branch.view');
 
 
+    //Department Type
+    Route::get('/department-type', [DepartmentTypeController::class, 'departmentType'])->name('department-type.index');
+    Route::match(['get', 'post'], 'department-type/add', [DepartmentTypeController::class, 'add'])->name('department-type.add');
+    Route::post('department-type/dataTableView', [DepartmentTypeController::class, 'dataTableView'])->name('department-type.dataTableView');
+    Route::match(['get', 'post'], 'department-type/edit/{encId}', [DepartmentTypeController::class, 'edit'])->name('department-type.edit');
+
     //Department
     Route::get('/department', [DepartmentController::class, 'department'])->name('department.index');
     Route::match(['get', 'post'], 'department/add', [DepartmentController::class, 'add'])->name('department.add');
     Route::post('department/dataTableView', [DepartmentController::class, 'dataTableView'])->name('department.dataTableView');
     Route::match(['get', 'post'], 'department/edit/{encId}', [DepartmentController::class, 'edit'])->name('department.edit');
 
-    //Org Document
-    Route::get('/org-department', [OrganizationDepartmentController::class, 'organizationDepartment'])->name('org-department.index');
-    Route::match(['get', 'post'], 'org-department/add', [OrganizationDepartmentController::class, 'add'])->name('org-department.add');
-    Route::post('org-department/dataTableView', [OrganizationDepartmentController::class, 'dataTableView'])->name('org-department.dataTableView');
-    Route::match(['get', 'post'], 'org-department/edit/{encId}', [OrganizationDepartmentController::class, 'edit'])->name('org-department.edit');
-
-
+    //Branch Type
+    Route::get('/user-roles', [UserRolesController::class, 'userRoles'])->name('user-roles.index');
+    Route::match(['get', 'post'], 'user-roles/add', [UserRolesController::class, 'add'])->name('user-roles.add');
+    Route::post('user-roles/dataTableView', [UserRolesController::class, 'dataTableView'])->name('user-roles.dataTableView');
+    Route::match(['get', 'post'], 'user-roles/edit/{encId}', [UserRolesController::class, 'edit'])->name('user-roles.edit');
+    Route::post('/organization/details',[UserRolesController::class,'getOrganizationDetails'])->name('organization.details');
 
 
 

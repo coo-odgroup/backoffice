@@ -27,6 +27,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </a>
     </div>
 </div>
+
 <!-- TABLE -->
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate class="w-100 add-cities-form">
     {{csrf_field()}}
@@ -60,59 +61,60 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                 <!-- POST FIELDS -->
                                 <div class="col-12">
-                                    <div class="row ">
-                                        <div class="col-md-6 ">
-                                            <label for="department">Department Name<span class="text-danger important">*</span></label>
-                                            <input type="text"
-                                                class="form-control form-control-sm clearable"
-                                                id="department"
-                                                name="department"
-                                                maxlength="100"
-                                                value="{{ $data['row']->department_name ?? '' }}">
-                                            <small class="text-muted char-counter float-end"></small>
-                                        </div>
-                                        <div class="col-md-6 ">
-                                            <label for="department_code">Department Code<span class="text-danger important">*</span></label>
-                                            <input type="text"
-                                                class="form-control form-control-sm clearable"
-                                                id="department_code"
-                                                name="department_code"
-                                                maxlength="100"
-                                                value="{{ $data['row']->department_code ?? '' }}">
-                                            <small class="text-muted char-counter float-end"></small>
-                                        </div>
-                                        <div class="col-md-12 mb-3">
-                                            <label for="department_desc">
-                                                Description
-                                            </label>
+                                    <div class="row mb-2">
+                                        <div class="col">
+                                            <div class="row mb-2">
+                                                <div class="col-md-5 mb-2">
+                                                    <label for="orgType">Organization Type<span class="text-danger important">*</span></label>
+                                                    <select class="form-select form-select-sm selOrg" id="orgType" name="orgType">
+                                                    </select>
+                                                </div>
 
-                                            <textarea
-                                                class="form-control form-control-sm clearable"
-                                                id="department_desc"
-                                                name="department_desc"
-                                                rows="3"
-                                                maxlength="1000">{{ old('department_desc', $data['row']->description ?? '') }}</textarea>
+                                                <div class="col-md-5 mb-2">
+                                                    <label for="org">Organization<span class="text-danger important">*</span></label>
+                                                    <select class="form-select form-select-sm selOrg" id="org" name="org">
+                                                    </select>
+                                                </div>
+                                            </div>
 
-                                            <small class="text-muted char-counter float-end"></small>
+                                            <div class="col-md-10 mb-2">
+                                                <label for="branch">Branch Type<span class="text-danger important">*</span></label>
+                                                <select class="form-select form-select-sm selBranch" id="branch" name="branch">
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+
+                                            <div class="col-md-10 mb-2">
+                                                <label for="dept">Department Type<span class="text-danger important">*</span></label>
+                                                <select class="form-select form-select-sm selDepartment" id="dept" name="dept">
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-10 mb-2">
+                                                <label for="parentDept"> Parent Deprtment<span class="text-danger important">*</span></label>
+                                                <select class="form-select form-select-sm selDepartment" id="parentDept" name="parentDept">
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <!-- BUTTONS -->
-                                    <div class="row">
-                                        <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
-                                            <button class="btn btn-primary btn-sm" type="submit">
-                                                {{ $data['strSubmit'] }}
-                                            </button>
-                                            @if($data['strReset'] == 'Cancel')
-                                            <a href="{{ route('department.index') }}" class="btn btn-secondary btn-sm">
-                                                {{ $data['strReset'] }}
-                                            </a>
-                                            @else
-                                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                                {{ $data['strReset'] }}
-                                            </button>
-                                            @endif
-                                        </div>
+                                <!-- BUTTONS -->
+                                <div class="row">
+                                    <div class="col-12 d-flex gap-2 justify-content-md-start justify-content-center">
+                                        <button class="btn btn-primary btn-sm" type="submit">
+                                            {{ $data['strSubmit'] }}
+                                        </button>
+                                        @if($data['strReset'] == 'Cancel')
+                                        <a href="{{ route('states.index') }}" class="btn btn-secondary btn-sm">
+                                            {{ $data['strReset'] }}
+                                        </a>
+                                        @else
+                                        <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
+                                            {{ $data['strReset'] }}
+                                        </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -121,6 +123,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </form>
 
@@ -137,14 +140,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
-        if (!validator.blankCheck('department', 'Department Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('department', 100, 'Department  Can not be more than 100 chracters'))
-            return false;
-        if (!validator.blankCheck('department_code', 'Department Code Name cannot be left blank'))
-            return false;
-        if (!validator.maxLength('department_code', 100, 'Department Code Can not be more than 100 chracters'))
-            return false;
+
+
         commonAjax.confirmAlert('Are you sure to proceed !');
 
         $('#btnConfirmOk').on('click', function() {
@@ -158,23 +155,100 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
-        commonAjax.initCharCounter(['department_code']);
+
+        commonAjax.initSelect2('#orgType', 'Select Organization Type');
+        commonAjax.initSelect2('#dept', 'Select Department Type');
+        commonAjax.initSelect2('#parentDept', 'Select Praent Department Type');
+
+        let selectedOrg = "{{ old('orgType', $data['row']->organization_id ?? '') }}";
+        let selectedDepartment = "{{ old('dept', $data['row']->department_id ?? '') }}";
+        let selectedParentDepartment = "{{ old('parentDept', $data['row']->parent_department_id ?? '') }}";
+
+        commonAjax.loadOrganizationTypeList(selectedOrg);
+        commonAjax.loadDepartmentList(selectedDepartment, '#dept');
+        commonAjax.loadDepartmentList(selectedParentDepartment, '#parentDept');
+
         commonAjax.initClearableInputs();
-        commonAjax.initCharCounter(['department', 'department_code', 'department_desc']);
         commonAjax.initClearableInputs();
 
-        $('#department').on('keyup', function() {
+    });
 
-            let val = $(this).val();
+    $('#orgType').on('change', function() {
 
-            val = val.toUpperCase();
-            val = val.replace(/\s+/g, '_');
-            val = val.replace(/[0-9]/g, '');
-            val = val.replace(/[^A-Z_]/g, '');
+        let orgTypeId = $(this).val();
 
-            $('#department_code').val(val);
-        });
+        // Reset Organization
+        $('#org').html('<option value="">-- Select Organization --</option>').trigger('change');
 
+        // Reset Branch
+        $('#branch').html('<option value="">-- Select Branch --</option>').trigger('change');
+
+        if (orgTypeId != '') {
+            commonAjax.loadOrganizationList(orgTypeId);
+        }
+
+    });
+
+    $('#org').on('change', function() {
+
+        let organizationId = $(this).val();
+
+        // Reset Branch
+        $('#branch').html('<option value="">-- Select Branch --</option>').trigger('change');
+
+        if (organizationId != '') {
+            commonAjax.loadBranchList(organizationId);
+        }
+
+    });
+
+    $('#org').on('change', function() {
+
+        let organizationId = $(this).val();
+        let organizationTypeId = $('#orgType').val();
+
+        if (organizationTypeId && organizationId) {
+
+            commonAjax.loadBranchList(
+                organizationTypeId,
+                organizationId
+            );
+
+        }
+
+    });
+
+    let selectedOrg = "{{ old('org', $data['row']->organization_id ?? '') }}";
+    let selectedBranch = "{{ old('branch', $data['row']->branch_id ?? '') }}";
+
+    commonAjax.loadOrganizationTypeList(selectedOrg);
+
+    if (selectedOrg) {
+        commonAjax.loadBranchList(selectedOrg, selectedBranch);
+    }
+
+    $('#branchName').on('keyup blur', function() {
+
+        let code = $(this).val()
+            .toUpperCase()
+            .trim()
+            .replace(/\s+/g, '_')
+            .replace(/[^A-Z0-9_]/g, '');
+
+        $('#branchCode').val(code);
+
+    });
+    $('#branchCode').on('keyup', function() {
+        $(this).val(
+            $(this).val()
+            .toUpperCase()
+            .replace(/\s+/g, '_')
+            .replace(/[^A-Z0-9_]/g, '')
+        );
+    });
+
+    $('#displyOrder').on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
     });
 </script>
 @endpush

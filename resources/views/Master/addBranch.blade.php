@@ -77,6 +77,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                             </select>
                                                         </div>
                                                         <div class="col-md-6">
+                                                            <label>Organization <span class="text-danger">*</span></label>
+                                                            <select class="form-select form-select-sm selOrg"
+                                                                id="org"
+                                                                name="org">
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6">
                                                             <label>Branch Type <span class="text-danger">*</span></label>
                                                             <select class="form-select form-select-sm selBranchType"
                                                                 id="branchType"
@@ -342,6 +349,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.initClearableInputs();
         commonAjax.initClearableInputs();
+
+    });
+
+    let selectedOrg = "{{ old('org', $data['row']->organization_id ?? '') }}";
+
+    $('#orgType').on('change', function() {
+
+        commonAjax.loadOrganizationList($(this).val(), selectedOrg);
 
     });
 

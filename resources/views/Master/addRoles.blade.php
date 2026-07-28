@@ -63,7 +63,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 <div class="col-12">
                                     <div class="row mb-3">
                                         <div class="col-md-3">
-                                            <label for="org">Organization Type<span class="text-danger important">*</span></label>
+                                            <label for="orgType">Organization Type<span class="text-danger important">*</span></label>
+                                            <select class="form-select form-select-sm selOrg" id="orgType" name="orgType">
+                                                <option value="">Select Organization Type</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="org">Organization<span class="text-danger important">*</span></label>
                                             <select class="form-select form-select-sm selOrg" id="org" name="org">
                                                 <option value="">Select Organization Type</option>
                                             </select>
@@ -73,25 +79,30 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <input type="text" class="form-control form-control-sm clearable" id="roleType" placeholder="Role Type" name="roleType" maxlength="100" value="{{ old('roleType', $data['row']->role_name ?? '') }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <label for="roleCode">Role Code<span class="text-danger important">*</span></label>
                                             <input type="text" class="form-control form-control-sm clearable" id="roleCode" placeholder="Role Code" name="roleCode" maxlength="100" value="{{ old('roleCode', $data['row']->role_code ?? '') }}">
                                             <small class="text-muted char-counter float-end"></small>
                                         </div>
-                                        <div class="col-md-3">
-                                            <label for="systemRolesType">Is System Role<span class="text-danger important">*</span></label>
-                                            <select class="form-select form-select-sm" id="systemRolesType" name="Type">
-                                                <option value="">Select System Role</option>
-                                                <option value="1"
-                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 'selected' : '' }}>
-                                                    True
-                                                </option>
+                                        <div class="col-md-1">
+                                            <label class="form-label">
+                                                Is System Role
+                                                <span class="text-danger important">*</span>
+                                            </label>
 
-                                                <option value="2"
-                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 2) ? 'selected' : '' }}>
-                                                    False
-                                                </option>
-                                            </select>
+                                            <div class="form-check form-switch mt-2">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    id="systemRolesType"
+                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 'checked' : '' }}>
+                                            </div>
+
+                                            <input
+                                                type="hidden"
+                                                name="Type"
+                                                id="Type"
+                                                value="{{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 1 : 2 }}">
                                         </div>
 
                                     </div>
@@ -144,7 +155,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('org', 'Organization Type'))
+        if (!validator.selectDropdown('orgType', 'Organization Type'))
             return false;
         if (!validator.selectDropdown('systemRolesType', ' System Role Type'))
             return false;
@@ -171,8 +182,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $(document).ready(function() {
         commonAjax.initCharCounter(['roleType', 'roleCode', 'description']);
         commonAjax.initClearableInputs();
-        commonAjax.initSelect2('#org', 'Select Organization Type');
+
+        commonAjax.initSelect2('#orgType', 'Select Organization Type');
+        commonAjax.initSelect2('#org', 'Select Organization');
+
         commonAjax.loadOrganizationTypeList("{{ old('orgType', $data['row']->organization_type_id ?? '') }}");
+        let selectedOrgType = "{{ old('orgType', $data['row']->organization_type_id ?? '') }}";
+        let selectedOrg = "{{ old('org', $data['row']->organization_id ?? '') }}";
+
+
+
+        if (selectedOrgType) {
+            commonAjax.loadOrganizationList(selectedOrgType, selectedOrg);
+        }
 
         $('#roleCode').on('keyup', function() {
 
@@ -184,6 +206,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             $(this).val(val);
         });
+
+    });
+
+    
+    $('#orgType').on('change', function() {
+
+        let orgTypeId = $(this).val();
+        $('#org').html('<option value="">-- Select Organization --</option>');
+
+        if (orgTypeId) {
+            commonAjax.loadOrganizationList(orgTypeId);
+        }
 
     });
 </script>

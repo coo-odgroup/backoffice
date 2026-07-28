@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('page_title', 'Organization Department')
+@section('page_title', 'User Roles')
 @section('content')
 
 <?php
@@ -26,7 +26,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <i class="fa-solid fa-magnifying-glass me-1"></i>
             <span class="btn-text">Filter</span>
         </button>
-        <a href="{{ route('org-department.add') }}" class="btn btn-success btn-sm">
+        <a href="{{ route('user-roles.add') }}" class="btn btn-success btn-sm">
             + Add @yield('page_title')
         </a>
     </div>
@@ -43,16 +43,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                         <!-- Search -->
                         <div class="col-lg-2 col-md-6">
-                            <label for="txtSearch">Search By Department</label>
+                            <label for="txtSearch">Search By User</label>
                             <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Department">
+                                placeholder="Brand">
                         </div>
 
                         <!-- Country -->
                         <div class="col-lg-2 col-md-6">
                             <label for="orgSearch">Search By Organization</label>
                             <select class="form-select form-select-sm selOrg" id="orgSearch " name="orgSearch">
-                                <option value="">Select Organization Type</option>
+                                <option value="">Select Organization </option>
                             </select>
                         </div>
 
@@ -122,20 +122,26 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             </div>
             <div class="table-responsive">
                 <table class="table table-hover table-bordered align-middle table-sm table-responsive" id="datatable"
-                    data-url="{{ route('org-department.dataTableView') }}"
-                    data-edit-url="{{ route('org-department.edit', 'ID') }}">
+                    data-url="{{ route('user-roles.dataTableView') }}"
+                    data-edit-url="{{ route('user-roles.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
-                            <th class="noPrint no-sort">
+                            <th class="noPrint">
                                 <div class="checkbox">
-                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
+                                    <input id="checkboxall" class="chkAll" type="checkbox">
                                 </div>
                             </th>
+
                             <th>Sl No</th>
-                            <th>Department Name</th>
-                            <th>Parent Department </th>
-                            <th>Branch Name</th>
-                            <th>Organization Name</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Organization Type</th>
+                            <th>Organization</th>
+                            <th>Branch</th>
+                            <th>Department</th>
+                            <th>Primary</th>
+                            <th>Effective From</th>
+                            <th>Effective To</th>
                             <th>Last Modified</th>
                             <th>Status</th>
                             <th class="no-sort">Action</th>
@@ -148,7 +154,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="OrganizationDepartment">
+            <input type="hidden" id="hdn_model" value="BranchType">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -220,21 +226,21 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
-        let displayColumns = [1, 2, 3, 4, 5, 6, 7];
+
+        let displayColumns = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
         let dataTableColumns = [
 
             {
                 data: '',
                 render: function(data, type, row) {
-
                     return `<div class="checkbox">
-                    <input class="inverted chkItem"
+                    <input class="chkItem"
                            type="checkbox"
-                           id="check${row.id}"
                            value="${row.id}">
                 </div>`;
                 },
-                className: "noPrint text-center"
+                className: "text-center"
             },
 
             {
@@ -246,23 +252,52 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             },
 
             {
-                data: 'department_name',
-                defaultContent: "--"
+                data: 'user_name',
+                defaultContent: '--'
             },
 
             {
-                data: 'parent_department_name',
-                defaultContent: "--"
+                data: 'role_name',
+                defaultContent: '--'
             },
 
             {
-                data: 'branch_name',
-                defaultContent: "--"
+                data: 'organization_type_name',
+                defaultContent: '--'
             },
 
             {
                 data: 'organization_name',
-                defaultContent: "--"
+                defaultContent: '--'
+            },
+
+            {
+                data: 'branch_name',
+                defaultContent: '--'
+            },
+
+            {
+                data: 'department_name',
+                defaultContent: '--'
+            },
+
+            {
+                data: 'is_primary',
+                render: function(data) {
+                    return data == 1 ?
+                        '<span class="badge bg-success">Yes</span>' :
+                        '<span class="badge bg-secondary">No</span>';
+                }
+            },
+
+            {
+                data: 'effective_from',
+                defaultContent: '--'
+            },
+
+            {
+                data: 'effective_to',
+                defaultContent: '--'
             },
 
             {
@@ -281,20 +316,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
             <span
-                class="fw-semibold text-decoration-underline cursor-pointer"
+                class="fw-semibold text-decoration-underline"
                 data-bs-toggle="tooltip"
                 data-bs-html="true"
                 title="
-                    <div>
-                        <strong>Created By:</strong> ${createdBy}<br>
-                        <strong>Created At:</strong> ${createdAt}<hr>
-                        <strong>Updated By:</strong> ${updatedBy}<br>
-                        <strong>Updated At:</strong> ${updatedAt}
-                    </div>">
-
+                    <b>Created By:</b> ${createdBy}<br>
+                    <b>Created At:</b> ${createdAt}<hr>
+                    <b>Updated By:</b> ${updatedBy}<br>
+                    <b>Updated At:</b> ${updatedAt}">
                 ${displayDate}
-
-            </span>`;
+            </span>
+        `;
                 }
             },
 
@@ -302,11 +334,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 data: 'is_active',
                 render: function(data, type, row) {
 
-                    let cls = row.is_active == 'Active' ?
-                        'badge bg-success' :
-                        'badge bg-danger';
-
-                    return `<span class="${cls}">${row.is_active}</span>`;
+                    return row.is_active == 'Active' ?
+                        '<span class="badge bg-success">Active</span>' :
+                        '<span class="badge bg-danger">Inactive</span>';
                 },
                 className: "text-center"
             },
@@ -319,19 +349,19 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                     return `
             <a class="btn btn-info btn-sm"
-               href="${editUrl.replace('ID', row.enc_id)}">
+               href="${editUrl.replace('ID',row.enc_id)}">
                 <i class="fa fa-edit"></i>
             </a>
 
-            <a href="javascript:void(0)"
+            <a href="javascript:void(0);"
                class="btn btn-success btn-sm btn-view-log"
-               data-table="mst_organization_departments"
+               data-table="user_roles"
                data-id="${row.enc_id}">
                 <i class="fa fa-history"></i>
             </a>
         `;
                 },
-                className: "text-center noPrint"
+                className: "text-center"
             }
 
         ];
