@@ -171,16 +171,104 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 @push('scripts')
 
 <script type="module">
-    let selectedOrgType = "{{ old('org', $data['row']->organization_type_id ?? '') }}";
     let selectedOrganization = "{{ old('organization', $data['row']->organization_id ?? '') }}";
+    let selectedBranch = "{{ old('branch_id', $data['row']->branch_id ?? '') }}";
+    let selectedDepartment = "{{ old('department_id', $data['row']->department_id ?? '') }}";
+    let selectedRole = "{{ old('role_id', $data['row']->role_id ?? '') }}";
+    let selectedUser = "{{ old('user_id', $data['row']->user_id ?? '') }}";
+    let selectedAssignedBy = "{{ old('assigned_by', $data['row']->assigned_by ?? '') }}";
+    let selectedOrgType = "{{ old('org', $data['row']->organization_type_id ?? '') }}";
 
     commonAjax.initSelect2('#org', 'Select Organization Type');
     commonAjax.initSelect2('#organization', 'Select Organization');
     commonAjax.loadOrganizationTypeList(selectedOrgType);
 
     if (selectedOrgType) {
-        commonAjax.loadOrganizationListForUserRoles(selectedOrgType, selectedOrganization);
-    }
+
+    commonAjax.loadOrganizationListForUserRoles(
+        selectedOrgType,
+        selectedOrganization
+    );
+
+    setTimeout(function () {
+
+        $.ajax({
+            url: "{{ route('organization.details') }}",
+            type: "POST",
+            data: {
+                organization_type_id: selectedOrgType,
+                organization_id: selectedOrganization,
+                _token: "{{ csrf_token() }}"
+            },
+            success: function (res) {
+
+                // Branch
+                $('#branch_id').html('<option value="">Select Branch</option>');
+                $.each(res.branches, function (i, item) {
+
+                    $('#branch_id').append(
+                        '<option value="' + item.id + '"' +
+                        (item.id == selectedBranch ? ' selected' : '') +
+                        '>' + item.branch_name + '</option>'
+                    );
+
+                });
+
+                // Department
+                $('#department_id').html('<option value="">Select Department</option>');
+                $.each(res.departments, function (i, item) {
+
+                    $('#department_id').append(
+                        '<option value="' + item.id + '"' +
+                        (item.id == selectedDepartment ? ' selected' : '') +
+                        '>' + item.department_name + '</option>'
+                    );
+
+                });
+
+                // Role
+                $('#role_id').html('<option value="">Select Role</option>');
+                $.each(res.roles, function (i, item) {
+
+                    $('#role_id').append(
+                        '<option value="' + item.id + '"' +
+                        (item.id == selectedRole ? ' selected' : '') +
+                        '>' + item.role_name + '</option>'
+                    );
+
+                });
+
+                // Users
+                $('#assigned_by').html('<option value="">Select User</option>');
+                $('#user_id').html('<option value="">Select User</option>');
+
+                $.each(res.users, function (i, item) {
+
+                    $('#assigned_by').append(
+                        '<option value="' + item.id + '"' +
+                        (item.id == selectedAssignedBy ? ' selected' : '') +
+                        '>' + item.name + '</option>'
+                    );
+
+                    $('#user_id').append(
+                        '<option value="' + item.id + '"' +
+                        (item.id == selectedUser ? ' selected' : '') +
+                        '>' + item.name + '</option>'
+                    );
+
+                });
+
+                $('#branch_id').trigger('change');
+                $('#department_id').trigger('change');
+                $('#role_id').trigger('change');
+                $('#assigned_by').trigger('change');
+                $('#user_id').trigger('change');
+
+            }
+        });
+
+    }, 300);
+}
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
