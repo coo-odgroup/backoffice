@@ -58,6 +58,7 @@ class CommonController extends Controller
             'FestiveDays' => \App\Models\Master\FestiveDays::class,
             'Brand' => \App\Models\Master\Brand::class,
             'BranchType' => \App\Models\Master\BranchType::class,
+            'UserRoles' => \App\Models\Master\UserRoles::class,
             'RolesHierarchy' => \App\Models\Master\RolesHierarchy::class,
             'BusModel' => \App\Models\Master\BusModel::class,
             'AxleType' => \App\Models\Master\AxleType::class,

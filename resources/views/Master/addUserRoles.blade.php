@@ -89,7 +89,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             <div class="row">
                                                 <div class="col-md-5 mb-2">
                                                     <label for="role">Roles<span class="text-danger important">*</span></label>
-                                                    <select id="role_id" name="role_id" class="form-select form-select-sm"></select>
+                                                    <select id="role_id" name="role_id[]" class="form-select form-select-sm" multiple></select>
                                                 </div>
                                                 <div class="col-md-5 mb-2">
                                                     <label for="org">User<span class="text-danger important">*</span></label>
@@ -174,7 +174,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     let selectedOrganization = "{{ old('organization', $data['row']->organization_id ?? '') }}";
     let selectedBranch = "{{ old('branch_id', $data['row']->branch_id ?? '') }}";
     let selectedDepartment = "{{ old('department_id', $data['row']->department_id ?? '') }}";
-    let selectedRole = "{{ old('role_id', $data['row']->role_id ?? '') }}";
+    let selectedRole = @json(old('role_id', $data['selectedRoles'] ?? []));
     let selectedUser = "{{ old('user_id', $data['row']->user_id ?? '') }}";
     let selectedAssignedBy = "{{ old('assigned_by', $data['row']->assigned_by ?? '') }}";
     let selectedOrgType = "{{ old('org', $data['row']->organization_type_id ?? '') }}";
@@ -185,90 +185,94 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     if (selectedOrgType) {
 
-    commonAjax.loadOrganizationListForUserRoles(
-        selectedOrgType,
-        selectedOrganization
-    );
+        commonAjax.loadOrganizationListForUserRoles(
+            selectedOrgType,
+            selectedOrganization
+        );
 
-    setTimeout(function () {
+        setTimeout(function() {
 
-        $.ajax({
-            url: "{{ route('organization.details') }}",
-            type: "POST",
-            data: {
-                organization_type_id: selectedOrgType,
-                organization_id: selectedOrganization,
-                _token: "{{ csrf_token() }}"
-            },
-            success: function (res) {
+            $.ajax({
+                url: "{{ route('organization.details') }}",
+                type: "POST",
+                data: {
+                    organization_type_id: selectedOrgType,
+                    organization_id: selectedOrganization,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(res) {
 
-                // Branch
-                $('#branch_id').html('<option value="">Select Branch</option>');
-                $.each(res.branches, function (i, item) {
+                    // Branch
+                    $('#branch_id').html('<option value="">Select Branch</option>');
+                    $.each(res.branches, function(i, item) {
 
-                    $('#branch_id').append(
-                        '<option value="' + item.id + '"' +
-                        (item.id == selectedBranch ? ' selected' : '') +
-                        '>' + item.branch_name + '</option>'
-                    );
+                        $('#branch_id').append(
+                            '<option value="' + item.id + '"' +
+                            (item.id == selectedBranch ? ' selected' : '') +
+                            '>' + item.branch_name + '</option>'
+                        );
 
-                });
+                    });
 
-                // Department
-                $('#department_id').html('<option value="">Select Department</option>');
-                $.each(res.departments, function (i, item) {
+                    // Department
+                    $('#department_id').html('<option value="">Select Department</option>');
+                    $.each(res.departments, function(i, item) {
 
-                    $('#department_id').append(
-                        '<option value="' + item.id + '"' +
-                        (item.id == selectedDepartment ? ' selected' : '') +
-                        '>' + item.department_name + '</option>'
-                    );
+                        $('#department_id').append(
+                            '<option value="' + item.id + '"' +
+                            (item.id == selectedDepartment ? ' selected' : '') +
+                            '>' + item.department_name + '</option>'
+                        );
 
-                });
+                    });
 
-                // Role
-                $('#role_id').html('<option value="">Select Role</option>');
-                $.each(res.roles, function (i, item) {
+                    // Role
+                    $('#role_id').html('<option value="">Select Role</option>');
+                    $.each(res.roles, function(i, item) {
 
-                    $('#role_id').append(
-                        '<option value="' + item.id + '"' +
-                        (item.id == selectedRole ? ' selected' : '') +
-                        '>' + item.role_name + '</option>'
-                    );
+                        $('#role_id').append(
+                            '<option value="' + item.id + '">' +
+                            item.role_name +
+                            '</option>'
+                        );
 
-                });
+                    });
 
-                // Users
-                $('#assigned_by').html('<option value="">Select User</option>');
-                $('#user_id').html('<option value="">Select User</option>');
+                    if (selectedRole.length > 0) {
+                        $('#role_id').val(selectedRole).trigger('change');
+                    }
 
-                $.each(res.users, function (i, item) {
+                    // Users
+                    $('#assigned_by').html('<option value="">Select User</option>');
+                    $('#user_id').html('<option value="">Select User</option>');
 
-                    $('#assigned_by').append(
-                        '<option value="' + item.id + '"' +
-                        (item.id == selectedAssignedBy ? ' selected' : '') +
-                        '>' + item.name + '</option>'
-                    );
+                    $.each(res.users, function(i, item) {
 
-                    $('#user_id').append(
-                        '<option value="' + item.id + '"' +
-                        (item.id == selectedUser ? ' selected' : '') +
-                        '>' + item.name + '</option>'
-                    );
+                        $('#assigned_by').append(
+                            '<option value="' + item.id + '"' +
+                            (item.id == selectedAssignedBy ? ' selected' : '') +
+                            '>' + item.name + '</option>'
+                        );
 
-                });
+                        $('#user_id').append(
+                            '<option value="' + item.id + '"' +
+                            (item.id == selectedUser ? ' selected' : '') +
+                            '>' + item.name + '</option>'
+                        );
 
-                $('#branch_id').trigger('change');
-                $('#department_id').trigger('change');
-                $('#role_id').trigger('change');
-                $('#assigned_by').trigger('change');
-                $('#user_id').trigger('change');
+                    });
 
-            }
-        });
+                    $('#branch_id').trigger('change');
+                    $('#department_id').trigger('change');
+                    $('#role_id').trigger('change');
+                    $('#assigned_by').trigger('change');
+                    $('#user_id').trigger('change');
 
-    }, 300);
-}
+                }
+            });
+
+        }, 300);
+    }
     $('#btnReset').click(function() {
         $(':input', '#backoffice-form').not(':button, :submit, :reset, :hidden').val('');
         $('.form-select').val(0);
@@ -396,6 +400,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         '<option value="' + item.id + '">' + item.role_name + '</option>'
                     );
                 });
+
+                if (selectedRole.length > 0) {
+                    $('#role_id').val(selectedRole).trigger('change');
+                }
 
                 // Users
                 $('#assigned_by').html('<option value="">Select User</option>');

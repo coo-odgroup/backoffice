@@ -514,7 +514,7 @@ Route::prefix('admin')->group(function () {
     Route::post('department/dataTableView', [DepartmentController::class, 'dataTableView'])->name('department.dataTableView');
     Route::match(['get', 'post'], 'department/edit/{encId}', [DepartmentController::class, 'edit'])->name('department.edit');
 
-    //Branch Type
+    //user roles
     Route::get('/user-roles', [UserRolesController::class, 'userRoles'])->name('user-roles.index');
     Route::match(['get', 'post'], 'user-roles/add', [UserRolesController::class, 'add'])->name('user-roles.add');
     Route::post('user-roles/dataTableView', [UserRolesController::class, 'dataTableView'])->name('user-roles.dataTableView');

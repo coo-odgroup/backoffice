@@ -32,7 +32,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     </div>
 </div>
 
-<!-- TABLE -->
+
 <form id="backoffice-form" name="backoffice-form" method="post" novalidate>
     <div class="card">
         <div class="card-body">
@@ -41,20 +41,20 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 <div class="card-body">
                     <div class="row align-items-end">
 
-                        <!-- Search -->
-                        <div class="col-lg-2 col-md-6">
+                      <div class="col-lg-2 col-md-6">
                             <label for="txtSearch">Search By User</label>
                             <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
-                                placeholder="Brand">
+                                placeholder="Search By User">
                         </div>
 
-                        <!-- Country -->
+                       
                         <div class="col-lg-2 col-md-6">
                             <label for="orgSearch">Search By Organization</label>
                             <select class="form-select form-select-sm selOrg" id="orgSearch " name="orgSearch">
                                 <option value="">Select Organization </option>
                             </select>
                         </div>
+
 
                         <!-- Status -->
                         <div class="col-lg-2 col-md-6">
@@ -126,12 +126,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     data-edit-url="{{ route('user-roles.edit', 'ID') }}">
                     <thead class="table-secondary">
                         <tr>
-                            <th class="noPrint">
+                            <th class="noPrint no-sort">
                                 <div class="checkbox">
-                                    <input id="checkboxall" class="chkAll" type="checkbox">
+                                    <input id="checkboxall" name="btSelectItem" class="chkAll" type="checkbox">
                                 </div>
                             </th>
-
                             <th>Sl No</th>
                             <th>User</th>
                             <th>Role</th>
@@ -154,7 +153,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {{csrf_field()}}
             <input name="hdn_ids" id="hdn_ids" type="hidden">
             <input name="hdn_qs" id="hdn_qs" type="hidden">
-            <input type="hidden" id="hdn_model" value="BranchType">
+            <input type="hidden" id="hdn_model" value="UserRoles">
 
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <div id="customTableInfo"></div>
@@ -234,13 +233,15 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             {
                 data: '',
                 render: function(data, type, row) {
+
                     return `<div class="checkbox">
-                    <input class="chkItem"
+                    <input class="inverted chkItem"
                            type="checkbox"
+                           id="check${row.id}"
                            value="${row.id}">
                 </div>`;
                 },
-                className: "text-center"
+                className: "noPrint text-center"
             },
 
             {
