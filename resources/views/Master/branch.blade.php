@@ -199,12 +199,23 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     });
 
     $(document).ready(function() {
-        commonAjax.initTableCheckbox('#checkboxall', '.chkItem');
-        commonAjax.initSelect2('#orgSearch', 'Select Organization Type');
-        commonAjax.initSelect2('#branchType', 'Select Branch Type');
+
         commonAjax.loadOrganizationTypeList();
         commonAjax.loadBranchTypeList();
-        commonAjax.initClearableInputs();
+
+        $('#orgType').on('change', function() {
+
+            let orgTypeId = $(this).val();
+
+            $('#orgSearch')
+                .html('<option value="">Select Organization</option>')
+                .trigger('change');
+
+            if (orgTypeId != '') {
+                commonAjax.loadOrganizationList(orgTypeId);
+            }
+        });
+
         getDataTableView();
     });
 

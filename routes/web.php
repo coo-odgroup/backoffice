@@ -34,6 +34,7 @@ use App\Http\Controllers\Master\BrandController;
 use App\Http\Controllers\Master\BranchController;
 use App\Http\Controllers\Master\BranchTypeController;
 use App\Http\Controllers\Master\OrganizationTypeController;
+use App\Http\Controllers\Master\ExcelController;
 use App\Http\Controllers\Master\OrganizationController;
 use App\Http\Controllers\Master\OrganizationContactsController;
 use App\Http\Controllers\Master\OrganizationTaxDetailsController;
@@ -527,7 +528,11 @@ Route::prefix('admin')->group(function () {
 
 
 
-
+ //Bus Service
+    Route::get('/excel', [ExcelController::class, 'excel'])->name('excel.index');
+    Route::match(['get', 'post'], 'excel/add', [ExcelController::class, 'add'])->name('excel.add');
+    Route::post('excel/dataTableView', [ExcelController::class, 'dataTableView'])->name('excel.dataTableView');
+    Route::match(['get', 'post'], 'excel/edit/{encId}', [ExcelController::class, 'edit'])->name('excel.edit');
 
 
 

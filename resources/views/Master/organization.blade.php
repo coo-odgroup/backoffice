@@ -138,9 +138,9 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Organization Name </th>
-                            <th>Organization Type </th>
                             <th>Unique ID</th>
+                            <th>Organization Type </th>
+                            <th>Organization Name </th>
                             <th>Parent</th>
                             <th>ORG Website</th>
                             <th>Last Modified</th>
@@ -169,99 +169,71 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     Organization View Modal
 ============================================================ -->
 <div class="modal fade" id="organizationViewModal" tabindex="-1" aria-hidden="true">
-
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
-
         <div class="modal-content modern-modal">
-
             <div class="modal-header modern-modal-header">
-
                 <div class="d-flex align-items-center">
-
                     <div class="modal-icon">
                         <i class="fa fa-building"></i>
                     </div>
-
                     <div class="ms-3">
                         <h4 class="mb-0 fw-bold text-white">
                             Organization Details
                         </h4>
-
                         <small class="text-white-50">
                             Complete Organization Profile
                         </small>
                     </div>
-
                 </div>
-
                 <button
                     type="button"
                     class="btn-close btn-close-white"
                     data-bs-dismiss="modal">
                 </button>
-
             </div>
-
             <div class="modal-body modern-modal-body">
-
                 <div id="viewLoader" class="text-center py-5">
-
                     <div class="spinner-border text-primary"></div>
-
                     <h6 class="mt-3">
                         Loading Organization...
                     </h6>
-
                 </div>
-
                 <div id="viewContent" style="display:none">
-
                     <div id="organizationHero"></div>
-
                     <div class="section-title">
                         <i class="fa fa-users"></i>
                         <span>Contacts</span>
                     </div>
                     <div id="contactCards" class="row g-3 mb-4"></div>
-
                     <div class="section-title">
                         <i class="fa fa-location-dot"></i>
                         <span>Addresses</span>
                     </div>
                     <div id="addressCards" class="row g-3 mb-4"></div>
-
                     <div class="section-title">
                         <i class="fa fa-building-columns"></i>
                         <span>Bank Accounts</span>
                     </div>
                     <div id="bankCards" class="row g-3 mb-4"></div>
-
                     <div class="section-title">
                         <i class="fa fa-file-invoice"></i>
                         <span>Tax Details</span>
                     </div>
                     <div id="taxDetails" class="mb-4"></div>
-
                     <div class="section-title">
                         <i class="fa fa-file-lines"></i>
                         <span>Documents</span>
                     </div>
                     <div id="documentCards" class="row g-3"></div>
-
                 </div>
-
             </div>
-
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">
                     Close
                 </button>
             </div>
-
         </div>
-
     </div>
-
 </div>
 </div>
 </div>
@@ -639,7 +611,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'org_name',
+                data: 'unique_id',
                 defaultContent: "--"
             },
             {
@@ -647,14 +619,12 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 defaultContent: "--"
             },
             {
-                data: 'unique_id',
+                data: 'org_name',
                 defaultContent: "--"
-
             },
             {
                 data: 'parent',
                 defaultContent: "--"
-
             },
             {
                 data: 'website_url',
@@ -728,7 +698,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         <!-- Edit Button -->
                         <a class="btn btn-sm btn-info"
                             href="${editUrl.replace('ID', row.enc_id)}">
-                            <i class="fa fa-edit"></i> 
+                            <i class="fa fa-edit"></i>
                         </a>
 
                         <!-- View Log Button -->
@@ -1187,7 +1157,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $.each(banks, function(i, row) {
 
-          let accountNumber = row.account_number ?? '--';
+            let accountNumber = row.account_number ?? '--';
 
             html += `
 

@@ -20,6 +20,8 @@ class BranchController extends Controller
 
     public function dataTableView()
     {
+
+
         $recordsTotal    = 0;
         $recordsFiltered = 0;
         $data            = [];
@@ -28,7 +30,7 @@ class BranchController extends Controller
 
             $txtSearch = htmlEncode(request('txtSearch'));
             $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $orgSearch = (request('orgSearch') !== null && request('orgSearch') !== '') ? (int)request('orgSearch') : '';
+            $organizationId = (request('orgSearch') !== null && request('orgSearch') !== '') ? (int) request('orgSearch') : '';
             $branchSearch = (request('branchSearch') !== null && request('branchSearch') !== '') ? (int)request('branchSearch') : '';
 
             $dataQuery = DB::table('mst_branches as b')
@@ -64,9 +66,11 @@ class BranchController extends Controller
                 });
             }
 
-            if ($orgSearch != '') {
-                $dataQuery->where('b.organization_id', $orgSearch);
+
+            if ($organizationId != '') {
+                $dataQuery->where('b.organization_id', $organizationId);
             }
+
             if ($branchSearch != '') {
                 $dataQuery->where('b.branch_type_id', $branchSearch);
             }
