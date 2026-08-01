@@ -76,13 +76,11 @@ class ExcelController extends Controller
                     foreach ($sheet as $row) {
 
                         $rows[] = [
-                            'organisation_name'   => trim($row['A'] ?? ''),
-                            'operator_url'         => trim($row['B'] ?? ''),
-                            'bank_account_name'    => trim($row['C'] ?? ''),
-                            'bank_name'            => trim($row['D'] ?? ''),
-                            'bank_ifsc'            => trim($row['E'] ?? ''),
-                            'bank_account_number'  => trim($row['F'] ?? ''),
-                            'status'               => 1
+                            'organisation_name' => trim($row['A'] ?? ''),
+                            'email'             => trim($row['B'] ?? ''),
+                            'mobile_number'     => trim($row['C'] ?? ''),
+                            'operator_name'     => trim($row['D'] ?? ''),
+                            'status'            => trim($row['G'] ?? ''),
                         ];
                     }
                 }
@@ -92,7 +90,7 @@ class ExcelController extends Controller
 
                     $organizationName = trim($row['organisation_name']);
 
-                    if ($organizationName == '') {
+                    if (empty($organizationName)) {
                         Log::warning("Row {$index}: Organization name is blank.");
                         continue;
                     }
@@ -109,78 +107,62 @@ class ExcelController extends Controller
 
                         continue;
                     }
+                    $mobile = trim($row['mobile_number']);
 
-                    $activeStatus = ($row['status'] == 1) ? 1 : 0;
-                    $accountNumber = trim($row['bank_account_number']);
-                    if (!empty($accountNumber)) {
-
-                        $exists = DB::table('mst_organization_bank_accounts')
-                            ->where('account_number', $accountNumber)
-                            ->exists();
-
-                        if ($exists) {
-
-                            Log::warning('Duplicate account number skipped', [
-                                'organization_name' => $organizationName,
-                                'account_number' => $accountNumber
-                            ]);
-
-                            continue;
-                        }
+                    if (empty($mobile)) {
+                        $mobile = '9999999999';
                     }
 
-                    $insertId = DB::table('mst_organization_bank_accounts')->insertGetId([
+                    $contactExists = DB::table('mst_organization_contacts')
+                        ->where('organization_id', $organization->id)
+                        ->where('mobile', $mobile)
+                        ->exists();
 
-                        'organization_id' => $organization->id,
+                    if ($contactExists) {
 
-                        'bank_name' => $row['bank_name'] ?: null,
+                        Log::warning('Duplicate contact skipped', [
+                            'organization_name' => $organizationName,
+                            'mobile' => $row['mobile_number']
+                        ]);
 
-                        'branch_name' => null,
+                        continue;
+                    }
 
-                        'account_holder' => $row['bank_account_name'] ?: null,
-
-                        'account_number' => $row['bank_account_number'] ?: null,
-
-                        'ifsc' => $row['bank_ifsc']
-                            ? strtoupper($row['bank_ifsc'])
-                            : null,
-
-                        'is_primary' => null,
-
-                        'active_status' => $activeStatus,
-
-                        'upi_id' => null,
-
-                        'created_at' => now(),
-
-                        'created_by' => auth()->id(),
-
-                        'updated_at' => null,
-
-                        'updated_by' => null
-
+                    DB::table('mst_organization_contacts')->insert([
+                        'organization_id'   => $organization->id,
+                        'contact_type'      => 1, // ALL
+                        'fullname'          => $row['operator_name'] ?: null,
+                        'designation'       => 'Owner',
+                        'mobile' => $mobile,
+                        'alternate_mobile'  => null,
+                        'email'             => $row['email'] ?: null,
+                        'is_primary'        => 1,
+                        'active_status'     => ($row['status'] == 1) ? 1 : 0,
+                        'created_at'        => now(),
+                        'created_by'        => auth()->id(),
+                        'updated_at'        => null,
+                        'updated_by'        => null,
                     ]);
 
-                    Log::info('Bank account imported', [
-                        'bank_account_id' => $insertId,
+                    Log::info('Contact imported', [
                         'organization_id' => $organization->id,
-                        'organization_name' => $organizationName
+                        'organization_name' => $organizationName,
+                        'mobile' => $mobile
                     ]);
                 }
-
                 DB::commit();
 
                 return redirect()
                     ->route('excel.index')
                     ->with([
                         'level' => 'success',
-                        'message' => 'Organization bank accounts imported successfully.'
+                        'message' => 'Organization contacts imported successfully.'
                     ]);
             } catch (\Throwable $e) {
 
                 DB::rollBack();
 
-                Log::error('Bank Import Failed', [
+                Log::error('Contacts Import Failed', [
                     'message' => $e->getMessage(),
                     'line' => $e->getLine(),
                     'file' => $e->getFile(),

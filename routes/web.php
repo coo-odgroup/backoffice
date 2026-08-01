@@ -191,7 +191,7 @@ Route::prefix('admin')->group(function () {
     Route::post('load-blog-author-dropdown', [CommonController::class, 'loadBlogAuthorDropdown']);
     Route::get('manage-route-distance/route-dropdown', [CommonController::class, 'RouteDropdown'])->name('manage-route-distance.routeDropdown');
     Route::get('organization/organization-type-dropdown', [CommonController::class, 'organizationTypeDropdown'])->name('organization.organizationTypeDropdown');
-    Route::get('organization/organization-dropdown',[CommonController::class, 'organizationDropdown']);
+    Route::get('organization/organization-dropdown', [CommonController::class, 'organizationDropdown']);
     Route::get('branch-type/branch-type-dropdown', [CommonController::class, 'branchTypeDropdown'])->name('branch-type.dropdown');
     Route::get('branch/branch-dropdown', [CommonController::class, 'branchDropdown']);
     Route::get('branch/parent-branch-dropdown', [CommonController::class, 'parentBranchDropdown'])->name('branch.parentBranchDropdown');
@@ -520,15 +520,21 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'user-roles/add', [UserRolesController::class, 'add'])->name('user-roles.add');
     Route::post('user-roles/dataTableView', [UserRolesController::class, 'dataTableView'])->name('user-roles.dataTableView');
     Route::match(['get', 'post'], 'user-roles/edit/{encId}', [UserRolesController::class, 'edit'])->name('user-roles.edit');
-    Route::post('/organization/details',[UserRolesController::class,'getOrganizationDetails'])->name('organization.details');
+    Route::post('/organization/details', [UserRolesController::class, 'getOrganizationDetails'])->name('organization.details');
+
+    // User
+    Route::get('/users', [UsersController::class, 'users'])->name('users.index');
+    Route::match(['get', 'post'], 'users/add', [UsersController::class, 'add'])->name('users.add');
+    Route::post('users/dataTableView', [UsersController::class, 'dataTableView'])->name('users.dataTableView');
+    Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
+    Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
 
 
 
 
 
 
-
- //Bus Service
+    //Bus Service
     Route::get('/excel', [ExcelController::class, 'excel'])->name('excel.index');
     Route::match(['get', 'post'], 'excel/add', [ExcelController::class, 'add'])->name('excel.add');
     Route::post('excel/dataTableView', [ExcelController::class, 'dataTableView'])->name('excel.dataTableView');
@@ -586,12 +592,6 @@ Route::prefix('admin')->group(function () {
     Route::post('cityapis/dataTableView', [CityApisController::class, 'dataTableView'])->name('cityapis.dataTableView');
     Route::match(['get', 'post'], 'cityapis/edit/{encId}', [CityApisController::class, 'edit'])->name('cityapis.edit');
 
-    // User
-    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-    Route::match(['get', 'post'], 'users/add', [UsersController::class, 'add'])->name('users.add');
-    Route::post('users/dataTableView', [UsersController::class, 'dataTableView'])->name('users.dataTableView');
-    Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
-    Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
 
     // Blog Images
     Route::get('/blog-images', [BlogImagesController::class, 'index'])->name('blog-images.index');

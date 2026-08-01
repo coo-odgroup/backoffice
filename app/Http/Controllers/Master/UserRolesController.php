@@ -340,7 +340,7 @@ class UserRolesController extends Controller
                         ];
 
                         DB::table('user_roles')->insert($row);
-                        
+
 
                         $insertRows[] = $row;
                     }
@@ -393,37 +393,57 @@ class UserRolesController extends Controller
         $organizationTypeId = $request->organization_type_id;
         $organizationId     = $request->organization_id;
 
+        // Branches
         $branches = DB::table('mst_branches')
             ->select('id', 'branch_name')
-            ->where('organization_type_id', $organizationTypeId)
-            ->where('organization_id', $organizationId)
             ->where('active_status', 1)
+            ->when($organizationTypeId, function ($q) use ($organizationTypeId) {
+                $q->where('organization_type_id', $organizationTypeId);
+            })
+            ->when(!empty($organizationId), function ($q) use ($organizationId) {
+                $q->where('organization_id', $organizationId);
+            })
             ->orderBy('branch_name')
             ->get();
 
+        // Departments
         $departments = DB::table('mst_department as od')
             ->join('mst_department_type as d', 'd.id', '=', 'od.department_id')
             ->select('od.id', 'd.department_name')
-            ->where('od.organization_type_id', $organizationTypeId)
-            ->where('od.organization_id', $organizationId)
             ->where('od.active_status', 1)
+            ->when($organizationTypeId, function ($q) use ($organizationTypeId) {
+                $q->where('od.organization_type_id', $organizationTypeId);
+            })
+            ->when(!empty($organizationId), function ($q) use ($organizationId) {
+                $q->where('od.organization_id', $organizationId);
+            })
             ->distinct()
             ->orderBy('d.department_name')
             ->get();
 
+        // Roles
         $roles = DB::table('mst_roles')
             ->select('id', 'role_name')
-            ->where('organization_type_id', $organizationTypeId)
-            ->where('organization_id', $organizationId)
             ->where('active_status', 1)
+            ->when($organizationTypeId, function ($q) use ($organizationTypeId) {
+                $q->where('organization_type_id', $organizationTypeId);
+            })
+            ->when(!empty($organizationId), function ($q) use ($organizationId) {
+                $q->where('organization_id', $organizationId);
+            })
             ->orderBy('role_name')
             ->get();
 
+        // Users
         $users = DB::table('users')
             ->select('id', 'name')
-            ->where('organization_type_id', $organizationTypeId)
-            ->where('organization_id', $organizationId)
             ->where('active_status', 1)
+            ->when($organizationTypeId, function ($q) use ($organizationTypeId) {
+                $q->where('organization_type_id', $organizationTypeId);
+            })
+            ->when(!empty($organizationId), function ($q) use ($organizationId) {
+                $q->where('organization_id', $organizationId);
+            })
             ->orderBy('name')
             ->get();
 

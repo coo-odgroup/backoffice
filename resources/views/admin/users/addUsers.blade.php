@@ -12,7 +12,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="#">Home</a></li>
-        <li class="breadcrumb-item">Bus Management</li>
+        <li class="breadcrumb-item">Bus Management</li> 
         <li class="breadcrumb-item active">{{ $data['strPage'] }} @yield('page_title')</li>
     </ol>
 </nav>

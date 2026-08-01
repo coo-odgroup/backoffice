@@ -312,18 +312,52 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $('#org').on('change', function() {
 
-        let orgTypeId = $(this).val();
+        let organizationTypeId = $(this).val();
 
         $('#organization').html('<option value="">Select Organization</option>');
-        $('#branch_id').html('<option value="">Select Branch</option>');
-        $('#department_id').html('<option value="">Select Department</option>');
-        $('#role_id').html('<option value="">Select Role</option>');
-        $('#assigned_by').html('<option value="">Select User</option>');
-        $('#user_id').html('<option value="">Select User</option>');
 
-        if (orgTypeId) {
-            commonAjax.loadOrganizationListForUserRoles(orgTypeId);
+        if (organizationTypeId) {
+            commonAjax.loadOrganizationListForUserRoles(organizationTypeId);
         }
+
+        $.ajax({
+            url: "{{ route('organization.details') }}",
+            type: "POST",
+            data: {
+                organization_type_id: organizationTypeId,
+                organization_id: '',
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(res) {
+
+                $('#branch_id').html('<option value="">Select Branch</option>');
+                $.each(res.branches, function(i, item) {
+                    $('#branch_id').append('<option value="' + item.id + '">' + item.branch_name + '</option>');
+                });
+
+                $('#department_id').html('<option value="">Select Department</option>');
+                $.each(res.departments, function(i, item) {
+                    $('#department_id').append('<option value="' + item.id + '">' + item.department_name + '</option>');
+                });
+
+                $('#role_id').html('<option value="">Select Role</option>');
+                $.each(res.roles, function(i, item) {
+                    $('#role_id').append('<option value="' + item.id + '">' + item.role_name + '</option>');
+                });
+
+                $('#assigned_by').html('<option value="">Select User</option>');
+                $('#user_id').html('<option value="">Select User</option>');
+
+                $.each(res.users, function(i, item) {
+                    $('#assigned_by').append('<option value="' + item.id + '">' + item.name + '</option>');
+                    $('#user_id').append('<option value="' + item.id + '">' + item.name + '</option>');
+                });
+
+                $('#role_id').trigger('change');
+                $('#assigned_by').trigger('change');
+                $('#user_id').trigger('change');
+            }
+        });
 
     });
 

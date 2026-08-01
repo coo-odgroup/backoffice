@@ -141,8 +141,8 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                 </div>
                             </th>
                             <th>Sl No</th>
-                            <th>Code</th>
                             <th>Name</th>
+                            <th>Code</th>
                             <th>System Role</th>
                             <th>Organizatin Type</th>
                             <th>Last Modified</th>
@@ -257,11 +257,11 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 className: "text-center"
             },
             {
-                data: 'role_code',
+                data: 'role_name',
                 defaultContent: "--"
             },
             {
-                data: 'role_name',
+                data: 'role_code',
                 defaultContent: "--"
             },
             {
@@ -270,7 +270,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                     if (data === 1 || data === '1') {
                         return 'True';
                     }
-                    if (data === 2 || data === '2') {
+                    if (data === 0 || data === '2') {
                         return 'False';
                     }
                     return '--';

@@ -8,10 +8,15 @@ class Users extends Model
 {
     protected $table = 'users';
     protected $fillable = [
-        'user_role',
+
         'unique_id',
         'name',
-        'organization_name',
+        'organization_type_id',
+        'organization_id',
+        'branch_id',
+        'department_id',
+        'reporting_to_user_id',
+        'role_id',
         'primary_email',
         'primary_contact',
         'location',

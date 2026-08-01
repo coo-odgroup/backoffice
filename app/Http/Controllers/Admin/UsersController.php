@@ -17,9 +17,9 @@ use Mews\Purifier\Facades\Purifier;
 
 class UsersController extends Controller
 {
-    public function index()
+    public function users()
     {
-        return view('admin.users.index');
+        return view('admin.users.users');
     }
 
     public function dataTableView()
@@ -31,116 +31,114 @@ class UsersController extends Controller
         try {
 
             $txtSearch = htmlEncode(request('txtSearch'));
-            $selStatus = (request('selStatus') !== null && request('selStatus') !== '') ? (int)request('selStatus') : '';
-            $user_role = (request('user_role') !== null && request('user_role') !== '') ? (int)request('user_role') : '';
+            $selStatus = request('selStatus');
+            $user_role = request('user_role');
 
+            // Base Query
             $dataQuery = DB::table('users as u')
+                ->leftJoin('mst_organization as o', 'o.id', '=', 'u.organization_id')
+                ->leftJoin('mst_roles as r', 'r.id', '=', 'u.role_id')
                 ->select(
                     'u.id as users_id',
                     'u.unique_id',
                     'u.name as user_name',
-                    'u.organization_name',
+                    'o.organization_name',
+                    'r.role_name as user_role',
                     'u.primary_email',
                     'u.primary_contact',
                     'u.location',
                     'u.created_at',
-                    'u.created_by',
                     'u.updated_at',
-                    'u.updated_by',
                     'u.active_status',
-                    DB::raw('(SELECT name FROM mst_roles WHERE id = u.user_role LIMIT 1) as user_role'),
                     DB::raw('(SELECT name FROM users WHERE id = u.created_by LIMIT 1) as created_by_name'),
                     DB::raw('(SELECT name FROM users WHERE id = u.updated_by LIMIT 1) as updated_by_name')
                 );
 
-            // Filters
+            // Search
             if (!empty($txtSearch)) {
                 $dataQuery->where(function ($q) use ($txtSearch) {
-                    $q->where('u.name', 'like', "%{$txtSearch}%");
+                    $q->where('u.name', 'like', '%' . $txtSearch . '%')
+                        ->orWhere('u.primary_email', 'like', '%' . $txtSearch . '%')
+                         ->orWhere('u.primary_contact', 'like', '%' . $txtSearch . '%');
                 });
             }
-
-            if (isset($user_role) && $user_role != '') {
-                $dataQuery->where('u.user_role', $user_role);
+            // Role Filter
+            if (!empty($user_role)) {
+                $dataQuery->where('u.role_id', $user_role);
             }
 
-            if (isset($selStatus) && $selStatus != '') {
+            // Status Filter
+            if ($selStatus !== '' && $selStatus !== null) {
                 $dataQuery->where('u.active_status', $selStatus);
             }
 
-            $count = $dataQuery->count('u.id');
+            // Clone query for count
+            $countQuery = clone $dataQuery;
+            $recordsTotal = $countQuery->count();
 
-            $start = request()->input('start', 0);
-            $length = request()->input('length', 10);
-
-            $start = is_numeric($start) ? (int)$start : 0;
-            $length = is_numeric($length) ? (int)$length : 10;
+            // Pagination
+            $start  = (int) request('start', 0);
+            $length = (int) request('length', 10);
 
             // Ordering
-            if (!empty(request('order'))) {
+            $columns = [
+                2 => 'r.role_name',
+                3 => 'u.name',
+                4 => 'o.organization_name',
+                5 => 'u.created_at',
+                6 => 'u.active_status'
+            ];
 
-                $columns = [2 => 'u.name', 3 => 'u.organization_name', 4 => 'u.created_at', 5 => 'u.created_by', 6 => 'u.active_status'];
-
-                $orderBy = request('order');
-                $orderColumn = $columns[$orderBy[0]['column']] ?? 'u.name';
-                $orderType = $orderBy[0]['dir'];
+            if (request()->has('order')) {
+                $order = request('order')[0];
+                $orderColumn = $columns[$order['column']] ?? 'u.name';
+                $orderType = $order['dir'];
             } else {
                 $orderColumn = 'u.name';
                 $orderType = 'asc';
             }
 
-            $dataQuery = $dataQuery->orderBy($orderColumn, $orderType);
+            $dataQuery->orderBy($orderColumn, $orderType);
 
-            // Pagination
-            if ($length == -1) {
-                $arrRes = $dataQuery->get();
-            } else {
-                $arrRes = $dataQuery->limit($length)
-                    ->offset($start)
-                    ->get();
-            }
-            // Format Data
-            if (count($arrRes) > 0) {
-
-                foreach ($arrRes as $val) {
-                    $val->created_date = date('d-M-Y H:i:s', strtotime($val->created_at));
-                    $val->updated_date = ($val->updated_at != null) ? date('d-M-Y H:i:s', strtotime($val->updated_at)) : null;
-                    $val->is_active = ($val->active_status == 1) ? 'Active' : 'Inactive';
-                    $val->enc_users_id = Crypt::encryptString($val->users_id);
-                }
+            if ($length != -1) {
+                $dataQuery->skip($start)->take($length);
             }
 
-            $recordsTotal = $count;
-            $recordsFiltered = $count;
+            $arrRes = $dataQuery->get();
+
+            foreach ($arrRes as $row) {
+
+                $row->created_date = $row->created_at
+                    ? date('d-M-Y H:i:s', strtotime($row->created_at))
+                    : '--';
+
+                $row->updated_date = $row->updated_at
+                    ? date('d-M-Y H:i:s', strtotime($row->updated_at))
+                    : '--';
+
+                $row->is_active = $row->active_status ? 'Active' : 'Inactive';
+
+                $row->enc_users_id = Crypt::encryptString($row->users_id);
+            }
+
+            $recordsFiltered = $recordsTotal;
             $data = $arrRes;
         } catch (\Throwable $t) {
 
-            Log::info("Exception occurred in UsersController@dataTableView", [
-                'error_message' => $t->getMessage(),
-                'trace' => $t->getTraceAsString()
+            return response()->json([
+                'error' => $t->getMessage(),
+                'line'  => $t->getLine(),
+                'file'  => $t->getFile(),
             ]);
-
-            $errorMsg = config('constants.SERVER_ERROR_MESSAGE');
-
-            Log::error("Error", [
-                'Controller' => 'UsersController',
-                'Method'     => 'dataTableView',
-                'Error'      => $errorMsg
-            ]);
-
-            $recordsTotal = 0;
-            $recordsFiltered = 0;
-            $data = [];
         }
 
         return response()->json([
-            'recordsTotal' => $recordsTotal,
+            'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
-            'data' => $data,
+            'data'            => $data,
         ]);
     }
-
-   public function add()
+    public function add()
     {
         $data = [];
         $data['strPage'] = $method = 'Add';
@@ -188,16 +186,16 @@ class UsersController extends Controller
                 }
 
                 $row = [
-                    'user_role'         => $user_role,
-                    'unique_id'         => $unique_id,
-                    'name'              => $name,
-                    'organization_name' => $organization_name,
-                    'primary_email'     => $primary_email,
-                    'primary_contact'   => $primary_contact,
-                    'location'          => $location,
-                    'created_by'        => 1,
-                    'active_status'     => 1,
-                    'created_at'        => now()
+                    'role_id'          => request('role_id'),
+                    'organization_id'  => request('organization_id'),
+                    'unique_id'        => $unique_id,
+                    'name'             => $name,
+                    'primary_email'    => $primary_email,
+                    'primary_contact'  => $primary_contact,
+                    'location'         => $location,
+                    'created_by'       => 1,
+                    'active_status'    => 1,
+                    'created_at'       => now(),
                 ];
 
                 app(CommonController::class)->auditLog(
@@ -233,7 +231,6 @@ class UsersController extends Controller
 
                 return redirect($redirectPage);
             }
-
         } catch (\Throwable $t) {
 
             DB::rollBack();
@@ -272,9 +269,7 @@ class UsersController extends Controller
                 $data['strPage'] = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset'] = 'Cancel';
-
                 $dataResQry = Users::with(['info', 'address', 'bankdetails']);
-
                 $dataResQry = $dataResQry->where('id', $id)->first();
 
                 if (empty($dataResQry)) {

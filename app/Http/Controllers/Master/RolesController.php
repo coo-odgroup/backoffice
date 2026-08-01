@@ -63,8 +63,8 @@ class RolesController extends Controller
                 request()->replace(request()->all());
 
                 $validator = Validator::make(request()->all(), [
-                    'orgType'     => 'bail|required|integer',
-                    'org'         => 'bail|required|integer',
+                    'orgType'     => 'bail|nullable|integer',
+                    'org'         => 'bail|nullable|integer',
                     'roleType'    => 'bail|required|max:100',
                     'roleCode'    => [
                         'bail',
@@ -72,14 +72,12 @@ class RolesController extends Controller
                         'max:100',
                         'regex:/^[A-Z]+(_[A-Z]+)*$/'
                     ],
-                    'Type'        => 'bail|required|in:1,2',
+                    'Type'        => 'bail|required|in:0,1',
                     'description' => 'nullable|max:256'
                 ], [
-                    'roleType.required' => 'Role Type cannot be left blank.',
                     'roleCode.required' => 'Role Code cannot be left blank.',
                     'roleCode.regex'    => 'Role Code must be CAPITAL letters separated by underscore (_).',
                     'Type.required'     => 'Please select System Role type.',
-                    'org.required' => 'Please select Organization Type.',
                     'orgType.required' => 'Please select Organization Type.',
                 ]);
 

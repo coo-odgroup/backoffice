@@ -40,22 +40,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
-                        <div class="col-lg-3 col-md-3 mb-2">
-                            <label for="txtSearch">Search By City Api ID</label>
-                            <input type="text" class="form-control form-select-sm" id="txtSearch" name="txtSearch"
-                                placeholder="City Api ID">
-                        </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="selCity">City</label>
-                            <select class="form-select form-select-sm selCity" id="selCity" name="selCity">
-                                <option value="">Select City</option>
-                            </select>
-                        </div>
-                        <div class="col-lg-2 col-md-2 mb-2">
-                            <label for="apiApp">Api App</label>
-                            <select class="form-select form-select-sm" id="apiApp" name="apiApp">
-                                <option value="">Select Api App</option>
-                            </select>
+                        <div class="col-lg-6 col-md-6 mb-2">
+                            <label for="txtSearch">User Name / Email</label>
+                            <input type="text"
+                                class="form-control form-control-sm"
+                                id="txtSearch"
+                                name="txtSearch"
+                                placeholder="Search by User Name or Email">
                         </div>
                         <div class="col-lg-2 col-md-2 mb-2">
                             <label for="selStatus">Status</label>
@@ -177,11 +168,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     $(document).ready(function() {
 
-        commonAjax.initSelect2('#apiApp', 'Select Api App');
-        commonAjax.initSelect2('.selCity', 'Select City');
-
-        commonAjax.loadApiAppsList(0);
-        commonAjax.loadCityList(0);
+      
     });
 
     $('#btnReset').click(function() {
@@ -212,7 +199,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         $('#pageSizeDatatable').val(10);
         let txtSearch = '';
         let selStatus = '';
-        let apiApp = '';
 
         if ($('#txtSearch').val() != '') {
             txtSearch = $('#txtSearch').val();
@@ -220,16 +206,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         if ($('#selStatus').val() != '') {
             selStatus = $('#selStatus').val();
         }
-        if ($('#apiApp').val() != '') {
-            apiApp = $('#apiApp').val();
-        }
 
         let tableId = 'datatable';
         let orderBy = [2, 'asc'];
         let searchParams = {
-            txtsearch: txtSearch,
-            selstatus: selStatus,
-            apiApp: apiApp
+            txtSearch: txtSearch,
+            selStatus: selStatus,
+            user_role: $('#user_role').val()
         };
         let displayColumns = [1, 2, 3, 4, 5, 6];
         let dataTableColumns = [{

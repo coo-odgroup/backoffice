@@ -90,19 +90,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 <span class="text-danger important">*</span>
                                             </label>
 
+                                            <!-- Default value when unchecked -->
+                                            <input type="hidden" name="Type" value="0">
+
                                             <div class="form-check form-switch mt-2">
                                                 <input
                                                     class="form-check-input"
                                                     type="checkbox"
                                                     id="systemRolesType"
-                                                    {{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 'checked' : '' }}>
+                                                    name="Type"
+                                                    value="1"
+                                                    {{ old('Type', $data['row']->is_system_role ?? 0) == 1 ? 'checked' : '' }}>
                                             </div>
-
-                                            <input
-                                                type="hidden"
-                                                name="Type"
-                                                id="Type"
-                                                value="{{ (isset($data['row']) && $data['row']->is_system_role == 1) ? 1 : 2 }}">
                                         </div>
 
                                     </div>
@@ -155,8 +154,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         e.preventDefault();
 
-        if (!validator.selectDropdown('orgType', 'Organization Type'))
-            return false;
         if (!validator.selectDropdown('systemRolesType', ' System Role Type'))
             return false;
         if (!validator.blankCheck('roleCode', 'Role Code cannot be left blank'))
@@ -209,7 +206,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
     });
 
-    
+
     $('#orgType').on('change', function() {
 
         let orgTypeId = $(this).val();
