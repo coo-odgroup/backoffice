@@ -68,6 +68,7 @@ class SupportTicketController extends Controller
                     'category'         => 'required|max:100',
                     'severity'         => 'required|max:100',
                     'priority'         => 'required|max:100',
+                    'environment'      => 'required|max:50',
 
                     'reported_by'      => 'nullable|integer',
                     'assigned_to'      => 'nullable|integer',
@@ -136,6 +137,7 @@ class SupportTicketController extends Controller
                     'category.required'    => 'Please select Category.',
                     'severity.required'    => 'Please select Severity.',
                     'priority.required'    => 'Please select Priority.',
+                    'environment.required' => 'Please select Environment.',
                     'reported_by.required' => 'Please select Reported By.',
                     'assigned_to.required' => 'Please select Assigned To.',
                     'assigned_by.required' => 'Please select Assigned By.'
@@ -157,9 +159,7 @@ class SupportTicketController extends Controller
                 $severity        = htmlEncode(trim(Purifier::clean(request('severity'))));
                 $priority        = htmlEncode(trim(Purifier::clean(request('priority'))));
 
-                $status = $id > 0
-                    ? htmlEncode(trim(Purifier::clean(request('status'))))
-                    : 'Open';
+                $status = $id > 0 ? (int) request('status') : 3;     // OPEN = annexture_value 3
 
                 $reportedBy      = (int)request('reported_by');
                 $assignedTo      = (int)request('assigned_to');
@@ -172,6 +172,7 @@ class SupportTicketController extends Controller
                 $browser         = htmlEncode(trim(Purifier::clean(request('browser'))));
                 $device          = htmlEncode(trim(Purifier::clean(request('device'))));
                 $appVersion      = htmlEncode(trim(Purifier::clean(request('app_version'))));
+                $environment = htmlEncode(trim(Purifier::clean(request('environment'))));
 
 
                 $duplicate = SupportTicket::where('ticket_code', $ticketCode);
@@ -240,6 +241,7 @@ class SupportTicketController extends Controller
                         'priority'         => $priority,
                         'status'           => $status,
                         'assigned_to'      => $assignedTo,
+                        'environment'      => $environment,
                         'reported_by'      => $reportedBy,
                         'assigned_by'      => $assignedBy,
                         'due_date'         => $dueDate,
@@ -309,6 +311,7 @@ class SupportTicketController extends Controller
                         'browser'          => $browser,
                         'device'           => $device,
                         'app_version'      => $appVersion,
+                        'environment'     => $environment,
 
                         'file_title'       => json_encode($fileTitles),
                         'file_type'        => json_encode($fileTypes),
@@ -319,6 +322,12 @@ class SupportTicketController extends Controller
                         'created_at'       => now()
                     ];
 
+
+
+                    $obj = new SupportTicket();
+                    $obj->fill($row);
+                    $obj->save();
+
                     app(CommonController::class)->auditLog(
                         'support_tickets',
                         null,
@@ -326,10 +335,6 @@ class SupportTicketController extends Controller
                         [],
                         $row
                     );
-
-                    $obj = new SupportTicket();
-                    $obj->fill($row);
-                    $obj->save();
                 }
 
                 DB::commit();
@@ -380,45 +385,83 @@ class SupportTicketController extends Controller
             $environment = request('environment');
 
             $dataQuery = DB::table('support_tickets as st')
+
+                // Module
+                ->leftJoin('mst_annexture as m', function ($join) {
+                    $join->on('m.annexture_value', '=', 'st.module')
+                        ->where('m.annexture_type_id', 32);
+                })
+
+                // Project
+                ->leftJoin('mst_annexture as pr', function ($join) {
+                    $join->on('pr.annexture_value', '=', 'st.project_id')
+                        ->where('pr.annexture_type_id', 33);
+                })
+
+                // Severity
+                ->leftJoin('mst_annexture as sev', function ($join) {
+                    $join->on('sev.annexture_value', '=', 'st.severity')
+                        ->where('sev.annexture_type_id', 34);
+                })
+
+                // Priority
+                ->leftJoin('mst_annexture as p', function ($join) {
+                    $join->on('p.annexture_value', '=', 'st.priority')
+                        ->where('p.annexture_type_id', 35);
+                })
+
+                // Status
+                ->leftJoin('mst_annexture as s', function ($join) {
+                    $join->on('s.annexture_value', '=', 'st.status')
+                        ->where('s.annexture_type_id', 36);
+                })
+
+                // Category
+                ->leftJoin('mst_annexture as c', function ($join) {
+                    $join->on('c.annexture_value', '=', 'st.category')
+                        ->where('c.annexture_type_id', 37);
+                })
+
+                // Users
                 ->leftJoin('users as ru', 'ru.id', '=', 'st.reported_by')
                 ->leftJoin('users as au', 'au.id', '=', 'st.assigned_to')
                 ->leftJoin('users as abu', 'abu.id', '=', 'st.assigned_by')
+
                 ->select(
-                    'st.id',
-                    'st.ticket_code',
-                    'st.title',
-                    'st.module',
-                    'st.category',
-                    'st.priority',
-                    'st.status',
-                    'st.active_status',
-                    'st.created_at',
-                    'st.updated_at',
-                    'st.created_by',
-                    'st.updated_by',
+                    'st.*',
+
+                    DB::raw("REPLACE(m.annexture_name,'_',' ') as module"),
+                    DB::raw("REPLACE(pr.annexture_name,'_',' ') as project"),
+                    DB::raw("REPLACE(sev.annexture_name,'_',' ') as severity"),
+                    DB::raw("REPLACE(p.annexture_name,'_',' ') as priority"),
+                    DB::raw("REPLACE(c.annexture_name,'_',' ') as category"),
+                    DB::raw("REPLACE(s.annexture_name,'_',' ') as status"),
 
                     'ru.name as reported_by_name',
                     'au.name as assigned_to_name',
-                    'abu.name as assigned_by_name',
-
-                    DB::raw('(SELECT name FROM users WHERE id = st.created_by LIMIT 1) as created_by_name'),
-                    DB::raw('(SELECT name FROM users WHERE id = st.updated_by LIMIT 1) as updated_by_name')
+                    'abu.name as assigned_by_name'
                 );
 
 
             if (!empty($txtSearch)) {
 
                 $dataQuery->where(function ($q) use ($txtSearch) {
-
                     $q->where('st.ticket_code', 'like', "%{$txtSearch}%")
                         ->orWhere('st.title', 'like', "%{$txtSearch}%")
+                        ->orWhere('m.annexture_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('pr.annexture_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('sev.annexture_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('p.annexture_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('c.annexture_name', 'like', "%{$txtSearch}%")
+                        ->orWhere('s.annexture_name', 'like', "%{$txtSearch}%")
                         ->orWhere('ru.name', 'like', "%{$txtSearch}%")
-                        ->orWhere('au.name', 'like', "%{$txtSearch}%");
+                        ->orWhere('au.name', 'like', "%{$txtSearch}%")
+                        ->orWhere('abu.name', 'like', "%{$txtSearch}%");
                 });
             }
 
             if ($selStatus !== '' && $selStatus !== null) {
-                $dataQuery->where('st.active_status', (int) $selStatus);
+                $dataQuery->where('st.status', (int) $selStatus);
             }
 
             if (!empty($module)) {
@@ -444,13 +487,13 @@ class SupportTicketController extends Controller
 
                 $columns = [
                     2 => 'st.ticket_code',
-                    3 => 'st.module',
+                    3 => 'm.annexture_name',
                     4 => 'st.title',
-                    5 => 'st.priority',
-                    6 => 'st.category',
-                    7 => 'st.status',
+                    5 => 'p.annexture_name',
+                    6 => 'c.annexture_name',
+                    7 => 's.annexture_name',
                     8 => 'st.updated_at',
-                    9 => 'st.active_status'
+                    9 => 'st.active_status',
                 ];
 
                 $order      = request('order');
@@ -477,45 +520,9 @@ class SupportTicketController extends Controller
             foreach ($arrRes as $row) {
 
                 $row->created_date = date('d-M-Y H:i:s', strtotime($row->created_at));
-
-                $row->updated_date = $row->updated_at
-                    ? date('d-M-Y H:i:s', strtotime($row->updated_at))
-                    : null;
-
+                $row->updated_date = $row->updated_at ? date('d-M-Y H:i:s', strtotime($row->updated_at)) : null;
                 $row->is_active = $row->active_status ? 'Active' : 'Inactive';
-
                 $row->enc_id = Crypt::encryptString($row->id);
-
-                $moduleMap = [
-                    1 => 'Website',
-                    2 => 'Admin Console',
-                    3 => 'Operator Panel',
-                    4 => 'Agent Panel',
-                    5 => 'API Client Dashboard',
-                    6 => 'Outgoing API',
-                    7 => 'Admin API',
-                    8 => 'Website API',
-                    9 => 'Android',
-                    10 => 'IOS'
-                ];
-
-                $priorityMap = [
-                    1 => 'Low',
-                    2 => 'Medium',
-                    3 => 'High',
-                    4 => 'Critical'
-                ];
-
-                $categoryMap = [
-                    1 => 'Bug',
-                    2 => 'Feature',
-                    3 => 'Enhancement',
-                    4 => 'Support'
-                ];
-
-                $row->module = $moduleMap[$row->module] ?? '--';
-                $row->priority = $priorityMap[$row->priority] ?? '--';
-                $row->category = $categoryMap[$row->category] ?? '--';
             }
 
             $data = $arrRes;

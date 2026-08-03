@@ -39,31 +39,44 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <!-- FILTER -->
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
-                    <div class="row align-items-end">
+                    <div class="row g-2 align-items-end">
+
                         <!-- Search -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="txtSearch">Search By Ticket Code</label>
-                            <input type="text" class="form-control clearable form-control-sm" id="txtSearch" name="txtSearch"
+                        <div class="col-lg-2 col-md-6">
+                            <label for="txtSearch" class="form-label mb-1">Search By Ticket Code</label>
+                            <input type="text"
+                                class="form-control form-control-sm clearable"
+                                id="txtSearch"
+                                name="txtSearch"
                                 placeholder="Ticket Code">
                         </div>
 
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="module">Module<span class="text-danger important">*</span></label>
-                            <select class="form-select form-select-sm selOrg" id="module" name="module">
+                        <!-- Module -->
+                        <div class="col-lg-2 col-md-6">
+                            <label for="module" class="form-label mb-1">
+                                Module
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select form-select-sm" id="module" name="module">
                                 <option value="">Select Module</option>
                             </select>
                         </div>
 
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="priority">Priority<span class="text-danger important">*</span></label>
-                            <select class="form-select form-select-sm selOrg" id="priority" name="priority">
+                        <!-- Priority -->
+                        <div class="col-lg-2 col-md-6">
+                            <label for="priority" class="form-label mb-1">
+                                Priority
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select form-select-sm" id="priority" name="priority">
                                 <option value="">Select Priority</option>
                             </select>
                         </div>
 
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="environment">Environment</label>
-                            <select class="form-select form-select-sm environment" id="environment" name="environment">
+                        <!-- Environment -->
+                        <div class="col-lg-2 col-md-6">
+                            <label for="environment" class="form-label mb-1">Environment</label>
+                            <select class="form-select form-select-sm" id="environment" name="environment">
                                 <option value="">Select Environment</option>
                                 <option value="Staging">Staging</option>
                                 <option value="Production">Production</option>
@@ -71,23 +84,32 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                         </div>
 
                         <!-- Status -->
-                        <div class="col-6 col-sm-6 col-md-4 col-lg-2 mb-2">
-                            <label for="selStatus">Status</label>
+                        <div class="col-lg-2 col-md-6">
+                            <label for="selStatus" class="form-label mb-1">Status</label>
                             <select class="form-select form-select-sm" id="selStatus" name="selStatus">
                                 <option value="">Select Status</option>
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
                             </select>
                         </div>
 
-                        <!-- Buttons -->
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-4 mb-2 d-flex justify-content-end flex-wrap action-btns gap-1">
-                            <button class="btn btn-primary btn-sm" type="button" onclick="getDataTableView()">
-                                <i class="fa-solid fa-search me-1"></i>Search
-                            </button>
-                            <button class="btn btn-secondary btn-sm" id="btnReset" type="button">
-                                <i class="fa-solid fa-rotate-left me-1"></i>Reset
-                            </button>
+                        <!-- Search / Reset -->
+                        <div class="col-lg-2 col-md-12">
+                            <div class="d-flex justify-content-end gap-2">
+
+                                <button class="btn btn-primary btn-sm"
+                                    type="button"
+                                    onclick="getDataTableView()">
+                                    <i class="fa fa-search me-1"></i>
+                                    Search
+                                </button>
+
+                                <button class="btn btn-secondary btn-sm"
+                                    id="btnReset"
+                                    type="button">
+                                    <i class="fa fa-rotate-left me-1"></i>
+                                    Reset
+                                </button>
+
+                            </div>
                         </div>
 
                     </div>
@@ -151,6 +173,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                             <th>Title</th>
                             <th>Priority</th>
                             <th>Category</th>
+                            <th>Enviornment</th>
                             <th>Status</th>
                             <th>Last Modified</th>
                             <th class="no-sort">Action</th>
@@ -193,11 +216,13 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         commonAjax.loadAnnextureList([
             'SUPPORT_TICKET_MODULE',
-            'SUPPORT_TICKET_PRIORITY'
+            'SUPPORT_TICKET_PRIORITY',
+            'SUPPORT_TICKET_STATUS'
         ], function(data) {
 
             renderDropdown('#module', data.SUPPORT_TICKET_MODULE || []);
             renderDropdown('#priority', data.SUPPORT_TICKET_PRIORITY || []);
+            renderDropdown('#selStatus', data.SUPPORT_TICKET_STATUS || []);
 
         });
 
@@ -280,7 +305,6 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-
             {
                 data: 'slNo',
                 render: function(data, type, row, meta) {
@@ -288,37 +312,34 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                 },
                 className: "text-center"
             },
-
             {
                 data: 'ticket_code',
                 defaultContent: '--'
             },
-
             {
                 data: 'module',
                 defaultContent: '--'
             },
-
             {
                 data: 'title',
                 defaultContent: '--'
             },
-
             {
                 data: 'priority',
                 defaultContent: '--'
             },
-
             {
                 data: 'category',
                 defaultContent: '--'
             },
-
+            {
+                data: 'environment',
+                defaultContent: '--'
+            },
             {
                 data: 'status',
                 defaultContent: '--'
             },
-
             {
                 data: null,
                 render: function(data, type, row) {
@@ -368,12 +389,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         $.each(data, function(index, item) {
 
-            let value = item.id ?? item.value;
-            let text = item.name ?? item.annexture_value ?? item.label;
+            let value = item.annexture_value ?? item.value ?? item.id;
+            let text = item.annexture_name ?? item.name ?? item.label;
 
             let isSelected = (selected == value) ? 'selected' : '';
 
-            options += `<option value="${value}" ${isSelected}>${text}</option>`;
+            options += `<option value="${value}" ${isSelected}>
+                        ${text.replaceAll('_',' ')}
+                    </option>`;
         });
 
         $(selector).html(options).trigger('change');

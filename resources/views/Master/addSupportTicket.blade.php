@@ -149,9 +149,17 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
                                                         <div class="col-md">
                                                             <label for="status">Status</label>
-                                                            <select class="form-select form-select-sm status" id="status" name="status">
+                                                            <select
+                                                                class="form-select form-select-sm status"
+                                                                id="status"
+                                                                name="status"
+                                                                {{ empty($data['row']) ? 'disabled' : '' }}>
                                                                 <option value="">Select Status</option>
                                                             </select>
+
+                                                            @if(empty($data['row']))
+                                                            <input type="hidden" name="status" id="status_hidden" value="1">
+                                                            @endif
                                                         </div>
                                                         <div class="col-md">
                                                             <label for="environment">Environment</label>
@@ -595,6 +603,16 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             renderDropdown('#severity', data.SUPPORT_TICKET_SEVERITY || [], selectedSeverity);
             renderDropdown('#status', data.SUPPORT_TICKET_STATUS || [], selectedStatus);
 
+            // Add Mode
+            @if(empty($data['row']))
+            $('#status')
+                .val('3') // Open
+                .trigger('change')
+                .prop('disabled', true);
+
+            $('#status_hidden').val('3');
+            @endif
+
             $('#module_type').trigger('change.select2');
 
 
@@ -664,25 +682,22 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         }
     });
 
-    function renderDropdown(selector, data, selectedValue = '', placeholder = 'Select') {
+    function renderDropdown(selector, data, selectedValue = '') {
 
-        let options = `<option value="">${placeholder}</option>`;
+        let options = '<option value="">Select</option>';
 
-        if (Array.isArray(data) && data.length > 0) {
-            data.forEach(function(item) {
+        data.forEach(function(item) {
 
-                let value = item.annexture_value ?? item.value ?? item.id ?? '';
-                let text = item.annexture_name ?? item.label ?? item.name ?? '';
-
-                options += `
-                    <option value="${value}" ${value == selectedValue ? 'selected' : ''}>
-                        ${text}
-                    </option>`;
-            });
-        }
+            options += `
+            <option value="${item.annexture_value}"
+                ${item.annexture_value == selectedValue ? 'selected' : ''}>
+                ${item.annexture_name.replaceAll('_',' ')}
+            </option>`;
+        });
 
         $(selector).html(options).trigger('change');
     }
+
 
     document.addEventListener('DOMContentLoaded', function() {
         initCkEditor('#description');
