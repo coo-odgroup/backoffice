@@ -37,6 +37,7 @@ use App\Http\Controllers\Master\OrganizationTypeController;
 use App\Http\Controllers\Master\ExcelController;
 use App\Http\Controllers\Master\OrganizationController;
 use App\Http\Controllers\Master\OrganizationContactsController;
+use App\Http\Controllers\Master\CancellationslabInfoController;
 use App\Http\Controllers\Master\OrganizationTaxDetailsController;
 use App\Http\Controllers\Master\OrganizationDocumentController;
 use App\Http\Controllers\Master\OrganizationAddressController;
@@ -64,8 +65,8 @@ use App\Http\Controllers\Master\BusInfoController;
 use App\Http\Controllers\Master\ReviewCategoryController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Master\CancellationslabController;
-use App\Http\Controllers\Master\CancellationslabInfoController;
 use App\Http\Controllers\Master\UserRolesController;
+use App\Http\Controllers\Master\SupportTicketController;
 use App\Http\Controllers\Master\TicketFareSlabController;
 use App\Http\Controllers\Master\TicketFareSlabInfoController;
 use App\Http\Controllers\MasterLogController;
@@ -196,6 +197,7 @@ Route::prefix('admin')->group(function () {
     Route::get('branch/branch-dropdown', [CommonController::class, 'branchDropdown']);
     Route::get('branch/parent-branch-dropdown', [CommonController::class, 'parentBranchDropdown'])->name('branch.parentBranchDropdown');
     Route::get('department/department-dropdown', [CommonController::class, 'departmentDropdown']);
+    Route::post('/get-users-type-list', [CommonController::class, 'getUsersTypeList']);
 
 
 
@@ -529,12 +531,26 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'users/edit/{edit_param}/{encId}', [UsersController::class, 'edit']);
     Route::post('/viewuser', [UsersController::class, 'viewUserRecord'])->name('users.viewuserrecord');
 
+    // Support Ticket
+    Route::get('/support-ticket', [SupportTicketController::class, 'supportTicket'])->name('supportTicket.index');
+    Route::match(['get', 'post'], 'support-ticket/add', [SupportTicketController::class, 'add'])->name('supportTicket.add');
+    Route::post('support-ticket/dataTableView', [SupportTicketController::class, 'dataTableView'])->name('supportTicket.dataTableView');
+    Route::match(['get', 'post'], 'support-ticket/edit/{encId}', [SupportTicketController::class, 'edit'])->name('supportTicket.edit');
 
 
 
 
 
-    //Bus Service
+
+
+
+
+
+
+
+
+
+    //Excel function To Bulk addition of data into table..
     Route::get('/excel', [ExcelController::class, 'excel'])->name('excel.index');
     Route::match(['get', 'post'], 'excel/add', [ExcelController::class, 'add'])->name('excel.add');
     Route::post('excel/dataTableView', [ExcelController::class, 'dataTableView'])->name('excel.dataTableView');

@@ -40,7 +40,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             <div class="mb-3 border-bottom d-none" id="filterBox">
                 <div class="card-body">
                     <div class="row align-items-end">
-                        <div class="col-lg-6 col-md-6 mb-2">
+                        <div class="col-lg-3 col-md-6 mb-2">
                             <label for="txtSearch">User Name / Email</label>
                             <input type="text"
                                 class="form-control form-control-sm"

@@ -16,6 +16,7 @@ use App\Models\Master\CancellationslabInfo;
 use App\Models\Master\Modules;
 use App\Models\Master\FaqCategory;
 use App\Models\Master\Roles;
+use App\Models\Users;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -1662,5 +1663,17 @@ class CommonController extends Controller
                 'data'    => []
             ]);
         }
+    }
+    public function getUsersTypeList(Request $request)
+    {
+        $users = Users::select('id', 'name')
+            ->where('active_status', 1)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'data'   => $users
+        ]);
     }
 }

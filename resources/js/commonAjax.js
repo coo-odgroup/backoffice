@@ -1975,6 +1975,7 @@ export function loadCronJobDropdown(selector, selected = "") {
         },
     });
 }
+
 export function getNotificationTemplateDropdown(
     selector,
     selected = "",
@@ -2394,7 +2395,6 @@ export function loadDepartmentList(selected_department_id = 0) {
     });
 }
 
-
 //Loads Branch list By Organization
 export function loadBranchList(organization_id = 0, selected_branch_id = 0) {
     $(".selBranch").html('<option value="">Loading...</option>');
@@ -2435,6 +2435,35 @@ export function loadBranchList(organization_id = 0, selected_branch_id = 0) {
                 '<option value="">-- Select Branch --</option>',
             );
         },
+    });
+}
+
+export function loadUsersTypeList() {
+    $.ajax({
+        type: "POST",
+        url: ajaxUrl + "get-users-type-list",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        dataType: "json",
+
+        success: function (response) {
+
+            let options = '<option value="">Select User</option>';
+
+            if (response.status) {
+
+                $.each(response.data, function (i, item) {
+                    options += `<option value="${item.id}">${item.name}</option>`;
+                });
+
+                $(".users").html(options).trigger('change');
+            }
+        },
+
+        error: function () {
+            console.log("Error loading users");
+        }
     });
 }
 
