@@ -536,8 +536,7 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], 'support-ticket/add', [SupportTicketController::class, 'add'])->name('supportTicket.add');
     Route::post('support-ticket/dataTableView', [SupportTicketController::class, 'dataTableView'])->name('supportTicket.dataTableView');
     Route::match(['get', 'post'], 'support-ticket/edit/{encId}', [SupportTicketController::class, 'edit'])->name('supportTicket.edit');
-
-
+    Route::post('admin/support-ticket/temp-upload',[SupportTicketController::class, 'tempUpload'])->name('supportTicket.tempUpload');
 
 
 

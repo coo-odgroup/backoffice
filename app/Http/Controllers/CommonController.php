@@ -44,7 +44,7 @@ class CommonController extends Controller
             'FaqCategory' => \App\Models\Master\FaqCategory::class,
             'Faq' => \App\Models\Master\Faq::class,
             'DepartmentType' => \App\Models\Master\DepartmentType::class,
-            'SeatType' => \App\Models\Master\SeatType::class,
+            'SupportTicket' => \App\Models\Master\SupportTicket::class,
             'ApiApps' => \App\Models\Master\ApiApps::class,
             'ApiKeys' => \App\Models\Master\ApiKeys::class,
             'CityApis' => \App\Models\Master\CityApis::class,

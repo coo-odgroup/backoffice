@@ -6,6 +6,7 @@ use Mews\Purifier\Facades\Purifier;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Master\SupportTicket;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -35,7 +36,7 @@ class SupportTicketController extends Controller
 
             if ($id > 0) {
 
-                $redirectPage = "admin/supportTicket/edit/" . $encId;
+                $redirectPage = "admin/support-ticket/edit/" . $encId;
                 $data['strPage']   = $method = 'Edit';
                 $data['strSubmit'] = 'Update';
                 $data['strReset']  = 'Cancel';
@@ -43,13 +44,13 @@ class SupportTicketController extends Controller
                 $row = SupportTicket::where('id', $id)->first();
 
                 if (!$row) {
-                    return redirect('supportTicket');
+                    return redirect('support-ticket');
                 }
 
                 $data['row'] = $row;
             } else {
                 $id = 0;
-                $redirectPage = "admin/supportTicket";
+                $redirectPage = "admin/support-ticket";
             }
 
             if (request()->isMethod('post')) {
@@ -68,9 +69,9 @@ class SupportTicketController extends Controller
                     'severity'         => 'required|max:100',
                     'priority'         => 'required|max:100',
 
-                    'reported_by'      => 'required|integer',
-                    'assigned_to'      => 'required|integer',
-                    'assigned_by'      => 'required|integer',
+                    'reported_by'      => 'nullable|integer',
+                    'assigned_to'      => 'nullable|integer',
+                    'assigned_by'      => 'nullable|integer',
 
                     'due_date'         => 'nullable|date',
                     'estimated_hours'  => 'nullable|numeric',
@@ -534,6 +535,23 @@ class SupportTicketController extends Controller
             'recordsTotal'    => $recordsTotal,
             'recordsFiltered' => $recordsFiltered,
             'data'            => $data,
+        ]);
+    }
+
+    public function tempUpload(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240',
+        ]);
+
+        $file = $request->file('file');
+
+        $path = $file->store('support-ticket/temp', 'public');
+
+        return response()->json([
+            'status' => true,
+            'path'   => $path,
+            'url'    => Storage::url($path),
         ]);
     }
 }

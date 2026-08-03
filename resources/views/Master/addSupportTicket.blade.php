@@ -173,7 +173,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                             </div>
 
                                             <!-- ================= Assignment ================= -->
-                                            <div class="card shadow-sm mb-3">
+                                            <div class="card shadow-sm mb-3 d-none">
                                                 <div class="card-header  text-black py-2">
                                                     <h6 class="mb-0">
                                                         <i class="fa fa-users me-2"></i>Assignment Details
@@ -211,7 +211,7 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                 </div>
                                             </div>
                                             <!-- ================= Time Tracking ================= -->
-                                            <div class="card shadow-sm mb-3">
+                                            <div class="card shadow-sm mb-3 d-none">
                                                 <div class="card-header text-black py-2">
                                                     <h6 class="mb-0">
                                                         <i class="fa fa-clock me-2"></i>Time Tracking
@@ -422,20 +422,39 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
                                                                     name="attachment_file[]">
                                                             </div>
                                                             <!-- Buttons -->
-                                                            <div class="d-flex justify-content-end gap-2">
+                                                            <div class="d-flex justify-content-end align-items-center gap-2">
+
+                                                                <!-- Loader -->
+                                                                <span class="upload-loader d-none">
+                                                                    <span class="spinner-border spinner-border-sm text-primary"></span>
+                                                                    <small>Uploading...</small>
+                                                                </span>
+
+                                                                <span class="upload-status d-none badge bg-success">
+                                                                    <i class="fa fa-check"></i> Uploaded
+                                                                </span>
+
                                                                 <button type="button"
-                                                                    class="btn btn-success btn-sm">
-                                                                    <i class="fa fa-upload me-1"></i>
-                                                                    Upload
+                                                                    class="btn btn-info btn-sm btnPreview d-none">
+                                                                    <i class="fa fa-eye"></i> Preview
                                                                 </button>
+
+                                                                <input type="hidden"
+                                                                    name="uploaded_file_path[]"
+                                                                    class="uploaded_file_path">
+
+                                                                <!-- Add -->
                                                                 <button type="button"
                                                                     class="btn btn-primary btn-sm btnAddAttachment">
                                                                     <i class="fa fa-plus"></i>
                                                                 </button>
+
+                                                                <!-- Delete -->
                                                                 <button type="button"
                                                                     class="btn btn-danger btn-sm btnRemoveAttachment">
                                                                     <i class="fa fa-trash"></i>
                                                                 </button>
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -482,6 +501,25 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         </div>
 </form>
 
+<div class="modal fade" id="previewModal">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Attachment Preview</h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="previewContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 @push('scripts')
 
@@ -495,13 +533,14 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
     $('#backoffice-form').on('submit', function(e) {
 
         e.preventDefault();
+        let form = this;
+        commonAjax.confirmAlert('Are you sure to proceed!');
 
-        commonAjax.confirmAlert('Are you sure to proceed !');
-
-        $('#btnConfirmOk').on('click', function() {
-            e.currentTarget.submit();
-        });
-
+        $('#btnConfirmOk')
+            .off('click')
+            .one('click', function() {
+                form.submit();
+            });
     });
 
     document.getElementById("menu-toggle").addEventListener("click", function() {
@@ -556,6 +595,10 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
             renderDropdown('#severity', data.SUPPORT_TICKET_SEVERITY || [], selectedSeverity);
             renderDropdown('#status', data.SUPPORT_TICKET_STATUS || [], selectedStatus);
 
+            $('#module_type').trigger('change.select2');
+
+
+
         });
 
         commonAjax.initClearableInputs();
@@ -571,10 +614,30 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
             let clone = $('.attachment-row:first').clone();
 
-            // Clear values
-            clone.find('input[type="text"]').val('');
-            clone.find('input[type="file"]').val('');
-            clone.find('select').prop('selectedIndex', 0);
+            // Clear all fields
+            clone.find('input[type=text]').val('');
+            clone.find('input[type=file]').val('');
+            clone.find('select').val('');
+
+            // Reset hidden uploaded path
+            clone.find('.uploaded_file_path').val('');
+
+            // Hide upload status
+            clone.find('.upload-status').addClass('d-none');
+
+            // Hide loader
+            clone.find('.upload-loader').addClass('d-none');
+
+            // Hide preview
+            clone.find('.btnPreview')
+                .addClass('d-none')
+                .removeData('url')
+                .removeData('type');
+
+            // Reset preview data attributes
+            clone.find('.btnPreview')
+                .attr('data-url', '')
+                .attr('data-type', '');
 
             $('#attachmentContainer').append(clone);
 
@@ -625,13 +688,18 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
         initCkEditor('#description');
     });
 
-    $(document).on('change', '#module_type', function() {
+    function generateTicketCode() {
 
-        if ($('#ticket_code').val() !== '') {
+        let module = $('#module_type option:selected').text().trim();
+
+        if (
+            module === '' ||
+            module === 'Select' ||
+            module === 'Select Module'
+        ) {
+            $('#ticket_code').val('');
             return;
         }
-
-        const module = $(this).find('option:selected').text().trim();
 
         const prefixes = {
             "Website": "WEBS",
@@ -648,12 +716,94 @@ $listButtons = ['indicate' => 'N', 'print' => 'N', 'xls' => 'N', 'download' => '
 
         const prefix = prefixes[module] || "TICK";
 
-        const unique6Digit = (
-            Date.now().toString().slice(-4) +
-            Math.floor(Math.random() * 90 + 10)
-        ).slice(-6);
+        const random = Math.floor(1000 + Math.random() * 9000);
 
-        $('#ticket_code').val(prefix + unique6Digit);
+        $('#ticket_code').val(prefix + random);
+    }
+
+    $('#module_type').on('select2:select', generateTicketCode);
+    $('#module_type').on('change', generateTicketCode);
+    $('#module_type').on('change', function() {
+
+        console.log("changed");
+        console.log($(this).val());
+        console.log($('#module_type option:selected').text());
+
+    });
+
+    $(document).on('change', 'input[name="attachment_file[]"]', function() {
+
+        let row = $(this).closest('.attachment-row');
+
+        let file = this.files[0];
+        if (!file) return;
+
+        let formData = new FormData();
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        formData.append('file', file);
+        row.find('.upload-loader').removeClass('d-none');
+
+        $.ajax({
+            url: "{{ route('supportTicket.tempUpload') }}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function(res) {
+
+                row.find('.upload-loader').addClass('d-none');
+                row.find('.upload-status').removeClass('d-none');
+                const btn = row.find('.btnPreview');
+
+                btn
+                    .removeClass('d-none')
+                    .data('url', res.url)
+                    .data('type', file.type)
+                    .attr('data-url', res.url)
+                    .attr('data-type', file.type);
+                row.find('.uploaded_file_path').val(res.path);
+            },
+            error: function() {
+                row.find('.upload-loader').addClass('d-none');
+                alert("Upload failed.");
+            }
+        });
+    });
+
+    $(document).on('click', '.btnPreview', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let url = $(this).attr('data-url');
+        let type = $(this).attr('data-type');
+        let html = '';
+
+        if (type.startsWith('image')) {
+            html = '<img src="' + url + '" class="img-fluid rounded">';
+        } else if (type.startsWith('video')) {
+            html = '<video controls class="w-100">' +
+                '<source src="' + url + '">' +
+                '</video>';
+
+        } else if (type === 'application/pdf') {
+            html = '<iframe src="' + url + '" width="100%" height="700"></iframe>';
+        } else {
+            html = '<a href="' + url + '" target="_blank">Download File</a>';
+        }
+
+        $('#previewContainer').html(html);
+        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+        modal.show();
+
+    });
+
+    $('#backoffice-form').on('submit', function(e) {
+
+        console.log("FORM SUBMIT TRIGGERED");
+        console.trace();
+
+        e.preventDefault();
     });
 </script>
 @endpush
